@@ -112,7 +112,7 @@ try:
 
     x = p.addUserDebugParameter('X', -20, 20, 0)
     y = p.addUserDebugParameter('Y', -20, 20, 0)
-    o = p.addUserDebugParameter('Omega', -1, 1, 0)
+    o = p.addUserDebugParameter('Omega', -math.pi, math.pi, 0)
     while(flag):
         x1 = p.readUserDebugParameter(x)
         y1 = p.readUserDebugParameter(y)
