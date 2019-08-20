@@ -17,12 +17,17 @@ print(pybullet_data.getDataPath())
 print("Loading Plane")
 p.loadURDF("plane.urdf")
 
+print("Loading table")
+p.loadURDF("table/table.urdf", [-1,2,0])
+p.loadURDF("tray/tray.urdf", [1,2,0])
+book = p.loadURDF("urdf/book.urdf", [-1,2,0.8])
+
 print("Loading Husky")
 husky = p.loadURDF("husky/husky.urdf", [0,0, 0.1],
                    [0,0,0,0.1])
 
 print("Loading ur5 arm")  
-robotID = p.loadURDF("pybullet-playground-master/urdf/sisbot.urdf", [0,0,0.320208])
+robotID = p.loadURDF("urdf/sisbot.urdf", [0,0,0.320208])
 for jointIndex in range(p.getNumJoints(robotID)):
   p.resetJointState(robotID, jointIndex, 0)
 
@@ -42,7 +47,7 @@ print("Reset done!")
 cid = p.createConstraint(husky, -1, robotID, -1, p.JOINT_FIXED, [0, 0, 0], [0, 0, 0], [0., 0., -.1],
                          [0, 0, 0, 1])
 
-# p.setGravity(0,0,-10)
+p.setGravity(0,0,-1)
 
 #######
 controlJoints = ["shoulder_pan_joint","shoulder_lift_joint",
@@ -101,6 +106,8 @@ parent = joints[mimicParentName]
 children = AttrDict((j, joints[j]) for j in joints if j in mimicChildren.keys())
 controlRobotiqC2 = functools.partial(controlGripper, robotID, parent, children, mimicChildren)
 
+x1,y1,o1 = 0,0,0
+
 # start simulation
 try:
     flag = True
@@ -109,14 +116,25 @@ try:
         joint = joints[name]
         userParam = p.addUserDebugParameter(name, joint.lowerLimit, joint.upperLimit, 0)
         userParams[name] = userParam
-
-    x = p.addUserDebugParameter('X', -20, 20, 0)
-    y = p.addUserDebugParameter('Y', -20, 20, 0)
-    o = p.addUserDebugParameter('Omega', -math.pi, math.pi, 0)
+    # x = p.addUserDebugParameter('X', -20, 20, 0)
+    # y = p.addUserDebugParameter('Y', -20, 20, 0)
+    # o = p.addUserDebugParameter('Omega', -math.pi, math.pi, 0)
     while(flag):
-        x1 = p.readUserDebugParameter(x)
-        y1 = p.readUserDebugParameter(y)
-        o1 = p.readUserDebugParameter(o)
+        # x1 = p.readUserDebugParameter(x)
+        # y1 = p.readUserDebugParameter(y)
+        # o1 = p.readUserDebugParameter(o)
+        keys = p.getKeyboardEvents()
+        print(x1, y1, o1)
+        if 65297 in keys:
+          x1 += math.cos(o1)*0.001
+          y1 += math.sin(o1)*0.001
+        if 65298 in keys:
+          x1 -= math.cos(o1)*0.001
+          y1 -= math.sin(o1)*0.001
+        if 65295 in keys:
+          o1 += 0.005
+        if 65296 in keys:
+          o1 -= 0.005
         for name in controlJoints:
             joint = joints[name]
             pose = p.readUserDebugParameter(userParams[name])
