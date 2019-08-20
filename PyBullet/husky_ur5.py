@@ -7,6 +7,7 @@ from collections import namedtuple
 from attrdict import AttrDict
 import functools
 import math
+import time
 
 
 p.connect(p.GUI)
@@ -47,7 +48,7 @@ print("Reset done!")
 cid = p.createConstraint(husky, -1, robotID, -1, p.JOINT_FIXED, [0, 0, 0], [0, 0, 0], [0., 0., -.1],
                          [0, 0, 0, 1])
 
-p.setGravity(0,0,-1)
+p.setGravity(0,0,-0.1)
 
 #######
 controlJoints = ["shoulder_pan_joint","shoulder_lift_joint",
@@ -107,6 +108,7 @@ children = AttrDict((j, joints[j]) for j in joints if j in mimicChildren.keys())
 controlRobotiqC2 = functools.partial(controlGripper, robotID, parent, children, mimicChildren)
 
 x1,y1,o1 = 0,0,0
+constraint = 0
 
 # start simulation
 try:
@@ -124,7 +126,6 @@ try:
         # y1 = p.readUserDebugParameter(y)
         # o1 = p.readUserDebugParameter(o)
         keys = p.getKeyboardEvents()
-        print(x1, y1, o1)
         if 65297 in keys:
           x1 += math.cos(o1)*0.001
           y1 += math.sin(o1)*0.001
@@ -135,6 +136,12 @@ try:
           o1 += 0.005
         if 65296 in keys:
           o1 -= 0.005
+        if ord('p') in keys and constraint == 0:
+            constraint = p.createConstraint(robotID, 12, book, -1, p.JOINT_POINT2POINT, [0, 0, 0], [0, 0, 0], [-0.2, 0.,0],
+                         [0, 0, 0, 1], childFrameOrientation=[0,0,0,0])
+        if ord('d') in keys and constraint != 0:
+            p.removeConstraint(constraint)
+            constraint = 0
         for name in controlJoints:
             joint = joints[name]
             pose = p.readUserDebugParameter(userParams[name])
