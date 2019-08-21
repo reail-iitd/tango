@@ -20,15 +20,22 @@ p.loadURDF("plane.urdf")
 
 print("Loading table")
 p.loadURDF("table/table.urdf", [-1,2,0])
-p.loadURDF("tray/tray.urdf", [1,2,0])
-book = p.loadURDF("urdf/book.urdf", [-1,2,0.8])
+p.loadURDF("tray/tray_textured2.urdf", [1,2,0])
+book = p.loadURDF("models/urdf/blue_book.urdf", [-1,2,0.8])
+graycube = p.loadURDF("models/urdf/gray_cube.urdf", [-1.5, 1.7, 0.8])
+greencube = p.loadURDF("models/urdf/green_cube.urdf", [-1.5, 1.8, 0.8])
+redcube = p.loadURDF("models/urdf/red_cube.urdf", [-1.5, 1.9, 0.8])
+blocktray =p.loadURDF("models/urdf/tray.urdf", [-0.5, 2, 0.8])
+bottle = p.loadURDF("models/urdf/bottle.urdf", [1,-2,0])
+# box = p.loadURDF("models/urdf/box.urdf", [-1,-2,0.2])
+
 
 print("Loading Husky")
 husky = p.loadURDF("husky/husky.urdf", [0,0, 0.1],
                    [0,0,0,0.1])
 
 print("Loading ur5 arm")  
-robotID = p.loadURDF("urdf/sisbot.urdf", [0,0,0.320208])
+robotID = p.loadURDF("models/urdf/sisbot.urdf", [0,0,0.320208])
 for jointIndex in range(p.getNumJoints(robotID)):
   p.resetJointState(robotID, jointIndex, 0)
 
