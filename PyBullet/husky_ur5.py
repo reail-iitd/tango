@@ -3,131 +3,41 @@ import time
 import pdb
 import pybullet as p
 import pybullet_data
-from collections import namedtuple
-from attrdict import AttrDict
-import functools
 import math
 import time
-import json
-import argparse
 from src.initialise import *
+from src.parser import *
+from src.ur5 import *
 
 object_file = "jsons/objects.json"
 
+# Connect to Bullet using GUI mode
 p.connect(p.GUI)
 
-parser = argparse.ArgumentParser('This will simulate a world describe in a json file.')
-parser.add_argument('--world', 
-                        type=str, 
-                        required=True,
-                        help='The json file to visualize')
-parser.add_argument('--timestep',
-                        type=float,
-                        required=False,
-                        default=1.0,
-                        help='How quickly to step through the visualization')
-args = parser.parse_args()
+# Add input arguments
+args = initParser()
 
-husky, robotID, object_lookup, id_lookup, horizontal_list = init_husky_ur5(args.world, object_file)
+# Initialize husky and ur5 model
+husky, robotID, object_lookup, id_lookup, horizontal_list = initHuskyUR5(args.world, object_file)
 
-book = id_lookup['book']
-
-
-for jointIndex in range(p.getNumJoints(robotID)):
-  p.resetJointState(robotID, jointIndex, 0)
-
-print("Husky num joints: ", p.getNumJoints(husky))
-print("Husky Joints info:")
-for i in range(p.getNumJoints(husky)):
-  print(p.getJointInfo(husky, i))
-print("UR5 num joints: ", p.getNumJoints(robotID))
-print("UR5 Joints info:")
-for i in range(p.getNumJoints(robotID)):
-  print(p.getJointInfo(robotID, i))
-
-
-print("Reset done!")
-
+# Fix ur5 to husky
 cid = p.createConstraint(husky, -1, robotID, -1, p.JOINT_FIXED, [0, 0, 0], [0, 0, 0], [0., 0., -.1],
                          [0, 0, 0, 1])
 
-p.setGravity(0,0,-0.1)
+# Set small gravity
+p.setGravity(0,0,-1)
 
-#######
-controlJoints = ["shoulder_pan_joint","shoulder_lift_joint",
-                 "elbow_joint", "wrist_1_joint",
-                 "wrist_2_joint", "wrist_3_joint",
-                 "robotiq_85_left_knuckle_joint"]
-robotStartPos = [0,0,0]
-robotStartOrn = p.getQuaternionFromEuler([0,0,0])
-jointTypeList = ["REVOLUTE", "PRISMATIC", "SPHERICAL", "PLANAR", "FIXED"]
-numJoints = p.getNumJoints(robotID)
-jointInfo = namedtuple("jointInfo", 
-                       ["id","name","type","lowerLimit","upperLimit","maxForce","maxVelocity","controllable"])
-joints = AttrDict()
-for i in range(numJoints):
-    info = p.getJointInfo(robotID, i)
-    jointID = info[0]
-    jointName = info[1].decode("utf-8")
-    jointType = jointTypeList[info[2]]
-    jointLowerLimit = info[8]
-    jointUpperLimit = info[9]
-    jointMaxForce = info[10]
-    jointMaxVelocity = info[11]
-    controllable = True if jointName in controlJoints else False
-    info = jointInfo(jointID,jointName,jointType,jointLowerLimit,
-                     jointUpperLimit,jointMaxForce,jointMaxVelocity,controllable)
-    if info.type=="REVOLUTE": # set revolute joint to static
-        p.setJointMotorControl2(robotID, info.id, p.VELOCITY_CONTROL, targetVelocity=0, force=0)
-    joints[info.name] = info
-# explicitly deal with mimic joints
-def controlGripper(robotID, parent, children, mul, **kwargs):
-    controlMode = kwargs.pop("controlMode")
-    if controlMode==p.POSITION_CONTROL:
-        pose = kwargs.pop("targetPosition")
-        # move parent joint
-        p.setJointMotorControl2(robotID, parent.id, controlMode, targetPosition=pose, 
-                                force=parent.maxForce, maxVelocity=parent.maxVelocity) 
-        # move child joints
-        for name in children:
-            child = children[name]
-            childPose = pose * mul[child.name]
-            p.setJointMotorControl2(robotID, child.id, controlMode, targetPosition=childPose, 
-                                    force=child.maxForce, maxVelocity=child.maxVelocity) 
-    else:
-        raise NotImplementedError("controlGripper does not support \"{}\" control mode".format(controlMode))
-    # check if there 
-    if len(kwargs) is not 0:
-        raise KeyError("No keys {} in controlGripper".format(", ".join(kwargs.keys())))
-mimicParentName = "robotiq_85_left_knuckle_joint"
-mimicChildren = {"robotiq_85_right_knuckle_joint":      1,
-                 "robotiq_85_right_finger_joint":       1,
-                 "robotiq_85_left_inner_knuckle_joint": 1,
-                 "robotiq_85_left_finger_tip_joint":    1,
-                 "robotiq_85_right_inner_knuckle_joint":1,
-                 "robotiq_85_right_finger_tip_joint":   1}
-parent = joints[mimicParentName] 
-children = AttrDict((j, joints[j]) for j in joints if j in mimicChildren.keys())
-controlRobotiqC2 = functools.partial(controlGripper, robotID, parent, children, mimicChildren)
+# Initialize gripper joints and forces
+controlJoints, joints = initGripper(robotID)
+gotoWing = getUR5Controller(robotID)
 
 x1,y1,o1 = 0,0,0
 constraint = 0
 
 # start simulation
+book = id_lookup["book"]
 try:
-    flag = True
-    userParams = dict()
-    for name in controlJoints:
-        joint = joints[name]
-        userParam = p.addUserDebugParameter(name, joint.lowerLimit, joint.upperLimit, 0)
-        userParams[name] = userParam
-    # x = p.addUserDebugParameter('X', -20, 20, 0)
-    # y = p.addUserDebugParameter('Y', -20, 20, 0)
-    # o = p.addUserDebugParameter('Omega', -math.pi, math.pi, 0)
-    while(flag):
-        # x1 = p.readUserDebugParameter(x)
-        # y1 = p.readUserDebugParameter(y)
-        # o1 = p.readUserDebugParameter(o)
+    while(True):
         keys = p.getKeyboardEvents()
         if 65297 in keys:
           x1 += math.cos(o1)*0.001
@@ -145,15 +55,7 @@ try:
         if ord('d') in keys and constraint != 0:
             p.removeConstraint(constraint)
             constraint = 0
-        for name in controlJoints:
-            joint = joints[name]
-            pose = p.readUserDebugParameter(userParams[name])
-            if name==mimicParentName:
-                controlRobotiqC2(controlMode=p.POSITION_CONTROL, targetPosition=pose)
-            else:
-                p.setJointMotorControl2(robotID, joint.id, p.POSITION_CONTROL,
-                                        targetPosition=pose, force=joint.maxForce, 
-                                        maxVelocity=joint.maxVelocity)
+        gotoWing(robotID)
         q=p.getQuaternionFromEuler((0,0,o1))
         if p.getBasePositionAndOrientation(robotID)[0] != ((x1, y1, 0.220208), (q)):
             p.resetBasePositionAndOrientation(robotID, [x1, y1, 0.220208], q)
