@@ -39,7 +39,7 @@ gotoWing(robotID, wings["home"])
 x1,y1,o1 = 0,0,0
 constraint = 0
 
-# start simulation
+# Start simulation
 try:
     while(True):
         x1,y1,o1 = moveKeyboard(x1, y1, o1, [husky, robotID])

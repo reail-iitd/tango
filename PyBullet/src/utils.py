@@ -11,6 +11,9 @@ def keepHorizontal(object_list):
                                           p.getQuaternionFromEuler((0,0,0)))
 
 def moveKeyboard(x1, y1, o1, object_list):
+    """
+    Move robot based on keyboard inputs
+    """
     keys = p.getKeyboardEvents()
     if 65297 in keys:
         x1 += math.cos(o1)*0.001
@@ -30,6 +33,9 @@ def moveKeyboard(x1, y1, o1, object_list):
     return x1, y1, o1
 
 def moveUR5Keyboard(robotID, wings, gotoWing):
+    """
+    Change UR5 arm position based on keyboard input
+    """
     keys = p.getKeyboardEvents()
     if ord(b'h') in keys:
         gotoWing(robotID, wings["home"])
