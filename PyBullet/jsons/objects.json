@@ -1,4 +1,3 @@
-// List of all objects, their urdf paths and constraints
 {
 	"objects":[
 		{
@@ -18,7 +17,7 @@
 		},
 		{
 			"name": "quadcopter",
-			"urdf": "models/urdf/quadcopter.urdf",
+			"urdf": "models/urdf/quadrotor.urdf",
 			"constraints": []
 		},
 		{
@@ -41,23 +40,18 @@
 			"urdf": "models/urdf/book.urdf",
 			"constraints": ["horizontal"]
 		},	
-		{
-			"name": "big-tray",
-			"urdf": "tray/tray_textured2.urdf",
-			"constraints": ["horizontal"]
-		},
         {
-            "name": "block_red",
+            "name": "cube_red",
             "urdf": "models/urdf/cube_red.urdf",
             "constraints": []
         },
         {
-            "name": "block_green",
+            "name": "cube_green",
             "urdf": "models/urdf/cube_green.urdf",
             "constraints": []
         },
         {
-            "name": "block_grey",
+            "name": "cube_gray",
             "urdf": "models/urdf/cube_gray.urdf",
             "constraints": []
         },

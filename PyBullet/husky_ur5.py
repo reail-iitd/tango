@@ -8,41 +8,62 @@ from attrdict import AttrDict
 import functools
 import math
 import time
-
+import json
+import argparse
 
 p.connect(p.GUI)
 p.setAdditionalSearchPath(pybullet_data.getDataPath())
 
 print(pybullet_data.getDataPath())
 
-print("Loading Plane")
-p.loadURDF("plane.urdf")
+object_list = []
+with open('jsons/objects.json', 'r') as handle:
+    object_list = json.load(handle)
 
-print("Loading table")
-p.loadURDF("table/table.urdf", [-1,2,0])
-p.loadURDF("tray/tray_textured2.urdf", [1,2,0])
-book = p.loadURDF("models/urdf/book.urdf", [-1,1.7,0.7])
-graycube = p.loadURDF("models/urdf/gray_cube.urdf", [-1.5, 1.7, 0.7])
-greencube = p.loadURDF("models/urdf/green_cube.urdf", [-1.5, 1.8, 0.7])
-redcube = p.loadURDF("models/urdf/red_cube.urdf", [-1.5, 1.9, 0.7])
-blocktray =p.loadURDF("models/urdf/tray.urdf", [-0.5, 2, 0.7])
-bottle = p.loadURDF("models/urdf/bottle.urdf", [1,-2,0])
-box2 = p.loadURDF("models/urdf/box.urdf", [-2,0,0.2])
-r2d2 = p.loadURDF("r2d2.urdf", [-1,-2,1])
-apple = p.loadURDF("models/urdf/apple.urdf", [3,0,0.2])
-orange = p.loadURDF("models/urdf/orange.urdf", [2.8,0,0.2])
-banana = p.loadURDF("models/urdf/banana.urdf", [2.6,0,0.2])
-quad = p.loadURDF("models/urdf/quadrotor.urdf", [2,0,0.1])
-chair = p.loadURDF("models/urdf/chair.urdf", [-0.7,1,0.1])
-ball = p.loadURDF("models/urdf/ball.urdf", [2,2,0.2])
-stick = p.loadURDF("models/urdf/stick.urdf", [2,0,0.2])
+parser = argparse.ArgumentParser('This will simulate a world describe in a json file.')
+parser.add_argument('--world', 
+                    type=str, 
+                    required=True,
+                    help='The json file to visualize')
 
-print("Loading Husky")
-husky = p.loadURDF("husky/husky.urdf", [0,0, 0.1],
-                   [0,0,0,0.1])
+args = parser.parse_args()
 
-print("Loading ur5 arm")  
-robotID = p.loadURDF("models/urdf/sisbot.urdf", [0,0,0.320208])
+def load_object(name, position, orientation):
+    urdf = ''
+    for obj in object_list['objects']:
+      if obj['name'] == name:
+        urdf = obj['urdf']
+    if orientation == []:
+      return p.loadURDF(urdf, position)
+    return p.loadURDF(urdf, position, orientation)
+
+def load_world(objects):
+    """
+    Load all URDFs specified in the world and create a user friendly dictionary with body
+    indexes to be used by pybullet parser at the time of loading the urdf model. 
+    :param objects: List containing names of objects in the world and their URDF file locations.
+    :return: Dictionary of object name -> object index.
+    """
+    object_lookup = {}
+    id_lookup = {}
+    for obj in objects:
+        object_id = load_object(obj['name'], obj['position'], obj['orientation'])
+        object_lookup[object_id] = obj['name']
+        id_lookup[obj['name']] = object_id
+
+        print(obj['name'], object_id)
+    return object_lookup, id_lookup
+
+with open(args.world, 'r') as handle:
+    world = json.load(handle)
+
+object_lookup, id_lookup = load_world(world['entities'])
+
+husky = id_lookup['husky']
+robotID = id_lookup['ur5']
+book = id_lookup['book']
+
+
 for jointIndex in range(p.getNumJoints(robotID)):
   p.resetJointState(robotID, jointIndex, 0)
 
@@ -55,7 +76,6 @@ print("UR5 Joints info:")
 for i in range(p.getNumJoints(robotID)):
   print(p.getJointInfo(robotID, i))
 
-#put kuka on top of husky
 
 print("Reset done!")
 
