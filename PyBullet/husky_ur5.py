@@ -10,57 +10,26 @@ import math
 import time
 import json
 import argparse
+from src.initialise import *
+
+object_file = "jsons/objects.json"
 
 p.connect(p.GUI)
-p.setAdditionalSearchPath(pybullet_data.getDataPath())
-
-print(pybullet_data.getDataPath())
-
-object_list = []
-with open('jsons/objects.json', 'r') as handle:
-    object_list = json.load(handle)
 
 parser = argparse.ArgumentParser('This will simulate a world describe in a json file.')
 parser.add_argument('--world', 
-                    type=str, 
-                    required=True,
-                    help='The json file to visualize')
-
+                        type=str, 
+                        required=True,
+                        help='The json file to visualize')
+parser.add_argument('--timestep',
+                        type=float,
+                        required=False,
+                        default=1.0,
+                        help='How quickly to step through the visualization')
 args = parser.parse_args()
 
-def load_object(name, position, orientation):
-    urdf = ''
-    for obj in object_list['objects']:
-      if obj['name'] == name:
-        urdf = obj['urdf']
-    if orientation == []:
-      return p.loadURDF(urdf, position)
-    return p.loadURDF(urdf, position, orientation)
+husky, robotID, object_lookup, id_lookup, horizontal_list = init_husky_ur5(args.world, object_file)
 
-def load_world(objects):
-    """
-    Load all URDFs specified in the world and create a user friendly dictionary with body
-    indexes to be used by pybullet parser at the time of loading the urdf model. 
-    :param objects: List containing names of objects in the world and their URDF file locations.
-    :return: Dictionary of object name -> object index.
-    """
-    object_lookup = {}
-    id_lookup = {}
-    for obj in objects:
-        object_id = load_object(obj['name'], obj['position'], obj['orientation'])
-        object_lookup[object_id] = obj['name']
-        id_lookup[obj['name']] = object_id
-
-        print(obj['name'], object_id)
-    return object_lookup, id_lookup
-
-with open(args.world, 'r') as handle:
-    world = json.load(handle)
-
-object_lookup, id_lookup = load_world(world['entities'])
-
-husky = id_lookup['husky']
-robotID = id_lookup['ur5']
 book = id_lookup['book']
 
 
