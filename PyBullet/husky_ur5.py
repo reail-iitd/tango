@@ -30,6 +30,10 @@ bottle = p.loadURDF("models/urdf/bottle.urdf", [1,-2,0])
 box2 = p.loadURDF("models/urdf/box.urdf", [-2,0,0.2])
 r2d2 = p.loadURDF("r2d2.urdf", [-1,-2,1])
 apple = p.loadURDF("models/urdf/apple.urdf", [3,0,0.2])
+orange = p.loadURDF("models/urdf/orange.urdf", [2.8,0,0.2])
+banana = p.loadURDF("models/urdf/banana.urdf", [2.6,0,0.2])
+quad = p.loadURDF("models/urdf/quadrotor.urdf", [2,0,0.1])
+chair = p.loadURDF("models/urdf/chair.urdf", [-0.7,1,0.1])
 
 print("Loading Husky")
 husky = p.loadURDF("husky/husky.urdf", [0,0, 0.1],

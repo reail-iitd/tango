@@ -9,22 +9,22 @@
     </contact>
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="0"/>
+      <mass value="5"/>
       <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
     </inertial>
     <visual>
       <origin rpy="1.57 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="models/meshes/apple/apple.stl" scale="0.003 0.003 0.003"/>
+        <mesh filename="models/meshes/apple/10162_Apple_v01_l3.obj" scale="0.0007 0.0007 0.0007"/>
       </geometry>
       <material name="tray_material">
-        <color rgba="0.954 0.253 0 1"/>
+        <color rgba="1 0.03 0 1"/>
       </material>
     </visual>
     <collision>
       <origin rpy="1.57 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="models/meshes/apple/apple.stl" scale="0.003 0.003 0.003"/>
+        <mesh filename="models/meshes/apple/10162_Apple_v01_l3.obj" scale="0.0006 0.0007 0.0007"/>
       </geometry>
     </collision>
   </link>
