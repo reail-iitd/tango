@@ -79,10 +79,10 @@ def getUR5ControllerHelper(robotID):
  
 def getUR5Controller(robotID):
     controlFunction = getUR5ControllerHelper(robotID)
-    def control(robotID):
+    def control(robotID, wing):
         for name in controlJoints:
             joint = joints[name]
-            pose = p.readUserDebugParameter(userParams[name])
+            pose = wing[name]
             if name==mimicParentName:
                 controlFunction(controlMode=p.POSITION_CONTROL, targetPosition=pose)
             else:

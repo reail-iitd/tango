@@ -47,6 +47,17 @@ def loadWorld(objects, object_file):
         print(obj['name'], object_id)
     return object_lookup, id_lookup, horizontal
 
+def initWingPos(wing_file):
+    wings = dict()
+    controlJoints = ["shoulder_pan_joint","shoulder_lift_joint",
+                     "elbow_joint", "wrist_1_joint",
+                     "wrist_2_joint", "wrist_3_joint",
+                     "robotiq_85_left_knuckle_joint"]
+    with open(wing_file, 'r') as handle:
+        poses = json.load(handle)["poses"]
+        for pose in poses:
+            wings[pose["name"]] = dict(zip(controlJoints, pose["pose"]))
+    return wings
 
 def initHuskyUR5(world_file, object_file):
     """
