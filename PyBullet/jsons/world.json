@@ -1,0 +1,33 @@
+// Objects and their positions in the world
+{
+	"entities":[
+		{
+			"name": "plane"
+		}
+		{
+			"name": "husky",
+			"position": [0,0,0.1],
+			"orientation": [0,0,0,0.1]
+		},
+		{
+			"name": "ur5",
+			"position": [0,0,0.320208],
+			"orientation": [0,0,0,0]
+		},
+		{
+			"name": "table",
+			"position": [-1, 2, 0],
+			"orientation": [0,0,0,0]
+		},
+		{
+			"name": "big-tray",
+			"position": [1, 2, 0],
+			"orientation": [0,0,0,0]
+		},
+		{
+			"name": "book",
+			"position": [-1,1.7,0.7],
+			"orientation": [0,0,0,0]
+		},
+	]
+}
