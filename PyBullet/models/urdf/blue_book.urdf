@@ -1,18 +1,48 @@
-<?xml version="1.0"?>
-<robot name="myfirst">
-  <material name="blue">
-    <color rgba="0 0 0.8 1"/>
-  </material>
-  <link name="base_link">
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.5.1-0-g916b5db  Build Version: 1.5.7152.31018
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="tray.SLDPRT">
+  <link
+    name="tray.SLDPRT">
+    <inertial>
+      <origin
+        xyz="-2.8472E-17 1.84601259873727E-17 0.0069104"
+        rpy="0 0 0" />
+      <mass
+        value="10.8496" />
+      <inertia
+        ixx="0.00078859"
+        ixy="2.2885E-19"
+        ixz="2.8E-20"
+        iyy="0.00026969"
+        iyz="7.83334618632542E-20"
+        izz="0.0010458" />
+    </inertial>
     <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="-1.5707963267949 0 0" />
       <geometry>
-        <box size="0.4 0.3 0.05"/>
+        <mesh
+          filename="models/meshes/book/book.STL" scale="0.004 0.004 0.004"/>
       </geometry>
-      <material name="blue"/>
+      <material
+        name="">
+        <color
+          rgba="0.19216 0.11961 0.63333 1" />
+        <texture
+          filename="models/textures/" />
+      </material>
     </visual>
-    <collision>
+    <collision concave="yes">
+      <origin
+        xyz="0 0 0"
+        rpy="-1.5707963267949 0 0" />
       <geometry>
-        <box size="0.4 0.3 0.05"/>
+        <mesh
+          filename="models/meshes/book/book.STL" scale="0.004 0.004 0.004" />
       </geometry>
     </collision>
   </link>
