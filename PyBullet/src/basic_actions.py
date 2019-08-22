@@ -11,7 +11,7 @@ def moveTo(x1, y1, o1, object_list, target, tolerance, moved):
     y2 = p.getBasePositionAndOrientation(target)[0][1]
     x2 = p.getBasePositionAndOrientation(target)[0][0]
     diff = math.atan2((y2-y1),(x2-x1))%(2*math.pi) - (o1%(2*math.pi))
-    print(math.atan2((y2-y1),(x2-x1))%(2*math.pi), (o1%(2*math.pi)), diff)
+    # print(math.atan2((y2-y1),(x2-x1))%(2*math.pi), (o1%(2*math.pi)), diff)
     if abs(diff) > 0.05:
         o1 = o1 + 0.001 if diff > 0 else o1 - 0.001
     elif abs(distance.euclidean((x1, y1), (x2, y2)) - tolerance) > 0.2: 
