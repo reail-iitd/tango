@@ -22,7 +22,7 @@ def loadObject(name, position, orientation, obj_list):
       object_id = p.loadURDF(urdf, position)
     else:
       object_id = p.loadURDF(urdf, position, orientation)
-    return object_id, ("horizontal" in obj['constraints'])
+    return object_id, ("horizontal" in obj['constraints']), obj["tolerance"]
 
 
 def loadWorld(objects, object_file):
@@ -36,16 +36,18 @@ def loadWorld(objects, object_file):
     horizontal = []
     object_lookup = {}
     id_lookup = {}
+    tolerances = {}
     with open(object_file, 'r') as handle:
         object_list = json.load(handle)['objects']
     for obj in objects:
-        object_id, horizontal_cons = loadObject(obj['name'], obj['position'], obj['orientation'], object_list)
+        object_id, horizontal_cons, tol = loadObject(obj['name'], obj['position'], obj['orientation'], object_list)
         if horizontal_cons:
             horizontal.append(object_id)
         object_lookup[object_id] = obj['name']
         id_lookup[obj['name']] = object_id
+        tolerances[obj['name']] = tol
         print(obj['name'], object_id)
-    return object_lookup, id_lookup, horizontal
+    return object_lookup, id_lookup, horizontal, tolerances
 
 def initWingPos(wing_file):
     wings = dict()
@@ -66,8 +68,8 @@ def initHuskyUR5(world_file, object_file):
     p.setAdditionalSearchPath(pybullet_data.getDataPath())
     with open(world_file, 'r') as handle:
         world = json.load(handle)
-    object_lookup, id_lookup, horizontal_list = loadWorld(world['entities'], object_file)
+    object_lookup, id_lookup, horizontal_list, tolerances = loadWorld(world['entities'], object_file)
     base = id_lookup['husky']
     arm = id_lookup['ur5']
-    return base, arm, object_lookup, id_lookup, horizontal_list
+    return base, arm, object_lookup, id_lookup, horizontal_list, tolerances
  

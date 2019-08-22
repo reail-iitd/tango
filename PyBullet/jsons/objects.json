@@ -3,112 +3,134 @@
 		{
 			"name": "husky",
 			"urdf": "husky/husky.urdf",
-			"constraints": []
+			"constraints": [],
+			"tolerance": 0
 		},
 		{
 			"name": "ur5",
 			"urdf": "models/urdf/sisbot.urdf",
-			"constraints": ["on_husky"]
+			"constraints": ["on_husky"],
+			"tolerance": 0
 		},
 		{
 			"name": "r2d2",
 			"urdf": "r2d2.urdf",
-			"constraints": []
+			"constraints": [],
+			"tolerance": 1
 		},
 		{
 			"name": "quadcopter",
 			"urdf": "models/urdf/quadrotor.urdf",
-			"constraints": []
+			"constraints": [],
+			"tolerance": 0
 		},
 		{
 			"name": "plane",
 			"urdf": "plane.urdf",
-			"constraints": []
+			"constraints": [],
+			"tolerance": 0
 		},
 		{
 			"name": "table",
 			"urdf": "table/table.urdf",
-			"constraints": []
+			"constraints": [],
+			"tolerance": 0.5
 		},
 		{
 			"name": "big-tray",
 			"urdf": "tray/tray_textured2.urdf",
-			"constraints": ["horizontal"]
+			"constraints": ["horizontal"],
+			"tolerance": 1
 		},
 		{
 			"name": "book",
 			"urdf": "models/urdf/book.urdf",
-			"constraints": ["horizontal"]
+			"constraints": ["horizontal"],
+			"tolerance": 0.5
 		},	
         {
             "name": "cube_red",
             "urdf": "models/urdf/cube_red.urdf",
-            "constraints": []
+            "constraints": [],
+			"tolerance": 0.5
         },
         {
             "name": "cube_green",
             "urdf": "models/urdf/cube_green.urdf",
-            "constraints": []
+            "constraints": [],
+			"tolerance": 0.5
         },
         {
             "name": "cube_gray",
             "urdf": "models/urdf/cube_gray.urdf",
-            "constraints": []
+            "constraints": [],
+			"tolerance": 0.5
         },
         {
             "name": "tray",
             "urdf": "models/urdf/tray.urdf",
-            "constraints": ["horizontal"]
+            "constraints": ["horizontal"],
+			"tolerance": 0.5
         },
         {
             "name": "bottle_blue",
             "urdf": "models/urdf/bottle_blue.urdf",
-            "constraints": []
+            "constraints": [],
+			"tolerance": 0.5
         },
         {
             "name": "bottle_red",
             "urdf": "models/urdf/bottle_red.urdf",
-            "constraints": []
+            "constraints": [],
+			"tolerance": 0.5
         },
         {
             "name": "bottle_gray",
             "urdf": "models/urdf/bottle_gray.urdf",
-            "constraints": []
+            "constraints": [],
+			"tolerance": 0.5
         },
         {
             "name": "box",
             "urdf": "models/urdf/box.urdf",
-            "constraints": ["on_ground", "horizontal"]
+            "constraints": ["on_ground", "horizontal"],
+			"tolerance": 0.5
         },
         {
             "name": "apple",
             "urdf": "models/urdf/apple.urdf",
-            "constraints": []
+            "constraints": [],
+			"tolerance": 0.5
         },
         {
             "name": "orange",
             "urdf": "models/urdf/orange.urdf",
-            "constraints": []
+            "constraints": [],
+			"tolerance": 0.5
         },
         {
             "name": "banana",
             "urdf": "models/urdf/banana.urdf",
-            "constraints": []
+            "constraints": [],
+			"tolerance": 0.5
         },
 		{
 			"name": "chair",
 			"urdf": "models/urdf/chair.urdf",
-			"constraints": []
+			"constraints": [],
+			"tolerance": 1
 		},
 		{
 			"name": "ball",
 			"urdf": "models/urdf/ball.urdf",
-			"constraints": []
+			"constraints": [],
+			"tolerance": 0.5
 		},
 		{
 			"name": "stick",
 			"urdf": "models/urdf/stick.urdf",
-			"constraints": []
+			"constraints": [],
+			"tolerance": 0.5
 		}
 	]
 }

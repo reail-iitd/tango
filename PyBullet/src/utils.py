@@ -14,23 +14,28 @@ def moveKeyboard(x1, y1, o1, object_list):
     """
     Move robot based on keyboard inputs
     """
+    flag = False
     keys = p.getKeyboardEvents()
     if 65297 in keys:
         x1 += math.cos(o1)*0.001
         y1 += math.sin(o1)*0.001
+        flag= True
     if 65298 in keys:
         x1 -= math.cos(o1)*0.001
         y1 -= math.sin(o1)*0.001
+        flag= True
     if 65295 in keys:
         o1 += 0.005
+        flag= True
     if 65296 in keys:
         o1 -= 0.005
+        flag= True
     q=p.getQuaternionFromEuler((0,0,o1))
     for obj_id in object_list:
         z = p.getBasePositionAndOrientation(obj_id)[0][2]
         if p.getBasePositionAndOrientation(obj_id)[0] != ((x1, y1, z), (q)):
             p.resetBasePositionAndOrientation(obj_id, [x1, y1, z], q)
-    return x1, y1, o1
+    return x1, y1, o1, flag
 
 def moveUR5Keyboard(robotID, wings, gotoWing):
     """
