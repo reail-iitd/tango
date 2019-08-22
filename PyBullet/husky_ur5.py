@@ -10,6 +10,7 @@ from src.parser import *
 from src.ur5 import *
 
 object_file = "jsons/objects.json"
+wings_file = "jsons/wings.json"
 
 # Connect to Bullet using GUI mode
 p.connect(p.GUI)
@@ -31,6 +32,7 @@ p.setGravity(0,0,-1)
 controlJoints, joints = initGripper(robotID)
 gotoWing = getUR5Controller(robotID)
 
+# Position of the robot
 x1,y1,o1 = 0,0,0
 constraint = 0
 
@@ -49,12 +51,6 @@ try:
           o1 += 0.005
         if 65296 in keys:
           o1 -= 0.005
-        if ord('p') in keys and constraint == 0:
-            constraint = p.createConstraint(robotID, 12, book, -1, p.JOINT_POINT2POINT, [0, 0, 0], [0, 0, 0], [-0.2, 0.,0],
-                         [0, 0, 0, 1], childFrameOrientation=[0,0,0,0])
-        if ord('d') in keys and constraint != 0:
-            p.removeConstraint(constraint)
-            constraint = 0
         gotoWing(robotID)
         q=p.getQuaternionFromEuler((0,0,o1))
         if p.getBasePositionAndOrientation(robotID)[0] != ((x1, y1, 0.220208), (q)):
