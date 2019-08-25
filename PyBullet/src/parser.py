@@ -14,6 +14,10 @@ def initParser():
                             required=False,
                             default=1.0,
                             help='How quickly to step through the visualization')
-
+    parser.add_argument('--input',
+                            type=str,
+                            required=False,
+                            default="jsons/input.json",
+                            help='The json file of input high level actions')
     return parser.parse_args()
  

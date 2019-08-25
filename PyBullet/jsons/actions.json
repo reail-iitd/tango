@@ -1,1 +1,54 @@
-// High level action components based on low level actions
+{
+	"actions":[
+		{
+			"name": "moveAtoB",
+			"args": ["object", "target"],
+			"execution": [
+				["moveTo", "object"],
+				["changeWing", "up"]
+				["constrain", "object", "ur5"],
+				["moveTo", "target"],
+				["constrain", "object", "target"]
+			]
+		},
+		{
+			"name": "moveTo",
+			"args": ["target"],
+			"execution": [
+				["moveTo", "target"]
+			]
+		},
+		{
+			"name": "move",
+			"args": ["position"],
+			"execution":[
+				["move", "position"]
+			]
+		},
+		{
+			"name": "pick",
+			"args": ["object"],
+			"execution": [
+				["moveTo", "object"],
+				["changeWing", "up"]
+				["constrain", "object", "ur5"]
+			]
+		},
+		{
+			"name": "place",
+			"args": ["object", "target"],
+			"execution":[
+				["moveTo", "target"],
+				["changeWing", "up"]
+				["constrain", "object", "target"],
+			]
+		},
+		{
+			"name": "drop",
+			"args": ["object_list","target"],
+			"execution":[
+				"constrain", "object_list", "target",
+			]
+		}
+	]
+}

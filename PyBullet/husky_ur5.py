@@ -67,6 +67,7 @@ actions = [["moveTo", "cube_red"],
            ["moveTo", "tray"],
            ["constrain", "cube_green", "tray"],
            ["constrain", "tray", "ur5"],
+           ["move", [0,0]],
            ["moveTo", "box"],
            ["constrain", "cube_red", "box"],
            ["constrain", "cube_green", "box"],
@@ -80,16 +81,24 @@ startTime = time.time()
 # Start simulation
 try:
     while(True):
-        x1,y1,o1,moved = moveKeyboard(x1, y1, o1, [husky, robotID])
+        x1,y1,o1,keyboard = moveKeyboard(x1, y1, o1, [husky, robotID])
         moveUR5Keyboard(robotID, wings, gotoWing)
 
-        if(actions[action_index][0] == "moveTo"):
+        if(actions[action_index][0] == "move"):
+          target = actions[action_index][1]
+          x1, y1, o1, done = move(x1, y1, o1, 
+                                  [husky, robotID], 
+                                  actions[action_index][1], 
+                                  keyboard)
+
+        elif(actions[action_index][0] == "moveTo"):
           target = actions[action_index][1]
           x1, y1, o1, done = moveTo(x1, y1, o1, 
                                   [husky, robotID], 
                                   id_lookup[target], 
                                   tolerances[target], 
-                                  moved)
+                                  keyboard)
+
         elif(actions[action_index][0] == "changeWing"):
           if time.time()-startTime > 1:
             done = True
