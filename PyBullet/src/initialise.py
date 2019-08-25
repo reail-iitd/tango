@@ -22,7 +22,12 @@ def loadObject(name, position, orientation, obj_list):
       object_id = p.loadURDF(urdf, position)
     else:
       object_id = p.loadURDF(urdf, position, orientation)
-    return object_id, ("horizontal" in obj['constraints']), obj["tolerance"], obj["constraint_pos"], obj["constraint_link"]
+    return (object_id, 
+            ("horizontal" in obj['constraints']), 
+            obj["tolerance"], 
+            obj["constraint_pos"], 
+            obj["constraint_link"],
+            obj["ur5_dist"])
 
 
 def loadWorld(objects, object_file):
@@ -38,20 +43,27 @@ def loadWorld(objects, object_file):
     id_lookup = {}
     cons_pos_lookup = {}
     cons_link_lookup = {}
+    ur5_dist = {}
     tolerances = {}
     with open(object_file, 'r') as handle:
         object_list = json.load(handle)['objects']
     for obj in objects:
-        object_id, horizontal_cons, tol, pos, link = loadObject(obj['name'], obj['position'], obj['orientation'], object_list)
+        (object_id, 
+            horizontal_cons, 
+            tol, 
+            pos, 
+            link, 
+            dist) = loadObject(obj['name'], obj['position'], obj['orientation'], object_list)
         if horizontal_cons:
             horizontal.append(object_id)
         object_lookup[object_id] = obj['name']
         id_lookup[obj['name']] = object_id
         cons_pos_lookup[obj['name']] = pos
         cons_link_lookup[obj['name']] = link
+        ur5_dist[obj['name']] = dist
         tolerances[obj['name']] = tol
         print(obj['name'], object_id)
-    return object_lookup, id_lookup, horizontal, tolerances, cons_pos_lookup, cons_link_lookup
+    return object_lookup, id_lookup, horizontal, tolerances, cons_pos_lookup, cons_link_lookup, ur5_dist
 
 def initWingPos(wing_file):
     wings = dict()
@@ -72,8 +84,14 @@ def initHuskyUR5(world_file, object_file):
     p.setAdditionalSearchPath(pybullet_data.getDataPath())
     with open(world_file, 'r') as handle:
         world = json.load(handle)
-    object_lookup, id_lookup, horizontal_list, tolerances, cons_pos_lookup, cons_link_lookup = loadWorld(world['entities'], object_file)
+    (object_lookup, 
+        id_lookup, 
+        horizontal_list, 
+        tolerances, 
+        cons_pos_lookup, 
+        cons_link_lookup,
+        ur5_dist) = loadWorld(world['entities'], object_file)
     base = id_lookup['husky']
     arm = id_lookup['ur5']
-    return base, arm, object_lookup, id_lookup, horizontal_list, tolerances, cons_pos_lookup, cons_link_lookup
+    return base, arm, object_lookup, id_lookup, horizontal_list, tolerances, cons_pos_lookup, cons_link_lookup, ur5_dist
  

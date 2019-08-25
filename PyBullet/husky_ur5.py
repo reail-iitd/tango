@@ -27,7 +27,8 @@ args = initParser()
   horizontal_list, 
   tolerances, 
   cons_pos_lookup, 
-  cons_link_lookup) = initHuskyUR5(args.world, object_file)
+  cons_link_lookup,
+  ur5_dist) = initHuskyUR5(args.world, object_file)
 
 # Initialize dictionary of wing positions
 wings = initWingPos(wings_file)
@@ -66,7 +67,10 @@ actions = [["moveTo", "cube_red"],
            ["moveTo", "tray"],
            ["constrain", "cube_green", "tray"],
            ["constrain", "tray", "ur5"],
-           ["moveTo", "r2d2"]]
+           ["moveTo", "box"],
+           ["constrain", "cube_red", "box"],
+           ["constrain", "cube_green", "box"],
+           ["constrain", "cube_gray", "box"]]
 action_index = 0
 done = False
 waiting = False
@@ -101,7 +105,8 @@ try:
                             cons_link_lookup, 
                             cons_pos_lookup,
                             id_lookup,
-                            constraints)
+                            constraints,
+                            ur5_dist)
             constraints[actions[action_index][1]] = (actions[action_index][2], cid)
             waiting = True
 

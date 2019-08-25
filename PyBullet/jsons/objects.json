@@ -6,7 +6,8 @@
 			"constraints": [],
 			"tolerance": 0,
 			"constraint_link": -1,
-			"constraint_pos": [[0, 0, 0]]
+			"constraint_pos": [[0, 0, 0]],
+			"ur5_dist": [0,0,0]
 		},
 		{
 			"name": "ur5",
@@ -14,7 +15,8 @@
 			"constraints": ["on_husky"],
 			"tolerance": 0,
 			"constraint_link": 9,
-			"constraint_pos": [[0.3, 0, 0]]
+			"constraint_pos": [[0.2, 0, 0]],
+			"ur5_dist": [0,0,0]
 		},
 		{
 			"name": "r2d2",
@@ -22,7 +24,8 @@
 			"constraints": [],
 			"tolerance": 1,
 			"constraint_link": -1,
-			"constraint_pos": [[0, 0, 0]]
+			"constraint_pos": [[0, 0, 0]],
+			"ur5_dist": [0,0,0]
 		},
 		{
 			"name": "quadcopter",
@@ -30,7 +33,8 @@
 			"constraints": [],
 			"tolerance": 0,
 			"constraint_link": -1,
-			"constraint_pos": [[0, 0, 0]]
+			"constraint_pos": [[0, 0, 0]],
+			"ur5_dist": [0,0,0]
 		},
 		{
 			"name": "plane",
@@ -38,7 +42,8 @@
 			"constraints": [],
 			"tolerance": 0,
 			"constraint_link": -1,
-			"constraint_pos": [[0, 0, 0]]
+			"constraint_pos": [[0, 0, 0]],
+			"ur5_dist": [0,0,0]
 		},
 		{
 			"name": "table",
@@ -46,7 +51,8 @@
 			"constraints": [],
 			"tolerance": 1,
 			"constraint_link": -1,
-			"constraint_pos": [[0, 0, 0]]
+			"constraint_pos": [[0, 0, 0]],
+			"ur5_dist": [0,0,0]
 		},
 		{
 			"name": "big-tray",
@@ -54,7 +60,8 @@
 			"constraints": ["horizontal"],
 			"tolerance": 1,
 			"constraint_link": -1,
-			"constraint_pos": [[0, 0, 0]]
+			"constraint_pos": [[0, 0, 0.1], [0, 0, 0.2], [0, 0, 0.3]],
+			"ur5_dist": [0.48,0,0]
 		},
 		{
 			"name": "book",
@@ -62,7 +69,8 @@
 			"constraints": ["horizontal"],
 			"tolerance": 0.5,
 			"constraint_link": -1,
-			"constraint_pos": [[0, 0, 0]]
+			"constraint_pos": [[0, 0, 0]],
+			"ur5_dist": [0,0,0]
 		},	
         {
             "name": "cube_red",
@@ -70,7 +78,8 @@
             "constraints": ["horizontal"],
 			"tolerance": 1,
 			"constraint_link": -1,
-			"constraint_pos": [[0, 0, -0.05]]
+			"constraint_pos": [[0, 0, -0.05]],
+			"ur5_dist": [0.2,0,0]
         },
         {
             "name": "cube_green",
@@ -78,7 +87,8 @@
             "constraints": ["horizontal"],
 			"tolerance": 1,
 			"constraint_link": -1,
-			"constraint_pos": [[0, 0, -0.05]]
+			"constraint_pos": [[0, 0, -0.05]],
+			"ur5_dist": [0.2,0,0]
         },
         {
             "name": "cube_gray",
@@ -86,7 +96,8 @@
             "constraints": ["horizontal"],
 			"tolerance": 1,
 			"constraint_link": -1,
-			"constraint_pos": [[0, 0, -0.05]]
+			"constraint_pos": [[0, 0, -0.05]],
+			"ur5_dist": [0.2,0,0]
         },
         {
             "name": "tray",
@@ -94,7 +105,8 @@
             "constraints": ["horizontal"],
 			"tolerance": 0.5,
 			"constraint_link": -1,
-			"constraint_pos": [[0, 0, 0], [0, 0.1, 0], [0, -0.1, 0]]
+			"constraint_pos": [[0, 0, 0], [0, 0.1, 0], [0, -0.1, 0]],
+			"ur5_dist": [0.4,0,0]
         },
         {
             "name": "bottle_blue",
@@ -102,7 +114,8 @@
             "constraints": [],
 			"tolerance": 0.5,
 			"constraint_link": -1,
-			"constraint_pos": [[0, 0, 0]]
+			"constraint_pos": [[0, 0, 0]],
+			"ur5_dist": [0.2,0,0]
         },
         {
             "name": "bottle_red",
@@ -110,7 +123,8 @@
             "constraints": [],
 			"tolerance": 0.5,
 			"constraint_link": -1,
-			"constraint_pos": [[0, 0, 0]]
+			"constraint_pos": [[0, 0, 0]],
+			"ur5_dist": [0.2,0,0]
         },
         {
             "name": "bottle_gray",
@@ -118,15 +132,17 @@
             "constraints": [],
 			"tolerance": 0.5,
 			"constraint_link": -1,
-			"constraint_pos": [[0, 0, 0]]
+			"constraint_pos": [[0, 0, 0]],
+			"ur5_dist": [0.2,0,0]
         },
         {
             "name": "box",
             "urdf": "models/urdf/box.urdf",
             "constraints": ["on_ground", "horizontal"],
-			"tolerance": 0.5,
+			"tolerance": 1,
 			"constraint_link": -1,
-			"constraint_pos": [[0, 0, 0]]
+			"constraint_pos": [[0, 0, 0.1], [0, 0, 0.2], [0, 0, 0.3]],
+			"ur5_dist": [0.5,0,0]
         },
         {
             "name": "apple",
@@ -134,7 +150,8 @@
             "constraints": [],
 			"tolerance": 0.5,
 			"constraint_link": -1,
-			"constraint_pos": [[0, 0, 0]]
+			"constraint_pos": [[0, 0, 0]],
+			"ur5_dist": [0,0,0]
         },
         {
             "name": "orange",
@@ -142,7 +159,8 @@
             "constraints": [],
 			"tolerance": 0.5,
 			"constraint_link": -1,
-			"constraint_pos": [[0, 0, 0]]
+			"constraint_pos": [[0, 0, 0]],
+			"ur5_dist": [0,0,0]
         },
         {
             "name": "banana",
@@ -150,7 +168,8 @@
             "constraints": [],
 			"tolerance": 0.5,
 			"constraint_link": -1,
-			"constraint_pos": [[0, 0, 0]]
+			"constraint_pos": [[0, 0, 0]],
+			"ur5_dist": [0,0,0]
         },
 		{
 			"name": "chair",
@@ -158,7 +177,8 @@
 			"constraints": [],
 			"tolerance": 1,
 			"constraint_link": -1,
-			"constraint_pos": [[0, 0, 0]]
+			"constraint_pos": [[0, 0, 0]],
+			"ur5_dist": [0,0,0]
 		},
 		{
 			"name": "ball",
@@ -166,7 +186,8 @@
 			"constraints": [],
 			"tolerance": 0.5,
 			"constraint_link": -1,
-			"constraint_pos": [[0, 0, 0]]
+			"constraint_pos": [[0, 0, 0]],
+			"ur5_dist": [0,0,0]
 		},
 		{
 			"name": "stick",
@@ -174,7 +195,8 @@
 			"constraints": [],
 			"tolerance": 0.5,
 			"constraint_link": -1,
-			"constraint_pos": [[0, 0, 0]]
+			"constraint_pos": [[0, 0, 0]],
+			"ur5_dist": [0,0,0]
 		}
 	]
 }
