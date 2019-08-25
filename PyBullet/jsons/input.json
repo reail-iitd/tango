@@ -1,40 +1,28 @@
 {
 	"actions":[
 		{
-			"name": "moveAtoB",
-			"args": ["cube_red", "tray"]
+			"name": "pickNplaceAonB",
+			"args": ["cube_red", "big-tray"]
 		},
 		{
-			"name": "moveAtoB",
-			"args": ["cube_gray", "tray"]
-		},
-		{
-			"name": "moveAtoB",
-			"args": ["cube_green", "tray"]
-		},
-		{
-			"name": "pick",
-			"args": ["tray"]
-		},
-		{
-			"name": "moveTo",
+			"name": "move",
 			"args": [[0, 0, 0]]
 		},
 		{
-			"name": "moveTo",
-			"args": ["big-tray"]
+			"name": "pickNplaceAonB",
+			"args": ["cube_gray", "tray"]
 		},
 		{
-			"name": "place",
-			"args": ["cube_gray", "big-tray"]
+			"name": "pickNplaceAonB",
+			"args": ["cube_green", "tray"]
 		},
 		{
-			"name": "moveTo",
-			"args": ["box"]
+			"name": "moveAToB",
+			"args": ["tray", "box"]
 		},
 		{
 			"name": "drop",
-			"args": [["cube_green", "cbe-red"], "box"]
+			"args": [["cube_green", "cube_gray"], "box"]
 		}
 	]
 }

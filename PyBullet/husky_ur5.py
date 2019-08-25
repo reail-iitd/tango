@@ -8,6 +8,7 @@ from src.parser import *
 from src.ur5 import *
 from src.utils import *
 from src.basic_actions import *
+from src.actions import *
 
 object_file = "jsons/objects.json"
 wings_file = "jsons/wings.json"
@@ -53,25 +54,8 @@ constraint = 0
 constraints = dict()
 
 # List of low level actions
-actions = [["moveTo", "cube_red"],
-           ["changeWing", "up"],
-           ["constrain", "cube_red", "ur5"],
-           ["moveTo", "tray"],
-           ["constrain", "cube_red", "tray"],
-           ["moveTo", "cube_gray"],
-           ["constrain", "cube_gray", "ur5"],
-           ["moveTo", "tray"],
-           ["constrain", "cube_gray", "tray"],
-           ["moveTo", "cube_green"],
-           ["constrain", "cube_green", "ur5"],
-           ["moveTo", "tray"],
-           ["constrain", "cube_green", "tray"],
-           ["constrain", "tray", "ur5"],
-           ["move", [0,0]],
-           ["moveTo", "box"],
-           ["constrain", "cube_red", "box"],
-           ["constrain", "cube_green", "box"],
-           ["constrain", "cube_gray", "box"]]
+actions = convertActions(args.input)
+print(actions)
 action_index = 0
 done = False
 waiting = False
@@ -83,6 +67,11 @@ try:
     while(True):
         x1,y1,o1,keyboard = moveKeyboard(x1, y1, o1, [husky, robotID])
         moveUR5Keyboard(robotID, wings, gotoWing)
+        keepHorizontal(horizontal_list)
+        p.stepSimulation()  
+
+        if action_index >= len(actions):
+          continue
 
         if(actions[action_index][0] == "move"):
           target = actions[action_index][1]
@@ -124,8 +113,6 @@ try:
           action_index += 1
           done = False
 
-        keepHorizontal(horizontal_list)
-        p.stepSimulation()     
     p.disconnect()
 except Exception as e: 
     print(e)

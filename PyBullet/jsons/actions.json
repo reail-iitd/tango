@@ -1,7 +1,7 @@
 {
 	"actions":[
 		{
-			"name": "moveAtoB",
+			"name": "pickNplaceAonB",
 			"args": ["object", "target"],
 			"execution": [
 				["moveTo", "object"],
@@ -11,6 +11,17 @@
 				["constrain", "object", "target"]
 			]
 		},
+		{
+			"name": "moveAtoB",
+			"args": ["object", "target"],
+			"execution": [
+				["moveTo", "object"],
+				["changeWing", "up"]
+				["constrain", "object", "ur5"],
+				["moveTo", "target"]
+			]
+		},
+
 		{
 			"name": "moveTo",
 			"args": ["target"],
@@ -39,8 +50,8 @@
 			"args": ["object", "target"],
 			"execution":[
 				["moveTo", "target"],
-				["changeWing", "up"]
-				["constrain", "object", "target"],
+				["changeWing", "up"],
+				["constrain", "object", "target"]
 			]
 		},
 		{
