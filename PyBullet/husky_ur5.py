@@ -61,6 +61,10 @@ done = False
 waiting = False
 startTime = time.time()
 
+# Start video recording
+p.setRealTimeSimulation(0) 
+logId = p.startStateLogging(p.STATE_LOGGING_VIDEO_MP4, "video.mp4") if args.logging else 0
+
 
 # Start simulation
 try:
@@ -71,6 +75,10 @@ try:
         p.stepSimulation()  
 
         if action_index >= len(actions):
+          if logId != -1 and args.logging:
+            p.stopStateLogging(logId)
+            p.disconnect()
+            logId = -1
           continue
 
         if(actions[action_index][0] == "move"):

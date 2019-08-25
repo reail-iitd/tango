@@ -14,6 +14,11 @@ def initParser():
                             required=False,
                             default="jsons/input.json",
                             help='The json file of input high level actions')
+    parser.add_argument('--logging',
+                            type=bool,
+                            required=False,
+                            default=False,
+                            help='Video recording of simulation')
     parser.add_argument('--timestep',
                             type=float,
                             required=False,
