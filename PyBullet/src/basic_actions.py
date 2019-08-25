@@ -25,3 +25,18 @@ def moveTo(x1, y1, o1, object_list, target, tolerance, moved):
         if p.getBasePositionAndOrientation(obj_id) != ((x1, y1, z), (q)):
             p.resetBasePositionAndOrientation(obj_id, [x1, y1, z], q)
     return x1, y1, o1, False
+
+def constrain(obj1, obj2, link, pos, id_lookup, constraints):
+    if obj1 in constraints.keys():
+        p.removeConstraint(constraints[obj1][1])
+    count = 0
+    for obj in constraints.keys():
+        if constraints[obj][0] == obj2:
+            count += 1
+    print(obj1, obj2, link[obj1], link[obj2], pos[obj1], pos[obj2], count)
+    cid = p.createConstraint(id_lookup[obj2], link[obj2], id_lookup[obj1], link[obj1], p.JOINT_POINT2POINT, [0, 0, 0], 
+                            parentFramePosition=pos[obj2][count],
+                            childFramePosition=pos[obj1][0],
+                            childFrameOrientation=[0,0,0,0])
+    print(cid)
+    return cid

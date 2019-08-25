@@ -20,7 +20,14 @@ p.connect(p.GUI)
 args = initParser()
 
 # Initialize husky and ur5 model
-husky, robotID, object_lookup, id_lookup, horizontal_list, tolerances = initHuskyUR5(args.world, object_file)
+( husky,
+  robotID, 
+  object_lookup, 
+  id_lookup, 
+  horizontal_list, 
+  tolerances, 
+  cons_pos_lookup, 
+  cons_link_lookup) = initHuskyUR5(args.world, object_file)
 
 # Initialize dictionary of wing positions
 wings = initWingPos(wings_file)
@@ -41,16 +48,30 @@ gotoWing(robotID, wings["home"])
 x1,y1,o1 = 0,0,0
 constraint = 0
 
+# List of constraints with target object and constraint id
+constraints = dict()
+
 # List of low level actions
-actions = [["moveTo", "big-tray"],
+actions = [["moveTo", "cube_red"],
            ["changeWing", "up"],
-           ["moveTo", "r2d2"],
-           ["moveTo", "bottle_blue"],
-           ["moveTo", "chair"],
-           ["moveTo", "apple"]]
+           ["constrain", "cube_red", "ur5"],
+           ["moveTo", "tray"],
+           ["constrain", "cube_red", "tray"],
+           ["moveTo", "cube_gray"],
+           ["constrain", "cube_gray", "ur5"],
+           ["moveTo", "tray"],
+           ["constrain", "cube_gray", "tray"],
+           ["moveTo", "cube_green"],
+           ["constrain", "cube_green", "ur5"],
+           ["moveTo", "tray"],
+           ["constrain", "cube_green", "tray"],
+           ["constrain", "tray", "ur5"],
+           ["moveTo", "r2d2"]]
 action_index = 0
 done = False
+waiting = False
 startTime = time.time()
+
 
 # Start simulation
 try:
@@ -70,6 +91,19 @@ try:
             done = True
           pose = actions[action_index][1]
           gotoWing(robotID, wings[pose])
+
+        elif(actions[action_index][0] == "constrain"):
+          if time.time()-startTime > 1:
+            done = True; waiting = False
+          if not waiting and not done:
+            cid = constrain(actions[action_index][1], 
+                            actions[action_index][2], 
+                            cons_link_lookup, 
+                            cons_pos_lookup,
+                            id_lookup,
+                            constraints)
+            constraints[actions[action_index][1]] = (actions[action_index][2], cid)
+            waiting = True
 
         if done:
           startTime = time.time()

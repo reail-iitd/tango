@@ -4,7 +4,7 @@ import pybullet as p
 import pybullet_data
 
 serverMode = p.GUI # GUI/DIRECT
-robotUrdfPath = "./urdf/sisbot.urdf"
+robotUrdfPath = "./models/urdf/sisbot.urdf"
 #robotUrdfPath = "./urdf/robotiq_c2.urdf"
 #robotUrdfPath = "./urdf/ur5.urdf"
 

@@ -4,133 +4,177 @@
 			"name": "husky",
 			"urdf": "husky/husky.urdf",
 			"constraints": [],
-			"tolerance": 0
+			"tolerance": 0,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0]]
 		},
 		{
 			"name": "ur5",
 			"urdf": "models/urdf/sisbot.urdf",
 			"constraints": ["on_husky"],
-			"tolerance": 0
+			"tolerance": 0,
+			"constraint_link": 9,
+			"constraint_pos": [[0.3, 0, 0]]
 		},
 		{
 			"name": "r2d2",
 			"urdf": "r2d2.urdf",
 			"constraints": [],
-			"tolerance": 1
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0]]
 		},
 		{
 			"name": "quadcopter",
 			"urdf": "models/urdf/quadrotor.urdf",
 			"constraints": [],
-			"tolerance": 0
+			"tolerance": 0,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0]]
 		},
 		{
 			"name": "plane",
 			"urdf": "plane.urdf",
 			"constraints": [],
-			"tolerance": 0
+			"tolerance": 0,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0]]
 		},
 		{
 			"name": "table",
 			"urdf": "table/table.urdf",
 			"constraints": [],
-			"tolerance": 0.5
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0]]
 		},
 		{
 			"name": "big-tray",
 			"urdf": "tray/tray_textured2.urdf",
 			"constraints": ["horizontal"],
-			"tolerance": 1
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0]]
 		},
 		{
 			"name": "book",
 			"urdf": "models/urdf/book.urdf",
 			"constraints": ["horizontal"],
-			"tolerance": 0.5
+			"tolerance": 0.5,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0]]
 		},	
         {
             "name": "cube_red",
             "urdf": "models/urdf/cube_red.urdf",
-            "constraints": [],
-			"tolerance": 0.5
+            "constraints": ["horizontal"],
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, -0.05]]
         },
         {
             "name": "cube_green",
             "urdf": "models/urdf/cube_green.urdf",
-            "constraints": [],
-			"tolerance": 0.5
+            "constraints": ["horizontal"],
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, -0.05]]
         },
         {
             "name": "cube_gray",
             "urdf": "models/urdf/cube_gray.urdf",
-            "constraints": [],
-			"tolerance": 0.5
+            "constraints": ["horizontal"],
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, -0.05]]
         },
         {
             "name": "tray",
             "urdf": "models/urdf/tray.urdf",
             "constraints": ["horizontal"],
-			"tolerance": 0.5
+			"tolerance": 0.5,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0], [0, 0.1, 0], [0, -0.1, 0]]
         },
         {
             "name": "bottle_blue",
             "urdf": "models/urdf/bottle_blue.urdf",
             "constraints": [],
-			"tolerance": 0.5
+			"tolerance": 0.5,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0]]
         },
         {
             "name": "bottle_red",
             "urdf": "models/urdf/bottle_red.urdf",
             "constraints": [],
-			"tolerance": 0.5
+			"tolerance": 0.5,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0]]
         },
         {
             "name": "bottle_gray",
             "urdf": "models/urdf/bottle_gray.urdf",
             "constraints": [],
-			"tolerance": 0.5
+			"tolerance": 0.5,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0]]
         },
         {
             "name": "box",
             "urdf": "models/urdf/box.urdf",
             "constraints": ["on_ground", "horizontal"],
-			"tolerance": 0.5
+			"tolerance": 0.5,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0]]
         },
         {
             "name": "apple",
             "urdf": "models/urdf/apple.urdf",
             "constraints": [],
-			"tolerance": 0.5
+			"tolerance": 0.5,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0]]
         },
         {
             "name": "orange",
             "urdf": "models/urdf/orange.urdf",
             "constraints": [],
-			"tolerance": 0.5
+			"tolerance": 0.5,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0]]
         },
         {
             "name": "banana",
             "urdf": "models/urdf/banana.urdf",
             "constraints": [],
-			"tolerance": 0.5
+			"tolerance": 0.5,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0]]
         },
 		{
 			"name": "chair",
 			"urdf": "models/urdf/chair.urdf",
 			"constraints": [],
-			"tolerance": 1
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0]]
 		},
 		{
 			"name": "ball",
 			"urdf": "models/urdf/ball.urdf",
 			"constraints": [],
-			"tolerance": 0.5
+			"tolerance": 0.5,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0]]
 		},
 		{
 			"name": "stick",
 			"urdf": "models/urdf/stick.urdf",
 			"constraints": [],
-			"tolerance": 0.5
+			"tolerance": 0.5,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0]]
 		}
 	]
 }
