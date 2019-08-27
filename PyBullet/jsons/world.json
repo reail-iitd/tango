@@ -92,7 +92,7 @@
 		},
 		{
 			"name": "quadcopter",
-			"position": [2,0,0.1],
+			"position": [2.2,0,0.1],
 			"orientation": []	
 		},
 		{
