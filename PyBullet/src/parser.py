@@ -19,7 +19,7 @@ def initParser():
                             required=False,
                             default=False,
                             help='Video recording of simulation')
-    parser.add_argument('--timestep',
+    parser.add_argument('--speed',
                             type=float,
                             required=False,
                             default=1.0,

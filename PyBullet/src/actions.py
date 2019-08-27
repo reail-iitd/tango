@@ -26,6 +26,23 @@ def convertActions(action_file):
                 ["moveTo", args[1]]
             ])
 
+        elif high_level_action['name'] == 'push':
+            action_list.extend([
+                ["moveTo", args[0]],
+                ["changeWing", "up"],
+                ["constrain", args[0], "ur5"],
+                ["move", args[1]]
+            ])
+
+        elif high_level_action['name'] == 'pushTo':
+            action_list.extend([
+                ["moveTo", args[0]],
+                ["changeWing", "up"],
+                ["constrain", args[0], "ur5"],
+                ["moveTo", args[1]]
+            ])
+
+
         elif high_level_action['name'] == 'moveTo':
             action_list.extend([
                 ["moveTo", args[0]]

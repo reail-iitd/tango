@@ -2,7 +2,7 @@ import pybullet as p
 import math
 from scipy.spatial import distance
 
-def move(x1, y1, o1, object_list, target_coordinates, keyboard, tolerance=0):
+def move(x1, y1, o1, object_list, target_coordinates, keyboard, speed, tolerance=0):
     """
     Move robot towards target coordinate location
     :params: 
@@ -24,10 +24,10 @@ def move(x1, y1, o1, object_list, target_coordinates, keyboard, tolerance=0):
     x2 = target_coordinates[0]; y2 = target_coordinates[1]
     diff = math.atan2((y2-y1),(x2-x1))%(2*math.pi) - (o1%(2*math.pi))
     if abs(diff) > 0.05:
-        o1 = o1 + 0.001 if diff > 0 else o1 - 0.001
-    elif abs(distance.euclidean((x1, y1), (x2, y2)) - tolerance) > 0.2: 
-        x1 += math.cos(o1)*0.001
-        y1 += math.sin(o1)*0.001
+        o1 = o1 + 0.001*speed if diff > 0 else o1 - 0.001*speed
+    elif abs(distance.euclidean((x1, y1), (x2, y2))) > tolerance + 0.1: 
+        x1 += math.cos(o1)*0.001*speed
+        y1 += math.sin(o1)*0.001*speed
     else:
         return x1, y1, o1, True
     q=p.getQuaternionFromEuler((0,0,o1))
@@ -38,7 +38,7 @@ def move(x1, y1, o1, object_list, target_coordinates, keyboard, tolerance=0):
     return x1, y1, o1, False
 
 
-def moveTo(x1, y1, o1, object_list, target, tolerance, keyboard):
+def moveTo(x1, y1, o1, object_list, target, tolerance, keyboard, speed):
     """
     Move robot towards a target object
     :params: 
@@ -59,7 +59,7 @@ def moveTo(x1, y1, o1, object_list, target, tolerance, keyboard):
     y2 = p.getBasePositionAndOrientation(target)[0][1]
     x2 = p.getBasePositionAndOrientation(target)[0][0]
     target_coordinates = [x2, y2]
-    return move(x1, y1, o1, object_list, target_coordinates, keyboard, tolerance)
+    return move(x1, y1, o1, object_list, target_coordinates, keyboard, speed, tolerance)
 
 
 def constrain(obj1, obj2, link, pos, id_lookup, constraints, ur5_dist):

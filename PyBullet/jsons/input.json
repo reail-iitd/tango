@@ -5,8 +5,8 @@
 			"args": ["cube_red", "big-tray"]
 		},
 		{
-			"name": "move",
-			"args": [[0, 0, 0]]
+			"name": "pickNplaceAonB",
+			"args": ["book", "box"]
 		},
 		{
 			"name": "pickNplaceAonB",
@@ -23,6 +23,31 @@
 		{
 			"name": "drop",
 			"args": [["cube_green", "cube_gray"], "box"]
+		},
+		{
+			"name": "moveTo",
+			"args": ["table"]
+		},
+		{
+			"name": "drop",
+			"args": [["tray"], "table"]
+		},
+		{
+			"name": "pickNplaceAonB",
+			"args": ["apple", "tray2"]
+		},
+		{
+			"name": "pickNplaceAonB",
+			"args": ["orange", "tray2"]
+		},
+		{
+			"name": "pickNplaceAonB",
+			"args": ["banana", "tray2"]
+		},
+		{
+			"name": "push",
+			"args": ["box", [-2.2, 2, 0]]
 		}
+
 	]
 }

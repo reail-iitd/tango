@@ -24,6 +24,7 @@ def loadObject(name, position, orientation, obj_list):
       object_id = p.loadURDF(urdf, position, orientation)
     return (object_id, 
             ("horizontal" in obj['constraints']), 
+            ("on_ground" in obj['constraints']), 
             obj["tolerance"], 
             obj["constraint_pos"], 
             obj["constraint_link"],
@@ -39,6 +40,7 @@ def loadWorld(objects, object_file):
     """
     object_list = []
     horizontal = []
+    ground = []
     object_lookup = {}
     id_lookup = {}
     cons_pos_lookup = {}
@@ -50,12 +52,15 @@ def loadWorld(objects, object_file):
     for obj in objects:
         (object_id, 
             horizontal_cons, 
+            gnd,
             tol, 
             pos, 
             link, 
             dist) = loadObject(obj['name'], obj['position'], obj['orientation'], object_list)
         if horizontal_cons:
             horizontal.append(object_id)
+        if gnd:
+            ground.append(object_id)
         object_lookup[object_id] = obj['name']
         id_lookup[obj['name']] = object_id
         cons_pos_lookup[obj['name']] = pos
@@ -63,7 +68,7 @@ def loadWorld(objects, object_file):
         ur5_dist[obj['name']] = dist
         tolerances[obj['name']] = tol
         print(obj['name'], object_id)
-    return object_lookup, id_lookup, horizontal, tolerances, cons_pos_lookup, cons_link_lookup, ur5_dist
+    return object_lookup, id_lookup, horizontal, ground, tolerances, cons_pos_lookup, cons_link_lookup, ur5_dist
 
 def initWingPos(wing_file):
     wings = dict()
@@ -87,11 +92,12 @@ def initHuskyUR5(world_file, object_file):
     (object_lookup, 
         id_lookup, 
         horizontal_list, 
+        ground_list,
         tolerances, 
         cons_pos_lookup, 
         cons_link_lookup,
         ur5_dist) = loadWorld(world['entities'], object_file)
     base = id_lookup['husky']
     arm = id_lookup['ur5']
-    return base, arm, object_lookup, id_lookup, horizontal_list, tolerances, cons_pos_lookup, cons_link_lookup, ur5_dist
+    return base, arm, object_lookup, id_lookup, horizontal_list, ground_list, tolerances, cons_pos_lookup, cons_link_lookup, ur5_dist
  

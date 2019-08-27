@@ -3,11 +3,21 @@ import math
 
 def keepHorizontal(object_list):
     """
-    Keep the objetcts horizontal
+    Keep the objects horizontal
     """
     for obj_id in object_list:
         p.resetBasePositionAndOrientation(obj_id,
                                           p.getBasePositionAndOrientation(obj_id)[0],
+                                          p.getQuaternionFromEuler((0,0,0)))
+
+def keepOnGround(object_list):
+    """
+    Keep the objects on ground
+    """
+    for obj_id in object_list:
+        p.resetBasePositionAndOrientation(obj_id,
+                                          (p.getBasePositionAndOrientation(obj_id)[0][0],
+                                          p.getBasePositionAndOrientation(obj_id)[0][1], 0.2),
                                           p.getQuaternionFromEuler((0,0,0)))
 
 def moveKeyboard(x1, y1, o1, object_list):

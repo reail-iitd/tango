@@ -51,8 +51,16 @@
 			"constraints": [],
 			"tolerance": 1,
 			"constraint_link": -1,
-			"constraint_pos": [[0, 0, 0]],
+			"constraint_pos": [[0, 0, 0.7], [0, 0.1, 0.7], [0, -0.1, 0.7], [1, 0, 0.7], [1, 0.1, 0.7], [1, -0.1, 0.7], [-1, 0, 0.7], [-1, 0.1, 0.7], [-1, -0.1, 0.7]],
 			"ur5_dist": [0,0,0]
+		},
+		{
+			"name": "table2",
+			"urdf": "table/table.urdf",
+			"constraints": [],
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0.7], [0, 0.1, 0.7], [0, -0.1, 0.7], [1, 0, 0.7], [1, 0.1, 0.7], [1, -0.1, 0.7], [-1, 0, 0.7], [-1, 0.1, 0.7], [-1, -0.1, 0.7]],			"ur5_dist": [0,0,0]
 		},
 		{
 			"name": "big-tray",
@@ -61,7 +69,7 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.1], [0, 0, 0.2], [0, 0, 0.3]],
-			"ur5_dist": [0.48,0,0]
+			"ur5_dist": [0.2,0,0]
 		},
 		{
 			"name": "book",
@@ -69,7 +77,7 @@
 			"constraints": ["horizontal"],
 			"tolerance": 0.5,
 			"constraint_link": -1,
-			"constraint_pos": [[0, 0, 0]],
+			"constraint_pos": [[0, 0, 0], [0, -0.1, 0], [0, 0.1, 0]],
 			"ur5_dist": [0,0,0]
 		},	
         {
@@ -79,7 +87,7 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, -0.05]],
-			"ur5_dist": [0.2,0,0]
+			"ur5_dist": [0.1,0,0]
         },
         {
             "name": "cube_green",
@@ -88,7 +96,7 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, -0.05]],
-			"ur5_dist": [0.2,0,0]
+			"ur5_dist": [0.1,0,0]
         },
         {
             "name": "cube_gray",
@@ -97,13 +105,22 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, -0.05]],
-			"ur5_dist": [0.2,0,0]
+			"ur5_dist": [0.1,0,0]
         },
         {
             "name": "tray",
             "urdf": "models/urdf/tray.urdf",
             "constraints": ["horizontal"],
-			"tolerance": 0.5,
+			"tolerance": 0.9,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0], [0, 0.1, 0], [0, -0.1, 0]],
+			"ur5_dist": [0.4,0,0]
+        },
+        {
+            "name": "tray2",
+            "urdf": "models/urdf/tray.urdf",
+            "constraints": ["horizontal"],
+			"tolerance": 0.9,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0], [0, 0.1, 0], [0, -0.1, 0]],
 			"ur5_dist": [0.4,0,0]
@@ -138,7 +155,7 @@
         {
             "name": "box",
             "urdf": "models/urdf/box.urdf",
-            "constraints": ["on_ground", "horizontal"],
+            "constraints": ["on_ground"],
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.1], [0, 0, 0.2], [0, 0, 0.3]],
@@ -148,28 +165,28 @@
             "name": "apple",
             "urdf": "models/urdf/apple.urdf",
             "constraints": [],
-			"tolerance": 0.5,
+			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0]],
-			"ur5_dist": [0,0,0]
+			"ur5_dist": [0.3,0,0]
         },
         {
             "name": "orange",
             "urdf": "models/urdf/orange.urdf",
             "constraints": [],
-			"tolerance": 0.5,
+			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0]],
-			"ur5_dist": [0,0,0]
+			"ur5_dist": [0.3,0,0]
         },
         {
             "name": "banana",
             "urdf": "models/urdf/banana.urdf",
             "constraints": [],
-			"tolerance": 0.5,
+			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0]],
-			"ur5_dist": [0,0,0]
+			"ur5_dist": [0.3,0,0]
         },
 		{
 			"name": "chair",

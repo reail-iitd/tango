@@ -21,8 +21,13 @@
 			"orientation": []
 		},
 		{
+			"name": "table2",
+			"position": [-1, -2, 0],
+			"orientation": []
+		},
+		{
 			"name": "big-tray",
-			"position": [1, 2, 0],
+			"position": [1.5, 0, 0],
 			"orientation": []
 		},
 		{
@@ -51,6 +56,11 @@
 			"orientation": []	
 		},
 		{
+			"name": "tray2",
+			"position": [-0.6, -2, 0.7],
+			"orientation": []	
+		},
+		{
 			"name": "bottle_blue",
 			"position": [1,-2,0],
 			"orientation": []	
@@ -62,22 +72,22 @@
 		},
 		{
 			"name": "r2d2",
-			"position": [-1,-2,1],
+			"position": [-2,-2,1],
 			"orientation": []	
 		},
 		{
 			"name": "apple",
-			"position": [3, 0, 0.2],
+			"position": [-1, -2, 0.7],
 			"orientation": []	
 		},
 		{
 			"name": "orange",
-			"position": [2.8, 0, 0.2],
+			"position": [-1, -2.2, 0.7],
 			"orientation": []	
 		},
 		{
 			"name": "banana",
-			"position": [2.6, 0, 0.2],
+			"position": [-1, -1.8, 0.75],
 			"orientation": []	
 		},
 		{
@@ -87,7 +97,7 @@
 		},
 		{
 			"name": "chair",
-			"position": [-0.7,1,0.1],
+			"position": [-0.8,3,0.1],
 			"orientation": []	
 		},
 		{
@@ -98,7 +108,7 @@
 
 		{
 			"name": "stick",
-			"position": [1.5,0,0.2],
+			"position": [2.5,0,0.2],
 			"orientation": []	
 		}
 	]

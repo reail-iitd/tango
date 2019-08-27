@@ -21,6 +21,27 @@
 				["moveTo", "target"]
 			]
 		},
+		{
+			"name": "push",
+			"args": ["object", "position"],
+			"execution": [
+				["moveTo", "object"],
+				["changeWing", "up"],
+				["constrain", "object", "ur5"],
+				["move", "position"]
+			]
+		},
+		{
+			"name": "pushTo",
+			"args": ["object", "target"],
+			"execution": [
+				["moveTo", "object"],
+				["changeWing", "up"],
+				["constrain", "object", "ur5"],
+				["moveTo", "target"]
+			]
+		},
+
 
 		{
 			"name": "moveTo",

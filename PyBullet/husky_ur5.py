@@ -19,6 +19,7 @@ p.connect(p.GUI)
 
 # Add input arguments
 args = initParser()
+speed = args.speed
 
 # Initialize husky and ur5 model
 ( husky,
@@ -26,6 +27,7 @@ args = initParser()
   object_lookup, 
   id_lookup, 
   horizontal_list, 
+  ground_list,
   tolerances, 
   cons_pos_lookup, 
   cons_link_lookup,
@@ -72,6 +74,7 @@ try:
         x1,y1,o1,keyboard = moveKeyboard(x1, y1, o1, [husky, robotID])
         moveUR5Keyboard(robotID, wings, gotoWing)
         keepHorizontal(horizontal_list)
+        keepOnGround(ground_list)
         p.stepSimulation()  
 
         if action_index >= len(actions):
@@ -86,7 +89,8 @@ try:
           x1, y1, o1, done = move(x1, y1, o1, 
                                   [husky, robotID], 
                                   actions[action_index][1], 
-                                  keyboard)
+                                  keyboard,
+                                  speed)
 
         elif(actions[action_index][0] == "moveTo"):
           target = actions[action_index][1]
@@ -94,7 +98,8 @@ try:
                                   [husky, robotID], 
                                   id_lookup[target], 
                                   tolerances[target], 
-                                  keyboard)
+                                  keyboard,
+                                  speed)
 
         elif(actions[action_index][0] == "changeWing"):
           if time.time()-startTime > 1:
