@@ -45,6 +45,22 @@
 				}
 		},
 		{
+			"name": "cupboard_back",
+			"position": [-2.5,-4.7,0],
+			"orientation": [],
+			"states": {}
+		},
+		{
+			"name": "cupboard",
+			"position": [-2.5,-4.2,0],
+			"orientation": [],
+			"states": 
+				{
+					"close": [[-2.5, -4.2, 0], [0, 0, 0]],
+					"open": [[-3, -3.8, 0], [0, 0, 1.57]]
+				}
+		},
+		{
 			"name": "husky",
 			"position": [0,0,0.1],
 			"orientation": [0,0,0,0.1],

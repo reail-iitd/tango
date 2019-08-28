@@ -2,6 +2,26 @@
 	"actions":[
 		{
 			"name": "changeState",
+			"args": ["cupboard", "open"]
+		},
+		{
+			"name": "pickNplaceAonB",
+			"args": ["banana", "cupboard"]
+		},
+		{
+			"name": "changeState",
+			"args": ["cupboard", "close"]
+		},
+		{
+			"name": "changeState",
+			"args": ["cupboard", "open"]
+		},
+		{
+			"name": "changeState",
+			"args": ["cupboard", "close"]
+		},
+		{
+			"name": "changeState",
 			"args": ["fridge", "open"]
 		},
 		{
