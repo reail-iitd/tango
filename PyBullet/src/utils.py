@@ -1,5 +1,8 @@
 import pybullet as p
 import math
+import operator 
+
+names = {}
 
 def keepHorizontal(object_list):
     """
@@ -61,4 +64,18 @@ def moveUR5Keyboard(robotID, wings, gotoWing):
     if ord(b'n') in keys:
         gotoWing(robotID, wings["down"])
     return
+
+def mentionNames(id_lookup):
+    if len(names.keys()) == 0:
+        for obj in id_lookup.keys():
+            id = p.addUserDebugText(obj, 
+                            tuple(map(operator.add, p.getBasePositionAndOrientation(id_lookup[obj])[0], 
+                            (0.2, 0.2, 0.2))))
+            names[obj] = id
+    # else:
+    #     for name in id_lookup.keys():
+    #         p.addUserDebugText(name, 
+    #                             tuple(map(operator.add, p.getBasePositionAndOrientation(id_lookup[name])[0], 
+    #                             (0, 0, 0.2))), 
+    #                             replaceItemUniqueId=names[name])
 

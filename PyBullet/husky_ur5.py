@@ -67,15 +67,18 @@ startTime = time.time()
 # Start video recording
 p.setRealTimeSimulation(0) 
 logId = p.startStateLogging(p.STATE_LOGGING_VIDEO_MP4, "video.mp4") if args.logging else 0
-
+counter = 0
 
 # Start simulation
 try:
     while(True):
+        counter = (counter+1)%100
         x1,y1,o1,keyboard = moveKeyboard(x1, y1, o1, [husky, robotID])
         moveUR5Keyboard(robotID, wings, gotoWing)
         keepHorizontal(horizontal_list)
         keepOnGround(ground_list)
+        if counter == 0:
+          mentionNames(id_lookup)
         p.stepSimulation()  
 
         if action_index >= len(actions):
