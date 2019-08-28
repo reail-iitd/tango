@@ -1,40 +1,50 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QFontDialog
+from PyQt5.QtWidgets import QApplication, QWidget, QInputDialog, QLineEdit
 from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import pyqtSlot
 
 class App(QWidget):
 
     def __init__(self):
         super().__init__()
-        self.title = 'PyQt5 font dialog - pythonspot.com'
+        self.title = 'PyQt5 input dialogs - pythonspot.com'
         self.left = 10
         self.top = 10
-        self.width = 320
-        self.height = 200
+        self.width = 640
+        self.height = 480
         self.initUI()
     
     def initUI(self):
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
         
-        button = QPushButton('Open PyQt5 Font Dialog', self)
-        button.setToolTip('font dialog')
-        button.move(50,50)
-        button.clicked.connect(self.on_click)
+        self.getInteger()
+        self.getText()
+        self.getDouble()
+        self.getChoice()
         
         self.show()
-    
-    @pyqtSlot()
-    def on_click(self):
-        print('PyQt5 button click')
-        self.openFontDialog()
-    
-    def openFontDialog(self):
-        font, ok = QFontDialog.getFont()
-        if ok:
-            print(font.toString())
-    
+        
+    def getInteger(self):
+        i, okPressed = QInputDialog.getInt(self, "Get integer","Percentage:", 28, 0, 100, 1)
+        if okPressed:
+            print(i)
+
+    def getDouble(self):
+        d, okPressed = QInputDialog.getDouble(self, "Get double","Value:", 10.50, 0, 100, 10)
+        if okPressed:
+            print( d)
+        
+    def getChoice(self):
+        items = ("Red","Blue","Green")
+        item, okPressed = QInputDialog.getItem(self, "Get item","Color:", items, 0, False)
+        if ok and item:
+            print(item)
+
+    def getText(self):
+        text, okPressed = QInputDialog.getText(self, "Get text","Your name:", QLineEdit.Normal, "")
+        if okPressed and text != '':
+            print(text)
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = App()
