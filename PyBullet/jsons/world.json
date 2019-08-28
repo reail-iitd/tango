@@ -24,8 +24,24 @@
 			"orientation": [],
 			"states": 
 				{
-					"closed": [[3.4, 4, 0], [0, 0, 0]],
+					"close": [[3.4, 4, 0], [0, 0, 0]],
 					"open": [[3.9, 4.4, 0], [0, 0, 1.57]]
+				}
+		},
+		{
+			"name": "fridge_back",
+			"position": [-2.5,4.7,0],
+			"orientation": [],
+			"states": {}
+		},
+		{
+			"name": "fridge",
+			"position": [-2.5,4.2,0],
+			"orientation": [],
+			"states": 
+				{
+					"close": [[-2.5, 4.2, 0], [0, 0, 0]],
+					"open": [[-2.9, 3.9, 0], [0, 0, -1.57]]
 				}
 		},
 		{

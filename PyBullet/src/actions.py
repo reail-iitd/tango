@@ -76,6 +76,7 @@ def convertActions(action_file):
         elif high_level_action['name'] == 'changeState':
             action_list.extend([
                 ["moveTo", args[0]],
+                ["changeWing", "up"],
                 ["changeState", args[0], args[1]]
             ])
 

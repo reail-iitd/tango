@@ -31,6 +31,9 @@ args = parser.parse_args()
 p.loadURDF("models/urdf/home/walls.urdf", [1,0,0])
 p.loadURDF("models/urdf/home/floor.urdf", [0,0,-0.1])
 
+p.loadURDF("models/urdf/fridge/fridge.urdf", [2,0,0])
+p.loadURDF("models/urdf/fridge/fridge_back.urdf", [2,1,0])
+
 def load_object(name, position, orientation):
     urdf = ''
     for obj in object_list['objects']:

@@ -49,6 +49,7 @@
 			"args": ["object", "state"],
 			"execution": [
 				["moveTo", "object"],
+				["changeWing", "up"],
 				["changeState", "object", "state"]
 			]
 		},

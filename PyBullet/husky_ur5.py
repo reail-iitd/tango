@@ -131,13 +131,9 @@ try:
             waiting = True
 
         elif(actions[action_index][0] == "changeState"):
-          if time.time()-startTime > 1:
-            done = True; waiting = False
-          if not waiting and not done:
-            state = actions[action_index][2]
-            print(id_lookup[actions[action_index][1]], states[actions[action_index][1]][state])
-            changeState(id_lookup[actions[action_index][1]], states[actions[action_index][1]][state])
-            waiting = True
+          state = actions[action_index][2]
+          print(id_lookup[actions[action_index][1]], states[actions[action_index][1]][state])
+          done = changeState(id_lookup[actions[action_index][1]], states[actions[action_index][1]][state])
 
         if done:
           startTime = time.time()
