@@ -31,7 +31,8 @@ speed = args.speed
   tolerances, 
   cons_pos_lookup, 
   cons_link_lookup,
-  ur5_dist) = initHuskyUR5(args.world, object_file)
+  ur5_dist,
+  states) = initHuskyUR5(args.world, object_file)
 
 # Initialize dictionary of wing positions
 wings = initWingPos(wings_file)
@@ -119,6 +120,23 @@ try:
                             constraints,
                             ur5_dist)
             constraints[actions[action_index][1]] = (actions[action_index][2], cid)
+            waiting = True
+
+        elif(actions[action_index][0] == "removeConstraint"):
+          if time.time()-startTime > 1:
+            done = True; waiting = False
+          if not waiting and not done:
+            removeConstraint(constraints, actions[action_index][1], actions[action_index][2])
+            del constraints[actions[action_index][1]]
+            waiting = True
+
+        elif(actions[action_index][0] == "changeState"):
+          if time.time()-startTime > 1:
+            done = True; waiting = False
+          if not waiting and not done:
+            state = actions[action_index][2]
+            print(id_lookup[actions[action_index][1]], states[actions[action_index][1]][state])
+            changeState(id_lookup[actions[action_index][1]], states[actions[action_index][1]][state])
             waiting = True
 
         if done:

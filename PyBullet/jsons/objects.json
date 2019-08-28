@@ -1,6 +1,42 @@
 {
 	"objects":[
 		{
+			"name": "floor",
+			"urdf": "models/urdf/home/floor.urdf",
+			"constraints": [],
+			"tolerance": 0,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0]],
+			"ur5_dist": [0,0,0]
+		},
+		{
+			"name": "walls",
+			"urdf": "models/urdf/home/walls.urdf",
+			"constraints": [],
+			"tolerance": 0,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0]],
+			"ur5_dist": [0,0,0]
+		},
+		{
+			"name": "ledge",
+			"urdf": "models/urdf/home/ledge.urdf",
+			"constraints": [],
+			"tolerance": 0,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0]],
+			"ur5_dist": [0,0,0]
+		},
+		{
+			"name": "door",
+			"urdf": "models/urdf/home/door.urdf",
+			"constraints": [],
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0]],
+			"ur5_dist": [0,0,0]
+		},
+		{
 			"name": "husky",
 			"urdf": "husky/husky.urdf",
 			"constraints": [],

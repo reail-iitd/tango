@@ -28,7 +28,8 @@
 				["moveTo", "object"],
 				["changeWing", "up"],
 				["constrain", "object", "ur5"],
-				["move", "position"]
+				["move", "position"],
+				["removeConstraint", "object", "ur5"]
 			]
 		},
 		{
@@ -38,11 +39,19 @@
 				["moveTo", "object"],
 				["changeWing", "up"],
 				["constrain", "object", "ur5"],
-				["moveTo", "target"]
+				["moveTo", "target"],
+				["removeConstraint", "object", "ur5"]
 			]
 		},
 
-
+		{
+			"name": "changeState",
+			"args": ["object", "state"],
+			"execution": [
+				["moveTo", "object"],
+				["changeState", "object", "state"]
+			]
+		},
 		{
 			"name": "moveTo",
 			"args": ["target"],

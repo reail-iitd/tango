@@ -45,6 +45,7 @@ def loadWorld(objects, object_file):
     id_lookup = {}
     cons_pos_lookup = {}
     cons_link_lookup = {}
+    states = {}
     ur5_dist = {}
     tolerances = {}
     with open(object_file, 'r') as handle:
@@ -63,12 +64,13 @@ def loadWorld(objects, object_file):
             ground.append(object_id)
         object_lookup[object_id] = obj['name']
         id_lookup[obj['name']] = object_id
+        states[obj['name']] = obj['states']
         cons_pos_lookup[obj['name']] = pos
         cons_link_lookup[obj['name']] = link
         ur5_dist[obj['name']] = dist
         tolerances[obj['name']] = tol
         print(obj['name'], object_id)
-    return object_lookup, id_lookup, horizontal, ground, tolerances, cons_pos_lookup, cons_link_lookup, ur5_dist
+    return object_lookup, id_lookup, horizontal, ground, tolerances, cons_pos_lookup, cons_link_lookup, ur5_dist, states
 
 def initWingPos(wing_file):
     wings = dict()
@@ -96,8 +98,9 @@ def initHuskyUR5(world_file, object_file):
         tolerances, 
         cons_pos_lookup, 
         cons_link_lookup,
-        ur5_dist) = loadWorld(world['entities'], object_file)
+        ur5_dist,
+        states) = loadWorld(world['entities'], object_file)
     base = id_lookup['husky']
     arm = id_lookup['ur5']
-    return base, arm, object_lookup, id_lookup, horizontal_list, ground_list, tolerances, cons_pos_lookup, cons_link_lookup, ur5_dist
+    return base, arm, object_lookup, id_lookup, horizontal_list, ground_list, tolerances, cons_pos_lookup, cons_link_lookup, ur5_dist, states
  

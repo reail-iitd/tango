@@ -1,115 +1,159 @@
 {
 	"entities":[
 		{
-			"name": "plane",
+			"name": "floor",
+			"position": [1,0,-0.1],
+			"orientation": [],
+			"states": {}
+		},
+		{
+			"name": "walls",
 			"position": [0,0,0],
-			"orientation": []
+			"orientation": [],
+			"states": {}
+		},
+		{
+			"name": "ledge",
+			"position": [3.5,0,1.8],
+			"orientation": [],
+			"states": {}
+		},
+		{
+			"name": "door",
+			"position": [3.4,4,0],
+			"orientation": [],
+			"states": 
+				{
+					"closed": [[3.4, 4, 0], [0, 0, 0]],
+					"open": [[3.9, 4.4, 0], [0, 0, 1.57]]
+				}
 		},
 		{
 			"name": "husky",
 			"position": [0,0,0.1],
-			"orientation": [0,0,0,0.1]
+			"orientation": [0,0,0,0.1],
+			"states": {}
 		},
 		{
 			"name": "ur5",
 			"position": [0,0,0.320208],
-			"orientation": []
+			"orientation": [],
+			"states": {}
 		},
 		{
 			"name": "table",
 			"position": [-1, 2, 0],
-			"orientation": []
+			"orientation": [],
+			"states": {}
 		},
 		{
 			"name": "table2",
 			"position": [-1, -2, 0],
-			"orientation": []
+			"orientation": [],
+			"states": []
 		},
 		{
 			"name": "big-tray",
 			"position": [1.5, 0, 0],
-			"orientation": []
+			"orientation": [],
+			"states": []
 		},
 		{
 			"name": "book",
 			"position": [-1,1.7,0.7],
-			"orientation": []
+			"orientation": [],
+			"states": []
 		},
 		{
 			"name": "cube_gray",
 			"position": [-1.5,1.7,0.7],
-			"orientation": []	
+			"orientation": [],
+			"states": []	
 		},
 		{
 			"name": "cube_green",
 			"position": [-1.5,1.8,0.7],
-			"orientation": []	
+			"orientation": [],
+			"states": []	
 		},
 		{
 			"name": "cube_red",
 			"position": [-1.5,1.9,0.7],
-			"orientation": []	
+			"orientation": [],
+			"states": []	
 		},
 		{
 			"name": "tray",
 			"position": [-0.5, 2, 0.7],
-			"orientation": []	
+			"orientation": [],
+			"states": []	
 		},
 		{
 			"name": "tray2",
 			"position": [-0.6, -2, 0.7],
-			"orientation": []	
+			"orientation": [],
+			"states": []	
 		},
 		{
 			"name": "bottle_blue",
 			"position": [1,-2,0],
-			"orientation": []	
+			"orientation": [],
+			"states": []	
 		},
 		{
 			"name": "box",
 			"position": [-2,0,0.2],
-			"orientation": []	
+			"orientation": [],
+			"states": []	
 		},
 		{
 			"name": "r2d2",
 			"position": [-2,-2,1],
-			"orientation": []	
+			"orientation": [],
+			"states": []	
 		},
 		{
 			"name": "apple",
 			"position": [-1, -2, 0.7],
-			"orientation": []	
+			"orientation": [],
+			"states": []	
 		},
 		{
 			"name": "orange",
 			"position": [-1, -2.2, 0.7],
-			"orientation": []	
+			"orientation": [],
+			"states": []	
 		},
 		{
 			"name": "banana",
 			"position": [-1, -1.8, 0.75],
-			"orientation": []	
+			"orientation": [],
+			"states": []	
 		},
 		{
 			"name": "quadcopter",
 			"position": [2.2,0,0.1],
-			"orientation": []	
+			"orientation": [],
+			"states": []	
 		},
 		{
 			"name": "chair",
 			"position": [-0.8,3,0.1],
-			"orientation": []	
+			"orientation": [],
+			"states": []	
 		},
 		{
 			"name": "ball",
 			"position": [2,2,0.2],
-			"orientation": []
+			"orientation": [],
+			"states": []
 		},
 
 		{
 			"name": "stick",
 			"position": [2.5,0,0.2],
-			"orientation": []	
+			"orientation": [],
+			"states": []	
 		}
 	]
 }

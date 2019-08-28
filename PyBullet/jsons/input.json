@@ -1,6 +1,10 @@
 {
 	"actions":[
 		{
+			"name": "changeState",
+			"args": ["door", "open"]
+		},
+		{
 			"name": "pickNplaceAonB",
 			"args": ["cube_red", "big-tray"]
 		},

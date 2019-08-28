@@ -82,3 +82,12 @@ def constrain(obj1, obj2, link, pos, id_lookup, constraints, ur5_dist):
                                 childFramePosition=pos[obj1][0],
                                 childFrameOrientation=[0,0,0,0])
     return cid
+
+def removeConstraint(constraints, obj1, obj2):
+    if obj1 in constraints.keys():
+        p.removeConstraint(constraints[obj1][1])
+
+def changeState(obj, positionAndOrientation):
+    print(obj, positionAndOrientation)
+    q=p.getQuaternionFromEuler(positionAndOrientation[1])
+    p.resetBasePositionAndOrientation(obj, positionAndOrientation[0], q)
