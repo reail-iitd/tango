@@ -286,6 +286,24 @@
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0]],
 			"ur5_dist": [0,0,0]
+		},
+		{
+			"name": "dumpster",
+			"urdf": "models/urdf/dumpster.urdf",
+			"constraints": ["horizontal"],
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0], [0, -0.1, 0], [0, 0.1, 0]],
+			"ur5_dist": [0,0,0]
+		},
+		{
+			"name": "couch",
+			"urdf": "models/urdf/couch.urdf",
+			"constraints": [],
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0.5], [0, -1, 0.5], [0, 1, 0.5]],
+			"ur5_dist": [0,0,0]
 		}
 	]
 }

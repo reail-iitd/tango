@@ -132,7 +132,6 @@ try:
 
         elif(actions[action_index][0] == "changeState"):
           state = actions[action_index][2]
-          print(id_lookup[actions[action_index][1]], states[actions[action_index][1]][state])
           done = changeState(id_lookup[actions[action_index][1]], states[actions[action_index][1]][state])
 
         if done:
