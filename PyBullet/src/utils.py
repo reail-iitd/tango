@@ -1,6 +1,8 @@
 import pybullet as p
 import math
 import operator 
+import json
+from scipy.spatial import distance
 
 names = {}
 
@@ -87,3 +89,40 @@ def restoreOnKeyboard(world_states, x1, y1, o1):
             p.restoreState(stateId=id1)
         return 0, 0, 0, world_states
     return x1, y1, o1, world_states
+
+
+def checkGoal(goal_file, constraints, states, id_lookup):
+    with open(goal_file, 'r') as handle:
+        file = json.load(handle)
+    goals = file['goals']
+    success = True
+
+    for goal in goals:
+        obj = goal['object']
+        if goal['target'] != "":
+            constrained = False
+            for obj1 in constraints.keys():
+                if obj1 == obj and constraints[obj][0] == goal["target"]:
+                    constrained = True
+            success = success and constrained
+
+        if goal['state'] != "":
+            positionAndOrientation = states[obj][goal['state']]
+            q=p.getQuaternionFromEuler(positionAndOrientation[1])
+            ((x1, y1, z1), (a1, b1, c1, d1)) = p.getBasePositionAndOrientation(id_lookup[obj])
+            ((x2, y2, z2), (a2, b2, c2, d2)) = (positionAndOrientation[0], q)
+            done = (True and 
+                abs(x2-x1) <= 0.01 and 
+                abs(y2-y1) <= 0.01 and 
+                abs(a2-a1) <= 0.01 and 
+                abs(b2-b2) <= 0.01 and 
+                abs(c2-c1) <= 0.01 and 
+                abs(d2-d2) <= 0.01)
+            success = success and done
+
+        if goal['position'] != []:
+            pos = p.getBasePositionAndOrientation(id_lookup[obj])[0]
+            goal_pos = goal['position']
+            if abs(distance.euclidean(pos, goal_pos)) > abs(goal['tolerance']):
+                success = False
+    return success

@@ -13,6 +13,7 @@ from src.actions import *
 object_file = "jsons/objects.json"
 wings_file = "jsons/wings.json"
 tolerance_file = "jsons/tolerance.json"
+goal_file = "jsons/goal.json"
 
 # Connect to Bullet using GUI mode
 p.connect(p.GUI)
@@ -85,6 +86,7 @@ try:
         keepOnGround(ground_list)
 
         p.stepSimulation()  
+        print(checkGoal(goal_file, constraints, states, id_lookup))
 
         if action_index >= len(actions):
           continue
