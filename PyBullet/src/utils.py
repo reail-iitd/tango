@@ -69,13 +69,13 @@ def mentionNames(id_lookup):
     if len(names.keys()) == 0:
         for obj in id_lookup.keys():
             id = p.addUserDebugText(obj, 
-                            tuple(map(operator.add, p.getBasePositionAndOrientation(id_lookup[obj])[0], 
-                            (0.2, 0.2, 0.2))))
-            names[obj] = id
-    # else:
-    #     for name in id_lookup.keys():
-    #         p.addUserDebugText(name, 
-    #                             tuple(map(operator.add, p.getBasePositionAndOrientation(id_lookup[name])[0], 
-    #                             (0, 0, 0.2))), 
-    #                             replaceItemUniqueId=names[name])
+                            (0, 0, 0.2),
+                            parentObjectUniqueId=id_lookup[obj])
 
+
+def restoreOnKeyboard(id1):
+    keys = p.getKeyboardEvents()
+    if ord(b'r') in keys:
+        p.restoreState(stateId=id1)
+        return True
+    return False

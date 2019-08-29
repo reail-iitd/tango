@@ -66,26 +66,28 @@ startTime = time.time()
 
 # Start video recording
 p.setRealTimeSimulation(0) 
-logId = p.startStateLogging(p.STATE_LOGGING_VIDEO_MP4, "video.mp4") if args.logging else 0
-counter = 0
+
+# Mention names of objects
+mentionNames(id_lookup)
+
+# Save state
+id1 = p.saveState()
 
 # Start simulation
 try:
     while(True):
-        counter = (counter+1)%100
         x1,y1,o1,keyboard = moveKeyboard(x1, y1, o1, [husky, robotID])
         moveUR5Keyboard(robotID, wings, gotoWing)
+        restore = restoreOnKeyboard(id1)
+        if restore:
+          x1, y1, o1 = 0, 0, 0
+          gotoWing(robotID, wings["home"])
         keepHorizontal(horizontal_list)
         keepOnGround(ground_list)
-        if counter == 0:
-          mentionNames(id_lookup)
+
         p.stepSimulation()  
 
         if action_index >= len(actions):
-          if logId != -1 and args.logging:
-            p.stopStateLogging(logId)
-            p.disconnect()
-            logId = -1
           continue
 
         if(actions[action_index][0] == "move"):
