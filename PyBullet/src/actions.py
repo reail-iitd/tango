@@ -85,4 +85,6 @@ def convertActions(action_file):
                 ["changeState", args[0], args[1]]
             ])
 
+        action_list.append(["saveState"])
+
     return action_list

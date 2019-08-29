@@ -71,17 +71,16 @@ p.setRealTimeSimulation(0)
 mentionNames(id_lookup)
 
 # Save state
+world_states = []
 id1 = p.saveState()
+world_states.append(id1)
 
 # Start simulation
 try:
     while(True):
         x1,y1,o1,keyboard = moveKeyboard(x1, y1, o1, [husky, robotID])
         moveUR5Keyboard(robotID, wings, gotoWing)
-        restore = restoreOnKeyboard(id1)
-        if restore:
-          x1, y1, o1 = 0, 0, 0
-          gotoWing(robotID, wings["home"])
+        x1, y1, o1, world_states = restoreOnKeyboard(world_states, x1, y1, o1)
         keepHorizontal(horizontal_list)
         keepOnGround(ground_list)
 
@@ -138,6 +137,11 @@ try:
         elif(actions[action_index][0] == "changeState"):
           state = actions[action_index][2]
           done = changeState(id_lookup[actions[action_index][1]], states[actions[action_index][1]][state])
+
+        elif(actions[action_index][0] == "saveState"):
+          id1 = p.saveState()
+          world_states.append(id1)
+          done = True
 
         if done:
           startTime = time.time()

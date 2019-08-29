@@ -66,6 +66,9 @@ def moveUR5Keyboard(robotID, wings, gotoWing):
     return
 
 def mentionNames(id_lookup):
+    """
+    Add labels of all objects in the world
+    """
     if len(names.keys()) == 0:
         for obj in id_lookup.keys():
             id = p.addUserDebugText(obj, 
@@ -73,9 +76,14 @@ def mentionNames(id_lookup):
                             parentObjectUniqueId=id_lookup[obj])
 
 
-def restoreOnKeyboard(id1):
+def restoreOnKeyboard(world_states, x1, y1, o1):
+    """
+    Restore to last saved state when 'r' is pressed
+    """
     keys = p.getKeyboardEvents()
     if ord(b'r') in keys:
-        p.restoreState(stateId=id1)
-        return True
-    return False
+        if len(world_states) != 0:
+            id1 = world_states.pop()
+            p.restoreState(stateId=id1)
+        return 0, 0, 0, world_states
+    return x1, y1, o1, world_states
