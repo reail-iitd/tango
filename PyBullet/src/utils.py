@@ -20,8 +20,8 @@ def keepOnGround(object_list):
     for obj_id in object_list:
         p.resetBasePositionAndOrientation(obj_id,
                                           (p.getBasePositionAndOrientation(obj_id)[0][0],
-                                          p.getBasePositionAndOrientation(obj_id)[0][1], 0.2),
-                                          p.getQuaternionFromEuler((0,0,0)))
+                                          p.getBasePositionAndOrientation(obj_id)[0][1], 0.05),
+                                          p.getBasePositionAndOrientation(obj_id)[1])
 
 def moveKeyboard(x1, y1, o1, object_list):
     """

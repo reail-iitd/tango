@@ -41,8 +41,28 @@
 			"args": ["fridge", "close"]
 		},
 		{
+			"name": "pick",
+			"args": ["quadcopter"]
+		},
+		{
 			"name": "changeState",
 			"args": ["door", "open"]
+		},
+		{
+			"name": "changeWing",
+			"args": ["home"]
+		},
+		{
+			"name": "place",
+			"args": ["quadcopter", "dumpster"]
+		},
+		{
+			"name": "move",
+			"args": [[0,0,0]]
+		},
+		{
+			"name": "changeState",
+			"args": ["fridge", "open"]
 		},
 		{
 			"name": "pickNplaceAonB",
@@ -78,19 +98,11 @@
 		},
 		{
 			"name": "pickNplaceAonB",
-			"args": ["apple", "tray2"]
-		},
-		{
-			"name": "pickNplaceAonB",
-			"args": ["orange", "tray2"]
-		},
-		{
-			"name": "pickNplaceAonB",
-			"args": ["banana", "tray2"]
+			"args": ["apple", "couch"]
 		},
 		{
 			"name": "push",
-			"args": ["box", [-2.2, 2, 0]]
+			"args": ["box", [-1.2, 3.2, 0]]
 		}
 
 	]

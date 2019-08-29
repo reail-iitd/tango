@@ -18,6 +18,11 @@ def convertActions(action_file):
                 ["constrain", args[0], args[1]]
             ])
 
+        if high_level_action['name'] == 'changeWing':
+            action_list.extend([
+                ["changeWing", args[0]]
+            ])
+
         elif high_level_action['name'] == 'moveAToB':
             action_list.extend([
                 ["moveTo", args[0]],

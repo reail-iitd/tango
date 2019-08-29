@@ -31,7 +31,7 @@
 			"name": "door",
 			"urdf": "models/urdf/home/door.urdf",
 			"constraints": [],
-			"tolerance": 1,
+			"tolerance": 0.3,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0]],
 			"ur5_dist": [0,0,0]
@@ -75,7 +75,7 @@
 		{
 			"name": "husky",
 			"urdf": "husky/husky.urdf",
-			"constraints": [],
+			"constraints": ["on_ground"],
 			"tolerance": 0,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0]],
@@ -103,10 +103,10 @@
 			"name": "quadcopter",
 			"urdf": "models/urdf/quadrotor.urdf",
 			"constraints": [],
-			"tolerance": 0,
+			"tolerance": 0.5,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0]],
-			"ur5_dist": [0,0,0]
+			"ur5_dist": [0.5,0,0]
 		},
 		{
 			"name": "plane",
@@ -150,7 +150,7 @@
 			"tolerance": 0.5,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0], [0, -0.1, 0], [0, 0.1, 0]],
-			"ur5_dist": [0,0,0]
+			"ur5_dist": [0.3,0,0]
 		},	
         {
             "name": "cube_red",
@@ -230,7 +230,7 @@
             "constraints": ["on_ground"],
 			"tolerance": 1,
 			"constraint_link": -1,
-			"constraint_pos": [[0, 0, 0.1], [0, 0, 0.2], [0, 0, 0.3]],
+			"constraint_pos": [[0, 0, 0.2], [0, 0, 0.3], [0, 0, 0.4]],
 			"ur5_dist": [0.5,0,0]
         },
         {
@@ -291,9 +291,9 @@
 			"name": "dumpster",
 			"urdf": "models/urdf/dumpster.urdf",
 			"constraints": ["horizontal"],
-			"tolerance": 1,
+			"tolerance": 0.5,
 			"constraint_link": -1,
-			"constraint_pos": [[0, 0, 0], [0, -0.1, 0], [0, 0.1, 0]],
+			"constraint_pos": [[0, 0, 0.2], [0, -0.1, 0.2], [0, 0.1, 0.2]],
 			"ur5_dist": [0,0,0]
 		},
 		{
