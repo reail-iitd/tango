@@ -129,3 +129,49 @@ def checkGoal(goal_file, constraints, states, id_lookup):
             if abs(distance.euclidean(pos, goal_pos)) > abs(goal['tolerance']):
                 success = False
     return success
+
+def checkUR5constrained(constraints):
+    """
+    Check if UR5 gripper is already holding something
+    """
+    for obj in constraints.keys():
+        if constraints[obj][0] == 'ur5':
+            return True
+    return False
+
+def checkInside(constraints, states, id_lookup, obj, enclosures):
+    """
+    Check if object is inside cupboard or fridge
+    """
+    for obj in constraints.keys():
+        for enclosure in enclosures:
+            if constraints[obj][0] == enclosure:
+                positionAndOrientation = states[enclosure]["close"]
+                q=p.getQuaternionFromEuler(positionAndOrientation[1])
+                ((x1, y1, z1), (a1, b1, c1, d1)) = p.getBasePositionAndOrientation(id_lookup[enclosure])
+                ((x2, y2, z2), (a2, b2, c2, d2)) = (positionAndOrientation[0], q)
+                closed = (abs(x2-x1) <= 0.01 and 
+                        abs(y2-y1) <= 0.01 and 
+                        abs(a2-a1) <= 0.01 and 
+                        abs(b2-b2) <= 0.01 and 
+                        abs(c2-c1) <= 0.01 and 
+                        abs(d2-d2) <= 0.01)
+                if closed:
+                    return True
+    return False
+
+def isClosed(enclosure, states, id_lookup):
+    """
+    Check if enclosure is closed or not
+    """
+    positionAndOrientation = states[enclosure]["closed"]
+    q=p.getQuaternionFromEuler(positionAndOrientation[1])
+    ((x1, y1, z1), (a1, b1, c1, d1)) = p.getBasePositionAndOrientation(id_lookup[enclosure])
+    ((x2, y2, z2), (a2, b2, c2, d2)) = (positionAndOrientation[0], q)
+    closed = (abs(x2-x1) <= 0.01 and 
+            abs(y2-y1) <= 0.01 and 
+            abs(a2-a1) <= 0.01 and 
+            abs(b2-b2) <= 0.01 and 
+            abs(c2-c1) <= 0.01 and 
+            abs(d2-d2) <= 0.01)
+    return closed

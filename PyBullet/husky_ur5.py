@@ -15,8 +15,11 @@ wings_file = "jsons/wings.json"
 tolerance_file = "jsons/tolerance.json"
 goal_file = "jsons/goal.json"
 
+# Enclosures
+enclosures = ['fridge', 'cupboard']
+
 # Connect to Bullet using GUI mode
-p.connect(p.GUI)
+light = p.connect(p.GUI)
 
 # Add input arguments
 args = initParser()
@@ -86,10 +89,12 @@ try:
         keepOnGround(ground_list)
 
         p.stepSimulation()  
-        print(checkGoal(goal_file, constraints, states, id_lookup))
+        # print(checkGoal(goal_file, constraints, states, id_lookup))
 
         if action_index >= len(actions):
           continue
+
+        # p.setLightPosition(15.0, 0.0, 15.0)
 
         if(actions[action_index][0] == "move"):
           target = actions[action_index][1]
@@ -118,6 +123,14 @@ try:
           if time.time()-startTime > 1:
             done = True; waiting = False
           if not waiting and not done:
+            if checkUR5constrained(constraints) and actions[action_index][2] == 'ur5':
+                raise Exception("Gripper is not free, can not hold object")
+            if (checkInside(constraints, states, id_lookup, actions[action_index][1], enclosures) 
+                and actions[action_index][2] == 'ur5'):
+                raise Exception("Object is inside an enclosure, can not grasp it.")
+            if (actions[action_index][2] in enclosures
+                and isClosed(actions[action_index][2], states, id_lookup)):
+                raise Exception("Enclosure is closed, can not place object inside")
             cid = constrain(actions[action_index][1], 
                             actions[action_index][2], 
                             cons_link_lookup, 
@@ -137,10 +150,12 @@ try:
             waiting = True
 
         elif(actions[action_index][0] == "changeState"):
+          if checkUR5constrained(constraints):
+              raise Exception("Gripper is not free, can not change state")
           state = actions[action_index][2]
           done = changeState(id_lookup[actions[action_index][1]], states[actions[action_index][1]][state])
 
-        elif(actions[action_index][0] == "saveState"):
+        elif(actions[action_index][0] == "saveBulletState"):
           id1 = p.saveState()
           world_states.append(id1)
           done = True
@@ -148,6 +163,7 @@ try:
         if done:
           startTime = time.time()
           action_index += 1
+          print("Executing action: ", actions[action_index])
           done = False
 
     p.disconnect()
