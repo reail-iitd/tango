@@ -72,7 +72,7 @@
 			"args": ["object"],
 			"execution": [
 				["moveTo", "object"],
-				["changeWing", "up"]
+				["changeWing", "up"],
 				["constrain", "object", "ur5"]
 			]
 		},
@@ -86,10 +86,44 @@
 			]
 		},
 		{
-			"name": "drop",
-			"args": ["object_list","target"],
+			"name": "dropTo",
+			"args": ["object_list", "target"],
 			"execution":[
-				"constrain", "object_list", "target",
+				"constrain", "object_list", "target"
+			]
+		},
+		{
+			"name": "drop",
+			"args": ["object"],
+			"execution":[
+				"removeConstrain", "object"
+			]
+		},
+		{
+			"name": "placeRamp",
+			"args": [],
+			"execution":[
+                ["moveTo", "ramp"],
+                ["changeWing", "up"],
+                ["constrain", "ramp", "ur5"],
+                ["move", [0.5,-0.5,0]],
+                ["constrain", "ramp", "floor_warehouse"]
+            ]
+		},
+		{
+			"name": "moveUp",
+			"args": [],
+			"execution":[
+				["move", [0.5, -0.5, 0]],
+                ["moveZ", [-1.5, 1.5, 1]]
+			]
+		},
+		{
+			"name": "moveDown",
+			"args": [],
+			"execution":[
+				["move", [-0.6, 0.6, 1]],
+                ["moveZ", [0.5, -0.5, 0]]
 			]
 		}
 	]
