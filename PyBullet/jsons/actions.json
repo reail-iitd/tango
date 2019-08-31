@@ -5,7 +5,7 @@
 			"args": ["object", "target"],
 			"execution": [
 				["moveTo", "object"],
-				["changeWing", "up"]
+				["changeWing", "up"],
 				["constrain", "object", "ur5"],
 				["moveTo", "target"],
 				["constrain", "object", "target"]
@@ -16,7 +16,7 @@
 			"args": ["object", "target"],
 			"execution": [
 				["moveTo", "object"],
-				["changeWing", "up"]
+				["changeWing", "up"],
 				["constrain", "object", "ur5"],
 				["moveTo", "target"]
 			]
