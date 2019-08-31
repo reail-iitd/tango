@@ -1,6 +1,10 @@
 {
 	"actions":[
 		{
+			"name": "placeRamp",
+			"args": []
+		},
+		{
 			"name": "move",
 			"args": [[-0.2, 0.2, 0]]
 		},

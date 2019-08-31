@@ -78,13 +78,13 @@
 			"constraints": [],
 			"tolerance": 0,
 			"constraint_link": -1,
-			"constraint_pos": [[0, 0, 0]],
+			"constraint_pos": [[-1.5, 0.4, 0]],
 			"ur5_dist": [0,0,0]
 		},
 		{
 			"name": "ramp",
 			"urdf": "models/urdf/warehouse/ramp.urdf",
-			"constraints": ["on_ground"],
+			"constraints": ["on_ground", "fixed_orientation"],
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0]],

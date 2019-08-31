@@ -32,6 +32,7 @@ speed = args.speed
   id_lookup, 
   horizontal_list, 
   ground_list,
+  fixed_orientation,
   tolerances, 
   cons_pos_lookup, 
   cons_link_lookup,
@@ -78,6 +79,8 @@ mentionNames(id_lookup)
 world_states = []
 id1 = p.saveState()
 world_states.append(id1)
+print(id_lookup)
+print(fixed_orientation)
 
 # Start simulation
 try:
@@ -87,6 +90,7 @@ try:
         z1, y1, o1, world_states = restoreOnKeyboard(world_states, x1, y1, o1)
         keepHorizontal(horizontal_list)
         keepOnGround(ground_list)
+        keepOrientation(fixed_orientation)
 
         p.stepSimulation()  
         # print(checkGoal(goal_file, constraints, states, id_lookup))

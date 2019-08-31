@@ -25,6 +25,15 @@ def keepOnGround(object_list):
                                           p.getBasePositionAndOrientation(obj_id)[0][1], 0.05),
                                           p.getBasePositionAndOrientation(obj_id)[1])
 
+def keepOrientation(objects):
+    """
+    keeps the orientation fixed
+    """
+    for obj_id in objects.keys():
+        p.resetBasePositionAndOrientation(obj_id,
+                                          p.getBasePositionAndOrientation(obj_id)[0],
+                                          objects[obj_id])
+
 def moveKeyboard(x1, y1, o1, object_list):
     """
     Move robot based on keyboard inputs

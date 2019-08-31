@@ -84,6 +84,15 @@ def convertActions(action_file):
                 ["changeWing", "up"],
                 ["changeState", args[0], args[1]]
             ])
+        
+        elif high_level_action['name'] == 'placeRamp':
+            action_list.extend([
+                ["moveTo", "ramp"],
+                ["changeWing", "up"],
+                ["constrain", "ramp", "ur5"],
+                ["move", [0.5,-0.5,0]],
+                ["constrain", "ramp", "floor_warehouse"]
+            ])
 
         action_list.append(["saveBulletState"])
 
