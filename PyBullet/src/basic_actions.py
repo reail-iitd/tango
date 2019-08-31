@@ -23,24 +23,26 @@ def move(x1, y1, o1, object_list, target_coordinates, keyboard, speed, tolerance
     """
     if keyboard:
         return x1, y1, o1, False
-    x2 = target_coordinates[0]; y2 = target_coordinates[1]
+    delz = 0
+    (x1, y1, z1) = p.getBasePositionAndOrientation(object_list[0])[0]
+    x2 = target_coordinates[0]; y2 = target_coordinates[1]; z2 = target_coordinates[2]
     diff = math.atan2((y2-y1),(x2-x1))%(2*math.pi) - (o1%(2*math.pi))
     if abs(diff) > 0.05:
         o1 = o1 + 0.001*speed if diff > 0 else o1 - 0.001*speed
-    elif abs(distance.euclidean((x1, y1), (x2, y2))) > tolerance + 0.1: 
+    elif abs(distance.euclidean((x1, y1, z1), (x2, y2, z2))) > tolerance + 0.1: 
         x1 += math.cos(o1)*0.001*speed
         y1 += math.sin(o1)*0.001*speed
+        delz = 0.001*speed*sign(z2-z1)
     else:
         return x1, y1, o1, True
     q=p.getQuaternionFromEuler((0,0,o1))
     for obj_id in object_list:
-        z = p.getBasePositionAndOrientation(obj_id)[0][2]
-        if p.getBasePositionAndOrientation(obj_id) != ((x1, y1, z), (q)):
-            p.resetBasePositionAndOrientation(obj_id, [x1, y1, z], q)
+        (x, y, z1) = p.getBasePositionAndOrientation(obj_id)[0]
+        p.resetBasePositionAndOrientation(obj_id, [x1, y1, z1+delz], q)
     return x1, y1, o1, False
 
 
-def moveTo(x1, y1, o1, object_list, target, tolerance, keyboard, speed):
+def moveTo(x1, y1, z1, o1, object_list, target, tolerance, keyboard, speed):
     """
     Move robot towards a target object
     :params: 
@@ -57,10 +59,11 @@ def moveTo(x1, y1, o1, object_list, target, tolerance, keyboard, speed):
         moved - move operation complete or not
     """
     if keyboard:
-        return x1, y1, o1, False
+        return x1, y1, z1, o1, False
     y2 = p.getBasePositionAndOrientation(target)[0][1]
     x2 = p.getBasePositionAndOrientation(target)[0][0]
-    target_coordinates = [x2, y2]
+    z2 = p.getBasePositionAndOrientation(target)[0][2]
+    target_coordinates = [x2, y2, z2]
     return move(x1, y1, o1, object_list, target_coordinates, keyboard, speed, tolerance)
 
 
@@ -101,4 +104,5 @@ def changeState(obj, positionAndOrientation):
     c1 = c1 + 0.01*sign(c2-c1); done = done and abs(c2-c1) <= 0.01
     d1 = d1 + 0.01*sign(d2-d2); done = done and abs(d2-d2) <= 0.01
     p.resetBasePositionAndOrientation(obj, (x1, y1, z1), (a1, b1, c1, d1))
+    print(((x1, y1, z1), (a1, b1, c1, d1)), ((x2, y2, z2), (a2, b2, c2, d2)), obj, done)
     return done

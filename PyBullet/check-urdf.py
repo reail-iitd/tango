@@ -28,7 +28,7 @@ parser.add_argument('--world',
 
 args = parser.parse_args()
 
-p.loadURDF("models/urdf/home/walls.urdf", [1,0,0])
+p.loadURDF("models/urdf/warehouse/ramp.urdf", [0,-2,0.1])
 p.loadURDF("models/urdf/home/floor.urdf", [0,0,-0.1])
 
 p.loadURDF("models/urdf/fridge/fridge.urdf", [2,0,0])

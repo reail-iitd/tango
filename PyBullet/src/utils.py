@@ -29,7 +29,7 @@ def moveKeyboard(x1, y1, o1, object_list):
     """
     Move robot based on keyboard inputs
     """
-    flag = False
+    flag = False; delz = 0
     keys = p.getKeyboardEvents()
     if 65297 in keys:
         x1 += math.cos(o1)*0.001
@@ -39,18 +39,25 @@ def moveKeyboard(x1, y1, o1, object_list):
         x1 -= math.cos(o1)*0.001
         y1 -= math.sin(o1)*0.001
         flag= True
+    if ord(b'o') in keys:
+        delz = 0.001
+        flag = True
+    if ord(b'l') in keys:
+        delz = -0.001
+        flag = True
     if 65295 in keys:
         o1 += 0.005
         flag= True
     if 65296 in keys:
         o1 -= 0.005
         flag= True
-    q=p.getQuaternionFromEuler((0,0,o1))
+    q = p.getQuaternionFromEuler((0,0,o1))
     for obj_id in object_list:
-        z = p.getBasePositionAndOrientation(obj_id)[0][2]
-        if p.getBasePositionAndOrientation(obj_id)[0] != ((x1, y1, z), (q)):
-            p.resetBasePositionAndOrientation(obj_id, [x1, y1, z], q)
-    return x1, y1, o1, flag
+        (x, y, z1) = p.getBasePositionAndOrientation(obj_id)[0]
+        z1 = max(0, z1+delz)
+        if p.getBasePositionAndOrientation(obj_id)[0] != ((x1, y1, z1), (q)):
+            p.resetBasePositionAndOrientation(obj_id, [x1, y1, z1], q)
+    return  x1, y1, o1, flag
 
 def moveUR5Keyboard(robotID, wings, gotoWing):
     """
@@ -87,6 +94,8 @@ def restoreOnKeyboard(world_states, x1, y1, o1):
         if len(world_states) != 0:
             id1 = world_states.pop()
             p.restoreState(stateId=id1)
+            q=p.getQuaternionFromEuler((0,0,0))
+            p.resetBasePositionAndOrientation(([0, 0, 0], q)) # Get robot to home when undo
         return 0, 0, 0, world_states
     return x1, y1, o1, world_states
 

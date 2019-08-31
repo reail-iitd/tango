@@ -42,7 +42,7 @@ speed = args.speed
 wings = initWingPos(wings_file)
 
 # Fix ur5 to husky
-cid = p.createConstraint(husky, -1, robotID, -1, p.JOINT_FIXED, [0, 0, 0], [0, 0, 0], [0., 0., -.1],
+cid = p.createConstraint(husky, -1, robotID, -1, p.JOINT_FIXED, [0, 0, 0], [0, 0, ], [0., 0., -.2],
                          [0, 0, 0, 1])
 
 # Set small gravity
@@ -54,7 +54,7 @@ gotoWing = getUR5Controller(robotID)
 gotoWing(robotID, wings["home"])
 
 # Position of the robot
-x1,y1,o1 = 0,0,0
+x1, y1, o1 = 0, 0, 0
 constraint = 0
 
 # List of constraints with target object and constraint id
@@ -82,9 +82,9 @@ world_states.append(id1)
 # Start simulation
 try:
     while(True):
-        x1,y1,o1,keyboard = moveKeyboard(x1, y1, o1, [husky, robotID])
+        x1, y1, o1, keyboard = moveKeyboard(x1, y1, o1, [husky, robotID])
         moveUR5Keyboard(robotID, wings, gotoWing)
-        x1, y1, o1, world_states = restoreOnKeyboard(world_states, x1, y1, o1)
+        z1, y1, o1, world_states = restoreOnKeyboard(world_states, x1, y1, o1)
         keepHorizontal(horizontal_list)
         keepOnGround(ground_list)
 
@@ -94,21 +94,13 @@ try:
         if action_index >= len(actions):
           continue
 
-        # p.setLightPosition(15.0, 0.0, 15.0)
-
         if(actions[action_index][0] == "move"):
           target = actions[action_index][1]
-          x1, y1, o1, done = move(x1, y1, o1, 
-                                  [husky, robotID], 
-                                  actions[action_index][1], 
-                                  keyboard,
-                                  speed)
+          x1, y1, o1, done = move(x1, y1, o1, [husky, robotID], target, keyboard, speed)
 
         elif(actions[action_index][0] == "moveTo"):
           target = actions[action_index][1]
-          x1, y1, o1, done = moveTo(x1, y1, o1, 
-                                  [husky, robotID], 
-                                  id_lookup[target], 
+          x1, y1, o1, done = moveTo(x1, y1, o1, [husky, robotID], id_lookup[target], 
                                   tolerances[target], 
                                   keyboard,
                                   speed)
@@ -154,6 +146,20 @@ try:
               raise Exception("Gripper is not free, can not change state")
           state = actions[action_index][2]
           done = changeState(id_lookup[actions[action_index][1]], states[actions[action_index][1]][state])
+
+        elif(actions[action_index][0] == "changeHeight"):
+          obj = actions[action_index][1]
+          surface = actions[action_index][2]
+          op = actions[action_index][3]
+          lst = []
+          if(surface == "ground"):
+              lst = ground_list
+          elif(surface == "height"):
+              lst = height_list
+          if(op == "unfix"):
+              lst.remove(obj)
+          else:
+              lst.append(obj)           
 
         elif(actions[action_index][0] == "saveBulletState"):
           id1 = p.saveState()

@@ -73,9 +73,27 @@
 			"ur5_dist": [0,0,0]
 		},
 		{
+			"name": "floor_warehouse",
+			"urdf": "models/urdf/warehouse/floor.urdf",
+			"constraints": [],
+			"tolerance": 0,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0]],
+			"ur5_dist": [0,0,0]
+		},
+		{
+			"name": "ramp",
+			"urdf": "models/urdf/warehouse/ramp.urdf",
+			"constraints": ["on_ground"],
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0]],
+			"ur5_dist": [1,0,0]
+		},
+		{
 			"name": "husky",
 			"urdf": "husky/husky.urdf",
-			"constraints": ["on_ground"],
+			"constraints": [],
 			"tolerance": 0,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0]],
