@@ -92,6 +92,9 @@ def restoreOnKeyboard(world_states, x1, y1, o1):
 
 
 def checkGoal(goal_file, constraints, states, id_lookup):
+    """
+    Check if goal conditions are true for the current state
+    """
     with open(goal_file, 'r') as handle:
         file = json.load(handle)
     goals = file['goals']
