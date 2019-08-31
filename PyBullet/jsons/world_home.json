@@ -152,7 +152,7 @@
 		},
 		{
 			"name": "box",
-			"position": [-3,0,0.2],
+			"position": [-3,0,0],
 			"orientation": [],
 			"states": []	
 		},

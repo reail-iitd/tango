@@ -4,7 +4,7 @@ from scipy.spatial import distance
 
 sign = lambda x: x and (1, -1)[x < 0]
 
-def move(x1, y1, o1, object_list, target_coordinates, keyboard, speed, tolerance=0):
+def move(x1, y1, o1, object_list, target_coordinates, keyboard, speed, tolerance=0, up=False):
     """
     Move robot towards target coordinate location
     :params: 
@@ -32,7 +32,7 @@ def move(x1, y1, o1, object_list, target_coordinates, keyboard, speed, tolerance
     elif abs(distance.euclidean((x1, y1, z1), (x2, y2, z2))) > tolerance + 0.1: 
         x1 += math.cos(o1)*0.001*speed
         y1 += math.sin(o1)*0.001*speed
-        delz = 0.001*speed*sign(z2-z1)
+        delz = 0.001*speed*sign(z2-z1) if up else 0
     else:
         return x1, y1, o1, True
     q=p.getQuaternionFromEuler((0,0,o1))
@@ -64,6 +64,10 @@ def moveTo(x1, y1, o1, object_list, target, tolerance, keyboard, speed):
     x2 = p.getBasePositionAndOrientation(target)[0][0]
     z2 = p.getBasePositionAndOrientation(target)[0][2]
     target_coordinates = [x2, y2, z2]
+    husky = object_list[0]
+    if ((target_coordinates[2] >= 1 and p.getBasePositionAndOrientation(husky)[0][2] <= 0.5) or
+        (target_coordinates[2] <= 0.9 and p.getBasePositionAndOrientation(husky)[0][2] >= 1)):
+        raise Exception("Target object is not on same level, please first move to the same level as target")
     return move(x1, y1, o1, object_list, target_coordinates, keyboard, speed, tolerance)
 
 
@@ -104,5 +108,4 @@ def changeState(obj, positionAndOrientation):
     c1 = c1 + 0.01*sign(c2-c1); done = done and abs(c2-c1) <= 0.01
     d1 = d1 + 0.01*sign(d2-d2); done = done and abs(d2-d2) <= 0.01
     p.resetBasePositionAndOrientation(obj, (x1, y1, z1), (a1, b1, c1, d1))
-    print(((x1, y1, z1), (a1, b1, c1, d1)), ((x2, y2, z2), (a2, b2, c2, d2)), obj, done)
     return done

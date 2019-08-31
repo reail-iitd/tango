@@ -60,6 +60,18 @@ def convertActions(action_file):
                 ["move", args[0]]
             ])
 
+        elif high_level_action['name'] == 'moveUp':
+            action_list.extend([
+                ["move", [0.5, -0.5, 0]],
+                ["moveZ", [-1.5, 1.5, 1]]
+            ])
+        
+        elif high_level_action['name'] == 'moveDown':
+            action_list.extend([
+                ["move", [-0.6, 0.6, 1]],
+                ["moveZ", [0.5, -0.5, 0]]
+            ])
+
         elif high_level_action['name'] == 'pick':
             action_list.extend([
                 ["moveTo", args[0]],
@@ -74,9 +86,12 @@ def convertActions(action_file):
                 ["constrain", args[0], args[1]]
             ])
 
-        elif high_level_action['name'] == 'drop':
+        elif high_level_action['name'] == 'dropTo':
             for obj in args[0]:
                 action_list.append(["constrain", obj, args[1]])
+        
+        elif high_level_action['name'] == 'drop':
+            action_list.append(["removeConstraint", args[0], "ur5"])
 
         elif high_level_action['name'] == 'changeState':
             action_list.extend([

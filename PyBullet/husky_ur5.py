@@ -47,7 +47,7 @@ cid = p.createConstraint(husky, -1, robotID, -1, p.JOINT_FIXED, [0, 0, 0], [0, 0
                          [0, 0, 0, 1])
 
 # Set small gravity
-p.setGravity(0,0,-1)
+p.setGravity(0,0,-10)
 
 # Initialize gripper joints and forces
 controlJoints, joints = initGripper(robotID)
@@ -101,6 +101,10 @@ try:
         if(actions[action_index][0] == "move"):
           target = actions[action_index][1]
           x1, y1, o1, done = move(x1, y1, o1, [husky, robotID], target, keyboard, speed)
+
+        if(actions[action_index][0] == "moveZ"):
+          target = actions[action_index][1]
+          x1, y1, o1, done = move(x1, y1, o1, [husky, robotID], target, keyboard, speed, up=True)
 
         elif(actions[action_index][0] == "moveTo"):
           target = actions[action_index][1]

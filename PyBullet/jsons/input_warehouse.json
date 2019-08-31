@@ -5,12 +5,24 @@
 			"args": []
 		},
 		{
-			"name": "move",
-			"args": [[-0.2, 0.2, 0]]
+			"name": "pick",
+			"args": ["box"]
 		},
 		{
-			"name": "move",
-			"args": [[-1.5, 1.5, 1]]
+			"name": "moveUp",
+			"args": []
+		},
+		{
+			"name": "drop",
+			"args": ["box"]
+		},
+		{
+			"name": "moveDown",
+			"args": []
+		},
+		{
+			"name": "pick",
+			"args": ["box"]
 		}
 	]
 }

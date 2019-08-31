@@ -22,7 +22,7 @@ def keepOnGround(object_list):
     for obj_id in object_list:
         p.resetBasePositionAndOrientation(obj_id,
                                           (p.getBasePositionAndOrientation(obj_id)[0][0],
-                                          p.getBasePositionAndOrientation(obj_id)[0][1], 0.05),
+                                          p.getBasePositionAndOrientation(obj_id)[0][1], 0.01),
                                           p.getBasePositionAndOrientation(obj_id)[1])
 
 def keepOrientation(objects):
@@ -161,7 +161,7 @@ def checkInside(constraints, states, id_lookup, obj, enclosures):
     """
     Check if object is inside cupboard or fridge
     """
-    for obj in constraints.keys():
+    if obj in constraints.keys():
         for enclosure in enclosures:
             if constraints[obj][0] == enclosure:
                 positionAndOrientation = states[enclosure]["close"]
@@ -182,7 +182,7 @@ def isClosed(enclosure, states, id_lookup):
     """
     Check if enclosure is closed or not
     """
-    positionAndOrientation = states[enclosure]["closed"]
+    positionAndOrientation = states[enclosure]["close"]
     q=p.getQuaternionFromEuler(positionAndOrientation[1])
     ((x1, y1, z1), (a1, b1, c1, d1)) = p.getBasePositionAndOrientation(id_lookup[enclosure])
     ((x2, y2, z2), (a2, b2, c2, d2)) = (positionAndOrientation[0], q)
