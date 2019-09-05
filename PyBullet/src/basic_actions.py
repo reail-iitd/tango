@@ -13,13 +13,15 @@ def move(x1, y1, o1, object_list, target_coordinates, keyboard, speed, tolerance
         o1 - current angle of objects in object_list
         object_list - list of object ids to be moved
         target_coordinates - coordinates of target location
-        moved - move operation complete or not
+        keyboard - if currently moving via keyboard
+        speed - speed of motion
         tolerance - how close to reach target location
+        up - move along z axis or not
     :return:
         x1 - updated x coordinate of objects in object_list
         y1 - updated y coordinate of objects in object_list
         o1 - updated angle of objects in object_list
-        moved - if currently moving via keyboard
+        moved - move operation complete or not
     """
     if keyboard:
         return x1, y1, o1, False
@@ -51,7 +53,9 @@ def moveTo(x1, y1, o1, object_list, target, tolerance, keyboard, speed):
         o1 - current angle of objects in object_list
         object_list - list of object ids to be moved
         target - object id of target to which the objects need to be moved to
+        tolerance - tolerance distance of the target object
         keyboard - if currently moving via keyboard
+        speed - speed of motion
     :return:
         x1 - updated x coordinate of objects in object_list
         y1 - updated y coordinate of objects in object_list
@@ -72,9 +76,21 @@ def moveTo(x1, y1, o1, object_list, target, tolerance, keyboard, speed):
 
 
 def constrain(obj1, obj2, link, pos, id_lookup, constraints, ur5_dist):
+    """
+    Constrain two objects
+    :params: 
+        obj1 - object to be constrained
+        obj2 - target object to which obj1 is constrained
+        link - link lookup for objects to be constrained
+        id_lookup - id dictionary to lookup object id by name
+        constraints - current list of constraints
+        ur5_dist - dictionary to lookup distance from ur5 gripper
+    :return:
+        cid - constraint id
+    """
     if obj1 in constraints.keys():
         p.removeConstraint(constraints[obj1][1])
-    count = 0
+    count = 0 # count checks where to place on target object
     for obj in constraints.keys():
         if constraints[obj][0] == obj2:
             count += 1
@@ -93,10 +109,25 @@ def constrain(obj1, obj2, link, pos, id_lookup, constraints, ur5_dist):
     return cid
 
 def removeConstraint(constraints, obj1, obj2):
+    """
+    Remove constraint between two objects
+    :params: 
+        constraints - current dictionary of constraints
+        obj1 - constrained object
+        obj2 - target object to which obj1 is constrained
+    """
     if obj1 in constraints.keys():
         p.removeConstraint(constraints[obj1][1])
 
 def changeState(obj, positionAndOrientation):
+    """
+    Change state of an object
+    :params: 
+        obj - if of object
+        positionAndOrientation - target state of object
+    :return:
+        done - if object state is very close to target state
+    """
     q=p.getQuaternionFromEuler(positionAndOrientation[1])
     ((x1, y1, z1), (a1, b1, c1, d1)) = p.getBasePositionAndOrientation(obj)
     ((x2, y2, z2), (a2, b2, c2, d2)) = (positionAndOrientation[0], q)

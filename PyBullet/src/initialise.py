@@ -78,6 +78,9 @@ def loadWorld(objects, object_file):
     return object_lookup, id_lookup, horizontal, ground, fixed_orientation, tolerances, cons_pos_lookup, cons_link_lookup, ur5_dist, states
 
 def initWingPos(wing_file):
+    """
+    Initialize wing poses of UR5 gripper
+    """
     wings = dict()
     controlJoints = ["shoulder_pan_joint","shoulder_lift_joint",
                      "elbow_joint", "wrist_1_joint",
