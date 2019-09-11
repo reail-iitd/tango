@@ -77,6 +77,7 @@ lastTime = startTime
 # Init camera
 imageCount = 0
 yaw = 0
+ims = []
 
 # Start video recording
 p.setRealTimeSimulation(0) 
@@ -99,11 +100,12 @@ if args.logging:
             os.unlink(file_path)
 
 # Start simulation
-# try:
-if True:
+try:
     while(True):
         if args.logging:
-          lastTime, imageCount = saveImage(lastTime, imageCount, yaw)
+          lastTime, imageCount, im = saveImage(lastTime, imageCount, yaw)
+          if im:
+                ims.append([im])
         x1, y1, o1, keyboard = moveKeyboard(x1, y1, o1, [husky, robotID])
         moveUR5Keyboard(robotID, wings, gotoWing)
         z1, y1, o1, world_states = restoreOnKeyboard(world_states, x1, y1, o1)
@@ -195,7 +197,12 @@ if True:
           done = False
 
     p.disconnect()
-# except Exception as e: 
-#     print(e)
-#     p.disconnect()
+except Exception as e: 
+    print(e)
+    p.disconnect()
+finally:
+    ani = animation.ArtistAnimation(fig, ims, interval=500, blit=True,
+                                repeat_delay=2000)
+    ani.save('logs/action_video.mp4', fps=30, extra_args=['-vcodec', 'libx264'])
+                    
 

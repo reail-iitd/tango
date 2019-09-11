@@ -4,29 +4,27 @@ import operator
 import json
 from scipy.spatial import distance
 import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 import time 
 import numpy as np
 current_milli_time = lambda: int(round(time.time() * 1000))
 
-plt.ion()
-plt.axis('off')
-ax = plt.gca()
-
+fig = plt.figure(figsize = (38.42,21.6))
 camTargetPos = [0, 0, 2]
 cameraUp = [0, 0, 2]
-cameraPos = [1, 1, 20]
+cameraPos = [1, 1, 5]
 pitch = -20.0
 roll = -30
 upAxisIndex = 2
 camDistance = 4
-pixelWidth = 1920
-pixelHeight = 1080
+pixelWidth = 1280
+pixelHeight = 720
 nearPlane = 0.01
 farPlane = 100
 fov = 60
 yaw = 40
-img = [[1, 2, 3] * 50] * 100  #np.random.rand(200, 320)
-image = plt.imshow(img, interpolation='none', animated=True, label="blah")
+plt.axis('off')
+image = plt.imshow([[1, 2, 3] * 50] * 100, interpolation='hanning', animated=True)
 names = {}
 
 def keepHorizontal(object_list):
@@ -230,8 +228,8 @@ def isClosed(enclosure, states, id_lookup):
 
 def saveImage(lastTime, imageCount, yaw):
     current = current_milli_time()
-    if (current - lastTime) < 500:
-        return lastTime, imageCount
+    if (current - lastTime) < 200:
+        return lastTime, imageCount, None
     viewMatrix = p.computeViewMatrixFromYawPitchRoll(camTargetPos, camDistance, yaw, pitch,
                                                             roll, upAxisIndex)
     aspect = pixelWidth / pixelHeight
@@ -243,14 +241,4 @@ def saveImage(lastTime, imageCount, yaw):
                                       shadow=1,
                                       lightDirection=[1, 1, 1],
                                       renderer=p.ER_BULLET_HARDWARE_OPENGL)
-    w = img_arr[0]  #width of the image, in pixels
-    h = img_arr[1]  #height of the image, in pixels
-    rgb = img_arr[2]  #color data RGB
-    dep = img_arr[3]  #depth data
-    np_img_arr = np.reshape(rgb, (h, w, 4))
-    np_img_arr = np_img_arr * (1. / 255.)
-
-    image.set_data(np_img_arr)
-    ax.plot([0])
-    plt.savefig("logs/" + str(imageCount) + ".png")
-    return current, imageCount+1
+    return current, imageCount+1, plt.imshow(rgb,interpolation='hanning')
