@@ -102,10 +102,12 @@ print(fixed_orientation)
 
 # Check Logging
 if args.logging:
-    for the_file in os.listdir("logs"):
-        file_path = os.path.join("logs", the_file)
-        if os.path.isfile(file_path):
-            os.unlink(file_path)
+    deleteAll("logs")
+  
+if args.display:
+    deleteAll("logs\\fp")
+    deleteAll("logs\\tp")
+
 
 # Start simulation
 if True:
