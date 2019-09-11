@@ -322,6 +322,24 @@
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.5], [0, -1, 0.5], [0, 1, 0.5]],
 			"ur5_dist": [0,0,0]
+		},
+		{
+            "name": "milk",
+            "urdf": "models/urdf/milk.urdf",
+            "constraints": [],
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0]],
+			"ur5_dist": [0.3,0,0]
+		},
+		{
+            "name": "shelf",
+            "urdf": "models/urdf/shelf.urdf",
+            "constraints": [],
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0]],
+			"ur5_dist": [0.5,0,0]
 		}
 	]
 }
