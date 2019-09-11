@@ -9,22 +9,33 @@ import time
 import numpy as np
 current_milli_time = lambda: int(round(time.time() * 1000))
 
-fig = plt.figure(figsize = (38.42,21.6))
-camTargetPos = [0, 0, 2]
+
+camTargetPos = [0, 0, 0]
 cameraUp = [0, 0, 2]
 cameraPos = [1, 1, 5]
-pitch = -20.0
+pitch = -35.0
 roll = -30
 upAxisIndex = 2
-camDistance = 4
+camDistance = 5
 pixelWidth = 1280
 pixelHeight = 720
+aspect = pixelWidth / pixelHeight
 nearPlane = 0.01
 farPlane = 100
 fov = 60
-yaw = 40
-plt.axis('off')
-image = plt.imshow([[1, 2, 3] * 50] * 100, interpolation='hanning', animated=True)
+
+def initDisplay():
+    plt.ion()
+    plt.axis('off')
+    image = plt.imshow([[1, 2, 3] * 50] * 100, interpolation='hanning', animated=True)
+    ax = plt.gca()
+    return ax, image
+
+def initLogging():
+    plt.axis('off')
+    fig = plt.figure(figsize = (38.42,21.6))
+    return fig
+
 names = {}
 
 def keepHorizontal(object_list):
@@ -226,13 +237,12 @@ def isClosed(enclosure, states, id_lookup):
             abs(d2-d2) <= 0.01)
     return closed
 
-def saveImage(lastTime, imageCount, yaw):
+def saveImage(lastTime, imageCount, yaw, save, display, ax, image):
     current = current_milli_time()
     if (current - lastTime) < 200:
         return lastTime, imageCount, None
     viewMatrix = p.computeViewMatrixFromYawPitchRoll(camTargetPos, camDistance, yaw, pitch,
                                                             roll, upAxisIndex)
-    aspect = pixelWidth / pixelHeight
     projectionMatrix = p.computeProjectionMatrixFOV(fov, aspect, nearPlane, farPlane)
     img_arr = p.getCameraImage(pixelWidth,
                                       pixelHeight,
@@ -240,5 +250,13 @@ def saveImage(lastTime, imageCount, yaw):
                                       projectionMatrix,
                                       shadow=1,
                                       lightDirection=[1, 1, 1],
-                                      renderer=p.ER_BULLET_HARDWARE_OPENGL)
-    return current, imageCount+1, plt.imshow(rgb,interpolation='hanning')
+                                      renderer=p.ER_BULLET_HARDWARE_OPENGL,
+                                      flags=p.ER_NO_SEGMENTATION_MASK)
+    rgb = img_arr[2]
+    if display:
+        image.set_data(np.reshape(rgb, (pixelHeight, pixelWidth, 4)) * (1. / 255.))
+        ax.plot([0])
+        plt.pause(0.01)
+    if save:
+        return current, imageCount+1, plt.imshow(rgb,interpolation='hanning')
+    return current, imageCount+1, None

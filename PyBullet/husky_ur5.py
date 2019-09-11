@@ -76,11 +76,17 @@ lastTime = startTime
 
 # Init camera
 imageCount = 0
-yaw = 0
+yaw = 50
 ims = []
 
 # Start video recording
 p.setRealTimeSimulation(0) 
+ax = 0; fig = 0; image = []
+if args.display:
+      ax, image = initDisplay()
+elif args.logging:
+      fig = initLogging()
+camPos = []
 
 # Mention names of objects
 mentionNames(id_lookup)
@@ -102,9 +108,9 @@ if args.logging:
 # Start simulation
 try:
     while(True):
-        if args.logging:
-          lastTime, imageCount, im = saveImage(lastTime, imageCount, yaw)
-          if im:
+        if args.logging or args.display:
+          lastTime, imageCount, im = saveImage(lastTime, imageCount, yaw, args.logging, args.display, ax, image)
+          if args.logging and im:
                 ims.append([im])
         x1, y1, o1, keyboard = moveKeyboard(x1, y1, o1, [husky, robotID])
         moveUR5Keyboard(robotID, wings, gotoWing)
@@ -193,7 +199,8 @@ try:
         if done:
           startTime = time.time()
           action_index += 1
-          print("Executing action: ", actions[action_index])
+          if action_index < len(actions):
+            print("Executing action: ", actions[action_index])
           done = False
 
     p.disconnect()
@@ -201,6 +208,7 @@ except Exception as e:
     print(e)
     p.disconnect()
 finally:
+  if args.logging:
     ani = animation.ArtistAnimation(fig, ims, interval=500, blit=True,
                                 repeat_delay=2000)
     ani.save('logs/action_video.mp4', fps=30, extra_args=['-vcodec', 'libx264'])
