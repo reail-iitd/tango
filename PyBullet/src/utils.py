@@ -28,19 +28,20 @@ img_arr = []; img_arr2 = []
 def initDisplay(display):
     plt.ion()
     plt.axis('off')
-    fp = []; tp = []
+    fp = []; tp = []; figs = []
     if display == "fp":
         fp = plt.imshow([[1, 2, 3] * 50] * 100, interpolation='none', animated=True)
     if display == "tp":
         tp = plt.imshow([[1, 2, 3] * 50] * 100, interpolation='none', animated=True)
     if  display == "both":
-        plt.figure(1)
+        fig1 = plt.figure(1)
         fp = plt.imshow([[1, 2, 3] * 50] * 100, interpolation='none', animated=True)
-        plt.figure(2)
+        fig2 = plt.figure(2)
         tp = plt.imshow([[1, 2, 3] * 50] * 100, interpolation='none', animated=True)
+        figs = [fig1, fig2]
     plt.axis('off')
     ax = plt.gca()
-    return ax, fp, tp
+    return ax, fp, tp, figs
 
 def initLogging():
     plt.axis('off')
@@ -260,7 +261,7 @@ def isClosed(enclosure, states, id_lookup):
             abs(d2-d2) <= 0.01)
     return closed
 
-def saveImage(lastTime, imageCount, save, display, ax, o1, fp, tp, dist, yaw, pitch, camTargetPos):
+def saveImage(figs, lastTime, imageCount, save, display, ax, o1, fp, tp, dist, yaw, pitch, camTargetPos):
     current = current_milli_time()
     if (current - lastTime) < 250:
         return lastTime, imageCount, None
@@ -290,14 +291,20 @@ def saveImage(lastTime, imageCount, save, display, ax, o1, fp, tp, dist, yaw, pi
                                       flags=p.ER_NO_SEGMENTATION_MASK)
 
     if display:
-        if display == "fp" or display == "both":
+        if display == "fp":
             rgbFP = img_arr[2]
             fp.set_data(np.reshape(rgbFP, (pixelHeight, pixelWidth, 4)) * (1. / 255.))
-            plt.savefig("logs/fp/"+str(imageCount)+".jpg") 
-        if display == "tp" or display == "both":
+            plt.savefig("logs/fp/"+str(imageCount)+".jpg",bbox_inches='tight',pad_inches=0)
+        elif display == "tp":
             rgbTP = img_arr2[2]
             tp.set_data(np.reshape(rgbTP, (pixelHeight, pixelWidth, 4)) * (1. / 255.))
-            plt.savefig("logs/tp/"+str(imageCount)+".jpg")        
+            plt.savefig("logs/tp/"+str(imageCount)+".jpg",bbox_inches='tight',pad_inches=0)
+        elif display == "both":
+            rgbFP = img_arr[2]; rgbTP = img_arr2[2]
+            fp.set_data(np.reshape(rgbFP, (pixelHeight, pixelWidth, 4)) * (1. / 255.))
+            tp.set_data(np.reshape(rgbTP, (pixelHeight, pixelWidth, 4)) * (1. / 255.))
+            figs[0].savefig("logs/fp/"+str(imageCount)+".jpg",bbox_inches='tight',pad_inches=0) 
+            figs[1].savefig("logs/tp/"+str(imageCount)+".jpg",bbox_inches='tight',pad_inches=0)
         ax.plot([0])
         plt.pause(0.00001)
     if save:
