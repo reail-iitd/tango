@@ -3,6 +3,47 @@ import math
 import operator 
 import json
 from scipy.spatial import distance
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+import time 
+import numpy as np
+current_milli_time = lambda: int(round(time.time() * 1000))
+
+camTargetPos = [0, 0, 0]
+cameraUp = [0, 0, 2]
+cameraPos = [1, 1, 5]
+roll = -30
+upAxisIndex = 2
+camDistance = 5
+pixelWidth = 352
+pixelHeight = 240
+aspect = pixelWidth / pixelHeight
+nearPlane = 0.01
+farPlane = 100
+fov = 60
+img_arr = []; img_arr2 = []
+
+def initDisplay(display):
+    plt.ion()
+    plt.axis('off')
+    fp = []; tp = []
+    if display == "fp":
+        fp = plt.imshow([[1, 2, 3] * 50] * 100, interpolation='none', animated=True)
+    if display == "tp":
+        tp = plt.imshow([[1, 2, 3] * 50] * 100, interpolation='none', animated=True)
+    if  display == "both":
+        plt.figure(1)
+        fp = plt.imshow([[1, 2, 3] * 50] * 100, interpolation='none', animated=True)
+        plt.figure(2)
+        tp = plt.imshow([[1, 2, 3] * 50] * 100, interpolation='none', animated=True)
+    plt.axis('off')
+    ax = plt.gca()
+    return ax, fp, tp
+
+def initLogging():
+    plt.axis('off')
+    fig = plt.figure(figsize = (38.42,21.6))
+    return fig
 
 names = {}
 
@@ -40,26 +81,27 @@ def moveKeyboard(x1, y1, o1, object_list):
     """
     flag = False; delz = 0
     keys = p.getKeyboardEvents()
-    if 65297 in keys:
-        x1 += math.cos(o1)*0.001
-        y1 += math.sin(o1)*0.001
-        flag= True
-    if 65298 in keys:
-        x1 -= math.cos(o1)*0.001
-        y1 -= math.sin(o1)*0.001
-        flag= True
-    if ord(b'o') in keys:
-        delz = 0.001
-        flag = True
-    if ord(b'l') in keys:
-        delz = -0.001
-        flag = True
-    if 65295 in keys:
-        o1 += 0.005
-        flag= True
-    if 65296 in keys:
-        o1 -= 0.005
-        flag= True
+    if ord(b'm') in keys:
+        if 65297 in keys:
+            x1 += math.cos(o1)*0.001
+            y1 += math.sin(o1)*0.001
+            flag= True
+        if 65298 in keys:
+            x1 -= math.cos(o1)*0.001
+            y1 -= math.sin(o1)*0.001
+            flag= True
+        if ord(b'o') in keys:
+            delz = 0.001
+            flag = True
+        if ord(b'l') in keys:
+            delz = -0.001
+            flag = True
+        if 65295 in keys:
+            o1 += 0.005
+            flag= True
+        if 65296 in keys:
+            o1 -= 0.005
+            flag= True
     q = p.getQuaternionFromEuler((0,0,o1))
     for obj_id in object_list:
         (x, y, z1) = p.getBasePositionAndOrientation(obj_id)[0]
@@ -82,6 +124,28 @@ def moveUR5Keyboard(robotID, wings, gotoWing):
     if ord(b'n') in keys:
         gotoWing(robotID, wings["down"])
     return
+
+def changeCameraOnKeyboard(camDistance, yaw, pitch, x,y):
+    """
+    Change camera zoom or angle from keyboard
+    """
+    mouseEvents = p.getMouseEvents()
+    keys = p.getKeyboardEvents()
+    if ord(b'a') in keys:
+        camDistance += 0.01
+    elif ord(b'd') in keys:
+        camDistance -= 0.01
+    if ord(b'm') not in keys:
+        if 65297 in keys:
+            pitch += 0.2
+        if 65298 in keys:
+            pitch -= 0.2
+        if 65295 in keys:
+            yaw += 0.2
+        if 65296 in keys:
+            yaw -= 0.2
+    return camDistance, yaw, pitch, 0,0
+
 
 def mentionNames(id_lookup):
     """
@@ -193,3 +257,45 @@ def isClosed(enclosure, states, id_lookup):
             abs(c2-c1) <= 0.01 and 
             abs(d2-d2) <= 0.01)
     return closed
+
+def saveImage(lastTime, imageCount, save, display, ax, o1, fp, tp, dist, yaw, pitch, camTargetPos):
+    current = current_milli_time()
+    if (current - lastTime) < 150:
+        return lastTime, imageCount, None
+    projectionMatrix = p.computeProjectionMatrixFOV(fov, aspect, nearPlane, farPlane)
+    img_arr = []; img_arr2 = []
+    if display == "fp" or display == "both":
+        viewMatrixFP = p.computeViewMatrixFromYawPitchRoll(camTargetPos, dist, -90+(o1*180/math.pi), -35,
+                                                                roll, upAxisIndex)
+        img_arr = p.getCameraImage(pixelWidth,
+                                      pixelHeight,
+                                      viewMatrixFP,
+                                      projectionMatrix,
+                                      shadow=1,
+                                      lightDirection=[1, 1, 1],
+                                      renderer=p.ER_BULLET_HARDWARE_OPENGL,
+                                      flags=p.ER_NO_SEGMENTATION_MASK)
+    if display == "tp" or display == "both":
+        viewMatrixTP = p.computeViewMatrixFromYawPitchRoll([0,0,0], 5, yaw, pitch,
+                                                            roll, upAxisIndex)
+        img_arr2 = p.getCameraImage(pixelWidth,
+                                      pixelHeight,
+                                      viewMatrixTP,
+                                      projectionMatrix,
+                                      shadow=1,
+                                      lightDirection=[1, 1, 1],
+                                      renderer=p.ER_BULLET_HARDWARE_OPENGL,
+                                      flags=p.ER_NO_SEGMENTATION_MASK)
+
+    if display:
+        if display == "fp" or display == "both":
+            rgbFP = img_arr[2]
+            fp.set_data(np.reshape(rgbFP, (pixelHeight, pixelWidth, 4)) * (1. / 255.))
+        if display == "tp" or display == "both":
+            rgbTP = img_arr2[2]
+            tp.set_data(np.reshape(rgbTP, (pixelHeight, pixelWidth, 4)) * (1. / 255.))
+        ax.plot([0])
+        plt.pause(0.00001)
+    if save:
+        return current, imageCount+1, plt.imshow(rgbTP,interpolation='none')
+    return current, imageCount+1, None

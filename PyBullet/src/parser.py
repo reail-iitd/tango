@@ -19,6 +19,11 @@ def initParser():
                             required=False,
                             default=False,
                             help='Video recording of simulation')
+    parser.add_argument('--display',
+                            type=str,
+                            required=False,
+                            default="tp",
+                            help='Display states on matplotlib animation')
     parser.add_argument('--speed',
                             type=float,
                             required=False,

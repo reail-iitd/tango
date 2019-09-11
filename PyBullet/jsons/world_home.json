@@ -92,7 +92,7 @@
 		},
 		{
 			"name": "big-tray",
-			"position": [2.5, 2, 0],
+			"position": [2.5, 1.2, 0],
 			"orientation": [],
 			"states": []
 		},
@@ -210,6 +210,39 @@
 			"position": [4.5,3.8,0],
 			"orientation": [],
 			"states": []	
+		},
+		{
+			"name": "milk",
+			"position": [2,3,0],
+			"orientation": [],
+			"states": []	
+		},
+		{
+			"name": "shelf",
+			"position": [2.9,3,0],
+			"orientation": [],
+			"states": []	
+		},
+		{
+			"name": "glue",
+			"position": [0.7,4.4,0.7],
+			"orientation": [],
+			"states": []	
+		},
+		{
+			"name": "paper",
+			"position": [-0.4,4.4,0.7],
+			"orientation": [],
+			"states": 
+			{
+				"stuck": [[-3, 3, 1], [-1.57079632679, 1.57079632679, 1.57079632679]]
+			}
+		},
+		{
+			"name": "tape",
+			"position": [0.2,4.4,0.7],
+			"orientation": [],
+			"states": {}
 		}
 	]
 }

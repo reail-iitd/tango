@@ -109,6 +109,26 @@ def convertActions(action_file):
                 ["constrain", "ramp", "floor_warehouse"]
             ])
 
+        elif high_level_action['name'] == 'stick':
+                action_list.extend([
+                ["moveTo", args[0]],
+                ["changeWing", "up"],
+                ["constrain", args[0], "ur5"],
+                ["move", [-2,3,0]],
+                ["constrain", args[0], args[1]],
+                ["changeState", args[0], "stuck"]
+            ])
+
+        elif high_level_action['name'] == 'apply':
+                action_list.extend([
+                ["moveTo", args[0]],
+                ["changeWing", "up"],
+                ["constrain", args[0], "ur5"],
+                ["moveTo", args[1]],
+                ["removeConstraint", args[0], "ur5"],
+                ["addTo", args[1], "sticky"]
+            ])
+
         action_list.append(["saveBulletState"])
 
     return action_list

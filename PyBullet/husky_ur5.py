@@ -3,6 +3,7 @@ import time
 import pdb
 import pybullet as p
 import time
+import os, shutil
 from src.initialise import *
 from src.parser import *
 from src.ur5 import *
@@ -17,6 +18,9 @@ goal_file = "jsons/goal.json"
 
 # Enclosures
 enclosures = ['fridge', 'cupboard']
+
+# Sticky objects
+sticky = []
 
 # Connect to Bullet using GUI mode
 light = p.connect(p.GUI)
@@ -67,10 +71,24 @@ print(actions)
 action_index = 0
 done = False
 waiting = False
-startTime = time.time()
+startTime = current_milli_time()
+lastTime = startTime
+
+# Init camera
+imageCount = 0
+yaw = 50
+ims = []
+dist = 2.5
+pitch = -35.0
 
 # Start video recording
-p.setRealTimeSimulation(0) 
+# p.setRealTimeSimulation(0) 
+ax = 0; fig = 0; fp = []; tp = []
+if args.display:
+      ax, fp, tp = initDisplay(args.display)
+elif args.logging:
+      fig = initLogging()
+camX, camY = 0, 0
 
 # Mention names of objects
 mentionNames(id_lookup)
@@ -82,15 +100,28 @@ world_states.append(id1)
 print(id_lookup)
 print(fixed_orientation)
 
+# Check Logging
+if args.logging:
+    for the_file in os.listdir("logs"):
+        file_path = os.path.join("logs", the_file)
+        if os.path.isfile(file_path):
+            os.unlink(file_path)
+
 # Start simulation
 try:
     while(True):
+        camTargetPos = [x1, y1, 0]
+        if args.logging or args.display:
+          lastTime, imageCount, im = saveImage(lastTime, imageCount, args.logging, args.display, ax, o1, fp, tp, dist, yaw, pitch, camTargetPos)
+          if args.logging and im:
+                ims.append([im])
         x1, y1, o1, keyboard = moveKeyboard(x1, y1, o1, [husky, robotID])
         moveUR5Keyboard(robotID, wings, gotoWing)
         z1, y1, o1, world_states = restoreOnKeyboard(world_states, x1, y1, o1)
         keepHorizontal(horizontal_list)
         keepOnGround(ground_list)
         keepOrientation(fixed_orientation)
+        dist, yaw, pitch, camX, camY = changeCameraOnKeyboard(dist, yaw, pitch, camX, camY)
 
         p.stepSimulation()  
         # print(checkGoal(goal_file, constraints, states, id_lookup))
@@ -104,7 +135,7 @@ try:
 
         if(actions[action_index][0] == "moveZ"):
           target = actions[action_index][1]
-          x1, y1, o1, done = move(x1, y1, o1, [husky, robotID], target, keyboard, speed, up=True)
+          x1, y1, o1, done = move(x1, yd1, o1, [husky, robotID], target, keyboard, speed, up=True)
 
         elif(actions[action_index][0] == "moveTo"):
           target = actions[action_index][1]
@@ -153,21 +184,15 @@ try:
           if checkUR5constrained(constraints):
               raise Exception("Gripper is not free, can not change state")
           state = actions[action_index][2]
-          done = changeState(id_lookup[actions[action_index][1]], states[actions[action_index][1]][state])
+          if state == "stuck" and not actions[action_index][1] in sticky:
+              raise Exception("Object not sticky")  
+          done = changeState(id_lookup[actions[action_index][1]], states[actions[action_index][1]][state])   
 
-        elif(actions[action_index][0] == "changeHeight"):
+        elif(actions[action_index][0] == "addTo"):
           obj = actions[action_index][1]
-          surface = actions[action_index][2]
-          op = actions[action_index][3]
-          lst = []
-          if(surface == "ground"):
-              lst = ground_list
-          elif(surface == "height"):
-              lst = height_list
-          if(op == "unfix"):
-              lst.remove(obj)
-          else:
-              lst.append(obj)           
+          if actions[action_index][2] == "sticky":
+            sticky.append(obj) 
+          done = True 
 
         elif(actions[action_index][0] == "saveBulletState"):
           id1 = p.saveState()
@@ -177,11 +202,18 @@ try:
         if done:
           startTime = time.time()
           action_index += 1
-          print("Executing action: ", actions[action_index])
+          if action_index < len(actions):
+            print("Executing action: ", actions[action_index])
           done = False
 
     p.disconnect()
 except Exception as e: 
     print(e)
     p.disconnect()
+finally:
+  if args.logging:
+    ani = animation.ArtistAnimation(fig, ims, interval=500, blit=True,
+                                repeat_delay=2000)
+    ani.save('logs/action_video.mp4', fps=30, extra_args=['-vcodec', 'libx264'])
+                    
 
