@@ -78,6 +78,8 @@ lastTime = startTime
 imageCount = 0
 yaw = 50
 ims = []
+dist = 3
+pitch = -35.0
 
 # Start video recording
 p.setRealTimeSimulation(0) 
@@ -86,7 +88,7 @@ if args.display:
       ax, image = initDisplay()
 elif args.logging:
       fig = initLogging()
-camPos = []
+camX, camY = 0, 0
 
 # Mention names of objects
 mentionNames(id_lookup)
@@ -108,17 +110,18 @@ if args.logging:
 # Start simulation
 try:
     while(True):
+        camTargetPos = [x1, y1, 0]
         if args.logging or args.display:
-          lastTime, imageCount, im = saveImage(lastTime, imageCount, yaw, args.logging, args.display, ax, image)
+          lastTime, imageCount, im = saveImage(lastTime, imageCount, args.logging, args.display, ax, image, dist, yaw, pitch, camTargetPos)
           if args.logging and im:
                 ims.append([im])
         x1, y1, o1, keyboard = moveKeyboard(x1, y1, o1, [husky, robotID])
         moveUR5Keyboard(robotID, wings, gotoWing)
         z1, y1, o1, world_states = restoreOnKeyboard(world_states, x1, y1, o1)
-        yaw = changeYaw(yaw)
         keepHorizontal(horizontal_list)
         keepOnGround(ground_list)
         keepOrientation(fixed_orientation)
+        dist, yaw, pitch, camX, camY = changeCameraOnKeyboard(dist, yaw, pitch, camX, camY)
 
         p.stepSimulation()  
         # print(checkGoal(goal_file, constraints, states, id_lookup))
@@ -132,7 +135,7 @@ try:
 
         if(actions[action_index][0] == "moveZ"):
           target = actions[action_index][1]
-          x1, y1, o1, done = move(x1, y1, o1, [husky, robotID], target, keyboard, speed, up=True)
+          x1, y1, o1, done = move(x1, yd1, o1, [husky, robotID], target, keyboard, speed, up=True)
 
         elif(actions[action_index][0] == "moveTo"):
           target = actions[action_index][1]

@@ -9,11 +9,9 @@ import time
 import numpy as np
 current_milli_time = lambda: int(round(time.time() * 1000))
 
-
 camTargetPos = [0, 0, 0]
 cameraUp = [0, 0, 2]
 cameraPos = [1, 1, 5]
-pitch = -35.0
 roll = -30
 upAxisIndex = 2
 camDistance = 5
@@ -72,26 +70,27 @@ def moveKeyboard(x1, y1, o1, object_list):
     """
     flag = False; delz = 0
     keys = p.getKeyboardEvents()
-    if 65297 in keys:
-        x1 += math.cos(o1)*0.001
-        y1 += math.sin(o1)*0.001
-        flag= True
-    if 65298 in keys:
-        x1 -= math.cos(o1)*0.001
-        y1 -= math.sin(o1)*0.001
-        flag= True
-    if ord(b'o') in keys:
-        delz = 0.001
-        flag = True
-    if ord(b'l') in keys:
-        delz = -0.001
-        flag = True
-    if 65295 in keys:
-        o1 += 0.005
-        flag= True
-    if 65296 in keys:
-        o1 -= 0.005
-        flag= True
+    if ord(b'm') in keys:
+        if 65297 in keys:
+            x1 += math.cos(o1)*0.001
+            y1 += math.sin(o1)*0.001
+            flag= True
+        if 65298 in keys:
+            x1 -= math.cos(o1)*0.001
+            y1 -= math.sin(o1)*0.001
+            flag= True
+        if ord(b'o') in keys:
+            delz = 0.001
+            flag = True
+        if ord(b'l') in keys:
+            delz = -0.001
+            flag = True
+        if 65295 in keys:
+            o1 += 0.005
+            flag= True
+        if 65296 in keys:
+            o1 -= 0.005
+            flag= True
     q = p.getQuaternionFromEuler((0,0,o1))
     for obj_id in object_list:
         (x, y, z1) = p.getBasePositionAndOrientation(obj_id)[0]
@@ -115,16 +114,27 @@ def moveUR5Keyboard(robotID, wings, gotoWing):
         gotoWing(robotID, wings["down"])
     return
 
-def changeYaw(yaw):
+def changeCameraOnKeyboard(camDistance, yaw, pitch, x,y):
     """
-    Change yaw of camera
+    Change camera zoom or angle from keyboard
     """
+    mouseEvents = p.getMouseEvents()
     keys = p.getKeyboardEvents()
     if ord(b'a') in keys:
-        return yaw - 1
-    if ord(b'd') in keys:
-        return yaw + 1
-    return yaw
+        camDistance += 0.01
+    elif ord(b'd') in keys:
+        camDistance -= 0.01
+    if ord(b'm') not in keys:
+        if 65297 in keys:
+            pitch += 0.5
+        if 65298 in keys:
+            pitch -= 0.5
+        if 65295 in keys:
+            yaw += 0.5
+        if 65296 in keys:
+            yaw -= 0.5
+    return camDistance, yaw, pitch, 0,0
+
 
 def mentionNames(id_lookup):
     """
@@ -237,11 +247,11 @@ def isClosed(enclosure, states, id_lookup):
             abs(d2-d2) <= 0.01)
     return closed
 
-def saveImage(lastTime, imageCount, yaw, save, display, ax, image):
+def saveImage(lastTime, imageCount, save, display, ax, image, dist, yaw, pitch, camTargetPos):
     current = current_milli_time()
-    if (current - lastTime) < 200:
+    if (current - lastTime) < 180:
         return lastTime, imageCount, None
-    viewMatrix = p.computeViewMatrixFromYawPitchRoll(camTargetPos, camDistance, yaw, pitch,
+    viewMatrix = p.computeViewMatrixFromYawPitchRoll(camTargetPos, dist, yaw, pitch,
                                                             roll, upAxisIndex)
     projectionMatrix = p.computeProjectionMatrixFOV(fov, aspect, nearPlane, farPlane)
     img_arr = p.getCameraImage(pixelWidth,
