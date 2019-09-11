@@ -1,6 +1,10 @@
 {
 	"actions":[
 		{
+			"name": "pickNplaceAonB",
+			"args": ["book", "shelf"]
+		},
+		{
 			"name": "changeState",
 			"args": ["cupboard", "open"]
 		},

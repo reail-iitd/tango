@@ -165,7 +165,7 @@
 			"name": "book",
 			"urdf": "models/urdf/book.urdf",
 			"constraints": ["horizontal"],
-			"tolerance": 0.5,
+			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0], [0, -0.1, 0], [0, 0.1, 0]],
 			"ur5_dist": [0.3,0,0]
@@ -338,7 +338,7 @@
             "constraints": [],
 			"tolerance": 1,
 			"constraint_link": -1,
-			"constraint_pos": [[0, 0, 0]],
+			"constraint_pos": [[0.1, -1, 1]],
 			"ur5_dist": [0.5,0,0]
 		}
 	]
