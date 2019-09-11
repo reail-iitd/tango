@@ -15,19 +15,30 @@ cameraPos = [1, 1, 5]
 roll = -30
 upAxisIndex = 2
 camDistance = 5
-pixelWidth = 1280
-pixelHeight = 720
+pixelWidth = 352
+pixelHeight = 240
 aspect = pixelWidth / pixelHeight
 nearPlane = 0.01
 farPlane = 100
 fov = 60
+img_arr = []; img_arr2 = []
 
-def initDisplay():
+def initDisplay(display):
     plt.ion()
     plt.axis('off')
-    image = plt.imshow([[1, 2, 3] * 50] * 100, interpolation='hanning', animated=True)
+    fp = []; tp = []
+    if display == "fp":
+        fp = plt.imshow([[1, 2, 3] * 50] * 100, interpolation='none', animated=True)
+    if display == "tp":
+        tp = plt.imshow([[1, 2, 3] * 50] * 100, interpolation='none', animated=True)
+    if  display == "both":
+        plt.figure(1)
+        fp = plt.imshow([[1, 2, 3] * 50] * 100, interpolation='none', animated=True)
+        plt.figure(2)
+        tp = plt.imshow([[1, 2, 3] * 50] * 100, interpolation='none', animated=True)
+    plt.axis('off')
     ax = plt.gca()
-    return ax, image
+    return ax, fp, tp
 
 def initLogging():
     plt.axis('off')
@@ -126,13 +137,13 @@ def changeCameraOnKeyboard(camDistance, yaw, pitch, x,y):
         camDistance -= 0.01
     if ord(b'm') not in keys:
         if 65297 in keys:
-            pitch += 0.5
+            pitch += 0.2
         if 65298 in keys:
-            pitch -= 0.5
+            pitch -= 0.2
         if 65295 in keys:
-            yaw += 0.5
+            yaw += 0.2
         if 65296 in keys:
-            yaw -= 0.5
+            yaw -= 0.2
     return camDistance, yaw, pitch, 0,0
 
 
@@ -247,26 +258,44 @@ def isClosed(enclosure, states, id_lookup):
             abs(d2-d2) <= 0.01)
     return closed
 
-def saveImage(lastTime, imageCount, save, display, ax, image, dist, yaw, pitch, camTargetPos):
+def saveImage(lastTime, imageCount, save, display, ax, o1, fp, tp, dist, yaw, pitch, camTargetPos):
     current = current_milli_time()
-    if (current - lastTime) < 180:
+    if (current - lastTime) < 150:
         return lastTime, imageCount, None
-    viewMatrix = p.computeViewMatrixFromYawPitchRoll(camTargetPos, dist, yaw, pitch,
-                                                            roll, upAxisIndex)
     projectionMatrix = p.computeProjectionMatrixFOV(fov, aspect, nearPlane, farPlane)
-    img_arr = p.getCameraImage(pixelWidth,
+    img_arr = []; img_arr2 = []
+    if display == "fp" or display == "both":
+        viewMatrixFP = p.computeViewMatrixFromYawPitchRoll(camTargetPos, dist, -90+(o1*180/math.pi), -35,
+                                                                roll, upAxisIndex)
+        img_arr = p.getCameraImage(pixelWidth,
                                       pixelHeight,
-                                      viewMatrix,
+                                      viewMatrixFP,
                                       projectionMatrix,
                                       shadow=1,
                                       lightDirection=[1, 1, 1],
                                       renderer=p.ER_BULLET_HARDWARE_OPENGL,
                                       flags=p.ER_NO_SEGMENTATION_MASK)
-    rgb = img_arr[2]
+    if display == "tp" or display == "both":
+        viewMatrixTP = p.computeViewMatrixFromYawPitchRoll([0,0,0], 5, yaw, pitch,
+                                                            roll, upAxisIndex)
+        img_arr2 = p.getCameraImage(pixelWidth,
+                                      pixelHeight,
+                                      viewMatrixTP,
+                                      projectionMatrix,
+                                      shadow=1,
+                                      lightDirection=[1, 1, 1],
+                                      renderer=p.ER_BULLET_HARDWARE_OPENGL,
+                                      flags=p.ER_NO_SEGMENTATION_MASK)
+
     if display:
-        image.set_data(np.reshape(rgb, (pixelHeight, pixelWidth, 4)) * (1. / 255.))
+        if display == "fp" or display == "both":
+            rgbFP = img_arr[2]
+            fp.set_data(np.reshape(rgbFP, (pixelHeight, pixelWidth, 4)) * (1. / 255.))
+        if display == "tp" or display == "both":
+            rgbTP = img_arr2[2]
+            tp.set_data(np.reshape(rgbTP, (pixelHeight, pixelWidth, 4)) * (1. / 255.))
         ax.plot([0])
-        plt.pause(0.01)
+        plt.pause(0.00001)
     if save:
-        return current, imageCount+1, plt.imshow(rgb,interpolation='hanning')
+        return current, imageCount+1, plt.imshow(rgbTP,interpolation='none')
     return current, imageCount+1, None

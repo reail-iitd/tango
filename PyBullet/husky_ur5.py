@@ -78,14 +78,14 @@ lastTime = startTime
 imageCount = 0
 yaw = 50
 ims = []
-dist = 3
+dist = 2.5
 pitch = -35.0
 
 # Start video recording
-p.setRealTimeSimulation(0) 
-ax = 0; fig = 0; image = []
+# p.setRealTimeSimulation(0) 
+ax = 0; fig = 0; fp = []; tp = []
 if args.display:
-      ax, image = initDisplay()
+      ax, fp, tp = initDisplay(args.display)
 elif args.logging:
       fig = initLogging()
 camX, camY = 0, 0
@@ -112,7 +112,7 @@ try:
     while(True):
         camTargetPos = [x1, y1, 0]
         if args.logging or args.display:
-          lastTime, imageCount, im = saveImage(lastTime, imageCount, args.logging, args.display, ax, image, dist, yaw, pitch, camTargetPos)
+          lastTime, imageCount, im = saveImage(lastTime, imageCount, args.logging, args.display, ax, o1, fp, tp, dist, yaw, pitch, camTargetPos)
           if args.logging and im:
                 ims.append([im])
         x1, y1, o1, keyboard = moveKeyboard(x1, y1, o1, [husky, robotID])
