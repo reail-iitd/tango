@@ -108,7 +108,7 @@ if args.logging:
             os.unlink(file_path)
 
 # Start simulation
-try:
+if True:
     while(True):
         camTargetPos = [x1, y1, 0]
         if args.logging or args.display:
@@ -207,13 +207,13 @@ try:
           done = False
 
     p.disconnect()
-except Exception as e: 
-    print(e)
-    p.disconnect()
-finally:
-  if args.logging:
-    ani = animation.ArtistAnimation(fig, ims, interval=500, blit=True,
-                                repeat_delay=2000)
-    ani.save('logs/action_video.mp4', fps=30, extra_args=['-vcodec', 'libx264'])
+# except Exception as e: 
+#     print(e)
+#     p.disconnect()
+# finally:
+#   if args.logging:
+#     ani = animation.ArtistAnimation(fig, ims, interval=500, blit=True,
+#                                 repeat_delay=2000)
+#     ani.save('logs/action_video.mp4', fps=30, extra_args=['-vcodec', 'libx264'])
                     
 

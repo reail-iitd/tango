@@ -167,8 +167,8 @@ def restoreOnKeyboard(world_states, x1, y1, o1):
         if len(world_states) != 0:
             id1 = world_states.pop()
             p.restoreState(stateId=id1)
-            q=p.getQuaternionFromEuler((0,0,0))
-            p.resetBasePositionAndOrientation(([0, 0, 0], q)) # Get robot to home when undo
+            # q=p.getQuaternionFromEuler((0,0,0))
+            # p.resetBasePositionAndOrientation(([0, 0, 0], q)) # Get robot to home when undo
         return 0, 0, 0, world_states
     return x1, y1, o1, world_states
 
