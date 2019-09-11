@@ -3,7 +3,30 @@ import math
 import operator 
 import json
 from scipy.spatial import distance
+import matplotlib.pyplot as plt
+import time 
+import numpy as np
+current_milli_time = lambda: int(round(time.time() * 1000))
 
+plt.ion()
+plt.axis('off')
+ax = plt.gca()
+
+camTargetPos = [0, 0, 2]
+cameraUp = [0, 0, 2]
+cameraPos = [1, 1, 20]
+pitch = -20.0
+roll = -30
+upAxisIndex = 2
+camDistance = 4
+pixelWidth = 1920
+pixelHeight = 1080
+nearPlane = 0.01
+farPlane = 100
+fov = 60
+yaw = 40
+img = [[1, 2, 3] * 50] * 100  #np.random.rand(200, 320)
+image = plt.imshow(img, interpolation='none', animated=True, label="blah")
 names = {}
 
 def keepHorizontal(object_list):
@@ -82,6 +105,17 @@ def moveUR5Keyboard(robotID, wings, gotoWing):
     if ord(b'n') in keys:
         gotoWing(robotID, wings["down"])
     return
+
+def changeYaw(yaw):
+    """
+    Change yaw of camera
+    """
+    keys = p.getKeyboardEvents()
+    if ord(b'a') in keys:
+        return yaw - 1
+    if ord(b'd') in keys:
+        return yaw + 1
+    return yaw
 
 def mentionNames(id_lookup):
     """
@@ -193,3 +227,30 @@ def isClosed(enclosure, states, id_lookup):
             abs(c2-c1) <= 0.01 and 
             abs(d2-d2) <= 0.01)
     return closed
+
+def saveImage(lastTime, imageCount, yaw):
+    current = current_milli_time()
+    if (current - lastTime) < 500:
+        return lastTime, imageCount
+    viewMatrix = p.computeViewMatrixFromYawPitchRoll(camTargetPos, camDistance, yaw, pitch,
+                                                            roll, upAxisIndex)
+    aspect = pixelWidth / pixelHeight
+    projectionMatrix = p.computeProjectionMatrixFOV(fov, aspect, nearPlane, farPlane)
+    img_arr = p.getCameraImage(pixelWidth,
+                                      pixelHeight,
+                                      viewMatrix,
+                                      projectionMatrix,
+                                      shadow=1,
+                                      lightDirection=[1, 1, 1],
+                                      renderer=p.ER_BULLET_HARDWARE_OPENGL)
+    w = img_arr[0]  #width of the image, in pixels
+    h = img_arr[1]  #height of the image, in pixels
+    rgb = img_arr[2]  #color data RGB
+    dep = img_arr[3]  #depth data
+    np_img_arr = np.reshape(rgb, (h, w, 4))
+    np_img_arr = np_img_arr * (1. / 255.)
+
+    image.set_data(np_img_arr)
+    ax.plot([0])
+    plt.savefig("logs/" + str(imageCount) + ".png")
+    return current, imageCount+1

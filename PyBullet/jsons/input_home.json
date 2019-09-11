@@ -1,6 +1,14 @@
 {
 	"actions":[
 		{
+			"name": "apply",
+			"args": ["tape", "paper"]
+		},
+		{
+			"name": "stick",
+			"args": ["paper", "walls"]
+		},
+		{
 			"name": "pickNplaceAonB",
 			"args": ["book", "shelf"]
 		},

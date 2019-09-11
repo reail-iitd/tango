@@ -3,6 +3,7 @@ import time
 import pdb
 import pybullet as p
 import time
+import os, shutil
 from src.initialise import *
 from src.parser import *
 from src.ur5 import *
@@ -17,6 +18,9 @@ goal_file = "jsons/goal.json"
 
 # Enclosures
 enclosures = ['fridge', 'cupboard']
+
+# Sticky objects
+sticky = []
 
 # Connect to Bullet using GUI mode
 light = p.connect(p.GUI)
@@ -67,7 +71,12 @@ print(actions)
 action_index = 0
 done = False
 waiting = False
-startTime = time.time()
+startTime = current_milli_time()
+lastTime = startTime
+
+# Init camera
+imageCount = 0
+yaw = 0
 
 # Start video recording
 p.setRealTimeSimulation(0) 
@@ -82,12 +91,23 @@ world_states.append(id1)
 print(id_lookup)
 print(fixed_orientation)
 
+# Check Logging
+if args.logging:
+    for the_file in os.listdir("logs"):
+        file_path = os.path.join("logs", the_file)
+        if os.path.isfile(file_path):
+            os.unlink(file_path)
+
 # Start simulation
-try:
+# try:
+if True:
     while(True):
+        if args.logging:
+          lastTime, imageCount = saveImage(lastTime, imageCount, yaw)
         x1, y1, o1, keyboard = moveKeyboard(x1, y1, o1, [husky, robotID])
         moveUR5Keyboard(robotID, wings, gotoWing)
         z1, y1, o1, world_states = restoreOnKeyboard(world_states, x1, y1, o1)
+        yaw = changeYaw(yaw)
         keepHorizontal(horizontal_list)
         keepOnGround(ground_list)
         keepOrientation(fixed_orientation)
@@ -153,21 +173,15 @@ try:
           if checkUR5constrained(constraints):
               raise Exception("Gripper is not free, can not change state")
           state = actions[action_index][2]
-          done = changeState(id_lookup[actions[action_index][1]], states[actions[action_index][1]][state])
+          if state == "stuck" and not actions[action_index][1] in sticky:
+              raise Exception("Object not sticky")  
+          done = changeState(id_lookup[actions[action_index][1]], states[actions[action_index][1]][state])   
 
-        elif(actions[action_index][0] == "changeHeight"):
+        elif(actions[action_index][0] == "addTo"):
           obj = actions[action_index][1]
-          surface = actions[action_index][2]
-          op = actions[action_index][3]
-          lst = []
-          if(surface == "ground"):
-              lst = ground_list
-          elif(surface == "height"):
-              lst = height_list
-          if(op == "unfix"):
-              lst.remove(obj)
-          else:
-              lst.append(obj)           
+          if actions[action_index][2] == "sticky":
+            sticky.append(obj) 
+          done = True 
 
         elif(actions[action_index][0] == "saveBulletState"):
           id1 = p.saveState()
@@ -181,7 +195,7 @@ try:
           done = False
 
     p.disconnect()
-except Exception as e: 
-    print(e)
-    p.disconnect()
+# except Exception as e: 
+#     print(e)
+#     p.disconnect()
 
