@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<!-- jQuery library -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<!-- Latest compiled JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+	<title>First webpage</title>
+</head>
+<body>
+	<div class="row">
+	  <div class="col-sm-6" style="padding-left: 2em;">
+	  		<h2> Task Description (Goal to achieve) </h2>
+	  		<p> This is an example instruction. This can be arbitraritly long because we may want to specify a lot of things. This also is not required to be of a pre-specified size. </p>
+	  		<h2>Instruction Input</h2>
+	  		<!-- <form> -->
+	  			<!-- <div class="form-group"> -->
+  					<select class="form-control" id="predicate_dropdown">
+  						<option>Move</option>
+  						<option>Grasp</option>
+  					</select>
+					<label for="predicate"> ( </label>
+	  			<!-- </div> -->
+	  			<div id = "arguments">
+		  			<!-- <div class="form-group" style="padding-left: 15em;">
+		  					<label><h6>argument1 = </h6></label>
+		  					<select >
+	  						<option>Move</option>
+	  						<option>Grasp</option>
+	  						</select>
+		  			</div> -->
+		  		</div>
+	  			)
+	  		<!-- </form> -->
+	  		<!-- <div class = "row">
+		  		<div class="col-sm-3">
+			  		<div class="dropdown">
+					  <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Dropdown Example
+					  <span class="caret"></span></button>
+					  <ul class="dropdown-menu">
+					    <li><a href="#">HTML</a></li>
+					    <li><a href="#">CSS</a></li>
+					    <li><a href="#">JavaScript</a></li>
+					  </ul>
+					</div>
+				</div>
+				<div class="col-sm-3">
+					(
+				</div>
+			</div>
+			<div class = "row">
+				<div class="col-sm-3">
+					argument1 =
+				</div>
+				<div class="col-sm-3">
+			  		<div class="dropdown">
+					  <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Dropdown Example
+					  <span class="caret"></span></button>
+					  <ul class="dropdown-menu">
+					    <li><a href="#">HTML</a></li>
+					    <li><a href="#">CSS</a></li>
+					    <li><a href="#">JavaScript</a></li>
+					  </ul>
+					</div>
+				</div>
+			</div> -->
+	  </div>
+	  <div class="col-sm-6">
+	  	<img src="/Users/rajas/Desktop/BTP/Robot-task-planning/flask-video-streaming/1.jpg" style="width: 100%;">
+	  </div>
+	</div>
+	<script>
+		$("#predicate_dropdown").change(function(){
+		    var text = $(this).val();
+
+		    $.ajax({
+		      url: "/arguments",
+		      type: "get",
+		      data: {predicate: text},
+		      success: function(response) {
+		        $("#arguments").html(response);
+		      },
+		      error: function(xhr) {
+		        //Do Something to handle error
+		      }
+		    });
+		});
+	</script>
+</body>
+</html>

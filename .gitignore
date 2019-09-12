@@ -1,6 +1,8 @@
 ## Support Code
 GUI/vizForDSE/*
 **.png
+*__pycache*
+venv/
 
 ## Mac Files
 *.DS_Store
