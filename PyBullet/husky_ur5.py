@@ -83,9 +83,9 @@ pitch = -35.0
 
 # Start video recording
 # p.setRealTimeSimulation(0) 
-ax = 0; fig = 0; fp = []; tp = []
+ax = 0; fig = 0; fp = []; tp = []; figs = []
 if args.display:
-      ax, fp, tp = initDisplay(args.display)
+      ax, fp, tp, figs = initDisplay(args.display)
 elif args.logging:
       fig = initLogging()
 camX, camY = 0, 0
@@ -102,17 +102,19 @@ print(fixed_orientation)
 
 # Check Logging
 if args.logging:
-    for the_file in os.listdir("logs"):
-        file_path = os.path.join("logs", the_file)
-        if os.path.isfile(file_path):
-            os.unlink(file_path)
+    deleteAll("logs")
+  
+if args.display:
+    deleteAll("logs\\fp")
+    deleteAll("logs\\tp")
+
 
 # Start simulation
-try:
+if True:
     while(True):
         camTargetPos = [x1, y1, 0]
         if args.logging or args.display:
-          lastTime, imageCount, im = saveImage(lastTime, imageCount, args.logging, args.display, ax, o1, fp, tp, dist, yaw, pitch, camTargetPos)
+          lastTime, imageCount, im = saveImage(figs, lastTime, imageCount, args.logging, args.display, ax, o1, fp, tp, dist, yaw, pitch, camTargetPos)
           if args.logging and im:
                 ims.append([im])
         x1, y1, o1, keyboard = moveKeyboard(x1, y1, o1, [husky, robotID])
@@ -207,13 +209,13 @@ try:
           done = False
 
     p.disconnect()
-except Exception as e: 
-    print(e)
-    p.disconnect()
-finally:
-  if args.logging:
-    ani = animation.ArtistAnimation(fig, ims, interval=500, blit=True,
-                                repeat_delay=2000)
-    ani.save('logs/action_video.mp4', fps=30, extra_args=['-vcodec', 'libx264'])
+# except Exception as e: 
+#     print(e)
+#     p.disconnect()
+# finally:
+#   if args.logging:
+#     ani = animation.ArtistAnimation(fig, ims, interval=500, blit=True,
+#                                 repeat_delay=2000)
+#     ani.save('logs/action_video.mp4', fps=30, extra_args=['-vcodec', 'libx264'])
                     
 

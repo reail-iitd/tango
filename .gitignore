@@ -3,6 +3,7 @@ GUI/vizForDSE/*
 **.png
 *__pycache*
 venv/
+**.jpg
 
 ## Mac Files
 *.DS_Store
