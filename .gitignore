@@ -4,6 +4,7 @@ GUI/vizForDSE/*
 *__pycache*
 venv/
 **.jpg
+flask-video-streaming/
 
 ## Mac Files
 *.DS_Store
