@@ -103,6 +103,15 @@
 			"states": []
 		},
 		{
+			"name": "paper",
+			"position": [-1.4,-4.4,0.7],
+			"orientation": [],
+			"states": 
+			{
+				"stuck": [[-3, 3, 1], [-1.57079632679, 1.57079632679, 1.57079632679]]
+			}
+		},
+		{
 			"name": "cube_gray",
 			"position": [-0.5,4.2,0.7],
 			"orientation": [],
@@ -213,7 +222,7 @@
 		},
 		{
 			"name": "milk",
-			"position": [2,3,0],
+			"position": [3,2.5,1],
 			"orientation": [],
 			"states": []	
 		},
@@ -228,15 +237,6 @@
 			"position": [0.7,4.4,0.7],
 			"orientation": [],
 			"states": []	
-		},
-		{
-			"name": "paper",
-			"position": [-0.4,4.4,0.7],
-			"orientation": [],
-			"states": 
-			{
-				"stuck": [[-3, 3, 1], [-1.57079632679, 1.57079632679, 1.57079632679]]
-			}
 		},
 		{
 			"name": "tape",

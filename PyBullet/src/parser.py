@@ -22,7 +22,7 @@ def initParser():
     parser.add_argument('--display',
                             type=str,
                             required=False,
-                            default="tp",
+                            default=None,
                             help='Display states on matplotlib animation')
     parser.add_argument('--speed',
                             type=float,

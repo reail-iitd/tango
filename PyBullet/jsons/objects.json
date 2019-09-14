@@ -67,7 +67,7 @@
 			"name": "cupboard",
 			"urdf": "models/urdf/cupboard/cupboard.urdf",
 			"constraints": [],
-			"tolerance": 1,
+			"tolerance": 1.2,
 			"constraint_link": -1,
 			"constraint_pos": [[0, -0.4, 0.5], [0.5, -0.4, 0.5], [-0.5, -0.4, 0.5], [0, -0.4, 0.8], [0, -0.4, 0.2]],
 			"ur5_dist": [0,0,0]
@@ -201,7 +201,7 @@
             "name": "tray",
             "urdf": "models/urdf/tray.urdf",
             "constraints": ["horizontal"],
-			"tolerance": 0.9,
+			"tolerance": 1.1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0], [0, 0.1, 0], [0, -0.1, 0]],
 			"ur5_dist": [0.4,0,0]
