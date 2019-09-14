@@ -1,7 +1,10 @@
 ## Support Code
 GUI/vizForDSE/*
 **.png
+*__pycache*
+venv/
 **.jpg
+flask-video-streaming/
 
 ## Mac Files
 *.DS_Store
