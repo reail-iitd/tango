@@ -65,15 +65,6 @@ constraint = 0
 # List of constraints with target object and constraint id
 constraints = dict()
 
-# List of low level actions
-actions = convertActions(args.input)
-print(actions)
-action_index = 0
-done = False
-waiting = False
-startTime = current_milli_time()
-lastTime = startTime
-
 # Init camera
 imageCount = 0
 yaw = 50
@@ -108,114 +99,124 @@ if args.display:
     deleteAll("logs\\fp")
     deleteAll("logs\\tp")
 
+def execute(actions):
+  global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount
+  # List of low level actions
+  actions = convertActions(actions)
+  print(actions)
+  action_index = 0
+  done = False
+  waiting = False
+  startTime = current_milli_time()
+  lastTime = startTime
 
-# Start simulation
-if True:
-    while(True):
-        camTargetPos = [x1, y1, 0]
-        if args.logging or args.display:
-          lastTime, imageCount, im = saveImage(figs, lastTime, imageCount, args.logging, args.display, ax, o1, fp, tp, dist, yaw, pitch, camTargetPos)
-          if args.logging and im:
-                ims.append([im])
-        x1, y1, o1, keyboard = moveKeyboard(x1, y1, o1, [husky, robotID])
-        moveUR5Keyboard(robotID, wings, gotoWing)
-        z1, y1, o1, world_states = restoreOnKeyboard(world_states, x1, y1, o1)
-        keepHorizontal(horizontal_list)
-        keepOnGround(ground_list)
-        keepOrientation(fixed_orientation)
-        dist, yaw, pitch, camX, camY = changeCameraOnKeyboard(dist, yaw, pitch, camX, camY)
+  # Start simulation
+  if True:
+      while(True):
+          camTargetPos = [x1, y1, 0]
+          if args.logging or args.display:
+            lastTime, imageCount, im = saveImage(figs, lastTime, imageCount, args.logging, args.display, ax, o1, fp, tp, dist, yaw, pitch, camTargetPos)
+            if args.logging and im:
+                  ims.append([im])
+          x1, y1, o1, keyboard = moveKeyboard(x1, y1, o1, [husky, robotID])
+          moveUR5Keyboard(robotID, wings, gotoWing)
+          z1, y1, o1, world_states = restoreOnKeyboard(world_states, x1, y1, o1)
+          keepHorizontal(horizontal_list)
+          keepOnGround(ground_list)
+          keepOrientation(fixed_orientation)
+          dist, yaw, pitch, camX, camY = changeCameraOnKeyboard(dist, yaw, pitch, camX, camY)
 
-        p.stepSimulation()  
-        # print(checkGoal(goal_file, constraints, states, id_lookup))
+          p.stepSimulation()  
+          # print(checkGoal(goal_file, constraints, states, id_lookup))
 
-        if action_index >= len(actions):
-          continue
+          if action_index >= len(actions):
+            continue
 
-        if(actions[action_index][0] == "move"):
-          target = actions[action_index][1]
-          x1, y1, o1, done = move(x1, y1, o1, [husky, robotID], target, keyboard, speed)
+          if(actions[action_index][0] == "move"):
+            target = actions[action_index][1]
+            x1, y1, o1, done = move(x1, y1, o1, [husky, robotID], target, keyboard, speed)
 
-        if(actions[action_index][0] == "moveZ"):
-          target = actions[action_index][1]
-          x1, y1, o1, done = move(x1, yd1, o1, [husky, robotID], target, keyboard, speed, up=True)
+          if(actions[action_index][0] == "moveZ"):
+            target = actions[action_index][1]
+            x1, y1, o1, done = move(x1, yd1, o1, [husky, robotID], target, keyboard, speed, up=True)
 
-        elif(actions[action_index][0] == "moveTo"):
-          target = actions[action_index][1]
-          x1, y1, o1, done = moveTo(x1, y1, o1, [husky, robotID], id_lookup[target], 
-                                  tolerances[target], 
-                                  keyboard,
-                                  speed)
+          elif(actions[action_index][0] == "moveTo"):
+            target = actions[action_index][1]
+            x1, y1, o1, done = moveTo(x1, y1, o1, [husky, robotID], id_lookup[target], 
+                                    tolerances[target], 
+                                    keyboard,
+                                    speed)
 
-        elif(actions[action_index][0] == "changeWing"):
-          if time.time()-startTime > 1:
+          elif(actions[action_index][0] == "changeWing"):
+            if time.time()-startTime > 1:
+              done = True
+            pose = actions[action_index][1]
+            gotoWing(robotID, wings[pose])
+
+          elif(actions[action_index][0] == "constrain"):
+            if time.time()-startTime > 1:
+              done = True; waiting = False
+            if not waiting and not done:
+              if checkUR5constrained(constraints) and actions[action_index][2] == 'ur5':
+                  raise Exception("Gripper is not free, can not hold object")
+              if (checkInside(constraints, states, id_lookup, actions[action_index][1], enclosures) 
+                  and actions[action_index][2] == 'ur5'):
+                  raise Exception("Object is inside an enclosure, can not grasp it.")
+              if (actions[action_index][2] in enclosures
+                  and isClosed(actions[action_index][2], states, id_lookup)):
+                  raise Exception("Enclosure is closed, can not place object inside")
+              cid = constrain(actions[action_index][1], 
+                              actions[action_index][2], 
+                              cons_link_lookup, 
+                              cons_pos_lookup,
+                              id_lookup,
+                              constraints,
+                              ur5_dist)
+              constraints[actions[action_index][1]] = (actions[action_index][2], cid)
+              waiting = True
+
+          elif(actions[action_index][0] == "removeConstraint"):
+            if time.time()-startTime > 1:
+              done = True; waiting = False
+            if not waiting and not done:
+              removeConstraint(constraints, actions[action_index][1], actions[action_index][2])
+              del constraints[actions[action_index][1]]
+              waiting = True
+
+          elif(actions[action_index][0] == "changeState"):
+            if checkUR5constrained(constraints):
+                raise Exception("Gripper is not free, can not change state")
+            state = actions[action_index][2]
+            if state == "stuck" and not actions[action_index][1] in sticky:
+                raise Exception("Object not sticky")  
+            done = changeState(id_lookup[actions[action_index][1]], states[actions[action_index][1]][state])   
+
+          elif(actions[action_index][0] == "addTo"):
+            obj = actions[action_index][1]
+            if actions[action_index][2] == "sticky":
+              sticky.append(obj) 
+            done = True 
+
+          elif(actions[action_index][0] == "saveBulletState"):
+            id1 = p.saveState()
+            world_states.append(id1)
             done = True
-          pose = actions[action_index][1]
-          gotoWing(robotID, wings[pose])
 
-        elif(actions[action_index][0] == "constrain"):
-          if time.time()-startTime > 1:
-            done = True; waiting = False
-          if not waiting and not done:
-            if checkUR5constrained(constraints) and actions[action_index][2] == 'ur5':
-                raise Exception("Gripper is not free, can not hold object")
-            if (checkInside(constraints, states, id_lookup, actions[action_index][1], enclosures) 
-                and actions[action_index][2] == 'ur5'):
-                raise Exception("Object is inside an enclosure, can not grasp it.")
-            if (actions[action_index][2] in enclosures
-                and isClosed(actions[action_index][2], states, id_lookup)):
-                raise Exception("Enclosure is closed, can not place object inside")
-            cid = constrain(actions[action_index][1], 
-                            actions[action_index][2], 
-                            cons_link_lookup, 
-                            cons_pos_lookup,
-                            id_lookup,
-                            constraints,
-                            ur5_dist)
-            constraints[actions[action_index][1]] = (actions[action_index][2], cid)
-            waiting = True
+          if done:
+            startTime = time.time()
+            action_index += 1
+            if action_index < len(actions):
+              print("Executing action: ", actions[action_index])
+            done = False
 
-        elif(actions[action_index][0] == "removeConstraint"):
-          if time.time()-startTime > 1:
-            done = True; waiting = False
-          if not waiting and not done:
-            removeConstraint(constraints, actions[action_index][1], actions[action_index][2])
-            del constraints[actions[action_index][1]]
-            waiting = True
-
-        elif(actions[action_index][0] == "changeState"):
-          if checkUR5constrained(constraints):
-              raise Exception("Gripper is not free, can not change state")
-          state = actions[action_index][2]
-          if state == "stuck" and not actions[action_index][1] in sticky:
-              raise Exception("Object not sticky")  
-          done = changeState(id_lookup[actions[action_index][1]], states[actions[action_index][1]][state])   
-
-        elif(actions[action_index][0] == "addTo"):
-          obj = actions[action_index][1]
-          if actions[action_index][2] == "sticky":
-            sticky.append(obj) 
-          done = True 
-
-        elif(actions[action_index][0] == "saveBulletState"):
-          id1 = p.saveState()
-          world_states.append(id1)
-          done = True
-
-        if done:
-          startTime = time.time()
-          action_index += 1
-          if action_index < len(actions):
-            print("Executing action: ", actions[action_index])
-          done = False
-
-    p.disconnect()
-# except Exception as e: 
-#     print(e)
-#     p.disconnect()
-# finally:
-#   if args.logging:
-#     ani = animation.ArtistAnimation(fig, ims, interval=500, blit=True,
-#                                 repeat_delay=2000)
-#     ani.save('logs/action_video.mp4', fps=30, extra_args=['-vcodec', 'libx264'])
-                    
+      p.disconnect()
+  # except Exception as e: 
+  #     print(e)
+  #     p.disconnect()
+  # finally:
+  #   if args.logging:
+  #     ani = animation.ArtistAnimation(fig, ims, interval=500, blit=True,
+  #                                 repeat_delay=2000)
+  #     ani.save('logs/action_video.mp4', fps=30, extra_args=['-vcodec', 'libx264'])
+                      
 

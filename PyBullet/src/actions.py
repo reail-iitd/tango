@@ -1,9 +1,6 @@
 import json
 
-def convertActions(action_file):
-    inp = None
-    with open(action_file, 'r') as handle:
-        inp = json.load(handle)
+def convertActions(inp):
     action_list = []
 
     for high_level_action in inp['actions']:
@@ -132,3 +129,9 @@ def convertActions(action_file):
         action_list.append(["saveBulletState"])
 
     return action_list
+
+def convertActionsFromFile(action_file):
+    inp = None
+    with open(action_file, 'r') as handle:
+        inp = json.load(handle)
+    return(inp)
