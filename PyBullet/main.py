@@ -1,4 +1,13 @@
 from husky_ur5 import *
 from src.actions import *
 
-execute(convertActionsFromFile(args.input))
+def executeAction():
+    execute(convertActionsFromFile(args.input))
+
+while True:
+    # take input from user
+    inp = args.input
+    process = Thread(target=executeAction, args=[inp])
+    process.start()
+    # while images in folder, update images
+    process.join()
