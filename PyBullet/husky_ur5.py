@@ -130,7 +130,7 @@ def execute(actions):
           # print(checkGoal(goal_file, constraints, states, id_lookup))
 
           if action_index >= len(actions):
-            continue
+            break
 
           if(actions[action_index][0] == "move"):
             target = actions[action_index][1]
