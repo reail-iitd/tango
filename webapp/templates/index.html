@@ -53,6 +53,7 @@
 		$("#execute_move").click(function(){
 			var i = 0;
 			var data_for_arguments = {};
+			data_for_arguments["predicate"] = $("#predicate_dropdown").val();
 			while (true){
 				var arg = "arg" + i;
 				var text = $("#"+arg).val();

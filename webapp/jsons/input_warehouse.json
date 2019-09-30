@@ -1,0 +1,28 @@
+{
+	"actions":[
+		{
+			"name": "placeRamp",
+			"args": []
+		},
+		{
+			"name": "pick",
+			"args": ["box"]
+		},
+		{
+			"name": "moveUp",
+			"args": []
+		},
+		{
+			"name": "drop",
+			"args": ["box"]
+		},
+		{
+			"name": "moveDown",
+			"args": []
+		},
+		{
+			"name": "pick",
+			"args": ["box"]
+		}
+	]
+}

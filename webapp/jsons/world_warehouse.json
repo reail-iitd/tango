@@ -1,0 +1,112 @@
+{
+	"entities":[
+		{
+			"name": "floor_warehouse",
+			"position": [0,0,-0.1],
+			"orientation": [],
+			"states": {}
+		},
+		{
+			"name": "ramp",
+			"position": [1,1,0],
+			"orientation": [],
+			"states": {}
+		},
+		{
+			"name": "husky",
+			"position": [0,0,0.1],
+			"orientation": [0,0,0,0.1],
+			"states": {}
+		},
+		{
+			"name": "ur5",
+			"position": [0,0,0.320208],
+			"orientation": [],
+			"states": {}
+		},
+		{
+			"name": "table",
+			"position": [2, 4.5, 0],
+			"orientation": [],
+			"states": {}
+		},
+		{
+			"name": "table2",
+			"position": [-1, -4.5, 0],
+			"orientation": [],
+			"states": []
+		},
+		{
+			"name": "big-tray",
+			"position": [2.5, -2, 0],
+			"orientation": [],
+			"states": []
+		},
+		{
+			"name": "cube_gray",
+			"position": [1.5,4.2,0.7],
+			"orientation": [],
+			"states": []	
+		},
+		{
+			"name": "cube_green",
+			"position": [1.5,4.3,0.7],
+			"orientation": [],
+			"states": []	
+		},
+		{
+			"name": "cube_red",
+			"position": [1.5,4.4,0.7],
+			"orientation": [],
+			"states": []	
+		},
+		{
+			"name": "tray",
+			"position": [2.5, 4.5, 0.7],
+			"orientation": [],
+			"states": []	
+		},
+		{
+			"name": "tray2",
+			"position": [-0.5, -4.5, 0.7],
+			"orientation": [],
+			"states": []	
+		},
+		{
+			"name": "bottle_blue",
+			"position": [1,-4,0],
+			"orientation": [],
+			"states": []	
+		},
+		{
+			"name": "bottle_gray",
+			"position": [1.2,-4,0],
+			"orientation": [],
+			"states": []	
+		},
+		{
+			"name": "bottle_red",
+			"position": [1.4,-4,0],
+			"orientation": [],
+			"states": []	
+		},
+		{
+			"name": "box",
+			"position": [-3,-2,0],
+			"orientation": [],
+			"states": []	
+		},
+		{
+			"name": "ball",
+			"position": [-3,-3,0.2],
+			"orientation": [],
+			"states": []
+		},
+		{
+			"name": "stick",
+			"position": [3,0,0.2],
+			"orientation": [],
+			"states": []	
+		}
+	]
+}

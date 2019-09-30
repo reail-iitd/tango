@@ -1,18 +1,56 @@
 #!/usr/bin/env python3
 from importlib import import_module
 import os
+import json
 from flask import Flask, render_template, Response, request
 from camera import Camera
 from base_camera import BaseCamera
+import multiprocessing as mp
+import time
+
+q = mp.Queue()
 
 app = Flask(__name__)
 
 dict_of_predicates = {
-		"Move":{"argument1" : "dropdown-objects", "argument2": "dropdown-objects", "argument3":"dropdown-objects"},
-		"Grasp": {"argument1" : "dropdown-objects", "argument2": "dropdown-places"},
-		"Pick": {"argument1": "dropdown-objects"}
+		"Move object to destination":{"source-object" : "dropdown-objects", "destination (near object)": "dropdown-objects"},
+		"Push object to destination": {"source-object" : "dropdown-objects", "destination-place": "dropdown-places"},
+		"Pick source and place on destination": {"source-object": "dropdown-objects", "destination-place": "dropdown-objects"},
+        "Move robot to object" : {"destination-object": "dropdown-objects"}
 	}
-world_objects = ["apple", "banana", "table"]
+
+dict_predicate_to_action = {
+    "Move object to destination": "moveAtoB",
+    "Push object to destination": "pushTo",
+    "Pick source and place on destination": "pickNplaceAonB",
+    "Move robot to object": "moveTo"
+}
+
+d = json.load(open("../PyBullet/jsons/world_home.json"))["entities"]
+world_objects = []
+renamed_objects = {}
+for obj in d:
+    if (("ignore" in obj) and (obj["ignore"] == "true")):
+        continue
+    if ("rename" in obj):
+        world_objects.append(obj["rename"])
+        renamed_objects[obj["rename"]] = obj["name"]
+    else:
+        world_objects.append(obj["name"])
+
+def convertActionsFromFile(action_file):
+    inp = None
+    with open(action_file, 'r') as handle:
+        inp = json.load(handle)
+    return(inp)
+
+def simulator(q):
+    import husky_ur5
+    import src.actions
+    print ("Waiting")
+    while True:
+        inp = q.get()
+        husky_ur5.execute(inp)
 
 @app.route('/')
 def index():
@@ -22,7 +60,7 @@ def index():
 def return_arguments_for_predicate():
 	text = request.args.get('predicate')
 	return render_template("arguments.html", arguments_list = list(enumerate(dict_of_predicates[text].items())), world_objects = world_objects)
-
+    
 def gen(camera):
     """Video streaming generator function."""
     while True:
@@ -38,8 +76,35 @@ def get_simulator_state():
 
 @app.route("/execute_move", methods = ["POST"])
 def execute_move():
-	print (request.form["arg0"])
-	return ""
+    print (request.form)
+    predicate = request.form["predicate"]
+    l = []
+    i = 0
+    while True:
+        if ("arg" + str(i) in request.form):
+            front_end_object = request.form["arg" + str(i)]
+            if front_end_object in renamed_objects:
+                l.append(renamed_objects[front_end_object])
+            else:
+                l.append(front_end_object)
+            i += 1
+        else:
+            break
+    d = {
+        "actions": [
+        {
+            "name": dict_predicate_to_action[predicate],
+            "args": l
+        }
+        ]
+    }
+    print (d)
+    d = {'actions': [{'name': 'pickNplaceAonB', 'args': ['book', 'box']}]}
+    q.put(d)
+    return ""
 
 if __name__ == '__main__':
+    inp = "jsons/input_home.json"
+    p = mp.Process(target=simulator, args=(q,))
+    p.start()
     app.run(host='0.0.0.0', threaded=True)
