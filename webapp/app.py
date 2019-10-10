@@ -92,15 +92,15 @@ def execute_move():
         else:
             break
     d = {
-        "actions": [
+        'actions': [
         {
-            "name": dict_predicate_to_action[predicate],
-            "args": l
+            'name': str(dict_predicate_to_action[predicate]),
+            'args': list(l)
         }
         ]
     }
     print (d)
-    d = {'actions': [{'name': 'pickNplaceAonB', 'args': ['book', 'box']}]}
+    # d = {'actions': [{'name': 'pickNplaceAonB', 'args': ['book', 'box']}]}
     q.put(d)
     return ""
 

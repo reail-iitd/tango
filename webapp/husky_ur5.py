@@ -125,7 +125,7 @@ def execute(actions):
       while(True):
           counter += 1
           camTargetPos = [x1, y1, 0]
-          if (args.logging or args.display) and (counter % 10 == 0):
+          if (args.logging or args.display) and (counter % 30 == 0):
             start_image = time.time()
             lastTime, imageCount, im = saveImage(figs, lastTime, imageCount, args.logging, args.display, ax, o1, fp, tp, dist, yaw, pitch, camTargetPos)
             image_save_time = time.time() - start_image
