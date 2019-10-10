@@ -99,6 +99,11 @@ if args.display:
     deleteAll("logs/fp")
     deleteAll("logs/tp")
 
+def firstImage():
+  global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount
+  camTargetPos = [x1, y1, 0]
+  lastTime, imageCount, im = saveImage(figs, -250, imageCount, args.logging, args.display, ax, o1, fp, tp, dist, yaw, pitch, camTargetPos)
+
 def execute(actions):
   # if args.display:
   # deleteAll("logs/fp")
@@ -115,10 +120,16 @@ def execute(actions):
 
   # Start simulation
   if True:
+      start_here = time.time()
+      counter = 0
       while(True):
+          counter += 1
           camTargetPos = [x1, y1, 0]
-          if args.logging or args.display:
+          if (args.logging or args.display) and (counter % 10 == 0):
+            start_image = time.time()
             lastTime, imageCount, im = saveImage(figs, lastTime, imageCount, args.logging, args.display, ax, o1, fp, tp, dist, yaw, pitch, camTargetPos)
+            image_save_time = time.time() - start_image
+            # print ("Image save time", image_save_time)
             if args.logging and im:
                   ims.append([im])
           x1, y1, o1, keyboard = moveKeyboard(x1, y1, o1, [husky, robotID])
@@ -129,10 +140,13 @@ def execute(actions):
           keepOrientation(fixed_orientation)
           dist, yaw, pitch, camX, camY = changeCameraOnKeyboard(dist, yaw, pitch, camX, camY)
 
-          p.stepSimulation()  
+          start = time.time()
+          p.stepSimulation() 
+          # print ("Step simulation time ",time.time() - start) 
           # print(checkGoal(goal_file, constraints, states, id_lookup))
 
           if action_index >= len(actions):
+            lastTime, imageCount, im = saveImage(figs, lastTime, imageCount, args.logging, args.display, ax, o1, fp, tp, dist, yaw, pitch, camTargetPos)
             break
 
           if(actions[action_index][0] == "move"):
@@ -211,6 +225,10 @@ def execute(actions):
             if action_index < len(actions):
               print("Executing action: ", actions[action_index])
             done = False
+          total_time_taken = time.time() - start_here
+          # print ("Total", total_time_taken)
+          # print ("Fraction", image_save_time/total_time_taken)
+          start_here = time.time()
 
 def destroy():
   p.disconnect()

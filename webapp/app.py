@@ -48,6 +48,7 @@ def simulator(q):
     import husky_ur5
     import src.actions
     print ("Waiting")
+    husky_ur5.firstImage()
     while True:
         inp = q.get()
         husky_ur5.execute(inp)
