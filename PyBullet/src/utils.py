@@ -17,16 +17,19 @@ cameraPos = [1, 1, 5]
 roll = -30
 upAxisIndex = 2
 camDistance = 5
-pixelWidth = 480
-pixelHeight = 360
+pixelWidth = 800
+pixelHeight = 600
 aspect = pixelWidth / pixelHeight
 nearPlane = 0.01
 farPlane = 100
 fov = 60
 img_arr = []; img_arr2 = []
 
+fig = None
+
 def initDisplay(display):
     plt.ion()
+    plt.rcParams["figure.figsize"] = [6,4]
     plt.axis('off')
     fp = []; tp = []; figs = []
     if display == "fp":
