@@ -114,10 +114,16 @@ def execute_move():
     queue_from_webapp_to_simulator.put(d)
     return ""
 
-@app.route("/rotateCamera", methods = ["POST"])
-def rotateCamera():
+@app.route("/rotateCameraLeft", methods = ["POST"])
+def rotateCameraL():
     direction = request.args.get('direction')
-    queue_from_webapp_to_simulator.put({"rotate": direction})
+    queue_from_webapp_to_simulator.put({"rotate": "left"})
+    return ""
+
+@app.route("/rotateCameraRight", methods = ["POST"])
+def rotateCameraR():
+    direction = request.args.get('direction')
+    queue_from_webapp_to_simulator.put({"rotate": "right"})
     return ""
 
 if __name__ == '__main__':

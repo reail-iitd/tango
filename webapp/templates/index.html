@@ -47,7 +47,7 @@
 	<script>
 		function rotateLeft(){
 			$.ajax({
-		      url: "/rotateCamera",
+		      url: "/rotateCameraLeft",
 		      type: "post",
 		      data: {direction: "left"},
 		      success: function(response) {
@@ -58,7 +58,7 @@
 		}
 		function rotateRight(){
 			$.ajax({
-		      url: "/rotateCamera",
+		      url: "/rotateCameraRight",
 		      type: "post",
 		      data: {direction: "right"},
 		      success: function(response) {

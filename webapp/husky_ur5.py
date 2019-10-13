@@ -77,9 +77,9 @@ pitch = -35.0
 
 # Start video recording
 # p.setRealTimeSimulation(0) 
-ax = 0; fig = 0; fp = []; tp = []; figs = []
+ax = 0; fig = 0; cam = []
 if args.display:
-      ax, fp, tp, figs = initDisplay(args.display)
+      ax, cam = initDisplay("both")
 elif args.logging:
       fig = initLogging()
 camX, camY = 0, 0
@@ -95,27 +95,24 @@ print(id_lookup)
 print(fixed_orientation)
 
 # Check Logging
-if args.logging:
+if args.logging or args.display:
     deleteAll("logs")
   
-if args.display:
-    deleteAll("logs/fp")
-    deleteAll("logs/tp")
-
 def changeView(direction):
-  if direction == "left":
-    pass
-  else:
-    pass
+  global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount
+  camTargetPos = [x1, y1, 0]
+  dist, yaw = changeCameraOnInput(dist, yaw, 0, -1) if direction == "left" \
+         else changeCameraOnInput(dist, yaw, 0, 1) if direction == "right" \
+         else changeCameraOnInput(dist, yaw, 1, 0) if direction == "in" \
+         else changeCameraOnInput(dist, yaw, -1, 0)
+  lastTime, imageCount = saveImage(0, imageCount, "tp", ax, o1, cam, dist, yaw, pitch, camTargetPos)
+
 def firstImage():
   global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount
   camTargetPos = [x1, y1, 0]
-  lastTime, imageCount, im = saveImage(figs, -250, imageCount, args.logging, args.display, ax, o1, fp, tp, dist, yaw, pitch, camTargetPos)
+  lastTime, imageCount= saveImage(-250, imageCount, "tp", ax, o1, cam, dist, 50, pitch, camTargetPos)
 
 def execute(actions):
-  # if args.display:
-  # deleteAll("logs/fp")
-  # deleteAll("logs/tp")
   global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount
   # List of low level actions
   actions = convertActions(actions)
@@ -135,18 +132,16 @@ def execute(actions):
           camTargetPos = [x1, y1, 0]
           if (args.logging or args.display) and (counter % COUNTER_MOD == 0):
             start_image = time.time()
-            lastTime, imageCount, im = saveImage(figs, lastTime, imageCount, args.logging, args.display, ax, o1, fp, tp, dist, yaw, pitch, camTargetPos)
+            lastTime, imageCount = saveImage(lastTime, imageCount, "fp", ax, o1, cam, dist, yaw, pitch, camTargetPos)
             image_save_time = time.time() - start_image
             # print ("Image save time", image_save_time)
-            if args.logging and im:
-                  ims.append([im])
           x1, y1, o1, keyboard = moveKeyboard(x1, y1, o1, [husky, robotID])
           moveUR5Keyboard(robotID, wings, gotoWing)
           z1, y1, o1, world_states = restoreOnKeyboard(world_states, x1, y1, o1)
           keepHorizontal(horizontal_list)
           keepOnGround(ground_list)
           keepOrientation(fixed_orientation)
-          dist, yaw, pitch, camX, camY = changeCameraOnKeyboard(dist, yaw, pitch, camX, camY)
+          # dist, yaw, pitch, camX, camY = changeCameraOnKeyboard(dist, yaw, pitch, camX, camY)
 
           start = time.time()
           p.stepSimulation() 
@@ -154,7 +149,7 @@ def execute(actions):
           # print(checkGoal(goal_file, constraints, states, id_lookup))
 
           if action_index >= len(actions):
-            lastTime, imageCount, im = saveImage(figs, lastTime, imageCount, args.logging, args.display, ax, o1, fp, tp, dist, yaw, pitch, camTargetPos)
+            lastTime, imageCount = saveImage(lastTime, imageCount, "tp", ax, o1, cam, dist, yaw, pitch, camTargetPos)
             break
 
           if(actions[action_index][0] == "move"):

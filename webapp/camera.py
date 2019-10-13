@@ -33,7 +33,7 @@ class Camera(BaseCamera):
         #         print ("no")
         #         os.remove(open_dir + "0.jpg")
         #         x = 1   
-        outer_dir = "logs/tp/"
+        outer_dir = "logs/"
         x = 0
         while True:
             time.sleep(0.1)
