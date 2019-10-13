@@ -4,11 +4,21 @@
 	{% if j == "dropdown-objects" %}
 		<select id = "arg{{ a }}">
 			{% for object in world_objects %}
-				<option> {{ object }} </option>
+				{% if object not in constraints_dict[i] %}
+					<option> {{ object }} </option>
+				{% endif %}
 			{% endfor %}
 		</select>
 	{% else %}
-		<input type="email" id = "arg{{ a }}">
+		{% if j == "dropdown-states"%}
+			<select id = "arg{{ a }}">
+			{% for state in dropdown_states %}
+				<option> {{ state }} </option>
+			{% endfor %}
+			</select>
+		{% else %}
+			<input type="email" id = "arg{{ a }}">
+		{% endif %}
 	{% endif %}
 </div>
 {% endfor %}

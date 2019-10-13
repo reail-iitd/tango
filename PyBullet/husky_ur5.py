@@ -96,8 +96,8 @@ if args.logging:
     deleteAll("logs")
   
 if args.display:
-    deleteAll("logs\\fp")
-    deleteAll("logs\\tp")
+    deleteAll("logs/fp")
+    deleteAll("logs/tp")
 
 def execute(actions):
   global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount
@@ -125,8 +125,9 @@ def execute(actions):
           keepOnGround(ground_list)
           keepOrientation(fixed_orientation)
           dist, yaw, pitch, camX, camY = changeCameraOnKeyboard(dist, yaw, pitch, camX, camY)
-
-          p.stepSimulation()  
+          start = time.time()
+          p.stepSimulation() 
+          print (time.time() - start)
           # print(checkGoal(goal_file, constraints, states, id_lookup))
 
           if action_index >= len(actions):
@@ -209,7 +210,8 @@ def execute(actions):
               print("Executing action: ", actions[action_index])
             done = False
 
-      p.disconnect()
+def destroy():
+  p.disconnect()
   # except Exception as e: 
   #     print(e)
   #     p.disconnect()

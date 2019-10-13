@@ -32,7 +32,8 @@
 			"name": "fridge_back",
 			"position": [-2.5,4.7,0],
 			"orientation": [],
-			"states": {}
+			"states": {},
+			"ignore": "true"
 		},
 		{
 			"name": "fridge",
@@ -48,7 +49,8 @@
 			"name": "cupboard_back",
 			"position": [-2.5,-4.7,0],
 			"orientation": [],
-			"states": {}
+			"states": {},
+			"ignore": "true"
 		},
 		{
 			"name": "cupboard",
@@ -64,25 +66,29 @@
 			"name": "husky",
 			"position": [0,0,0.1],
 			"orientation": [0,0,0,0.1],
-			"states": {}
+			"states": {},
+			"ignore": "true"
 		},
 		{
 			"name": "ur5",
 			"position": [0,0,0.320208],
 			"orientation": [],
-			"states": {}
+			"states": {},
+			"ignore": "true"
 		},
 		{
 			"name": "table",
 			"position": [0, 4.5, 0],
 			"orientation": [],
-			"states": {}
+			"states": {},
+			"rename" : "bigger table"
 		},
 		{
 			"name": "table2",
 			"position": [-1, -4.5, 0],
 			"orientation": [],
-			"states": []
+			"states": [],
+			"rename" : "smaller table"
 		},
 		{
 			"name": "couch",
@@ -115,19 +121,22 @@
 			"name": "cube_gray",
 			"position": [-0.5,4.2,0.7],
 			"orientation": [],
-			"states": []	
+			"states": [],
+			"rename": "gray cube"
 		},
 		{
 			"name": "cube_green",
 			"position": [-0.5,4.3,0.7],
 			"orientation": [],
-			"states": []	
+			"states": [],
+			"rename": "green cube"	
 		},
 		{
 			"name": "cube_red",
 			"position": [-0.5,4.4,0.7],
 			"orientation": [],
-			"states": []	
+			"states": [],
+			"rename": "red cube"	
 		},
 		{
 			"name": "tray",
@@ -145,19 +154,22 @@
 			"name": "bottle_blue",
 			"position": [1,-4,0],
 			"orientation": [],
-			"states": []	
+			"states": [],
+			"rename": "blue bottle"	
 		},
 		{
 			"name": "bottle_gray",
 			"position": [1.2,-4,0],
 			"orientation": [],
-			"states": []	
+			"states": [],
+			"rename": "gray bottle"	
 		},
 		{
 			"name": "bottle_red",
 			"position": [1.4,-4,0],
 			"orientation": [],
-			"states": []	
+			"states": [],
+			"rename": "red bottle"
 		},
 		{
 			"name": "box",
@@ -169,7 +181,8 @@
 			"name": "r2d2",
 			"position": [-3,-2,1],
 			"orientation": [],
-			"states": []	
+			"states": [],
+			"ignore": "true"	
 		},
 		{
 			"name": "apple",

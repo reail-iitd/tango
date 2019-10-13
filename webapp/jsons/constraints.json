@@ -1,0 +1,21 @@
+{
+	"Push object to destination": 
+		{
+			"Object to push" : ["floor", "walls", "door"], 
+			"Destination (near this object)": ["floor", "walls"]
+		},
+	"Pick source and place on destination": 
+		{
+			"Object to pick": ["floor", "walls", "door", "cupboard"], 
+			"Object to place on": ["floor", "walls"]
+		},
+    "Move robot to object": 
+    	{
+    		"Destination (near this object)": ["floor"]
+    	},
+	"Open/Close object":
+		{
+			"Object to open or close": ["floor", "walls", "ledge", "bigger table", "smaller table", "couch", "big-tray", "paper", "gray cube", "green cube","red cube", "tray", "tray2", "blue bottle", "gray bottle", "red bottle", "box", "apple", "orange", "banana", "quadcopter", "chair", "ball", "stick", "dumpster", "milk", "shelf", "glue", "tape"], 
+			"Open or Close it": ["floor"]
+		}
+}

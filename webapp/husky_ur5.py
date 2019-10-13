@@ -16,6 +16,9 @@ wings_file = "jsons/wings.json"
 tolerance_file = "jsons/tolerance.json"
 goal_file = "jsons/goal.json"
 
+#Number of steps before image capture
+COUNTER_MOD = 30
+
 # Enclosures
 enclosures = ['fridge', 'cupboard']
 
@@ -99,6 +102,11 @@ if args.display:
     deleteAll("logs/fp")
     deleteAll("logs/tp")
 
+def changeView(direction):
+  if direction == "left":
+    pass
+  else:
+    pass
 def firstImage():
   global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount
   camTargetPos = [x1, y1, 0]
@@ -125,7 +133,7 @@ def execute(actions):
       while(True):
           counter += 1
           camTargetPos = [x1, y1, 0]
-          if (args.logging or args.display) and (counter % 30 == 0):
+          if (args.logging or args.display) and (counter % COUNTER_MOD == 0):
             start_image = time.time()
             lastTime, imageCount, im = saveImage(figs, lastTime, imageCount, args.logging, args.display, ax, o1, fp, tp, dist, yaw, pitch, camTargetPos)
             image_save_time = time.time() - start_image
