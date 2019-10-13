@@ -17,7 +17,7 @@ tolerance_file = "jsons/tolerance.json"
 goal_file = "jsons/goal.json"
 
 #Number of steps before image capture
-COUNTER_MOD = 10
+COUNTER_MOD = 5
 
 # Enclosures
 enclosures = ['fridge', 'cupboard']
