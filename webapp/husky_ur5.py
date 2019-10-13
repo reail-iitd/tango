@@ -17,7 +17,7 @@ tolerance_file = "jsons/tolerance.json"
 goal_file = "jsons/goal.json"
 
 #Number of steps before image capture
-COUNTER_MOD = 30
+COUNTER_MOD = 10
 
 # Enclosures
 enclosures = ['fridge', 'cupboard']
@@ -72,7 +72,7 @@ constraints = dict()
 imageCount = 0
 yaw = 50
 ims = []
-dist = 2.5
+dist = 5
 pitch = -35.0
 
 # Start video recording
@@ -97,20 +97,23 @@ print(fixed_orientation)
 # Check Logging
 if args.logging or args.display:
     deleteAll("logs")
+
+# Default perspective
+perspective = "tp"
   
 def changeView(direction):
-  global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount
+  global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount, perspective
   camTargetPos = [x1, y1, 0]
-  dist, yaw = changeCameraOnInput(dist, yaw, 0, -1) if direction == "left" \
-         else changeCameraOnInput(dist, yaw, 0, 1) if direction == "right" \
-         else changeCameraOnInput(dist, yaw, 1, 0) if direction == "in" \
-         else changeCameraOnInput(dist, yaw, -1, 0)
-  lastTime, imageCount = saveImage(0, imageCount, "tp", ax, o1, cam, dist, yaw, pitch, camTargetPos)
+  dist = dist - 0.5 if direction == "in" else dist + 0.5 if direction == "out" else dist
+  yaw = yaw - 5 if direction == "left" else yaw + 5 if direction == "right" else yaw
+  print(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos)
+  perspective = "tp" if perspective == "fp" and direction == None else "fp" if direction == None else perspective
+  lastTime, imageCount = saveImage(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos)
 
 def firstImage():
   global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount
   camTargetPos = [x1, y1, 0]
-  lastTime, imageCount= saveImage(-250, imageCount, "tp", ax, o1, cam, dist, 50, pitch, camTargetPos)
+  lastTime, imageCount= saveImage(-250, imageCount, perspective, ax, o1, cam, dist, 50, pitch, camTargetPos)
 
 def execute(actions):
   global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount
@@ -149,7 +152,7 @@ def execute(actions):
           # print(checkGoal(goal_file, constraints, states, id_lookup))
 
           if action_index >= len(actions):
-            lastTime, imageCount = saveImage(lastTime, imageCount, "tp", ax, o1, cam, dist, yaw, pitch, camTargetPos)
+            lastTime, imageCount = saveImage(lastTime, imageCount, "fp", ax, o1, cam, dist, yaw, pitch, camTargetPos)
             break
 
           if(actions[action_index][0] == "move"):
@@ -235,13 +238,5 @@ def execute(actions):
 
 def destroy():
   p.disconnect()
-  # except Exception as e: 
-  #     print(e)
-  #     p.disconnect()
-  # finally:
-  #   if args.logging:
-  #     ani = animation.ArtistAnimation(fig, ims, interval=500, blit=True,
-  #                                 repeat_delay=2000)
-  #     ani.save('logs/action_video.mp4', fps=30, extra_args=['-vcodec', 'libx264'])
                       
 

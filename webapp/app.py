@@ -59,7 +59,7 @@ def simulator(queue_from_webapp_to_simulator, queue_from_simulator_to_webapp):
     husky_ur5.firstImage()
     while True:
         inp = queue_from_webapp_to_simulator.get()
-        if ("rotate" in inp):
+        if ("rotate" in inp or "zoom" in inp or "toggle" in inp):
             husky_ur5.changeView(inp["rotate"])
         else:
             husky_ur5.execute(inp)
@@ -116,14 +116,27 @@ def execute_move():
 
 @app.route("/rotateCameraLeft", methods = ["POST"])
 def rotateCameraL():
-    direction = request.args.get('direction')
     queue_from_webapp_to_simulator.put({"rotate": "left"})
     return ""
 
 @app.route("/rotateCameraRight", methods = ["POST"])
 def rotateCameraR():
-    direction = request.args.get('direction')
     queue_from_webapp_to_simulator.put({"rotate": "right"})
+    return ""
+
+@app.route("/zoomIn", methods = ["POST"])
+def zoomIn():
+    queue_from_webapp_to_simulator.put({"rotate": "in"})
+    return ""
+
+@app.route("/zoomOut", methods = ["POST"])
+def zoomOut():
+    queue_from_webapp_to_simulator.put({"rotate": "out"})
+    return ""
+
+@app.route("/toggle", methods = ["POST"])
+def toggle():
+    queue_from_webapp_to_simulator.put({"rotate": None})
     return ""
 
 if __name__ == '__main__':

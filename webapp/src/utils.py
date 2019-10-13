@@ -17,8 +17,8 @@ cameraPos = [0, 0, 5]
 roll = -30
 upAxisIndex = 2
 camDistance = 5
-pixelWidth = 480
-pixelHeight = 360
+pixelWidth = 1600
+pixelHeight = 1200
 aspect = pixelWidth / pixelHeight
 nearPlane = 0.01
 farPlane = 100
@@ -27,6 +27,7 @@ img_arr = []; img_arr2 = []
 
 def initDisplay(display):
     plt.axis('off')
+    plt.rcParams["figure.figsize"] = [8,6]
     cam = plt.figure()
     plt.axis('off')
     ax = plt.gca()
@@ -142,9 +143,7 @@ def changeCameraOnInput(camDistance, yaw, deltaDistance, deltaYaw):
     """
     Change camera zoom or angle from input
     """
-    camDistance += 0.01 *deltaDistance
-    yaw += 5 * deltaYaw
-    return camDistance, yaw
+    return (camDistance + 0.5 * deltaDistance, yaw + 5 * deltaYaw)
 
 def mentionNames(id_lookup):
     """
@@ -264,7 +263,7 @@ def saveImage(lastTime, imageCount, display, ax, o1, cam, dist, yaw, pitch, camT
     projectionMatrix = p.computeProjectionMatrixFOV(fov, aspect, nearPlane, farPlane)
     img_arr = []; img_arr2 = []; rgb = []
     if display == "fp" or display == "both":
-        viewMatrixFP = p.computeViewMatrixFromYawPitchRoll(camTargetPos, dist, -90+(o1*180/math.pi), -35,
+        viewMatrixFP = p.computeViewMatrixFromYawPitchRoll(camTargetPos, 3, -90+(o1*180/math.pi), -35,
                                                                 roll, upAxisIndex)
         img_arr = p.getCameraImage(pixelWidth,
                                       pixelHeight,
@@ -276,7 +275,7 @@ def saveImage(lastTime, imageCount, display, ax, o1, cam, dist, yaw, pitch, camT
                                       flags=p.ER_NO_SEGMENTATION_MASK)
     if display == "tp" or display == "both":
         viewMatrixTP = p.computeViewMatrixFromYawPitchRoll([0,0,0],
-                                                            5, yaw, pitch,
+                                                            dist, yaw, pitch,
                                                             roll, upAxisIndex)
         img_arr2 = p.getCameraImage(pixelWidth,
                                       pixelHeight,

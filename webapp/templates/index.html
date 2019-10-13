@@ -35,16 +35,58 @@
 		  	<img src="{{ url_for('get_simulator_state') }}" style="width: 100%;">
 		  </div>
 		  <div class="row">
-		  	<div class="col-sm-6">
-		  		<img src="/static/left.png" style="width:50px;height:50px;float: right;" alt="Rotate camera left" onclick="rotateLeft()">
-		  	</div>
-		  	<div class="col-sm-6">
-		  		<img src="/static/right.png" style="width:50px;height:50px;float: left;" alt="Rotate camera right" onclick="rotateRight()">
+		    <div class="col-sm-2">
+				<img src="/static/toggle.png" style="width:50px;height:50px;" alt="Zoom in" onclick="toggle()">
+			</div>
+			<div class="col-sm-2">
+				<img src="/static/up.png" style="width:50px;height:50px;" alt="Zoom in" onclick="zoomIn()">
+			</div>
+			<div class="col-sm-2">
+				<img src="/static/down.png" style="width:50px;height:50px;" alt="Zoom Out" onclick="zoomOut()">
+			</div>
+		  	<div class="col-sm-2">
+		  		<img src="/static/left.png" style="width:50px;height:50px;" alt="Rotate camera left" onclick="rotateLeft()">
+			</div>
+		  	<div class="col-sm-2">
+		  		<img src="/static/right.png" style="width:50px;height:50px;" alt="Rotate camera right" onclick="rotateRight()">
 		  	</div>
 		  </div>
 		</div>
 	</div>
 	<script>
+		function zoomIn(){
+			$.ajax({
+		      url: "/zoomIn",
+		      type: "post",
+		      data: {direction: "up"},
+		      success: function(response) {
+		      },
+		      error: function(xhr) {
+		      }
+		    });
+		}
+		function toggle(){
+			$.ajax({
+		      url: "/toggle",
+		      type: "post",
+		      data: {direction: "toggle"},
+		      success: function(response) {
+		      },
+		      error: function(xhr) {
+		      }
+		    });
+		}
+		function zoomOut(){
+			$.ajax({
+		      url: "/zoomOut",
+		      type: "post",
+		      data: {direction: "down"},
+		      success: function(response) {
+		      },
+		      error: function(xhr) {
+		      }
+		    });
+		}
 		function rotateLeft(){
 			$.ajax({
 		      url: "/rotateCameraLeft",

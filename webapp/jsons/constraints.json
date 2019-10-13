@@ -2,12 +2,12 @@
 	"Push object to destination": 
 		{
 			"Object to push" : ["floor", "walls", "door"], 
-			"Destination (near this object)": ["floor", "walls"]
+			"Destination (near this object)": ["floor", "walls", "fridge_back", "cupboard_back"]
 		},
 	"Pick source and place on destination": 
 		{
 			"Object to pick": ["floor", "walls", "door", "cupboard"], 
-			"Object to place on": ["floor", "walls"]
+			"Object to place on": ["floor", "walls", "milk", "tape", "ledge", "door", "cube_red", "cube_green", "cubr_gray"]
 		},
     "Move robot to object": 
     	{
