@@ -30,7 +30,7 @@ dict_predicate_to_action = {
 }
 
 # Unnecessary (can be removed)
-d = json.load(open("../PyBullet/jsons/world_home.json"))["entities"]
+d = json.load(open("jsons/world_home.json"))["entities"]
 world_objects = []
 renamed_objects = {}
 constraints_dict = json.load(open("jsons/constraints.json"))
