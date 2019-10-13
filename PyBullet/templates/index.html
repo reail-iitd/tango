@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<!-- jQuery library -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<!-- Latest compiled JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+	<title>First webpage</title>
+</head>
+<body>
+	<div class="row">
+	  <div class="col-sm-6" style="padding-left: 2em;">
+	  		<h2> Task Description (Goal to achieve) </h2>
+	  		<p> This is an example instruction. This can be arbitraritly long because we may want to specify a lot of things. This also is not required to be of a pre-specified size. </p>
+	  		<h2>Instruction Input</h2>
+			<select class="form-control" id="predicate_dropdown">
+				<option selected="selected"> Select the verb/predicate you want </option>
+				{% for i in list_of_predicates %}
+					<option> {{ i }} </option>
+				{% endfor %}
+			</select>
+			<label for="predicate"> ( </label>
+  			<div id = "arguments">
+	  		</div>
+	  		) <br/>
+	  		<div style="padding-left: 35em">
+	  			<button type="button" class="btn btn-success" id="execute_move">Execute Move</button>
+	  		</div>
+	  </div>
+	  <div class="col-sm-6">
+	  	<img src="{{ url_for('get_simulator_state') }}" style="width: 100%;">
+	  </div>
+	</div>
+	<script>
+		$("#predicate_dropdown").change(function(){
+		    var text = $(this).val();
+
+		    $.ajax({
+		      url: "/arguments",
+		      type: "get",
+		      data: {predicate: text},
+		      success: function(response) {
+		        $("#arguments").html(response);
+		      },
+		      error: function(xhr) {
+		        //Do Something to handle error
+		      }
+		    });
+		});
+		$("#execute_move").click(function(){
+			var i = 0;
+			var data_for_arguments = {};
+			data_for_arguments["predicate"] = $("#predicate_dropdown").val();
+			while (true){
+				var arg = "arg" + i;
+				var text = $("#"+arg).val();
+				if (typeof text == "undefined"){
+					break;
+				}
+				data_for_arguments[arg] = text;
+				console.log(data_for_arguments);
+				i += 1;
+			}
+			$.ajax({
+		      url: "/execute_move",
+		      type: "post",
+		      data: data_for_arguments,
+		      success: function(response) {
+		      },
+		      error: function(xhr) {
+		      }
+		    });
+		});
+	</script>
+</body>
+</html>

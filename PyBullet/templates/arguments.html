@@ -1,0 +1,14 @@
+{% for (a,(i,j)) in arguments_list%}
+<div class="form-group" style="padding-left: 15em;">
+	<label><h6>{{ i }} = </h6></label>
+	{% if j == "dropdown-objects" %}
+		<select id = "arg{{ a }}">
+			{% for object in world_objects %}
+				<option> {{ object }} </option>
+			{% endfor %}
+		</select>
+	{% else %}
+		<input type="email" id = "arg{{ a }}">
+	{% endif %}
+</div>
+{% endfor %}
