@@ -297,4 +297,4 @@ def saveImage(lastTime, imageCount, display, ax, o1, cam, dist, yaw, pitch, camT
 def deleteAll(path):
     filesToRemove = [os.path.join(path,f) for f in os.listdir(path)]
     for f in filesToRemove:
-        os.remove(f) 
+        os.system("rm -rf " + f) 

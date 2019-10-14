@@ -115,6 +115,10 @@ def firstImage():
   camTargetPos = [x1, y1, 0]
   lastTime, imageCount= saveImage(-250, imageCount, perspective, ax, o1, cam, dist, 50, pitch, camTargetPos)
 
+def undo():
+  print ("Undo has been executed")
+  pass
+
 def execute(actions):
   global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount
   # List of low level actions

@@ -61,6 +61,8 @@ def simulator(queue_from_webapp_to_simulator, queue_from_simulator_to_webapp):
         inp = queue_from_webapp_to_simulator.get()
         if ("rotate" in inp or "zoom" in inp or "toggle" in inp):
             husky_ur5.changeView(inp["rotate"])
+        elif "undo" in inp:
+            husky_ur5.undo()
         else:
             husky_ur5.execute(inp)
 
@@ -139,6 +141,10 @@ def toggle():
     queue_from_webapp_to_simulator.put({"rotate": None})
     return ""
 
+@app.route("/undo_move", methods = ["GET"])
+def undo_move():
+    queue_from_webapp_to_simulator.put({"undo": True})
+    return ""
 if __name__ == '__main__':
     inp = "jsons/input_home.json"
     p = mp.Process(target=simulator, args=(queue_from_webapp_to_simulator,queue_from_simulator_to_webapp))
