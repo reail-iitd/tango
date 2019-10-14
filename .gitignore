@@ -5,6 +5,7 @@ GUI/vizForDSE/*
 venv/
 **.jpg
 flask-video-streaming/
+vscode.code-workspace
 
 ## Mac Files
 *.DS_Store
