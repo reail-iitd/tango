@@ -1,9 +1,9 @@
 ## Support Code
 GUI/vizForDSE/*
-**.png
+
 *__pycache*
 venv/
-**.jpg
+
 flask-video-streaming/
 vscode.code-workspace
 
