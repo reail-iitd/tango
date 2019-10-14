@@ -57,14 +57,21 @@ def simulator(queue_from_webapp_to_simulator, queue_from_simulator_to_webapp):
     queue_from_simulator_to_webapp.put(True)
     print ("Waiting")
     husky_ur5.firstImage()
+    called_undo_before = False
     while True:
         inp = queue_from_webapp_to_simulator.get()
         if ("rotate" in inp or "zoom" in inp or "toggle" in inp):
             husky_ur5.changeView(inp["rotate"])
         elif "undo" in inp:
-            husky_ur5.undo()
+            if (not called_undo_before):
+                husky_ur5.undo()
+                husky_ur5.undo()
+                called_undo_before = True
+            else:
+                husky_ur5.undo()
         else:
             husky_ur5.execute(inp)
+            called_undo_before = False
 
 @app.route('/')
 def index():
