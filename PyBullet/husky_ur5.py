@@ -17,7 +17,7 @@ tolerance_file = "jsons/tolerance.json"
 goal_file = "jsons/goal.json"
 
 #Number of steps before image capture
-COUNTER_MOD = 5
+COUNTER_MOD = 100
 
 # Enclosures
 enclosures = ['fridge', 'cupboard']
@@ -111,7 +111,7 @@ def changeView(direction):
   lastTime, imageCount = saveImage(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos)
 
 def undo():
-  global world_states, x1, y1, o1
+  global world_states, x1, y1, o1, imageCount
   x1, y1, o1, world_states = restoreOnInput(world_states, x1, y1, o1)
   lastTime, imageCount = saveImage(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos)
 
@@ -119,10 +119,6 @@ def firstImage():
   global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount
   camTargetPos = [x1, y1, 0]
   lastTime, imageCount= saveImage(-250, imageCount, perspective, ax, o1, cam, dist, 50, pitch, camTargetPos)
-
-def undo():
-  print ("Undo has been executed")
-  pass
 
 def execute(actions):
   global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount
