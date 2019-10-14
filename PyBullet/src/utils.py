@@ -162,12 +162,27 @@ def restoreOnKeyboard(world_states, x1, y1, o1):
     """
     keys = p.getKeyboardEvents()
     if ord(b'r') in keys:
+        print("Pressed R")
         if len(world_states) != 0:
-            id1 = world_states.pop()
+            print("Restoring state")
+            id1, x, y, o = world_states.pop()
             p.restoreState(stateId=id1)
             # q=p.getQuaternionFromEuler((0,0,0))
             # p.resetBasePositionAndOrientation(([0, 0, 0], q)) # Get robot to home when undo
-        return 0, 0, 0, world_states
+            return x, y, o, world_states
+    return x1, y1, o1, world_states
+
+def restoreOnInput(world_states, x1, y1, o1):
+    """
+    Restore to last saved state when this function is called
+    """
+    if len(world_states) != 0:
+        id1, x, y, o = world_states.pop()
+        p.restoreState(stateId=id1)
+        # q=p.getQuaternionFromEuler((0,0,0))
+        # p.resetBasePositionAndOrientation(([0, 0, 0], q)) # Get robot to home when undo
+        # return 0, 0, 0, world_states
+        return x, y, o, world_states
     return x1, y1, o1, world_states
 
 

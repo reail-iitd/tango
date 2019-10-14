@@ -90,7 +90,7 @@ mentionNames(id_lookup)
 # Save state
 world_states = []
 id1 = p.saveState()
-world_states.append(id1)
+world_states.append([id1, x1, y1, o1])
 print(id_lookup)
 print(fixed_orientation)
 
@@ -108,6 +108,11 @@ def changeView(direction):
   yaw = yaw - 5 if direction == "left" else yaw + 5 if direction == "right" else yaw
   print(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos)
   perspective = "tp" if perspective == "fp" and direction == None else "fp" if direction == None else perspective
+  lastTime, imageCount = saveImage(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos)
+
+def undo():
+  global world_states, x1, y1, o1
+  x1, y1, o1, world_states = restoreOnInput(world_states, x1, y1, o1)
   lastTime, imageCount = saveImage(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos)
 
 def firstImage():
@@ -140,7 +145,7 @@ def execute(actions):
             # print ("Image save time", image_save_time)
           x1, y1, o1, keyboard = moveKeyboard(x1, y1, o1, [husky, robotID])
           moveUR5Keyboard(robotID, wings, gotoWing)
-          z1, y1, o1, world_states = restoreOnKeyboard(world_states, x1, y1, o1)
+          # x1, y1, o1, world_states = restoreOnKeyboard(world_states, x1, y1, o1)
           keepHorizontal(horizontal_list)
           keepOnGround(ground_list)
           keepOrientation(fixed_orientation)
@@ -222,7 +227,7 @@ def execute(actions):
 
           elif(actions[action_index][0] == "saveBulletState"):
             id1 = p.saveState()
-            world_states.append(id1)
+            world_states.append([id1, x1, y1, o1])
             done = True
 
           if done:
