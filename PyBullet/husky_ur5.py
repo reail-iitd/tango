@@ -17,7 +17,7 @@ tolerance_file = "jsons/tolerance.json"
 goal_file = "jsons/goal.json"
 
 #Number of steps before image capture
-COUNTER_MOD = 100
+COUNTER_MOD = 50
 
 # Enclosures
 enclosures = ['fridge', 'cupboard']
@@ -31,6 +31,11 @@ light = p.connect(p.GUI)
 # Add input arguments
 args = initParser()
 speed = args.speed
+
+if (args.logging or args.display):
+  p.configureDebugVisualizer(p.COV_ENABLE_GUI, 0)
+  p.configureDebugVisualizer(p.COV_ENABLE_RENDERING, 0)
+  p.configureDebugVisualizer(p.COV_ENABLE_TINY_RENDERER, 0)
 
 # Initialize husky and ur5 model
 ( husky,
@@ -100,7 +105,7 @@ if args.logging or args.display:
 
 # Default perspective
 perspective = "tp"
-  
+ 
 def changeView(direction):
   global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount, perspective
   camTargetPos = [x1, y1, 0]
