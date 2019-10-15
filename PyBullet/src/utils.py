@@ -25,6 +25,8 @@ farPlane = 100
 fov = 60
 img_arr = []; img_arr2 = []
 
+projectionMatrix = p.computeProjectionMatrixFOV(fov, aspect, nearPlane, farPlane)
+
 def initDisplay(display):
     plt.axis('off')
     plt.rcParams["figure.figsize"] = [8,6]
@@ -276,9 +278,8 @@ def isClosed(enclosure, states, id_lookup):
 
 def saveImage(lastTime, imageCount, display, ax, o1, cam, dist, yaw, pitch, camTargetPos):
     current = current_milli_time()
-    if (current - lastTime) < 250:
+    if (current - lastTime) < 100:
         return lastTime, imageCount
-    projectionMatrix = p.computeProjectionMatrixFOV(fov, aspect, nearPlane, farPlane)
     img_arr = []; img_arr2 = []; rgb = []
     if display == "fp" or display == "both":
         viewMatrixFP = p.computeViewMatrixFromYawPitchRoll(camTargetPos, 3, -90+(o1*180/math.pi), -35,
