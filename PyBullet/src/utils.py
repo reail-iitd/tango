@@ -282,6 +282,12 @@ def saveImage(lastTime, imageCount, display, ax, o1, cam, dist, yaw, pitch, camT
         return lastTime, imageCount
     img_arr = []; img_arr2 = []; rgb = []
     if display == "fp" or display == "both":
+        # dist = min(
+        #     abs(abs(camTargetPos[0] - 3*math.cos(o1)) - 4), 
+        #     abs(abs(camTargetPos[0] - 3*math.cos(o1)) + 4), 
+        #     abs(abs(camTargetPos[1] - 3*math.sin(o1)) - 5),
+        #     abs(abs(camTargetPos[1] - 3*math.sin(o1)) + 5),
+        #     3)
         viewMatrixFP = p.computeViewMatrixFromYawPitchRoll(camTargetPos, 3, -90+(o1*180/math.pi), -35,
                                                                 roll, upAxisIndex)
         img_arr = p.getCameraImage(pixelWidth,
