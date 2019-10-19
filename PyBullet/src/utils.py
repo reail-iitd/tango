@@ -299,7 +299,7 @@ def saveImage(lastTime, imageCount, display, ax, o1, cam, dist, yaw, pitch, camT
                                       renderer=p.ER_BULLET_HARDWARE_OPENGL,
                                       flags=p.ER_NO_SEGMENTATION_MASK)
     if display == "tp" or display == "both":
-        viewMatrixTP = p.computeViewMatrixFromYawPitchRoll([0,0,0],
+        viewMatrixTP = p.computeViewMatrixFromYawPitchRoll(camTargetPos,
                                                             dist, yaw, pitch,
                                                             roll, upAxisIndex)
         img_arr2 = p.getCameraImage(pixelWidth,

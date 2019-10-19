@@ -10,6 +10,7 @@ from src.ur5 import *
 from src.utils import *
 from src.basic_actions import *
 from src.actions import *
+import math
 
 object_file = "jsons/objects.json"
 wings_file = "jsons/wings.json"
@@ -115,10 +116,16 @@ def changeView(direction):
   perspective = "tp" if perspective == "fp" and direction == None else "fp" if direction == None else perspective
   lastTime, imageCount = saveImage(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos)
 
+
+def showObject(obj):
+  global world_states, x1, y1, o1, imageCount
+  ((x, y, z), (a1, b1, c1, d1)) = p.getBasePositionAndOrientation(id_lookup[obj])
+  saveImage(0, imageCount, 'fp', ax, math.atan2(y,x)%(2*math.pi), cam, 2, yaw, pitch, [x, y, z])
+
 def undo():
   global world_states, x1, y1, o1, imageCount
   x1, y1, o1, world_states = restoreOnInput(world_states, x1, y1, o1)
-  lastTime, imageCount = saveImage(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos)
+  saveImage(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos)
 
 def firstImage():
   global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount
