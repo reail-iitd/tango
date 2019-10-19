@@ -12,6 +12,7 @@ def convertActions(inp):
                 ["changeWing", "up"],
                 ["constrain", args[0], "ur5"],
                 ["moveTo", args[1]],
+                ["removeConstraint", args[0], "ur5"],
                 ["constrain", args[0], args[1]]
             ])
 
@@ -84,8 +85,7 @@ def convertActions(inp):
             ])
 
         elif high_level_action['name'] == 'dropTo':
-            for obj in args[0]:
-                action_list.append(["constrain", obj, args[1]])
+            action_list.extend([["moveTo", args[1]], ["constrain", args[0], args[1]]])
         
         elif high_level_action['name'] == 'drop':
             action_list.append(["removeConstraint", args[0], "ur5"])

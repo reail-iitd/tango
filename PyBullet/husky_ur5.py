@@ -145,15 +145,15 @@ def execute(actions):
 
   # Start simulation
   if True:
-      start_here = time.time()
+      # start_here = time.time()
       counter = 0
       while(True):
           counter += 1
           camTargetPos = [x1, y1, 0]
           if (args.logging or args.display) and (counter % COUNTER_MOD == 0):
-            start_image = time.time()
+            # start_image = time.time()
             lastTime, imageCount = saveImage(lastTime, imageCount, "fp", ax, o1, cam, dist, yaw, pitch, camTargetPos)
-            image_save_time = time.time() - start_image
+            # image_save_time = time.time() - start_image
             # print ("Image save time", image_save_time)
           x1, y1, o1, keyboard = moveKeyboard(x1, y1, o1, [husky, robotID])
           moveUR5Keyboard(robotID, wings, gotoWing)
@@ -163,7 +163,7 @@ def execute(actions):
           keepOrientation(fixed_orientation)
           # dist, yaw, pitch, camX, camY = changeCameraOnKeyboard(dist, yaw, pitch, camX, camY)
 
-          start = time.time()
+          # start = time.time()
           p.stepSimulation() 
           # print ("Step simulation time ",time.time() - start) 
           # print(checkGoal(goal_file, constraints, states, id_lookup))
@@ -176,7 +176,7 @@ def execute(actions):
             target = actions[action_index][1]
             x1, y1, o1, done = move(x1, y1, o1, [husky, robotID], target, keyboard, speed)
 
-          if(actions[action_index][0] == "moveZ"):
+          elif(actions[action_index][0] == "moveZ"):
             target = actions[action_index][1]
             x1, y1, o1, done = move(x1, yd1, o1, [husky, robotID], target, keyboard, speed, up=True)
 
@@ -248,10 +248,10 @@ def execute(actions):
             if action_index < len(actions):
               print("Executing action: ", actions[action_index])
             done = False
-          total_time_taken = time.time() - start_here
+          # total_time_taken = time.time() - start_here
           # print ("Total", total_time_taken)
           # print ("Fraction", image_save_time/total_time_taken)
-          start_here = time.time()
+          # start_here = time.time()
 
 def destroy():
   p.disconnect()

@@ -203,8 +203,8 @@
             "constraints": ["horizontal"],
 			"tolerance": 1.1,
 			"constraint_link": -1,
-			"constraint_pos": [[0, 0, 0], [0, 0.1, 0], [0, -0.1, 0]],
-			"ur5_dist": [0.4,0,0]
+			"constraint_pos": [[0, 0, 0.05], [0, 0.1, 0.05], [0, -0.1, 0.05]],
+			"ur5_dist": [0.3,0,0]
         },
         {
             "name": "tray2",
@@ -213,7 +213,7 @@
 			"tolerance": 0.9,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0], [0, 0.1, 0], [0, -0.1, 0]],
-			"ur5_dist": [0.4,0,0]
+			"ur5_dist": [0.3,0,0]
         },
         {
             "name": "bottle_blue",
