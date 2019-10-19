@@ -96,7 +96,7 @@ mentionNames(id_lookup)
 # Save state
 world_states = []
 id1 = p.saveState()
-world_states.append([id1, x1, y1, o1])
+world_states.append([id1, x1, y1, o1, constraints])
 print(id_lookup)
 print(fixed_orientation)
 
@@ -123,8 +123,8 @@ def showObject(obj):
   saveImage(0, imageCount, 'fp', ax, math.atan2(y,x)%(2*math.pi), cam, 2, yaw, pitch, [x, y, z])
 
 def undo():
-  global world_states, x1, y1, o1, imageCount
-  x1, y1, o1, world_states = restoreOnInput(world_states, x1, y1, o1)
+  global world_states, x1, y1, o1, imageCount, constraints
+  x1, y1, o1, constraints, world_states = restoreOnInput(world_states, x1, y1, o1, constraints)
   saveImage(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos)
 
 def firstImage():
@@ -239,7 +239,7 @@ def execute(actions):
 
           elif(actions[action_index][0] == "saveBulletState"):
             id1 = p.saveState()
-            world_states.append([id1, x1, y1, o1])
+            world_states.append([id1, x1, y1, o1, constraints])
             done = True
 
           if done:

@@ -175,20 +175,27 @@ def restoreOnKeyboard(world_states, x1, y1, o1):
             return x, y, o, world_states
     return x1, y1, o1, world_states
 
-def restoreOnInput(world_states, x1, y1, o1):
+def restoreOnInput(world_states, x1, y1, o1, constraints):
     """
     Restore to last saved state when this function is called
     """
     print(world_states)
     if len(world_states) != 0:
         world_states.pop()
-        id1, x, y, o = world_states[-1]
+        id1, x, y, o, cids_old = world_states[-1]
+        cids_list_old = []
+        for obj in cids_old.keys():
+            cids_list_old.append(cids_old[obj][1])
+        for obj in constraints.keys():
+            if not constraints[obj][1] in cids_list_old:
+                p.removeConstraint(constraints[obj][1])
+                del(constraints[obj])
         p.restoreState(stateId=id1)
         # q=p.getQuaternionFromEuler((0,0,0))
         # p.resetBasePositionAndOrientation(([0, 0, 0], q)) # Get robot to home when undo
         # return 0, 0, 0, world_states
-        return x, y, o, world_states
-    return x1, y1, o1, world_states
+        return x, y, o, constraints, world_states
+    return x1, y1, o1, constraints, world_states
 
 
 def checkGoal(goal_file, constraints, states, id_lookup):
