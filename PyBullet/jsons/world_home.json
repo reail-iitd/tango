@@ -262,6 +262,30 @@
 			"position": [0.2,-4.4,0.1],
 			"orientation": [],
 			"states": {}
-		}
+		},
+		{
+			"name": "mop",
+			"position": [-1.5,4,0],
+			"orientation": [],
+			"states": {}
+		},
+		{
+			"name": "sponge",
+			"position": [2.5, 1.2, 0.2],
+			"orientation": [],
+			"states": {}
+		},
+		{
+			"name": "vacuum",
+			"position": [2.5, -0.8, 0.2],
+			"orientation": [],
+			"states": {}
+		},
+		{
+			"name": "dirt",
+			"position": [-2.5, -0.8, 0],
+			"orientation": [],
+			"states": {}
+		}							
 	]
 }

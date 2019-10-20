@@ -1,20 +1,16 @@
 {
 	"actions":[
 		{
-			"name": "pushTo",
-			"args": ["stool", "fridge"]
-		},
-		{
-			"name": "climbUp",
-			"args": ["stool"]
+			"name": "moveTo",
+			"args": ["mop"]
 		},
 		{
 			"name": "pick",
-			"args": ["milk"]
+			"args": ["mop"]
 		},
 		{
-			"name": "climbDown",
-			"args": ["stool"]
+			"name": "clean",
+			"args": ["dirt"]
 		}
 	]
 }

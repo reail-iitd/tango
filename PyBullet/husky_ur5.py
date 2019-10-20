@@ -28,6 +28,8 @@ enclosures = ['fridge', 'cupboard']
 sticky = []
 # Fixed objects
 fixed = []
+# Has cleaner
+cleaner = False
 
 # Connect to Bullet using GUI mode
 light = p.connect(p.GUI)
@@ -141,7 +143,7 @@ def firstImage():
   lastTime, imageCount= saveImage(-250, imageCount, perspective, ax, o1, cam, dist, 50, pitch, camTargetPos, wall_id)
 
 def execute(actions):
-  global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount
+  global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount, cleaner
   # List of low level actions
   actions = convertActions(actions)
   print(actions)
@@ -219,6 +221,13 @@ def execute(actions):
               if (actions[action_index][2] in enclosures
                   and isClosed(actions[action_index][2], states, id_lookup)):
                   raise Exception("Enclosure is closed, can not place object inside")
+              if (actions[action_index][2] == 'ur5' 
+                  and(objDistance(actions[action_index][1], actions[action_index][2], id_lookup)) > 2):
+                  raise Exception("Object too far away, move closer to it")
+              if ("mop" in actions[action_index][1] 
+                  or "sponge" in actions[action_index][1] 
+                  or "vacuum" in actions[action_index][1]):
+                  cleaner = True
               cid = constrain(actions[action_index][1], 
                               actions[action_index][2], 
                               cons_link_lookup, 
@@ -233,6 +242,7 @@ def execute(actions):
             if time.time()-startTime > 1:
               done = True; waiting = False
             if not waiting and not done:
+              cleaner = False
               removeConstraint(constraints, actions[action_index][1], actions[action_index][2])
               del constraints[actions[action_index][1]]
               waiting = True
@@ -256,6 +266,12 @@ def execute(actions):
             (x2, y2, z2), _ = p.getBasePositionAndOrientation(target)
             targetLoc = [x2, y2+(2 if y2 < 0 else -2), 0]
             x1, y1, o1, done = move(x1, y1, o1, [husky, robotID], targetLoc, keyboard, speed, up=True)
+
+          elif(actions[action_index][0] == "clean"):
+            if not cleaner:
+                raise Exception("No cleaning agent with the robot")
+            p.changeVisualShape(id_lookup[actions[action_index][1]], -1, rgbaColor = [1, 1, 1, 0])
+            done = True
 
           elif(actions[action_index][0] == "addTo"):
             obj = actions[action_index][1]
