@@ -283,18 +283,15 @@ def isClosed(enclosure, states, id_lookup):
             abs(d2-d2) <= 0.01)
     return closed
 
-def saveImage(lastTime, imageCount, display, ax, o1, cam, dist, yaw, pitch, camTargetPos):
+def saveImage(lastTime, imageCount, display, ax, o1, cam, dist, yaw, pitch, camTargetPos, id_lookup):
     current = current_milli_time()
     if (current - lastTime) < 100:
         return lastTime, imageCount
     img_arr = []; img_arr2 = []; rgb = []
     if display == "fp" or display == "both":
-        # dist = min(
-        #     abs(abs(camTargetPos[0] - 3*math.cos(o1)) - 4), 
-        #     abs(abs(camTargetPos[0] - 3*math.cos(o1)) + 4), 
-        #     abs(abs(camTargetPos[1] - 3*math.sin(o1)) - 5),
-        #     abs(abs(camTargetPos[1] - 3*math.sin(o1)) + 5),
-        #     3)
+        camPos = [camTargetPos[0] - 3*math.cos(o1), camTargetPos[1] - 3*math.sin(o1)]
+        if camPos[0] > 4 or camPos[0] < -4 or camPos[1] > 5 or camPos[1] < -5:
+            p.changeVisualShape(id_lookup['walls'], -1, rgbaColor = [1, 1, 1, 0.4])
         viewMatrixFP = p.computeViewMatrixFromYawPitchRoll(camTargetPos, 3, -90+(o1*180/math.pi), -35,
                                                                 roll, upAxisIndex)
         img_arr = p.getCameraImage(pixelWidth,
@@ -305,6 +302,7 @@ def saveImage(lastTime, imageCount, display, ax, o1, cam, dist, yaw, pitch, camT
                                       lightDirection=[1, 1, 1],
                                       renderer=p.ER_BULLET_HARDWARE_OPENGL,
                                       flags=p.ER_NO_SEGMENTATION_MASK)
+        p.changeVisualShape(id_lookup['walls'], -1, rgbaColor = [1, 1, 1, 1])
     if display == "tp" or display == "both":
         viewMatrixTP = p.computeViewMatrixFromYawPitchRoll(camTargetPos,
                                                             dist, yaw, pitch,
