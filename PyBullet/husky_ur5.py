@@ -23,8 +23,11 @@ COUNTER_MOD = 50
 # Enclosures
 enclosures = ['fridge', 'cupboard']
 
+# Semantic objects
 # Sticky objects
 sticky = []
+# Fixed objects
+fixed = []
 
 # Connect to Bullet using GUI mode
 light = p.connect(p.GUI)
@@ -178,14 +181,20 @@ def execute(actions):
             break
 
           if(actions[action_index][0] == "move"):
+            if "husky" in fixed:
+              raise Exception("Husky can not move as it is on a stool")    
             target = actions[action_index][1]
             x1, y1, o1, done = move(x1, y1, o1, [husky, robotID], target, keyboard, speed)
 
           elif(actions[action_index][0] == "moveZ"):
+            if "husky" in fixed:
+                  raise Exception("Husky can not move as it is on a stool")    
             target = actions[action_index][1]
-            x1, y1, o1, done = move(x1, yd1, o1, [husky, robotID], target, keyboard, speed, up=True)
+            x1, y1, o1, done = move(x1, y1, o1, [husky, robotID], target, keyboard, speed, up=True)
 
           elif(actions[action_index][0] == "moveTo"):
+            if "husky" in fixed:
+                  raise Exception("Husky can not move as it is on a stool")    
             target = actions[action_index][1]
             x1, y1, o1, done = moveTo(x1, y1, o1, [husky, robotID], id_lookup[target], 
                                     tolerances[target], 
@@ -236,10 +245,32 @@ def execute(actions):
                 raise Exception("Object not sticky")  
             done = changeState(id_lookup[actions[action_index][1]], states[actions[action_index][1]][state])   
 
+          elif(actions[action_index][0] == "climbUp"):
+            target = id_lookup[actions[action_index][1]]
+            (x2, y2, z2), _ = p.getBasePositionAndOrientation(target)
+            targetLoc = [x2, y2, z2+0.4]
+            x1, y1, o1, done = move(x1, y1, o1, [husky, robotID], targetLoc, keyboard, speed, up=True)
+          
+          elif(actions[action_index][0] == "climbDown"):
+            target = id_lookup[actions[action_index][1]]
+            (x2, y2, z2), _ = p.getBasePositionAndOrientation(target)
+            targetLoc = [x2, y2+(2 if y2 < 0 else -2), 0]
+            x1, y1, o1, done = move(x1, y1, o1, [husky, robotID], targetLoc, keyboard, speed, up=True)
+
           elif(actions[action_index][0] == "addTo"):
             obj = actions[action_index][1]
             if actions[action_index][2] == "sticky":
               sticky.append(obj) 
+            elif actions[action_index][2] == "fixed":
+              fixed.append(obj) 
+            done = True 
+          
+          elif(actions[action_index][0] == "removeFrom"):
+            obj = actions[action_index][1]
+            if actions[action_index][2] == "sticky":
+              sticky.remove(obj) 
+            elif actions[action_index][2] == "fixed":
+              fixed.remove(obj) 
             done = True 
 
           elif(actions[action_index][0] == "saveBulletState"):

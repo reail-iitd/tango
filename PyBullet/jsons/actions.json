@@ -148,6 +148,21 @@
                 ["moveTo", "target"],
 				["removeConstrain", "object", "ur5"]
 			]
+		},
+		{
+			"name": "climbUp",
+			"args": ["object"],
+			"execution":[
+                ["moveTo", "object"],
+                ["moveZ", "object+Z=0.4"]
+			]
+		},
+		{
+			"name": "climbDown",
+			"args": ["object"],
+			"execution":[
+                [["moveZ", "object-Z"]]
+			]
 		}
 	]
 }

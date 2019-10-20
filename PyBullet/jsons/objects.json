@@ -326,7 +326,7 @@
 		{
             "name": "milk",
             "urdf": "models/urdf/milk.urdf",
-            "constraints": [],
+            "constraints": ["horizontal"],
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0]],
@@ -367,6 +367,15 @@
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0]],
 			"ur5_dist": [0.3,0,0]
+		},
+		{
+            "name": "stool",
+            "urdf": "models/urdf/stool.urdf",
+            "constraints": ["horizontal"],
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0.7]],
+			"ur5_dist": [0.4,0,0]
 		}
 	]
 }

@@ -1,12 +1,20 @@
 {
 	"actions":[
 		{
-			"name": "apply",
-			"args": ["glue", "paper"]
+			"name": "pushTo",
+			"args": ["stool", "fridge"]
 		},
 		{
-			"name": "stick",
-			"args": ["paper", "walls"]
+			"name": "climbUp",
+			"args": ["stool"]
+		},
+		{
+			"name": "pick",
+			"args": ["milk"]
+		},
+		{
+			"name": "climbDown",
+			"args": ["stool"]
 		}
 	]
 }
