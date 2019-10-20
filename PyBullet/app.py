@@ -18,15 +18,19 @@ dict_of_predicates = {
 		"Push object to destination": {"Object to push" : "dropdown-objects", "Destination (near this object)": "dropdown-objects"},
 		"Pick source and place on destination": {"Object to pick": "dropdown-objects", "Object to place on": "dropdown-objects"},
         "Move robot to object" : {"Destination (near this object)": "dropdown-objects"},
-        "Open/Close object" : {"Object to open or close": "dropdown-objects", "Open or Close it": "dropdown-states"}
-	}
+        "Open/Close object" : {"Object to open or close": "dropdown-objects", "Open or Close it": "dropdown-states"},
+        "Pick Object": {"Object to pick": "dropdown-objects"},
+        "Drop Object on destination": {"Object to drop": "dropdown-objects", "Object to drop on": "dropdown-objects"}
+    }
 
 dict_predicate_to_action = {
     # "Move object to destination": "moveAToB",
     "Push object to destination": "pushTo",
     "Pick source and place on destination": "pickNplaceAonB",
     "Move robot to object": "moveTo",
-    "Open/Close object" : "changeState"
+    "Open/Close object" : "changeState",
+    "Pick Object": "pick",
+    "Drop Object on destination": "dropTo"
 }
 
 # Unnecessary (can be removed)

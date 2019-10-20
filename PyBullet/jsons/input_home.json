@@ -1,56 +1,20 @@
 {
 	"actions":[
 		{
-			"name": "pickNplaceAonB",
-			"args": ["book", "box"]
-		},
-		{
-			"name":  "move",
-			"args": [[0,0,0]]
-		},
-		{
-			"name":  "pickNplaceAonB",
-			"args": ["cube_red", "tray"]
-		},
-		{
-			"name":  "pickNplaceAonB",
-			"args": ["cube_gray", "tray"]
-		},
-		{
-			"name":  "pick",
-			"args": ["tray"]
-		},
-		{
-			"name":  "moveTo",
-			"args": ["box"]
-		},
-		{
-			"name":  "dropTo",
-			"args": [["cube_red", "cube_gray"], "box"]
-		},
-		{
-			"name":  "place",
-			"args": ["tray", "table"]
-		},
-		{
 			"name": "pushTo",
-			"args": ["box", "cupboard"]
+			"args": ["stool", "fridge"]
 		},
 		{
-			"name":  "move",
-			"args": [[0,0,0]]
+			"name": "climbUp",
+			"args": ["stool"]
 		},
 		{
-			"name": "changeState",
-			"args": ["fridge", "open"]
+			"name": "pick",
+			"args": ["milk"]
 		},
 		{
-			"name": "pickNplaceAonB",
-			"args": ["milk", "fridge"]
-		},
-		{
-			"name": "changeState",
-			"args": ["fridge", "close"]
+			"name": "climbDown",
+			"args": ["stool"]
 		}
 	]
 }

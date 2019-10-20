@@ -175,20 +175,27 @@ def restoreOnKeyboard(world_states, x1, y1, o1):
             return x, y, o, world_states
     return x1, y1, o1, world_states
 
-def restoreOnInput(world_states, x1, y1, o1):
+def restoreOnInput(world_states, x1, y1, o1, constraints):
     """
     Restore to last saved state when this function is called
     """
     print(world_states)
     if len(world_states) != 0:
         world_states.pop()
-        id1, x, y, o = world_states[-1]
+        id1, x, y, o, cids_old = world_states[-1]
+        cids_list_old = []
+        for obj in cids_old.keys():
+            cids_list_old.append(cids_old[obj][1])
+        for obj in constraints.keys():
+            if not constraints[obj][1] in cids_list_old:
+                p.removeConstraint(constraints[obj][1])
+                del(constraints[obj])
         p.restoreState(stateId=id1)
         # q=p.getQuaternionFromEuler((0,0,0))
         # p.resetBasePositionAndOrientation(([0, 0, 0], q)) # Get robot to home when undo
         # return 0, 0, 0, world_states
-        return x, y, o, world_states
-    return x1, y1, o1, world_states
+        return x, y, o, constraints, world_states
+    return x1, y1, o1, constraints, world_states
 
 
 def checkGoal(goal_file, constraints, states, id_lookup):
@@ -276,18 +283,15 @@ def isClosed(enclosure, states, id_lookup):
             abs(d2-d2) <= 0.01)
     return closed
 
-def saveImage(lastTime, imageCount, display, ax, o1, cam, dist, yaw, pitch, camTargetPos):
+def saveImage(lastTime, imageCount, display, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id):
     current = current_milli_time()
     if (current - lastTime) < 100:
         return lastTime, imageCount
     img_arr = []; img_arr2 = []; rgb = []
     if display == "fp" or display == "both":
-        # dist = min(
-        #     abs(abs(camTargetPos[0] - 3*math.cos(o1)) - 4), 
-        #     abs(abs(camTargetPos[0] - 3*math.cos(o1)) + 4), 
-        #     abs(abs(camTargetPos[1] - 3*math.sin(o1)) - 5),
-        #     abs(abs(camTargetPos[1] - 3*math.sin(o1)) + 5),
-        #     3)
+        camPos = [camTargetPos[0] - 3*math.cos(o1), camTargetPos[1] - 3*math.sin(o1)]
+        if wall_id > -1 and (abs(camPos[0]) > 4 or abs(camPos[1]) > 5):
+            p.changeVisualShape(wall_id, -1, rgbaColor = [1, 1, 1, 0.4])
         viewMatrixFP = p.computeViewMatrixFromYawPitchRoll(camTargetPos, 3, -90+(o1*180/math.pi), -35,
                                                                 roll, upAxisIndex)
         img_arr = p.getCameraImage(pixelWidth,
@@ -298,8 +302,10 @@ def saveImage(lastTime, imageCount, display, ax, o1, cam, dist, yaw, pitch, camT
                                       lightDirection=[1, 1, 1],
                                       renderer=p.ER_BULLET_HARDWARE_OPENGL,
                                       flags=p.ER_NO_SEGMENTATION_MASK)
+        if wall_id > -1:
+            p.changeVisualShape(wall_id, -1, rgbaColor = [1, 1, 1, 1])
     if display == "tp" or display == "both":
-        viewMatrixTP = p.computeViewMatrixFromYawPitchRoll([0,0,0],
+        viewMatrixTP = p.computeViewMatrixFromYawPitchRoll(camTargetPos,
                                                             dist, yaw, pitch,
                                                             roll, upAxisIndex)
         img_arr2 = p.getCameraImage(pixelWidth,

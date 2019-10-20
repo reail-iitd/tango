@@ -5,13 +5,14 @@ def convertActions(inp):
 
     for high_level_action in inp['actions']:
         args = high_level_action['args']
-        print(args)
+        print("Action", high_level_action['name'], args)
         if high_level_action['name'] == 'pickNplaceAonB':
             action_list.extend([
                 ["moveTo", args[0]],
                 ["changeWing", "up"],
                 ["constrain", args[0], "ur5"],
                 ["moveTo", args[1]],
+                ["removeConstraint", args[0], "ur5"],
                 ["constrain", args[0], args[1]]
             ])
 
@@ -71,7 +72,6 @@ def convertActions(inp):
 
         elif high_level_action['name'] == 'pick':
             action_list.extend([
-                ["moveTo", args[0]],
                 ["changeWing", "up"],
                 ["constrain", args[0], "ur5"]
             ])
@@ -84,8 +84,7 @@ def convertActions(inp):
             ])
 
         elif high_level_action['name'] == 'dropTo':
-            for obj in args[0]:
-                action_list.append(["constrain", obj, args[1]])
+            action_list.extend([["moveTo", args[1]], ["constrain", args[0], args[1]]])
         
         elif high_level_action['name'] == 'drop':
             action_list.append(["removeConstraint", args[0], "ur5"])
@@ -124,6 +123,19 @@ def convertActions(inp):
                 ["moveTo", args[1]],
                 ["removeConstraint", args[0], "ur5"],
                 ["addTo", args[1], "sticky"]
+            ])
+        
+        elif high_level_action['name'] == 'climbUp':
+            action_list.extend([
+                ["moveTo", args[0]],
+                ["climbUp", args[0]],
+                ["addTo", "husky", "fixed"]
+            ])
+        
+        elif high_level_action['name'] == 'climbDown':
+                action_list.extend([
+                ["removeFrom", "husky", "fixed"],
+                ["climbDown", args[0]]
             ])
 
         action_list.append(["saveBulletState"])

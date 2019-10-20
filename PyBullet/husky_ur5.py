@@ -10,6 +10,7 @@ from src.ur5 import *
 from src.utils import *
 from src.basic_actions import *
 from src.actions import *
+import math
 
 object_file = "jsons/objects.json"
 wings_file = "jsons/wings.json"
@@ -22,8 +23,11 @@ COUNTER_MOD = 50
 # Enclosures
 enclosures = ['fridge', 'cupboard']
 
+# Semantic objects
 # Sticky objects
 sticky = []
+# Fixed objects
+fixed = []
 
 # Connect to Bullet using GUI mode
 light = p.connect(p.GUI)
@@ -95,7 +99,7 @@ mentionNames(id_lookup)
 # Save state
 world_states = []
 id1 = p.saveState()
-world_states.append([id1, x1, y1, o1])
+world_states.append([id1, x1, y1, o1, constraints])
 print(id_lookup)
 print(fixed_orientation)
 
@@ -105,6 +109,11 @@ if args.logging or args.display:
 
 # Default perspective
 perspective = "tp"
+
+# Wall to make trasparent when camera outside
+wall_id = -1
+if 'home' in args.world:
+  wall_id = id_lookup['walls']
  
 def changeView(direction):
   global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount, perspective
@@ -113,17 +122,23 @@ def changeView(direction):
   yaw = yaw - 5 if direction == "left" else yaw + 5 if direction == "right" else yaw
   print(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos)
   perspective = "tp" if perspective == "fp" and direction == None else "fp" if direction == None else perspective
-  lastTime, imageCount = saveImage(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos)
+  lastTime, imageCount = saveImage(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id)
+
+
+def showObject(obj):
+  global world_states, x1, y1, o1, imageCount
+  ((x, y, z), (a1, b1, c1, d1)) = p.getBasePositionAndOrientation(id_lookup[obj])
+  saveImage(0, imageCount, 'fp', ax, math.atan2(y,x)%(2*math.pi), cam, 2, yaw, pitch, [x, y, z], wall_id)
 
 def undo():
-  global world_states, x1, y1, o1, imageCount
-  x1, y1, o1, world_states = restoreOnInput(world_states, x1, y1, o1)
-  lastTime, imageCount = saveImage(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos)
+  global world_states, x1, y1, o1, imageCount, constraints
+  x1, y1, o1, constraints, world_states = restoreOnInput(world_states, x1, y1, o1, constraints)
+  saveImage(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id)
 
 def firstImage():
   global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount
   camTargetPos = [x1, y1, 0]
-  lastTime, imageCount= saveImage(-250, imageCount, perspective, ax, o1, cam, dist, 50, pitch, camTargetPos)
+  lastTime, imageCount= saveImage(-250, imageCount, perspective, ax, o1, cam, dist, 50, pitch, camTargetPos, wall_id)
 
 def execute(actions):
   global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount
@@ -138,15 +153,15 @@ def execute(actions):
 
   # Start simulation
   if True:
-      start_here = time.time()
+      # start_here = time.time()
       counter = 0
       while(True):
           counter += 1
           camTargetPos = [x1, y1, 0]
           if (args.logging or args.display) and (counter % COUNTER_MOD == 0):
-            start_image = time.time()
-            lastTime, imageCount = saveImage(lastTime, imageCount, "fp", ax, o1, cam, dist, yaw, pitch, camTargetPos)
-            image_save_time = time.time() - start_image
+            # start_image = time.time()
+            lastTime, imageCount = saveImage(lastTime, imageCount, "fp", ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id)
+            # image_save_time = time.time() - start_image
             # print ("Image save time", image_save_time)
           x1, y1, o1, keyboard = moveKeyboard(x1, y1, o1, [husky, robotID])
           moveUR5Keyboard(robotID, wings, gotoWing)
@@ -156,7 +171,7 @@ def execute(actions):
           keepOrientation(fixed_orientation)
           # dist, yaw, pitch, camX, camY = changeCameraOnKeyboard(dist, yaw, pitch, camX, camY)
 
-          start = time.time()
+          # start = time.time()
           p.stepSimulation() 
           # print ("Step simulation time ",time.time() - start) 
           # print(checkGoal(goal_file, constraints, states, id_lookup))
@@ -166,14 +181,20 @@ def execute(actions):
             break
 
           if(actions[action_index][0] == "move"):
+            if "husky" in fixed:
+              raise Exception("Husky can not move as it is on a stool")    
             target = actions[action_index][1]
             x1, y1, o1, done = move(x1, y1, o1, [husky, robotID], target, keyboard, speed)
 
-          if(actions[action_index][0] == "moveZ"):
+          elif(actions[action_index][0] == "moveZ"):
+            if "husky" in fixed:
+                  raise Exception("Husky can not move as it is on a stool")    
             target = actions[action_index][1]
-            x1, y1, o1, done = move(x1, yd1, o1, [husky, robotID], target, keyboard, speed, up=True)
+            x1, y1, o1, done = move(x1, y1, o1, [husky, robotID], target, keyboard, speed, up=True)
 
           elif(actions[action_index][0] == "moveTo"):
+            if "husky" in fixed:
+                  raise Exception("Husky can not move as it is on a stool")    
             target = actions[action_index][1]
             x1, y1, o1, done = moveTo(x1, y1, o1, [husky, robotID], id_lookup[target], 
                                     tolerances[target], 
@@ -224,15 +245,37 @@ def execute(actions):
                 raise Exception("Object not sticky")  
             done = changeState(id_lookup[actions[action_index][1]], states[actions[action_index][1]][state])   
 
+          elif(actions[action_index][0] == "climbUp"):
+            target = id_lookup[actions[action_index][1]]
+            (x2, y2, z2), _ = p.getBasePositionAndOrientation(target)
+            targetLoc = [x2, y2, z2+0.4]
+            x1, y1, o1, done = move(x1, y1, o1, [husky, robotID], targetLoc, keyboard, speed, up=True)
+          
+          elif(actions[action_index][0] == "climbDown"):
+            target = id_lookup[actions[action_index][1]]
+            (x2, y2, z2), _ = p.getBasePositionAndOrientation(target)
+            targetLoc = [x2, y2+(2 if y2 < 0 else -2), 0]
+            x1, y1, o1, done = move(x1, y1, o1, [husky, robotID], targetLoc, keyboard, speed, up=True)
+
           elif(actions[action_index][0] == "addTo"):
             obj = actions[action_index][1]
             if actions[action_index][2] == "sticky":
               sticky.append(obj) 
+            elif actions[action_index][2] == "fixed":
+              fixed.append(obj) 
+            done = True 
+          
+          elif(actions[action_index][0] == "removeFrom"):
+            obj = actions[action_index][1]
+            if actions[action_index][2] == "sticky":
+              sticky.remove(obj) 
+            elif actions[action_index][2] == "fixed":
+              fixed.remove(obj) 
             done = True 
 
           elif(actions[action_index][0] == "saveBulletState"):
             id1 = p.saveState()
-            world_states.append([id1, x1, y1, o1])
+            world_states.append([id1, x1, y1, o1, constraints])
             done = True
 
           if done:
@@ -241,10 +284,10 @@ def execute(actions):
             if action_index < len(actions):
               print("Executing action: ", actions[action_index])
             done = False
-          total_time_taken = time.time() - start_here
+          # total_time_taken = time.time() - start_here
           # print ("Total", total_time_taken)
           # print ("Fraction", image_save_time/total_time_taken)
-          start_here = time.time()
+          # start_here = time.time()
 
 def destroy():
   p.disconnect()
