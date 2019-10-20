@@ -162,7 +162,7 @@ def execute(actions):
           # print(checkGoal(goal_file, constraints, states, id_lookup))
 
           if action_index >= len(actions):
-            lastTime, imageCount = saveImage(lastTime, imageCount, "fp", ax, o1, cam, dist, yaw, pitch, camTargetPos)
+            lastTime, imageCount = saveImage(lastTime, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos)
             break
 
           if(actions[action_index][0] == "move"):
