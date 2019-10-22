@@ -81,14 +81,14 @@
 			"position": [0, 4.5, 0],
 			"orientation": [],
 			"states": {},
-			"rename" : "bigger table"
+			"rename" : "bigger_table"
 		},
 		{
 			"name": "table2",
 			"position": [-1, -4.5, 0],
 			"orientation": [],
 			"states": [],
-			"rename" : "smaller table"
+			"rename" : "smaller_table"
 		},
 		{
 			"name": "couch",
@@ -122,21 +122,21 @@
 			"position": [-0.5,4.2,0.7],
 			"orientation": [],
 			"states": [],
-			"rename": "gray cube"
+			"rename": "gray_cube"
 		},
 		{
 			"name": "cube_green",
 			"position": [-0.5,4.3,0.7],
 			"orientation": [],
 			"states": [],
-			"rename": "green cube"	
+			"rename": "green_cube"	
 		},
 		{
 			"name": "cube_red",
 			"position": [-0.5,4.4,0.7],
 			"orientation": [],
 			"states": [],
-			"rename": "red cube"	
+			"rename": "red_cube"	
 		},
 		{
 			"name": "tray",
@@ -155,21 +155,21 @@
 			"position": [1,-4,0],
 			"orientation": [],
 			"states": [],
-			"rename": "blue bottle"	
+			"rename": "blue_bottle"	
 		},
 		{
 			"name": "bottle_gray",
 			"position": [1.2,-4,0],
 			"orientation": [],
 			"states": [],
-			"rename": "gray bottle"	
+			"rename": "gray_bottle"	
 		},
 		{
 			"name": "bottle_red",
 			"position": [1.4,-4,0],
 			"orientation": [],
 			"states": [],
-			"rename": "red bottle"
+			"rename": "red_bottle"
 		},
 		{
 			"name": "box",

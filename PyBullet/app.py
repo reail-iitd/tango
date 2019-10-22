@@ -10,8 +10,9 @@ import time
 
 queue_from_webapp_to_simulator = mp.Queue()
 queue_from_simulator_to_webapp = mp.Queue()
-
+workerId = None
 app = Flask(__name__)
+moves_to_show = []
 
 dict_of_predicates = {
 		# "Move object to destination":{"source-object" : "dropdown-objects", "destination (near object)": "dropdown-objects"},
@@ -67,13 +68,25 @@ def simulator(queue_from_webapp_to_simulator, queue_from_simulator_to_webapp):
             husky_ur5.changeView(inp["rotate"])
         elif "undo" in inp:
             husky_ur5.undo()
+            if (len(moves_to_show) > 0):
+                moves_to_show.pop(-1)
+        elif "showObject" in inp:
+            husky_ur5.showObject(inp["showObject"])
         else:
             husky_ur5.execute(inp)
             called_undo_before = False
 
-@app.route('/')
+@app.route('/', methods = ["GET"])
 def index():
-    return render_template('index.html', list_of_predicates = dict_of_predicates.keys())
+    if (request.method == "GET"):
+        return render_template('index.html', list_of_predicates = dict_of_predicates.keys(), workerId = workerId, world_objects = world_objects)
+
+@app.route('/workerId', methods = ["POST"])
+def addworkerid():
+    global workerId
+    workerId = request.form["workerId"]
+    print (workerId)
+    return render_template('index.html', list_of_predicates = dict_of_predicates.keys(), workerId = workerId, world_objects = world_objects)
 
 @app.route("/arguments")
 def return_arguments_for_predicate():
@@ -98,10 +111,12 @@ def execute_move():
     print (request.form)
     predicate = request.form["predicate"]
     l = []
+    front_end_objects = []
     i = 0
     while True:
         if ("arg" + str(i) in request.form):
             front_end_object = request.form["arg" + str(i)]
+            front_end_objects.append(front_end_object)
             if front_end_object in renamed_objects:
                 l.append(renamed_objects[front_end_object])
             else:
@@ -118,7 +133,22 @@ def execute_move():
         ]
     }
     print (d)
+    move_string = predicate + " ( " + str(front_end_objects[0])
+    for i in range(1,len(front_end_objects)):
+        move_string += " ," + str(front_end_objects[i])
+    move_string += " )"
+    print (move_string)
+    moves_to_show.append(move_string)
     queue_from_webapp_to_simulator.put(d)
+    return move_string
+
+@app.route("/showObject", methods = ["POST"])
+def showObject():
+    object_to_show = request.form["object"]
+    if object_to_show in renamed_objects:
+        object_to_show = renamed_objects[object_to_show]
+    print (object_to_show)
+    queue_from_webapp_to_simulator.put({"showObject": object_to_show})
     return ""
 
 @app.route("/rotateCameraLeft", methods = ["POST"])
