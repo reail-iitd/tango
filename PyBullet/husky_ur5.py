@@ -130,7 +130,9 @@ def changeView(direction):
 def showObject(obj):
   global world_states, x1, y1, o1, imageCount
   ((x, y, z), (a1, b1, c1, d1)) = p.getBasePositionAndOrientation(id_lookup[obj])
-  saveImage(0, imageCount, 'fp', ax, math.atan2(y,x)%(2*math.pi), cam, 2, yaw, pitch, [x, y, z], wall_id)
+  lastTime, imageCount = saveImage(0, imageCount, 'fp', ax, math.atan2(y,x)%(2*math.pi), cam, 2, yaw, pitch, [x, y, z], wall_id)
+  time.sleep(1)
+  firstImage()
 
 def undo():
   global world_states, x1, y1, o1, imageCount, constraints

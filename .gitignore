@@ -3,7 +3,7 @@ GUI/vizForDSE/*
 
 *__pycache*
 venv/
-PyBullet/logs/
+PyBullet/logs/*
 
 flask-video-streaming/
 vscode.code-workspace

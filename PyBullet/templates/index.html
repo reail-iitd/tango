@@ -59,12 +59,6 @@
 			  	<p> You are expected to explore the simulator and complete the tutorial using these instructions </p>
 			  </div>
 			</div>
-			<h4>General Instructions</h4>
-			<ul>
-				<li><strong>Please take a look at the sample example which has been provided before starting.</strong></li>
-				<li>Keep in mind the weight, feel and physical properties. We have tried to simulate the real world.</li>
-				<li>Please refrain from giving instructions not possible in the real world. However we support creativity.</li>
-			</ul>
 			<h4>Explore (Discover where different objects are kept)</h4>
 			{% for object in world_objects %}
 				<button id="{{object}}" class="btn btn-info">{{object}}</button>
@@ -119,6 +113,14 @@
 		  	<div class="col-sm-2">
 		  		<img src="/static/right.png" style="width:50px;height:50px;" alt="Rotate camera right" onclick="rotateRight()">
 		  	</div>
+		  </div>
+		  <div class="row">
+		  	<h4>General Instructions</h4>
+			<ul>
+				<li><strong>Please take a look at the sample example which has been provided before starting.</strong></li>
+				<li>Keep in mind the weight, feel and physical properties. We have tried to simulate the real world.</li>
+				<li>Please refrain from giving instructions not possible in the real world. However we support creativity.</li>
+			</ul>
 		  </div>
 		</div>
 	</div>
