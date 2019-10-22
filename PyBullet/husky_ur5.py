@@ -124,13 +124,15 @@ def changeView(direction):
   yaw = yaw - 5 if direction == "left" else yaw + 5 if direction == "right" else yaw
   print(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos)
   perspective = "tp" if perspective == "fp" and direction == None else "fp" if direction == None else perspective
-  lastTime, imageCount = saveImage(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id)
+  saveImage(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id)
 
 
 def showObject(obj):
   global world_states, x1, y1, o1, imageCount
   ((x, y, z), (a1, b1, c1, d1)) = p.getBasePositionAndOrientation(id_lookup[obj])
-  lastTime, imageCount = saveImage(0, imageCount, 'fp', ax, math.atan2(y,x)%(2*math.pi), cam, 2, yaw, pitch, [x, y, z], wall_id)
+  saveImage(0, imageCount, 'fp', ax, math.atan2(y,x)%(2*math.pi), cam, 2, yaw, pitch, [x, y, z], wall_id)
+  time.sleep(0.5)
+  saveImage(0, imageCount, 'fp', ax, math.atan2(y,x)%(2*math.pi), cam, 7, yaw, pitch, [x, y, z], wall_id)
   time.sleep(1)
   firstImage()
 
@@ -164,7 +166,7 @@ def execute(actions):
           camTargetPos = [x1, y1, 0]
           if (args.logging or args.display) and (counter % COUNTER_MOD == 0):
             # start_image = time.time()
-            lastTime, imageCount = saveImage(lastTime, imageCount, "fp", ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id)
+            lastTime, imageCount = saveImage(lastTime, imageCount, "fp", ax, o1, cam, 3, yaw, pitch, camTargetPos, wall_id)
             # image_save_time = time.time() - start_image
             # print ("Image save time", image_save_time)
           x1, y1, o1, keyboard = moveKeyboard(x1, y1, o1, [husky, robotID])
@@ -181,6 +183,7 @@ def execute(actions):
           # print(checkGoal(goal_file, constraints, states, id_lookup))
 
           if action_index >= len(actions):
+            yaw = 180*(math.atan2(y1,x1)%(2*math.pi))/math.pi - 90
             lastTime, imageCount = saveImage(lastTime, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id)
             break
 

@@ -294,10 +294,10 @@ def saveImage(lastTime, imageCount, display, ax, o1, cam, dist, yaw, pitch, camT
         return lastTime, imageCount
     img_arr = []; img_arr2 = []; rgb = []
     if display == "fp" or display == "both":
-        camPos = [camTargetPos[0] - 3*math.cos(o1), camTargetPos[1] - 3*math.sin(o1)]
+        camPos = [camTargetPos[0] - dist*math.cos(o1), camTargetPos[1] - dist*math.sin(o1)]
         if wall_id > -1 and (abs(camPos[0]) > 4 or abs(camPos[1]) > 5):
             p.changeVisualShape(wall_id, -1, rgbaColor = [1, 1, 1, 0.4])
-        viewMatrixFP = p.computeViewMatrixFromYawPitchRoll(camTargetPos, 3, -90+(o1*180/math.pi), -35,
+        viewMatrixFP = p.computeViewMatrixFromYawPitchRoll(camTargetPos, dist, -90+(o1*180/math.pi), -35,
                                                                 roll, upAxisIndex)
         img_arr = p.getCameraImage(pixelWidth,
                                       pixelHeight,
