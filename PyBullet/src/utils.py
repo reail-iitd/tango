@@ -283,6 +283,11 @@ def isClosed(enclosure, states, id_lookup):
             abs(d2-d2) <= 0.01)
     return closed
 
+def objDistance(obj1, obj2, id_lookup):
+    (x, y, z), _ = p.getBasePositionAndOrientation(id_lookup[obj1])
+    (x2, y2, z2), _ = p.getBasePositionAndOrientation(id_lookup[obj2])
+    return math.sqrt((x-x2)**2 + (y-y2)**2 + (z-z2)**2)
+
 def saveImage(lastTime, imageCount, display, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id):
     current = current_milli_time()
     if (current - lastTime) < 100:

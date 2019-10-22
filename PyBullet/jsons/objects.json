@@ -201,7 +201,7 @@
             "name": "tray",
             "urdf": "models/urdf/tray.urdf",
             "constraints": ["horizontal"],
-			"tolerance": 1.1,
+			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.05], [0, 0.1, 0.05], [0, -0.1, 0.05]],
 			"ur5_dist": [0.3,0,0]
@@ -248,7 +248,7 @@
             "constraints": ["horizontal"],
 			"tolerance": 1,
 			"constraint_link": -1,
-			"constraint_pos": [[0, 0, 0.2], [0, 0, 0.3], [0, 0, 0.4]],
+			"constraint_pos": [[0, 0, 0.1], [0, 0, 0.2], [0, 0, 0.3], [0, 0, 0.4]],
 			"ur5_dist": [0.4,0,0]
         },
         {
@@ -375,7 +375,43 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.7]],
-			"ur5_dist": [0.4,0,0]
+			"ur5_dist": [0.5,0,0]
+		},
+		{
+            "name": "mop",
+            "urdf": "models/urdf/mop.urdf",
+            "constraints": ["horizontal"],
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0.0]],
+			"ur5_dist": [0.2,0,0.6]
+		},
+		{
+            "name": "sponge",
+            "urdf": "models/urdf/sponge.urdf",
+            "constraints": ["horizontal"],
+			"tolerance": 0.8,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0.0]],
+			"ur5_dist": [0.2,0,0]
+		},
+		{
+            "name": "vacuum",
+            "urdf": "models/urdf/vacuum.urdf",
+            "constraints": ["horizontal"],
+			"tolerance": 0.8,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0.0]],
+			"ur5_dist": [0.2,0,0]
+		},
+		{
+            "name": "dirt",
+            "urdf": "models/urdf/dirt.urdf",
+            "constraints": ["horizontal"],
+			"tolerance": 0.9,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0.0]],
+			"ur5_dist": [0.2,0,0]
 		}
 	]
 }

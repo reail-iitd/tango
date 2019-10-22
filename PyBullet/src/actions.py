@@ -138,6 +138,12 @@ def convertActions(inp):
                 ["climbDown", args[0]]
             ])
 
+        elif high_level_action['name'] == 'clean':
+                action_list.extend([
+                ["moveTo", args[0]],
+                ["clean", args[0]]
+            ])
+
         action_list.append(["saveBulletState"])
 
     return action_list
