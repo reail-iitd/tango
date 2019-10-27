@@ -30,11 +30,11 @@ def move(x1, y1, o1, object_list, target_coordinates, keyboard, speed, tolerance
     x2 = target_coordinates[0]; y2 = target_coordinates[1]; z2 = target_coordinates[2]
     diff = math.atan2((y2-y1),(x2-x1))%(2*math.pi) - (o1%(2*math.pi))
     if abs(diff) > 0.05:
-        o1 = o1 + 0.001*speed if diff > 0 else o1 - 0.001*speed
+        o1 = o1 + 0.004*speed if diff > 0 else o1 - 0.004*speed
     elif abs(distance.euclidean((x1, y1, z1), (x2, y2, z2))) > tolerance + 0.1: 
-        x1 += math.cos(o1)*0.001*speed
-        y1 += math.sin(o1)*0.001*speed
-        delz = 0.001*speed*sign(z2-z1) if up else 0
+        x1 += math.cos(o1)*0.008*speed
+        y1 += math.sin(o1)*0.008*speed
+        delz = 0.008*speed*sign(z2-z1) if up else 0
     else:
         return x1, y1, o1, True
     q=p.getQuaternionFromEuler((0,0,o1))

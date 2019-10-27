@@ -1,30 +1,53 @@
 {
 	"Push object to destination": 
 		{
-			"Object to push" : ["floor", "walls", "door"], 
+			"Object to push" : ["floor", "walls", "door", "big-tray", "bigger_table", "smaller_table", "couch", "fridge", "cupboard", "dumpster", "ledge"], 
 			"Destination (near this object)": ["floor", "walls", "fridge_back", "cupboard_back"]
 		},
 	"Pick source and place on destination": 
 		{
-			"Object to pick": ["floor", "walls", "door", "cupboard"], 
+			"Object to pick": ["floor", "dumpster", "ledge", "stool", "fridge", "cupboard", "walls", "door", "big-tray", "bigger_table", "smaller_table", "couch", "chair"], 
 			"Object to place on": ["floor", "walls", "milk", "tape", "ledge", "door", "cube_red", "cube_green", "cubr_gray"]
 		},
     "Move robot to object": 
     	{
-    		"Destination (near this object)": ["floor"]
+    		"Destination (near this object)": ["floor", "ledge"]
     	},
 	"Open/Close object":
 		{
-			"Object to open or close": ["floor", "walls", "ledge", "bigger table", "smaller table", "couch", "big-tray", "paper", "gray cube", "green cube","red cube", "tray", "tray2", "blue bottle", "gray bottle", "red bottle", "box", "apple", "orange", "banana", "quadcopter", "chair", "ball", "stick", "dumpster", "milk", "shelf", "glue", "tape"], 
-			"Open or Close it": ["floor"]
+			"Object to open or close": ["floor", "blue_bottle", "gray_bottle", "green_cube", "dumpster", "big-tray", "walls", "ledge", "big-tray", "paper", "gray cube", "green_cube","red_cube", "tray", "tray2", "blue_bottle", "gray_bottle", "red_bottle", "box", "apple", "orange", "banana", "quadcopter", "chair", "ball", "stick", "dumpster", "milk", "shelf", "glue", "tape", "bigger_table", "book", "gray_cube", "mop", "smaller_table", "sponge", "vacuum", "couch", "stool", "dirt"],
+			"Open or Close it": []
 		},
 	"Pick Object": 
 		{
-			"Object to pick": ["floor", "walls", "door", "cupboard"]
+			"Object to pick": ["floor", "dumpster", "ledge", "stool", "fridge", "cupboard", "chair", "walls", "door", "big-tray", "bigger_table", "smaller_table", "couch"]
 		},
 	"Drop Object on destination": 
 		{
-			"Object to drop": ["floor", "walls", "door", "cupboard"], 
-			"Object to drop on": ["floor", "walls", "milk", "tape", "ledge", "door", "cube_red", "cube_green", "cubr_gray"]
+			"Object to drop": ["floor", "dumpster", "ledge", "stool", "fridge", "cupboard", "walls", "door", "big-tray", "bigger_table", "smaller_table", "couch"], 
+			"Object to drop on": ["fridge", "cupboard", "walls", "milk", "tape", "ledge", "door", "cube_red", "cube_green", "cubr_gray"]
+		},
+	"Climb up an object":
+		{
+			"Object to climb on": ["floor", "bluw_bottle", "gray_bottle", "dirt", "green_cube", "dumpster", "big-tray", "walls", "ledge", "big-tray", "paper", "gray cube", "green_cube","red_cube", "tray", "tray2", "blue_bottle", "gray_bottle", "red_bottle", "box", "apple", "orange", "banana", "quadcopter", "chair", "ball", "stick", "dumpster", "milk", "shelf", "glue", "tape", "cupboard", "fridge", "bigger_table", "book", "door", "gray_cube", "mop", "smaller_table", "sponge", "vacuum", "couch"]
+		},
+	"Climb down an object":
+		{
+			"Object to climb down from": ["floor", "bluw_bottle", "gray_bottle", "dirt", "green_cube", "dumpster", "big-tray", "walls", "ledge", "big-tray", "paper", "gray cube", "green_cube","red_cube", "tray", "tray2", "blue_bottle", "gray_bottle", "red_bottle", "box", "apple", "orange", "banana", "quadcopter", "chair", "ball", "stick", "dumpster", "milk", "shelf", "glue", "tape", "cupboard", "fridge", "bigger_table", "book", "door", "gray_cube", "mop", "smaller_table", "sponge", "vacuum", "couch"]
+		},
+	"Apply object on another object":
+		{
+			"Object to apply": ["floor", "door", "dumpster", "big-tray", "walls", "ledge", "couch", "big-tray", "paper", "gray cube", "green cube","red cube", "tray", "tray2", "blue bottle", "gray bottle", "red bottle", "box", "apple", "orange", "banana", "quadcopter", "chair", "ball", "stick", "dumpster", "milk", "shelf"], 
+			"Object to apply on": ["floor", "door", "dumpster", "big-tray", "walls", "ledge", "couch", "big-tray", "tray", "tray2", "blue bottle", "gray bottle", "red bottle", "box", "apple", "orange", "banana", "quadcopter", "chair", "ball", "stick", "dumpster", "milk", "shelf", "glue", "tape"]
+		},
+	"Stick object to destination":
+		{
+			"Object to stick": ["floor", "door", "dumpster", "big-tray", "walls", "ledge", "couch", "big-tray", "tray", "tray2", "blue bottle", "gray bottle", "red bottle", "box", "apple", "orange", "banana", "quadcopter", "chair", "ball", "stick", "dumpster", "milk", "shelf"], 
+			"Destination object": ["floor", "dumpster", "big-tray", "ledge", "couch", "big-tray", "paper", "gray cube", "green cube","red cube", "tray", "tray2", "blue bottle", "gray bottle", "red bottle", "box", "apple", "orange", "banana", "quadcopter", "chair", "ball", "stick", "dumpster", "milk", "shelf", "glue", "tape"]
+		},
+	"Clean object":
+		{
+			"Object to clean": ["floor", "blue_bottle", "gray_bottle", "green_cube", "dumpster", "big-tray", "walls", "ledge", "big-tray", "paper", "gray cube", "green_cube","red_cube", "tray", "tray2", "blue_bottle", "gray_bottle", "red_bottle", "box", "apple", "orange", "banana", "quadcopter", "chair", "ball", "stick", "dumpster", "milk", "shelf", "glue", "tape", "cupboard", "fridge", "bigger_table", "book", "door", "gray_cube", "mop", "smaller_table", "sponge", "vacuum", "couch", "stool"], 
+			"Cleaning agent": ["floor", "dumpster", "big-tray", "ledge", "couch", "big-tray", "paper", "gray cube", "green cube","red cube", "tray", "tray2", "blue bottle", "gray bottle", "red bottle", "box", "apple", "orange", "banana", "quadcopter", "chair", "ball", "stick", "dumpster", "milk", "shelf", "glue", "tape"]
 		}
 }

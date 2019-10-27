@@ -47,8 +47,10 @@ def keepHorizontal(object_list):
     Keep the objects horizontal
     """
     for obj_id in object_list:
+        pos = p.getBasePositionAndOrientation(obj_id)[0]
+        pos = (pos[0], pos[1], max(0.01, pos[2]))
         p.resetBasePositionAndOrientation(obj_id,
-                                          p.getBasePositionAndOrientation(obj_id)[0],
+                                          pos,
                                           p.getQuaternionFromEuler((0,0,0)))
 
 def keepOnGround(object_list):

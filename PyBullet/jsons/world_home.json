@@ -178,13 +178,6 @@
 			"states": []	
 		},
 		{
-			"name": "r2d2",
-			"position": [-3,-2,1],
-			"orientation": [],
-			"states": [],
-			"ignore": "true"	
-		},
-		{
 			"name": "apple",
 			"position": [-1, -4.5, 0.7],
 			"orientation": [],
@@ -199,12 +192,6 @@
 		{
 			"name": "banana",
 			"position": [-1, -4.3, 0.75],
-			"orientation": [],
-			"states": []	
-		},
-		{
-			"name": "quadcopter",
-			"position": [2.5,0,0.1],
 			"orientation": [],
 			"states": []	
 		},

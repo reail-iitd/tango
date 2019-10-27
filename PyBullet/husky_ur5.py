@@ -154,7 +154,7 @@ def execute(actions):
   action_index = 0
   done = False
   waiting = False
-  startTime = current_milli_time()
+  startTime = time.time()
   lastTime = startTime
 
   # Start simulation
@@ -220,6 +220,8 @@ def execute(actions):
             if not waiting and not done:
               if checkUR5constrained(constraints) and actions[action_index][2] == 'ur5':
                   raise Exception("Gripper is not free, can not hold object")
+              if actions[action_index][2] == actions[action_index][1]:
+                  raise Exception("Cant place object on itself")
               if (checkInside(constraints, states, id_lookup, actions[action_index][1], enclosures) 
                   and actions[action_index][2] == 'ur5'):
                   raise Exception("Object is inside an enclosure, can not grasp it.")
