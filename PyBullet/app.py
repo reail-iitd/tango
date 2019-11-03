@@ -7,6 +7,9 @@ from camera import Camera
 from base_camera import BaseCamera
 import multiprocessing as mp
 import time
+from src.parser import *
+
+args = initParser()
 
 queue_from_webapp_to_simulator = mp.Queue()
 queue_from_simulator_to_webapp = mp.Queue()
@@ -45,7 +48,7 @@ dict_predicate_to_action = {
 }
 
 # Unnecessary (can be removed)
-d = json.load(open("jsons/world_home.json"))["entities"]
+d = json.load(open(args.world))["entities"]
 world_objects = []
 renamed_objects = {}
 constraints_dict = json.load(open("jsons/constraints.json"))

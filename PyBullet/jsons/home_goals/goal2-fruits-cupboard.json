@@ -1,24 +1,31 @@
 {
 	"goals":[
 		{
-			"object": "cube_red",
-			"target": "fridge",
+			"object": "apple",
+			"target": "cupboard",
 			"state": "",
-			"position": [],
+			"position": "",
+			"tolerance": 0
+		},
+		{
+			"object": "orange",
+			"target": "cupboard",
+			"state": "",
+			"position": "",
 			"tolerance": 0
 		},
 		{
 			"object": "banana",
 			"target": "cupboard",
 			"state": "",
-			"position": [],
+			"position": "",
 			"tolerance": 0
 		},
 		{
 			"object": "cupboard",
 			"target": "",
 			"state": "close",
-			"position": [],
+			"position": "",
 			"tolerance": 0
 		}
 	]

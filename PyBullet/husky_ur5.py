@@ -278,6 +278,7 @@ def execute(actions):
             if not cleaner:
                 raise Exception("No cleaning agent with the robot")
             p.changeVisualShape(id_lookup[actions[action_index][1]], -1, rgbaColor = [1, 1, 1, 0])
+            dirtClean = True
             done = True
 
           elif(actions[action_index][0] == "addTo"):

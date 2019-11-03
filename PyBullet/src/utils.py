@@ -27,6 +27,9 @@ img_arr = []; img_arr2 = []
 
 projectionMatrix = p.computeProjectionMatrixFOV(fov, aspect, nearPlane, farPlane)
 
+# Dirt clean
+dirtClean = False
+
 def initDisplay(display):
     plt.axis('off')
     plt.rcParams["figure.figsize"] = [8,6]
@@ -211,6 +214,9 @@ def checkGoal(goal_file, constraints, states, id_lookup):
 
     for goal in goals:
         obj = goal['object']
+        if obj == 'dirt':
+            success = success and dirtClean
+
         if goal['target'] != "":
             constrained = False
             for obj1 in constraints.keys():
@@ -232,9 +238,9 @@ def checkGoal(goal_file, constraints, states, id_lookup):
                 abs(d2-d2) <= 0.01)
             success = success and done
 
-        if goal['position'] != []:
+        if goal['position'] != "":
             pos = p.getBasePositionAndOrientation(id_lookup[obj])[0]
-            goal_pos = goal['position']
+            goal_pos = p.getBasePositionAndOrientation(id_lookup[goal['position']])[0]
             if abs(distance.euclidean(pos, goal_pos)) > abs(goal['tolerance']):
                 success = False
     return success

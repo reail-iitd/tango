@@ -1,0 +1,11 @@
+{
+	"goals":[
+		{
+			"object": "dirt",
+			"target": "",
+			"state": "",
+			"position": "",
+			"tolerance": 0
+		}
+	]
+}
