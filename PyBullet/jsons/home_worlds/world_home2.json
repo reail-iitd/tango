@@ -110,7 +110,7 @@
 		},
 		{
 			"name": "paper",
-			"position": [-1.4,-4.4,0.7],
+			"position": [3.1,2.5,0.3],
 			"orientation": [],
 			"states": 
 			{
@@ -119,7 +119,7 @@
 		},
 		{
 			"name": "cube_gray",
-			"position": [-0.5,4.2,0.7],
+			"position": [3,2.2,0.3],
 			"orientation": [],
 			"states": [],
 			"rename": "gray_cube"
@@ -133,7 +133,7 @@
 		},
 		{
 			"name": "cube_red",
-			"position": [-0.5,4.4,0.7],
+			"position": [-2.3,-4.5,0.7],
 			"orientation": [],
 			"states": [],
 			"rename": "red_cube"	
@@ -185,13 +185,13 @@
 		},
 		{
 			"name": "orange",
-			"position": [-1, -4.7, 0.7],
+			"position": [0, 4.5, 0.7],
 			"orientation": [],
 			"states": []	
 		},
 		{
 			"name": "banana",
-			"position": [-1, -4.3, 0.75],
+			"position": [-3, -1.3, 0.2],
 			"orientation": [],
 			"states": []	
 		},

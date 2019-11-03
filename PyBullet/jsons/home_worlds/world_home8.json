@@ -179,19 +179,19 @@
 		},
 		{
 			"name": "apple",
-			"position": [-1, -4.5, 0.7],
+			"position": [3.2,2.2,0.3],
 			"orientation": [],
 			"states": []	
 		},
 		{
 			"name": "orange",
-			"position": [-1, -4.7, 0.7],
+			"position": [3.2,2.4,0.3],
 			"orientation": [],
 			"states": []	
 		},
 		{
 			"name": "banana",
-			"position": [-1, -4.3, 0.75],
+			"position": [3.2,2.6,0.3],
 			"orientation": [],
 			"states": []	
 		},
@@ -222,7 +222,7 @@
 		},
 		{
 			"name": "milk",
-			"position": [-2.5,4.5,1.3],
+			"position": [0,4.5,0.2],
 			"orientation": [],
 			"states": []	
 		},
@@ -270,7 +270,7 @@
 		},
 		{
 			"name": "dirt",
-			"position": [-2.5, -0.8, 0],
+			"position": [-2.5, -4.5, 1.5],
 			"orientation": [],
 			"states": {}
 		}							
