@@ -21,7 +21,8 @@ dict_of_predicates = {
         "Move robot to object" : {"Destination (near this object)": "dropdown-objects"},
         "Open/Close object" : {"Object to open or close": "dropdown-objects", "Open or Close it": "dropdown-states"},
         "Pick Object": {"Object to pick": "dropdown-objects"},
-        "Drop Object on destination": {"Object to drop": "dropdown-objects", "Object to drop on": "dropdown-objects"}
+        "Drop Object on destination": {"Object to drop": "dropdown-objects", "Object to drop on": "dropdown-objects"},
+        "Stick object1 on object2": {"Object to be sticked (object1)" : "dropdown-objects", "Object to be sticked on (object2)": "dropdown-objects"}
     }
 
 dict_predicate_to_action = {
@@ -31,7 +32,8 @@ dict_predicate_to_action = {
     "Move robot to object": "moveTo",
     "Open/Close object" : "changeState",
     "Pick Object": "pick",
-    "Drop Object on destination": "dropTo"
+    "Drop Object on destination": "dropTo",
+    "Stick object1 on object2" : "stick"
 }
 
 # Unnecessary (can be removed)
@@ -80,6 +82,22 @@ def simulator(queue_from_webapp_to_simulator, queue_from_simulator_to_webapp):
 def index():
     if (request.method == "GET"):
         return render_template('index.html', list_of_predicates = dict_of_predicates.keys(), workerId = workerId, world_objects = world_objects)
+
+@app.route('/tutorial/1', methods = ["GET"])
+def show_tutorial1():
+    return render_template('tutorial1.html')
+
+@app.route('/tutorial/2', methods = ["GET"])
+def show_tutorial2():
+    return render_template('tutorial2.html', list_of_predicates = dict_of_predicates.keys(), workerId = workerId, world_objects = world_objects)
+
+@app.route('/tutorial/3', methods = ["GET"])
+def show_tutorial3():
+    return render_template('tutorial3.html')
+
+@app.route('/tutorial/4', methods = ["GET"])
+def show_tutorial4():
+    return render_template('tutorial4.html', list_of_predicates = dict_of_predicates.keys(), workerId = workerId, world_objects = world_objects)
 
 @app.route('/workerId', methods = ["POST"])
 def addworkerid():

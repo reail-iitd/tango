@@ -121,25 +121,25 @@ def changeView(direction):
   global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount, perspective
   camTargetPos = [x1, y1, 0]
   dist = dist - 0.5 if direction == "in" else dist + 0.5 if direction == "out" else dist
-  yaw = yaw - 5 if direction == "left" else yaw + 5 if direction == "right" else yaw
+  yaw = yaw - 25 if direction == "left" else yaw + 25 if direction == "right" else yaw
   print(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos)
   perspective = "tp" if perspective == "fp" and direction == None else "fp" if direction == None else perspective
-  saveImage(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id)
+  lastTime, imageCount = saveImage(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id)
 
 
 def showObject(obj):
   global world_states, x1, y1, o1, imageCount
   ((x, y, z), (a1, b1, c1, d1)) = p.getBasePositionAndOrientation(id_lookup[obj])
-  saveImage(0, imageCount, 'fp', ax, math.atan2(y,x)%(2*math.pi), cam, 2, yaw, pitch, [x, y, z], wall_id)
-  time.sleep(0.5)
-  saveImage(0, imageCount, 'fp', ax, math.atan2(y,x)%(2*math.pi), cam, 7, yaw, pitch, [x, y, z], wall_id)
+  lastTime, imageCount = saveImage(0, imageCount, 'fp', ax, math.atan2(y,x)%(2*math.pi), cam, 10, yaw, pitch, [x, y, z], wall_id)
+  time.sleep(1)
+  lastTime, imageCount = saveImage(0, imageCount, 'fp', ax, math.atan2(y,x)%(2*math.pi), cam, 2, yaw, pitch, [x, y, z], wall_id)
   time.sleep(1)
   firstImage()
 
 def undo():
   global world_states, x1, y1, o1, imageCount, constraints
   x1, y1, o1, constraints, world_states = restoreOnInput(world_states, x1, y1, o1, constraints)
-  saveImage(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id)
+  lastTime, imageCount = saveImage(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id)
 
 def firstImage():
   global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount

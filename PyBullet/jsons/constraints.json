@@ -26,5 +26,10 @@
 		{
 			"Object to drop": ["floor", "walls", "door", "cupboard"], 
 			"Object to drop on": ["floor", "walls", "milk", "tape", "ledge", "door", "cube_red", "cube_green", "cubr_gray"]
+		},
+		"Stick object1 on object2": 
+		{
+			"Object to be sticked (object1)" : "dropdown-objects", 
+			"Object to be sticked on (object2)": "dropdown-objects"
 		}
 }
