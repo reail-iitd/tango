@@ -121,10 +121,10 @@ def changeView(direction):
   global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount, perspective
   camTargetPos = [x1, y1, 0]
   dist = dist - 0.5 if direction == "in" else dist + 0.5 if direction == "out" else dist
-  yaw = yaw - 5 if direction == "left" else yaw + 5 if direction == "right" else yaw
+  yaw = yaw - 25 if direction == "left" else yaw + 25 if direction == "right" else yaw
   print(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos)
   perspective = "tp" if perspective == "fp" and direction == None else "fp" if direction == None else perspective
-  saveImage(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id)
+  lastTime, imageCount = saveImage(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id)
 
 
 def showObject(obj):

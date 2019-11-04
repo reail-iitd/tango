@@ -4,18 +4,20 @@
 	<meta charset="utf-8">
 	<!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/css/bootstrap-select.css" />
 	<!-- jQuery library -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 	<!-- Latest compiled JavaScript -->
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>	
 	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/js/bootstrap-select.js"></script>
 	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 	<title>RoboMove</title>
 </head>
 {% if workerId != None %}
 <body>
 	<div class="row">
-	  <div class="col-sm-6" style="padding-left: 2em;">
+	  <div class="col-sm-6" style="padding-left: 2em; overflow-y: scroll;height: 800px;">
 	  		<h3>WORKER ID: {{workerId}}</h3>
 	  		<div id="accordion">
 			  <h2 id = "instructions">Instructions</h2>
@@ -64,9 +66,10 @@
 				<button id="{{object}}" class="btn btn-info">{{object}}</button>
 			{% endfor %}
 	  		<h2> Task Description (Goal to achieve) </h2>
-	  		<p> Transport all the cubes from the table to the box. You may use any objects that are present in the room. Creative usage of objects will be helpful for us. This is the tutorial task.</p>
+	  		<!-- <p> Transport all the cubes from the table to the box. You may use any objects that are present in the room. Creative usage of objects will be helpful for us. This is the tutorial task.</p> -->
+	  		<p> Transport all the cubes to the box.</p>
 	  		<h2>Instruction Input</h2>
-			<select class="form-control" id="predicate_dropdown">
+			<select class="form-control" id="predicate_dropdown" data-live-search="true">
 				<option selected="selected"> Select the verb/predicate you want </option>
 				{% for i in list_of_predicates %}
 					<option> {{ i }} </option>
@@ -165,7 +168,7 @@
 		}
 		function rotateLeft(){
 			$.ajax({
-		      url: "/rotateCameraLeft",
+		      url: "/rotateCameraRight",
 		      type: "post",
 		      data: {direction: "left"},
 		      success: function(response) {
@@ -176,7 +179,7 @@
 		}
 		function rotateRight(){
 			$.ajax({
-		      url: "/rotateCameraRight",
+		      url: "/rotateCameraLeft",
 		      type: "post",
 		      data: {direction: "right"},
 		      success: function(response) {

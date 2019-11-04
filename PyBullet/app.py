@@ -94,6 +94,22 @@ def index():
     if (request.method == "GET"):
         return render_template('index.html', list_of_predicates = dict_of_predicates.keys(), workerId = workerId, world_objects = world_objects)
 
+@app.route('/tutorial/1', methods = ["GET"])
+def show_tutorial1():
+    return render_template('tutorial1.html')
+
+@app.route('/tutorial/2', methods = ["GET"])
+def show_tutorial2():
+    return render_template('tutorial2.html', list_of_predicates = dict_of_predicates.keys(), workerId = workerId, world_objects = world_objects)
+
+@app.route('/tutorial/3', methods = ["GET"])
+def show_tutorial3():
+    return render_template('tutorial3.html')
+
+@app.route('/tutorial/4', methods = ["GET"])
+def show_tutorial4():
+    return render_template('tutorial4.html', list_of_predicates = dict_of_predicates.keys(), workerId = workerId, world_objects = world_objects)
+
 @app.route('/workerId', methods = ["POST"])
 def addworkerid():
     global workerId
