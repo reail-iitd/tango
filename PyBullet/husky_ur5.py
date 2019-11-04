@@ -130,21 +130,21 @@ def changeView(direction):
 def showObject(obj):
   global world_states, x1, y1, o1, imageCount
   ((x, y, z), (a1, b1, c1, d1)) = p.getBasePositionAndOrientation(id_lookup[obj])
-  lastTime, imageCount = saveImage(0, imageCount, 'fp', ax, math.atan2(y,x)%(2*math.pi), cam, 10, yaw, pitch, [x, y, z], wall_id)
-  time.sleep(1)
-  lastTime, imageCount = saveImage(0, imageCount, 'fp', ax, math.atan2(y,x)%(2*math.pi), cam, 2, yaw, pitch, [x, y, z], wall_id)
+  _, imageCount = saveImage(0, imageCount, 'fp', ax, math.atan2(y,x)%(2*math.pi), cam, 2, yaw, pitch, [x, y, z], wall_id)
+  time.sleep(0.5)
+  _, imageCount = saveImage(0, imageCount, 'fp', ax, math.atan2(y,x)%(2*math.pi), cam, 7, yaw, pitch, [x, y, z], wall_id)
   time.sleep(1)
   firstImage()
 
 def undo():
   global world_states, x1, y1, o1, imageCount, constraints
   x1, y1, o1, constraints, world_states = restoreOnInput(world_states, x1, y1, o1, constraints)
-  lastTime, imageCount = saveImage(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id)
+  _, imageCount = saveImage(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id)
 
 def firstImage():
   global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount
   camTargetPos = [x1, y1, 0]
-  lastTime, imageCount= saveImage(-250, imageCount, perspective, ax, o1, cam, dist, 50, pitch, camTargetPos, wall_id)
+  _, imageCount= saveImage(-250, imageCount, perspective, ax, o1, cam, dist, 50, pitch, camTargetPos, wall_id)
 
 def execute(actions):
   global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount, cleaner
@@ -154,7 +154,7 @@ def execute(actions):
   action_index = 0
   done = False
   waiting = False
-  startTime = current_milli_time()
+  startTime = time.time()
   lastTime = startTime
 
   # Start simulation
@@ -220,6 +220,8 @@ def execute(actions):
             if not waiting and not done:
               if checkUR5constrained(constraints) and actions[action_index][2] == 'ur5':
                   raise Exception("Gripper is not free, can not hold object")
+              if actions[action_index][2] == actions[action_index][1]:
+                  raise Exception("Cant place object on itself")
               if (checkInside(constraints, states, id_lookup, actions[action_index][1], enclosures) 
                   and actions[action_index][2] == 'ur5'):
                   raise Exception("Object is inside an enclosure, can not grasp it.")
@@ -276,6 +278,7 @@ def execute(actions):
             if not cleaner:
                 raise Exception("No cleaning agent with the robot")
             p.changeVisualShape(id_lookup[actions[action_index][1]], -1, rgbaColor = [1, 1, 1, 0])
+            dirtClean = True
             done = True
 
           elif(actions[action_index][0] == "addTo"):

@@ -1,16 +1,12 @@
 {
 	"actions":[
 		{
-			"name": "moveTo",
-			"args": ["mop"]
+			"name": "changeState",
+			"args": ["cupboard", "open"]
 		},
 		{
-			"name": "pick",
-			"args": ["mop"]
-		},
-		{
-			"name": "clean",
-			"args": ["dirt"]
+			"name": "changeState",
+			"args": ["fridge", "open"]
 		}
 	]
 }

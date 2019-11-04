@@ -7,6 +7,9 @@ from camera import Camera
 from base_camera import BaseCamera
 import multiprocessing as mp
 import time
+from src.parser import *
+
+args = initParser()
 
 queue_from_webapp_to_simulator = mp.Queue()
 queue_from_simulator_to_webapp = mp.Queue()
@@ -22,7 +25,11 @@ dict_of_predicates = {
         "Open/Close object" : {"Object to open or close": "dropdown-objects", "Open or Close it": "dropdown-states"},
         "Pick Object": {"Object to pick": "dropdown-objects"},
         "Drop Object on destination": {"Object to drop": "dropdown-objects", "Object to drop on": "dropdown-objects"},
-        "Stick object1 on object2": {"Object to be sticked (object1)" : "dropdown-objects", "Object to be sticked on (object2)": "dropdown-objects"}
+        "Climb up an object": {"Object to climb on": "dropdown-objects"},
+        "Climb down an object": {"Object to climb down from": "dropdown-objects"},
+        "Apply object on another object": {"Object to apply", "dropdown-objects", "Object to apply on", "dropdown-objects"},
+        "Stick object to destination": {"Object to stick": "dropdown-objects", "Destination object": "dropdown-objects"},
+        "Clean object": {"Object to clean": "dropdown-objects", "Cleaning agent": "dropdown-objects"}
     }
 
 dict_predicate_to_action = {
@@ -33,11 +40,15 @@ dict_predicate_to_action = {
     "Open/Close object" : "changeState",
     "Pick Object": "pick",
     "Drop Object on destination": "dropTo",
-    "Stick object1 on object2" : "stick"
+    "Climb up an object": "climbUp",
+    "Climb down an object": "climbDown",
+    "Apply object on another object": "apply",
+    "Stick object to destination": "stick",
+    "Clean object": "clean"
 }
 
 # Unnecessary (can be removed)
-d = json.load(open("jsons/world_home.json"))["entities"]
+d = json.load(open(args.world))["entities"]
 world_objects = []
 renamed_objects = {}
 constraints_dict = json.load(open("jsons/constraints.json"))
