@@ -207,6 +207,8 @@ def checkGoal(goal_file, constraints, states, id_lookup):
     """
     Check if goal conditions are true for the current state
     """
+    if not goal_file:
+        return False
     with open(goal_file, 'r') as handle:
         file = json.load(handle)
     goals = file['goals']
