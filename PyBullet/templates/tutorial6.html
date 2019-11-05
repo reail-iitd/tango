@@ -14,60 +14,20 @@
 	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 	<title>RoboMove</title>
 </head>
-{% if workerId != None %}
 <body>
 	<div class="row">
 	  <div class="col-sm-6" style="padding-left: 2em; overflow-y: scroll;height: 800px;">
-	  		<h3>WORKER ID: {{workerId}}</h3>
-	  		<div id="accordion">
-			  <h2 id = "instructions">Instructions</h2>
-			  <div>
-			    <p>Hi, I am Bucky, a robot who is tasked with helping humans in any way possible. I am just a small child right now and need to be trained. Instructions are given to me by humans and I have to complete them <strong>efficiently</strong>. I can <strong> make use of all objects around me.</strong> I want to <strong>minimise the effort and time taken to complete the action.</strong> Can you help me with some of the instructions that humans have given me?</p>
-			    <p>I have just some small number of actions mentioned below. Read them carefully as you will need to use them.</p>
-			    <ul>
-			    	<li> <strong>Move robot to object:</strong> Moves robot to a place near the object selected. </li>
-			    	<li> <strong>Pick source and place on desination:</strong> Moves to the source object, picks it up, and then carries it to the destination object and places it on top of it. Example usage: to pick and place a book inside the box. </li>
-			    	<li> <strong>Push object to destination:</strong> Goes near the source object and pushes it to a place near the destination object. </li>
-			    	<li> <strong>Open/Close object:</strong> Opens the cupboard or fridge or some other object that can be opened. Example usage will be to open the cupboard to find milk inside it. </li> 
-			    	<li> <strong>Pick object:</strong> Similar to the "pick source and place on destination", this just does the first part of the action, it goes to the object and picks it up. </li> 
-			    	<li> <strong>Drop object:</strong> Similar to the "pick source and place on destination", this just does the second part of the action, it drops the object that it already has in its hand.</li> 
-			    </ul>
-			    <strong> Undo Move: Use the undo button to reverse the last action.</strong>
-			    <br/>
-			    <p>The first task is a tutorial task which needs to be completed by everyone. Take a look at the <strong>"Sample Example"</strong> provided.</p>
-			  </div>
-			  <h3><strong>Sample Example</strong></h3>
-			  <div>
-			  	<p><strong>Suppose you are given the task : “Transport all cubes to the box”</strong> </p>
-			  	<p> Bucky needs to transport the three cubes to the box. There are two options for him :- </p>
-			  	<ol>
-			  		<li> He can transport all cubes 1 by 1. This can be done by the following sequence of moves.
-			  			<ul>
-			  				<li> Pick and place (source = cube1, destination = box)</li>
-			  				<li> Pick and place (source = cube2, destination = box)</li>
-			  				<li> Pick and place (source = cube3, destination = box)</li>
-			  			</ul>
-			  		</li>
-			  		<li> However, it is clear that we can make use of the environment around us. For example, we can use the tray to keep all cubes on it and then in in one instruction, transport the tray to the box. This can be done by :-
-			  			<ul>
-			  				<li> Pick and place (source = cube1, destination = tray)</li>
-			  				<li> Pick and place (source = cube2, destination = tray)</li>
-			  				<li> Pick and place (source = cube3, destination = tray)</li>
-			  				<li> Pick and place (source = tray, destination = box)</li>
-			  			</ul>
-			  		</li>
-			  	</ol>
-			  	<p>This is the kind of examples we want you to give the robot. We want you to essentially use your own common sense, that is what distinguishes you from robots. Treat Bucky as your own child.</p>
-			  	<p> You are expected to explore the simulator and complete the tutorial using these instructions </p>
-			  </div>
-			</div>
+	  		<h1>Tutorial</h1>
+	  		<p>Complete the tasks given below. After completing, click on next.</p>
 			<h4>Explore (Discover where different objects are kept)</h4>
 			{% for object in world_objects %}
 				<button id="{{object}}" class="btn btn-info">{{object}}</button>
 			{% endfor %}
 	  		<h2> Task Description (Goal to achieve) <span id="time" style="color: red;">10:00</span> </h2>
-	  		<!-- <p> Transport all the cubes from the table to the box. You may use any objects that are present in the room. Creative usage of objects will be helpful for us. This is the tutorial task.</p> -->
-	  		<p> Transport all the cubes to the box.</p>
+	  		<p> Complete the following tasks. </p>
+	  		<ol>
+	  			<li> Put the milk carton into the cupboard. </li>
+	  		</ol>
 	  		<h2>Instruction Input</h2>
 			<select class="form-control" id="predicate_dropdown" data-live-search="true">
 				<option selected="selected"> Select the verb/predicate you want </option>
@@ -91,6 +51,9 @@
 			  	<h3> Move list </h3>
 		  		<ol id = "move_list">
 		  		</ol>
+		  	</div>
+		  	<div>
+		  		<button class="btn btn-success" id="next-tut" style="width: 100%;">Next</button>
 		  	</div>
 	  </div>
 		<div class="col-sm-6">
@@ -128,6 +91,8 @@
 		</div>
 	</div>
 	<script>
+		var second = false;
+		var first = false;
 		$( function() {
 	    $( "#accordion" ).accordion({
 	      collapsible: true
@@ -239,17 +204,16 @@
 		      }
 		    });
 		});
+		$("#next-tut").click(function(){
+			window.location = "/tutorial/7";
+		});
 		{% for object in world_objects%}
 			$("#{{object}}").click(function(){
-				$("#execute_move").disabled = true;
-				$("#undo_move").disabled = true;
 				$.ajax({
 			      url: "/showObject",
 			      type: "post",
 			      data: {"object": "{{object}}" },
 			      success: function(response) {
-			      	$("#execute_move").disabled = false;
-					$("#undo_move").disabled = false;
 			      },
 			      error: function(xhr) {
 			      }
@@ -296,30 +260,4 @@
 		};
 	</script>
 </body>
-{% else %}
-	<body>
-		<h1>Please enter your MTurk Worker ID to continue</h1>
-		<form>
-		  <div class="form-group col-sm-6">
-		    <label for="workerId">Worker ID on Mturk</label>
-		    <input class="form-control" id="workerId" aria-describedby="workerId" placeholder="WorkerId">
-		    <br>
-		    <button type="submit" class="btn btn-primary" id="submitID">Submit</button>
-		  </div>
-		</form>
-		<script type="text/javascript">
-			$("#submitID").click(function(){
-				$.ajax({
-			      url: "/workerId",
-			      type: "post",
-			      data: {"workerId": $("#workerId").val()},
-			      success: function(response) {
-			      },
-			      error: function(xhr) {
-			      }
-			    });
-			});
-		</script>
-	</body>
-{% endif %}
 </html>

@@ -122,21 +122,21 @@
 			"position": [3,2.2,0.3],
 			"orientation": [],
 			"states": [],
-			"rename": "gray_cube"
+			"rename": "cube_gray"
 		},
 		{
 			"name": "cube_green",
 			"position": [3,2.4,0.3],
 			"orientation": [],
 			"states": [],
-			"rename": "green_cube"	
+			"rename": "cube_green"	
 		},
 		{
 			"name": "cube_red",
 			"position": [3,2.6,0.3],
 			"orientation": [],
 			"states": [],
-			"rename": "red_cube"	
+			"rename": "cube_red"	
 		},
 		{
 			"name": "tray",
@@ -155,21 +155,21 @@
 			"position": [1,-4,0],
 			"orientation": [],
 			"states": [],
-			"rename": "blue_bottle"	
+			"rename": "bottle_blue"	
 		},
 		{
 			"name": "bottle_gray",
 			"position": [1.2,-4,0],
 			"orientation": [],
 			"states": [],
-			"rename": "gray_bottle"	
+			"rename": "bottle_gray"	
 		},
 		{
 			"name": "bottle_red",
 			"position": [1.4,-4,0],
 			"orientation": [],
 			"states": [],
-			"rename": "red_bottle"
+			"rename": "bottle_red"
 		},
 		{
 			"name": "box",

@@ -7,7 +7,7 @@
 	"Pick source and place on destination": 
 		{
 			"Object to pick": ["floor", "dumpster", "ledge", "stool", "fridge", "cupboard", "walls", "door", "big-tray", "bigger_table", "smaller_table", "couch", "chair"], 
-			"Object to place on": ["floor", "walls", "milk", "tape", "ledge", "door", "red_cube", "greem_cube", "gray_cube"]
+			"Object to place on": ["floor", "walls", "milk", "tape", "ledge", "door", "cube_red", "greem_cube", "cube_gray"]
 		},
     "Move robot to object": 
     	{
@@ -15,7 +15,7 @@
     	},
 	"Open/Close object":
 		{
-			"Object to open or close": ["floor", "blue_bottle", "gray_bottle", "green_cube", "dumpster", "big-tray", "walls", "ledge", "big-tray", "paper", "gray cube", "green_cube","red_cube", "tray", "tray2", "blue_bottle", "gray_bottle", "red_bottle", "box", "apple", "orange", "banana", "quadcopter", "chair", "ball", "stick", "dumpster", "milk", "shelf", "glue", "tape", "bigger_table", "book", "gray_cube", "mop", "smaller_table", "sponge", "vacuum", "couch", "stool", "dirt"],
+			"Object to open or close": ["floor", "bottle_blue", "bottle_gray", "cube_green", "dumpster", "big-tray", "walls", "ledge", "big-tray", "paper", "gray cube", "cube_green","cube_red", "tray", "tray2", "bottle_blue", "bottle_gray", "bottle_red", "box", "apple", "orange", "banana", "quadcopter", "chair", "ball", "stick", "dumpster", "milk", "shelf", "glue", "tape", "bigger_table", "book", "cube_gray", "mop", "smaller_table", "sponge", "vacuum", "couch", "stool", "dirt"],
 			"Open or Close it": []
 		},
 	"Pick Object": 
@@ -30,11 +30,11 @@
 		},
 	"Climb up an object":
 		{
-			"Object to climb on": ["floor", "bluw_bottle", "gray_bottle", "dirt", "green_cube", "dumpster", "big-tray", "walls", "ledge", "big-tray", "paper", "gray cube", "green_cube","red_cube", "tray", "tray2", "blue_bottle", "gray_bottle", "red_bottle", "box", "apple", "orange", "banana", "quadcopter", "chair", "ball", "stick", "dumpster", "milk", "shelf", "glue", "tape", "cupboard", "fridge", "bigger_table", "book", "door", "gray_cube", "mop", "smaller_table", "sponge", "vacuum", "couch"]
+			"Object to climb on": ["floor", "bluw_bottle", "bottle_gray", "dirt", "cube_green", "dumpster", "big-tray", "walls", "ledge", "big-tray", "paper", "gray cube", "cube_green","cube_red", "tray", "tray2", "bottle_blue", "bottle_gray", "bottle_red", "box", "apple", "orange", "banana", "quadcopter", "chair", "ball", "stick", "dumpster", "milk", "shelf", "glue", "tape", "cupboard", "fridge", "bigger_table", "book", "door", "cube_gray", "mop", "smaller_table", "sponge", "vacuum", "couch"]
 		},
 	"Climb down an object":
 		{
-			"Object to climb down from": ["floor", "bluw_bottle", "gray_bottle", "dirt", "green_cube", "dumpster", "big-tray", "walls", "ledge", "big-tray", "paper", "gray cube", "green_cube","red_cube", "tray", "tray2", "blue_bottle", "gray_bottle", "red_bottle", "box", "apple", "orange", "banana", "quadcopter", "chair", "ball", "stick", "dumpster", "milk", "shelf", "glue", "tape", "cupboard", "fridge", "bigger_table", "book", "door", "gray_cube", "mop", "smaller_table", "sponge", "vacuum", "couch"]
+			"Object to climb down from": ["floor", "bluw_bottle", "bottle_gray", "dirt", "cube_green", "dumpster", "big-tray", "walls", "ledge", "big-tray", "paper", "gray cube", "cube_green","cube_red", "tray", "tray2", "bottle_blue", "bottle_gray", "bottle_red", "box", "apple", "orange", "banana", "quadcopter", "chair", "ball", "stick", "dumpster", "milk", "shelf", "glue", "tape", "cupboard", "fridge", "bigger_table", "book", "door", "cube_gray", "mop", "smaller_table", "sponge", "vacuum", "couch"]
 		},
 	"Apply object on another object":
 		{
@@ -48,7 +48,7 @@
 		},
 	"Clean object":
 		{
-			"Object to clean": ["floor", "blue_bottle", "gray_bottle", "green_cube", "dumpster", "big-tray", "walls", "ledge", "big-tray", "paper", "gray cube", "green_cube","red_cube", "tray", "tray2", "blue_bottle", "gray_bottle", "red_bottle", "box", "apple", "orange", "banana", "quadcopter", "chair", "ball", "stick", "dumpster", "milk", "shelf", "glue", "tape", "cupboard", "fridge", "bigger_table", "book", "door", "gray_cube", "mop", "smaller_table", "sponge", "vacuum", "couch", "stool"], 
+			"Object to clean": ["floor", "bottle_blue", "bottle_gray", "cube_green", "dumpster", "big-tray", "walls", "ledge", "big-tray", "paper", "gray cube", "cube_green","cube_red", "tray", "tray2", "bottle_blue", "bottle_gray", "bottle_red", "box", "apple", "orange", "banana", "quadcopter", "chair", "ball", "stick", "dumpster", "milk", "shelf", "glue", "tape", "cupboard", "fridge", "bigger_table", "book", "door", "cube_gray", "mop", "smaller_table", "sponge", "vacuum", "couch", "stool"], 
 			"Cleaning agent": ["floor", "dumpster", "big-tray", "ledge", "couch", "big-tray", "paper", "gray cube", "green cube","red cube", "tray", "tray2", "blue bottle", "gray bottle", "red bottle", "box", "apple", "orange", "banana", "quadcopter", "chair", "ball", "stick", "dumpster", "milk", "shelf", "glue", "tape"]
 		}
 }

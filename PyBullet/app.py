@@ -13,6 +13,7 @@ args = initParser()
 
 queue_from_webapp_to_simulator = mp.Queue()
 queue_from_simulator_to_webapp = mp.Queue()
+queue_for_error = mp.Queue()
 workerId = None
 app = Flask(__name__)
 moves_to_show = []
@@ -69,9 +70,10 @@ def convertActionsFromFile(action_file):
         inp = json.load(handle)
     return(inp)
 
-def simulator(queue_from_webapp_to_simulator, queue_from_simulator_to_webapp):
+def simulator(queue_from_webapp_to_simulator, queue_from_simulator_to_webapp, queue_for_error):
     import husky_ur5
     import src.actions
+    import sys
     queue_from_simulator_to_webapp.put(True)
     print ("Waiting")
     husky_ur5.firstImage()
@@ -85,8 +87,21 @@ def simulator(queue_from_webapp_to_simulator, queue_from_simulator_to_webapp):
                 moves_to_show.pop(-1)
         elif "showObject" in inp:
             husky_ur5.showObject(inp["showObject"])
+        elif "restart" in inp:
+            print ("hello")
+            husky_ur5.destroy()
+            del sys.modules["husky_ur5"]
+            del sys.modules["src.actions"]
+            import husky_ur5
+            import src.actions
+            husky_ur5.firstImage()
+            queue_from_simulator_to_webapp.put(True)
         else:
-            husky_ur5.execute(inp)
+            try:
+                husky_ur5.execute(inp)
+            except Exception as e:
+                print (str(e))
+                queue_for_error.put(str(e))
             called_undo_before = False
 
 @app.route('/', methods = ["GET"])
@@ -100,6 +115,8 @@ def show_tutorial1():
 
 @app.route('/tutorial/2', methods = ["GET"])
 def show_tutorial2():
+    queue_from_webapp_to_simulator.put({"restart": None})
+    should_webapp_start = queue_from_simulator_to_webapp.get()
     return render_template('tutorial2.html', list_of_predicates = dict_of_predicates.keys(), workerId = workerId, world_objects = world_objects)
 
 @app.route('/tutorial/3', methods = ["GET"])
@@ -108,7 +125,29 @@ def show_tutorial3():
 
 @app.route('/tutorial/4', methods = ["GET"])
 def show_tutorial4():
+    queue_from_webapp_to_simulator.put({"restart": None})
+    should_webapp_start = queue_from_simulator_to_webapp.get()
     return render_template('tutorial4.html', list_of_predicates = dict_of_predicates.keys(), workerId = workerId, world_objects = world_objects)
+
+@app.route('/tutorial/5', methods = ["GET"])
+def show_tutorial5():
+    return render_template('tutorial5.html')
+
+@app.route('/tutorial/6', methods = ["GET"])
+def show_tutorial6():
+    queue_from_webapp_to_simulator.put({"restart": None})
+    should_webapp_start = queue_from_simulator_to_webapp.get()
+    return render_template('tutorial6.html', list_of_predicates = dict_of_predicates.keys(), workerId = workerId, world_objects = world_objects)
+
+@app.route('/tutorial/7', methods = ["GET"])
+def show_tutorial7():
+    return render_template('tutorial7.html')
+
+@app.route('/tutorial/8', methods = ["GET"])
+def show_tutorial8():
+    queue_from_webapp_to_simulator.put({"restart": None})
+    should_webapp_start = queue_from_simulator_to_webapp.get()
+    return render_template('tutorial8.html', list_of_predicates = dict_of_predicates.keys(), workerId = workerId, world_objects = world_objects)
 
 @app.route('/workerId', methods = ["POST"])
 def addworkerid():
@@ -209,9 +248,18 @@ def toggle():
 def undo_move():
     queue_from_webapp_to_simulator.put({"undo": True})
     return ""
+
+@app.route("/check_error", methods = ["GET"])
+def is_error():
+    try:
+        err_string = queue_for_error.get(block = False)
+        return err_string
+    except:
+        return ""
+
 if __name__ == '__main__':
     inp = "jsons/input_home.json"
-    p = mp.Process(target=simulator, args=(queue_from_webapp_to_simulator,queue_from_simulator_to_webapp))
+    p = mp.Process(target=simulator, args=(queue_from_webapp_to_simulator,queue_from_simulator_to_webapp,queue_for_error))
     p.start()
     should_webapp_start = queue_from_simulator_to_webapp.get()
     app.run(host='0.0.0.0', threaded=True)

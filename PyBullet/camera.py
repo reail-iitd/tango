@@ -39,5 +39,9 @@ class Camera(BaseCamera):
             time.sleep(0.1)
             if (os.path.exists(outer_dir + str(x) + ".jpg")):
                 yield open(outer_dir + str(x) + ".jpg", "rb").read()
+            else:
+                x = 0
+                if (os.path.exists(outer_dir + str(x) + ".jpg")):
+                    yield open(outer_dir + str(x) + ".jpg", "rb").read()
             if (os.path.exists(outer_dir + str(x+1) + ".jpg")):
                 x += 1

@@ -23,12 +23,11 @@
 			{% for object in world_objects %}
 				<button id="{{object}}" class="btn btn-info">{{object}}</button>
 			{% endfor %}
-	  		<h2> Task Description (Goal to achieve) </h2>
+	  		<h2> Task Description (Goal to achieve) <span id="time" style="color: red;">10:00</span> </h2>
 	  		<p> Complete the following tasks. </p>
 	  		<ol>
 	  			<li> Transport the bottles to the box.</li>
 	  		</ol>
-	  		<button class="btn btn-success" id="next-tut">Next</button>
 	  		<h2>Instruction Input</h2>
 			<select class="form-control" id="predicate_dropdown" data-live-search="true">
 				<option selected="selected"> Select the verb/predicate you want </option>
@@ -52,6 +51,9 @@
 			  	<h3> Move list </h3>
 		  		<ol id = "move_list">
 		  		</ol>
+		  	</div>
+		  	<div>
+		  		<button class="btn btn-success" id="next-tut" style="width: 100%;">Next</button>
 		  	</div>
 	  </div>
 		<div class="col-sm-6">
@@ -218,6 +220,44 @@
 			    });
 			});
 		{% endfor %}
+		function checkIfError() {
+		  $.ajax({
+		    url: '/check_error',
+		    success: function(data) {
+		    	if (data != ""){
+		    		alert(data);
+		    	}
+		    }
+		  });
+		  setTimeout(checkIfError, 1000);
+		}
+
+		$(document).ready(function() {
+		  setTimeout(checkIfError, 1000);
+		});
+		function startTimer(duration, display) {
+		    var timer = duration, minutes, seconds;
+		    setInterval(function () {
+		        minutes = parseInt(timer / 60, 10);
+		        seconds = parseInt(timer % 60, 10);
+
+		        minutes = minutes < 10 ? "0" + minutes : minutes;
+		        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+		        display.textContent = minutes + ":" + seconds;
+
+		        if (--timer < 0) {
+		            timer = duration;
+		            alert("Time Complete");
+		        }
+		    }, 1000);
+		}
+
+		window.onload = function () {
+		    var tenMinutes = 60 * 10,
+		        display = document.querySelector('#time');
+		    startTimer(tenMinutes, display);
+		};
 	</script>
 </body>
 </html>
