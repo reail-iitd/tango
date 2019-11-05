@@ -146,7 +146,7 @@ def firstImage():
   camTargetPos = [x1, y1, 0]
   _, imageCount= saveImage(-250, imageCount, perspective, ax, o1, cam, dist, 50, pitch, camTargetPos, wall_id)
 
-def execute(actions):
+def execute(actions, goal_file=None):
   global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount, cleaner
   # List of low level actions
   actions = convertActions(actions)
@@ -185,7 +185,7 @@ def execute(actions):
           if action_index >= len(actions):
             yaw = 180*(math.atan2(y1,x1)%(2*math.pi))/math.pi - 90
             lastTime, imageCount = saveImage(lastTime, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id)
-            break
+            return checkGoal(goal_file, constraints, states, id_lookup)
 
           if(actions[action_index][0] == "move"):
             if "husky" in fixed:
@@ -312,6 +312,7 @@ def execute(actions):
           # print ("Total", total_time_taken)
           # print ("Fraction", image_save_time/total_time_taken)
           # start_here = time.time()
+
 
 def destroy():
   p.disconnect()
