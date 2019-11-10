@@ -197,7 +197,7 @@
 		},
 		{
 			"name": "chair",
-			"position": [1,4.5,0.1],
+			"position": [1.1,4.5,0.1],
 			"orientation": [],
 			"states": []	
 		},

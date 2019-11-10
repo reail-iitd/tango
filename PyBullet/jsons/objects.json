@@ -155,7 +155,7 @@
 		{
 			"name": "big-tray",
 			"urdf": "tray/tray_textured2.urdf",
-			"constraints": ["horizontal"],
+			"constraints": ["horizontal", "noise"],
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.1], [0, 0, 0.2], [0, 0, 0.3]],
@@ -164,7 +164,7 @@
 		{
 			"name": "book",
 			"urdf": "models/urdf/book.urdf",
-			"constraints": ["horizontal"],
+			"constraints": ["horizontal", "noise"],
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0], [0, -0.1, 0], [0, 0.1, 0]],
@@ -173,7 +173,7 @@
         {
             "name": "cube_red",
             "urdf": "models/urdf/cube_red.urdf",
-            "constraints": ["horizontal"],
+            "constraints": ["horizontal", "noise"],
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, -0.05]],
@@ -182,7 +182,7 @@
         {
             "name": "cube_green",
             "urdf": "models/urdf/cube_green.urdf",
-            "constraints": ["horizontal"],
+            "constraints": ["horizontal", "noise"],
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, -0.05]],
@@ -191,7 +191,7 @@
         {
             "name": "cube_gray",
             "urdf": "models/urdf/cube_gray.urdf",
-            "constraints": ["horizontal"],
+            "constraints": ["horizontal", "noise"],
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, -0.05]],
@@ -200,7 +200,7 @@
         {
             "name": "tray",
             "urdf": "models/urdf/tray.urdf",
-            "constraints": ["horizontal"],
+            "constraints": ["horizontal", "noise"],
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.05], [0, 0.1, 0.05], [0, -0.1, 0.05]],
@@ -209,7 +209,7 @@
         {
             "name": "tray2",
             "urdf": "models/urdf/tray.urdf",
-            "constraints": ["horizontal"],
+            "constraints": ["horizontal", "noise"],
 			"tolerance": 0.9,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.05], [0, 0.1, 0.05], [0, -0.1, 0.05]],
@@ -218,7 +218,7 @@
         {
             "name": "bottle_blue",
             "urdf": "models/urdf/bottle_blue.urdf",
-            "constraints": ["horizontal"],
+            "constraints": ["horizontal", "noise"],
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, -0.05]],
@@ -227,7 +227,7 @@
         {
             "name": "bottle_red",
             "urdf": "models/urdf/bottle_red.urdf",
-            "constraints": ["horizontal"],
+            "constraints": ["horizontal", "noise"],
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, -0.05]],
@@ -236,7 +236,7 @@
         {
             "name": "bottle_gray",
             "urdf": "models/urdf/bottle_gray.urdf",
-            "constraints": ["horizontal"],
+            "constraints": ["horizontal", "noise"],
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, -0.05]],
@@ -245,7 +245,7 @@
         {
             "name": "box",
             "urdf": "models/urdf/box.urdf",
-            "constraints": ["horizontal"],
+            "constraints": ["horizontal", "noise"],
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.1], [0, 0, 0.2], [0, 0, 0.3], [0, 0, 0.4]],
@@ -254,7 +254,7 @@
         {
             "name": "apple",
             "urdf": "models/urdf/apple.urdf",
-            "constraints": [],
+            "constraints": ["noise"],
 			"tolerance": 1.2,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, -0.05]],
@@ -263,7 +263,7 @@
         {
             "name": "orange",
             "urdf": "models/urdf/orange.urdf",
-            "constraints": [],
+            "constraints": ["noise"],
 			"tolerance": 1.4,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, -0.05]],
@@ -272,7 +272,7 @@
         {
             "name": "banana",
             "urdf": "models/urdf/banana.urdf",
-            "constraints": [],
+            "constraints": ["noise"],
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, -0.05]],
@@ -281,7 +281,7 @@
 		{
 			"name": "chair",
 			"urdf": "models/urdf/chair.urdf",
-			"constraints": ["horizontal"],
+			"constraints": ["horizontal", "noise"],
 			"tolerance": 1.2,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.7], [0, 0.05, 0.7], [0, -0.05, 0.7], [0.05, 0, 0.7], [0.05, 0.05, 0.7], [0.05, -0.05, 0.7], [-0.05, 0, 0.7], [-0.05, 0.05, 0.7], [-0.05, -0.05, 0.7]],
@@ -290,7 +290,7 @@
 		{
 			"name": "ball",
 			"urdf": "models/urdf/ball.urdf",
-			"constraints": [],
+			"constraints": ["noise"],
 			"tolerance": 0.5,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0]],
@@ -299,7 +299,7 @@
 		{
 			"name": "stick",
 			"urdf": "models/urdf/stick.urdf",
-			"constraints": [],
+			"constraints": ["noise"],
 			"tolerance": 0.5,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0]],
@@ -326,7 +326,7 @@
 		{
             "name": "milk",
             "urdf": "models/urdf/milk.urdf",
-            "constraints": ["horizontal"],
+            "constraints": ["horizontal", "noise"],
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0]],
@@ -344,7 +344,7 @@
 		{
             "name": "glue",
             "urdf": "models/urdf/glue.urdf",
-            "constraints": [],
+            "constraints": ["noise"],
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0]],
@@ -353,7 +353,7 @@
 		{
             "name": "tape",
             "urdf": "models/urdf/tape.urdf",
-            "constraints": [],
+            "constraints": ["noise"],
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0]],
@@ -362,7 +362,7 @@
 		{
             "name": "paper",
             "urdf": "models/urdf/paper.urdf",
-            "constraints": [],
+            "constraints": ["noise"],
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0]],
@@ -371,7 +371,7 @@
 		{
             "name": "stool",
             "urdf": "models/urdf/stool.urdf",
-            "constraints": ["horizontal"],
+            "constraints": ["horizontal", "noise"],
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.7]],
@@ -380,7 +380,7 @@
 		{
             "name": "mop",
             "urdf": "models/urdf/mop.urdf",
-            "constraints": ["horizontal"],
+            "constraints": ["horizontal", "noise"],
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.0]],
@@ -389,7 +389,7 @@
 		{
             "name": "sponge",
             "urdf": "models/urdf/sponge.urdf",
-            "constraints": ["horizontal"],
+            "constraints": ["horizontal", "noise"],
 			"tolerance": 0.8,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.0]],
@@ -398,7 +398,7 @@
 		{
             "name": "vacuum",
             "urdf": "models/urdf/vacuum.urdf",
-            "constraints": ["horizontal"],
+            "constraints": ["horizontal", "noise"],
 			"tolerance": 0.8,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.0]],
@@ -407,7 +407,7 @@
 		{
             "name": "dirt",
             "urdf": "models/urdf/dirt.urdf",
-            "constraints": ["horizontal"],
+            "constraints": ["horizontal", "noise"],
 			"tolerance": 0.9,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.0]],

@@ -3,6 +3,7 @@ import pybullet_data
 import json
 import os
 import time
+import numpy as np
 
 def loadObject(name, position, orientation, obj_list):
     """
@@ -14,14 +15,18 @@ def loadObject(name, position, orientation, obj_list):
     urdf = ''
     obj = 0
     object_id = 0
+    noise = np.zeros(3)
     for obj in obj_list:
       if obj['name'] == name:
         urdf = obj['urdf']
+        if "noise" in obj['constraints']:
+            noise = np.random.normal(0, size=3, scale=0.05)
+            noise[-1] = 0
         break
     if orientation == []:
-      object_id = p.loadURDF(urdf, position)
+      object_id = p.loadURDF(urdf, list(position+noise))
     else:
-      object_id = p.loadURDF(urdf, position, orientation)
+      object_id = p.loadURDF(urdf, list(position+noise), orientation)
     return (object_id, 
             ("horizontal" in obj['constraints']), 
             ("on_ground" in obj['constraints']),
