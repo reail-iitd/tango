@@ -1,16 +1,9 @@
 {
 	"goals":[
 		{
-			"object": "milk",
-			"target": "fridge",
+			"object": "paper",
+			"target": "wall",
 			"state": "",
-			"position": "",
-			"tolerance": 0
-		},
-		{
-			"object": "fridge",
-			"target": "",
-			"state": "close",
 			"position": "",
 			"tolerance": 0
 		}
