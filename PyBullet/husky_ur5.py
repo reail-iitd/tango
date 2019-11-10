@@ -209,7 +209,7 @@ def execute(actions, goal_file=None):
                                     speed)
 
           elif(actions[action_index][0] == "changeWing"):
-            if time.time()-startTime > 1:
+            if time.time()-startTime > 1.8:
               done = True
             pose = actions[action_index][1]
             gotoWing(robotID, wings[pose])
