@@ -202,6 +202,10 @@ def restoreOnInput(world_states, x1, y1, o1, constraints):
         return x, y, o, constraints, world_states
     return x1, y1, o1, constraints, world_states
 
+def findConstraintTo(obj1,constraints):
+    if obj1 in constraints.keys():
+        return constraints[obj1][0]
+    return ""
 
 def checkGoal(goal_file, constraints, states, id_lookup):
     """
@@ -220,11 +224,10 @@ def checkGoal(goal_file, constraints, states, id_lookup):
             success = success and dirtClean
 
         if goal['target'] != "":
-            constrained = False
-            for obj1 in constraints.keys():
-                if obj1 == obj and constraints[obj][0] == goal["target"]:
-                    constrained = True
-            success = success and constrained
+            tgt = findConstraintTo(obj, constraints)
+            while not (tgt == "" or tgt == goal['target']):
+                tgt = findConstraintTo(tgt, constraints)
+            success = success and (tgt == goal['target'])
 
         if goal['state'] != "":
             positionAndOrientation = states[obj][goal['state']]

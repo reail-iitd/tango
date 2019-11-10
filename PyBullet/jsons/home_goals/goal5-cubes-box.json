@@ -4,21 +4,21 @@
 			"object": "cube_red",
 			"target": "box",
 			"state": "",
-			"position": [],
+			"position": "",
 			"tolerance": 0
 		},
 		{
 			"object": "cube_green",
 			"target": "box",
 			"state": "",
-			"position": [],
+			"position": "",
 			"tolerance": 0
 		},
 		{
 			"object": "cube_gray",
 			"target": "box",
 			"state": "",
-			"position": [],
+			"position": "",
 			"tolerance": 0
 		},
 		{

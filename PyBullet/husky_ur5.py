@@ -180,7 +180,7 @@ def execute(actions, goal_file=None):
           # start = time.time()
           p.stepSimulation() 
           # print ("Step simulation time ",time.time() - start) 
-          # print(checkGoal(goal_file, constraints, states, id_lookup))
+          # print(checkGoal(goal_file, constraints, states, id_lookup), constraints)
 
           if action_index >= len(actions):
             yaw = 180*(math.atan2(y1,x1)%(2*math.pi))/math.pi - 90

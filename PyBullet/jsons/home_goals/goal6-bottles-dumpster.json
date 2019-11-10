@@ -4,21 +4,21 @@
 			"object": "bottle_red",
 			"target": "dumpster",
 			"state": "",
-			"position": [],
+			"position": "",
 			"tolerance": 0
 		},
 		{
 			"object": "bottle_blue",
 			"target": "dumpster",
 			"state": "",
-			"position": [],
+			"position": "",
 			"tolerance": 0
 		},
 		{
 			"object": "bottle_gray",
 			"target": "dumpster",
 			"state": "",
-			"position": [],
+			"position": "",
 			"tolerance": 0
 		}
 	]
