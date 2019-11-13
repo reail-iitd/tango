@@ -69,8 +69,8 @@ def moveTo(x1, y1, o1, object_list, target, tolerance, keyboard, speed):
     z2 = p.getBasePositionAndOrientation(target)[0][2]
     target_coordinates = [x2, y2, z2]
     husky = object_list[0]
-    if ((target_coordinates[2] >= 1 and p.getBasePositionAndOrientation(husky)[0][2] <= 0.5) or
-        (target_coordinates[2] <= 0.9 and p.getBasePositionAndOrientation(husky)[0][2] >= 1)):
+    if ((target_coordinates[2] >= 1.8 and p.getBasePositionAndOrientation(husky)[0][2] <= 1.0) or
+        (target_coordinates[2] <= 1.4 and p.getBasePositionAndOrientation(husky)[0][2] >= 1.8)):
         raise Exception("Target object is not on same level, please first move to the same level as target")
     return move(x1, y1, o1, object_list, target_coordinates, keyboard, speed, tolerance)
 
