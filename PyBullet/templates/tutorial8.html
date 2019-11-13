@@ -53,7 +53,7 @@
 		  		</ol>
 		  	</div>
 		  	<div>
-		  		<button class="btn btn-success" id="next-tut" style="width: 100%;">Next</button>
+		  		<button class="btn btn-success" id="next-tut" style="width: 100%;" disabled="true">Next</button>
 		  	</div>
 	  </div>
 		<div class="col-sm-6">
@@ -226,6 +226,9 @@
 		    success: function(data) {
 		    	if (data != ""){
 		    		alert(data);
+		    		if (data == "You have completed this tutorial."){
+		    			$('#next-tut').prop('disabled', false);
+		    		}
 		    	}
 		    }
 		  });
@@ -249,6 +252,7 @@
 		        if (--timer < 0) {
 		            timer = duration;
 		            alert("Time Complete");
+		            $('#next-tut').prop('disabled', false);
 		        }
 		    }, 1000);
 		}

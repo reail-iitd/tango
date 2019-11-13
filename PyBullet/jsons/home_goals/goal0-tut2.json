@@ -10,7 +10,7 @@
 		{
 			"object": "fridge",
 			"target": "",
-			"state": "close",
+			"state": "open",
 			"position": "",
 			"tolerance": 0
 		}

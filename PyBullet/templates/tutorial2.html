@@ -264,6 +264,7 @@
 		        if (--timer < 0) {
 		            timer = duration;
 		            alert("Time Complete");
+		            $('#next-tut').prop('disabled', false);
 		        }
 		    }, 1000);
 		}

@@ -262,6 +262,9 @@
 		    success: function(data) {
 		    	if (data != ""){
 		    		alert(data);
+		    		if (data == "You have completed this tutorial."){
+		    			$('#next-tut').prop('disabled', false);
+		    		}
 		    	}
 		    }
 		  });

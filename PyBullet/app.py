@@ -28,9 +28,9 @@ dict_of_predicates = {
         "Drop Object on destination": {"Object to drop": "dropdown-objects", "Object to drop on": "dropdown-objects"},
         "Climb up an object": {"Object to climb on": "dropdown-objects"},
         "Climb down an object": {"Object to climb down from": "dropdown-objects"},
-        "Apply object on another object": {"Object to apply", "dropdown-objects", "Object to apply on", "dropdown-objects"},
-        "Stick object to destination": {"Object to stick": "dropdown-objects", "Destination object": "dropdown-objects"},
-        "Clean object": {"Object to clean": "dropdown-objects", "Cleaning agent": "dropdown-objects"}
+        "Apply object on another object": {"Object to apply": "dropdown-objects", "Object to apply on": "dropdown-objects"},
+        "Stick object to destination": {"Object to stick": "dropdown-objects", "Destination object to stick on": "dropdown-objects"},
+        "Clean object": {"Object to clean": "dropdown-objects"}
     }
 
 dict_predicate_to_action = {
@@ -77,6 +77,7 @@ def simulator(queue_from_webapp_to_simulator, queue_from_simulator_to_webapp, qu
     queue_from_simulator_to_webapp.put(True)
     print ("Waiting")
     husky_ur5.firstImage()
+    goal_file = None
     while True:
         inp = queue_from_webapp_to_simulator.get()
         if ("rotate" in inp or "zoom" in inp or "toggle" in inp):
@@ -88,6 +89,7 @@ def simulator(queue_from_webapp_to_simulator, queue_from_simulator_to_webapp, qu
         elif "showObject" in inp:
             husky_ur5.showObject(inp["showObject"])
         elif "restart" in inp:
+            goal_file = inp["restart"]
             print ("hello")
             husky_ur5.destroy()
             del sys.modules["husky_ur5"]
@@ -98,14 +100,18 @@ def simulator(queue_from_webapp_to_simulator, queue_from_simulator_to_webapp, qu
             queue_from_simulator_to_webapp.put(True)
         else:
             try:
-                husky_ur5.execute(inp)
+                done = husky_ur5.execute(inp, goal_file)
             except Exception as e:
                 print (str(e))
                 queue_for_error.put(str(e))
+            if (done):
+                queue_for_error.put("You have completed this tutorial.")
             called_undo_before = False
 
 @app.route('/', methods = ["GET"])
 def index():
+    queue_from_webapp_to_simulator.put({"restart": None})
+    should_webapp_start = queue_from_simulator_to_webapp.get()
     if (request.method == "GET"):
         return render_template('index.html', list_of_predicates = dict_of_predicates.keys(), workerId = workerId, world_objects = world_objects)
 
@@ -125,7 +131,7 @@ def show_tutorial3():
 
 @app.route('/tutorial/4', methods = ["GET"])
 def show_tutorial4():
-    queue_from_webapp_to_simulator.put({"restart": None})
+    queue_from_webapp_to_simulator.put({"restart": "jsons/home_goals/goal0-tut1.json"})
     should_webapp_start = queue_from_simulator_to_webapp.get()
     return render_template('tutorial4.html', list_of_predicates = dict_of_predicates.keys(), workerId = workerId, world_objects = world_objects)
 
@@ -135,7 +141,7 @@ def show_tutorial5():
 
 @app.route('/tutorial/6', methods = ["GET"])
 def show_tutorial6():
-    queue_from_webapp_to_simulator.put({"restart": None})
+    queue_from_webapp_to_simulator.put({"restart": "jsons/home_goals/goal0-tut2.json"})
     should_webapp_start = queue_from_simulator_to_webapp.get()
     return render_template('tutorial6.html', list_of_predicates = dict_of_predicates.keys(), workerId = workerId, world_objects = world_objects)
 
@@ -145,7 +151,7 @@ def show_tutorial7():
 
 @app.route('/tutorial/8', methods = ["GET"])
 def show_tutorial8():
-    queue_from_webapp_to_simulator.put({"restart": None})
+    queue_from_webapp_to_simulator.put({"restart": "jsons/home_goals/goal0-tut3.json"})
     should_webapp_start = queue_from_simulator_to_webapp.get()
     return render_template('tutorial8.html', list_of_predicates = dict_of_predicates.keys(), workerId = workerId, world_objects = world_objects)
 
