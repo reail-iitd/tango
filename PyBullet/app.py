@@ -160,7 +160,9 @@ def addworkerid():
     global workerId
     workerId = request.form["workerId"]
     print (workerId)
-    return render_template('index.html', list_of_predicates = dict_of_predicates.keys(), workerId = workerId, world_objects = world_objects)
+    return ""
+    # show_tutorial1()
+    # return render_template('index.html', list_of_predicates = dict_of_predicates.keys(), workerId = workerId, world_objects = world_objects)
 
 @app.route("/arguments")
 def return_arguments_for_predicate():
