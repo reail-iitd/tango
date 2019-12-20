@@ -10,7 +10,9 @@ from src.ur5 import *
 from src.utils import *
 from src.basic_actions import *
 from src.actions import *
+from src.datapoint import Datapoint
 import math
+import pickle
 
 object_file = "jsons/objects.json"
 wings_file = "jsons/wings.json"
@@ -116,7 +118,11 @@ perspective = "tp"
 wall_id = -1
 if 'home' in args.world:
   wall_id = id_lookup['walls']
+
+# Initialize datapoint
+datapoint = Datapoint()
  
+
 def changeView(direction):
   global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount, perspective
   camTargetPos = [x1, y1, 0]
@@ -149,6 +155,7 @@ def firstImage():
 def execute(actions, goal_file=None):
   global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount, cleaner
   # List of low level actions
+  datapoint.addSymbolicAction(actions)
   actions = convertActions(actions)
   print(actions)
   action_index = 0
@@ -304,6 +311,7 @@ def execute(actions, goal_file=None):
 
           if done:
             startTime = time.time()
+            datapoint.addPoint([x1, y1, 0, o1], sticky, fixed, cleaner, actions[action_index], constraints)
             action_index += 1
             if action_index < len(actions):
               print("Executing action: ", actions[action_index])
@@ -313,6 +321,8 @@ def execute(actions, goal_file=None):
           # print ("Fraction", image_save_time/total_time_taken)
           # start_here = time.time()
 
+def saveDatapoint(filename):
+	pickle.dump(datapoint, filename)
 
 def destroy():
   p.disconnect()
