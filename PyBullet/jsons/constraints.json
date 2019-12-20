@@ -26,7 +26,7 @@
 		{
 
 			"Object to drop": ["floor", "dumpster", "ledge", "stool", "fridge", "cupboard", "walls", "door", "big-tray", "bigger_table", "smaller_table", "couch"], 
-			"Object to drop on": ["fridge", "cupboard", "walls", "milk", "tape", "ledge", "door", "cube_red", "cube_green", "cubr_gray"]
+			"Object to drop on": ["fridge", "floor", "cupboard", "walls", "milk", "tape", "ledge", "door", "cube_red", "cube_green", "cubr_gray"]
 		},
 	"Climb up an object":
 		{
