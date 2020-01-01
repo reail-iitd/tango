@@ -163,6 +163,7 @@ def execute(actions, goal_file=None):
   waiting = False
   startTime = time.time()
   lastTime = startTime
+  datapoint.addPoint([x1, y1, 0, o1], sticky, fixed, cleaner, 'Start', constraints, getAllPositionsAndOrientations(id_lookup))
 
   # Start simulation
   if True:
@@ -311,7 +312,8 @@ def execute(actions, goal_file=None):
 
           if done:
             startTime = time.time()
-            datapoint.addPoint([x1, y1, 0, o1], sticky, fixed, cleaner, actions[action_index], constraints)
+            if not actions[action_index][0] == "saveBulletState":
+              datapoint.addPoint([x1, y1, 0, o1], sticky, fixed, cleaner, actions[action_index], constraints, getAllPositionsAndOrientations(id_lookup))
             action_index += 1
             if action_index < len(actions):
               print("Executing action: ", actions[action_index])
@@ -322,7 +324,12 @@ def execute(actions, goal_file=None):
           # start_here = time.time()
 
 def saveDatapoint(filename):
-	pickle.dump(datapoint, filename)
+  f = open(filename + '.datapoint', 'wb')
+  pickle.dump(datapoint, f)
+  f.close()
+
+def getDatapoint():
+  return datapoint
 
 def destroy():
   p.disconnect()

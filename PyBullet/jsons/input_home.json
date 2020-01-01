@@ -7,6 +7,10 @@
 		{
 			"name": "changeState",
 			"args": ["fridge", "open"]
+		},
+		{
+			"name": "pickNplaceAonB",
+			"args": ["orange", "fridge"]
 		}
 	]
 }

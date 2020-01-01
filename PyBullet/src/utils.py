@@ -162,6 +162,15 @@ def mentionNames(id_lookup):
                             (0, 0, 0.2),
                             parentObjectUniqueId=id_lookup[obj])
 
+def getAllPositionsAndOrientations(id_lookup):
+    """
+    Get position and orientation of all objects for dataset
+    """
+    metrics = dict()
+    for obj in id_lookup.keys():
+        metrics[obj] = p.getBasePositionAndOrientation(id_lookup[obj])
+    return metrics
+
 
 def restoreOnKeyboard(world_states, x1, y1, o1):
     """
