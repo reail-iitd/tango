@@ -282,6 +282,12 @@
 			"position": [-2.5, -0.8, 0],
 			"orientation": [],
 			"states": {}
-		}							
+		},
+		{
+			"name": "light",
+			"position": [2, 4.9, 0.5],
+			"orientation": [],
+			"states": []	
+		}						
 	]
 }

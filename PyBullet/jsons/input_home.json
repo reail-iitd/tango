@@ -1,8 +1,8 @@
 {
 	"actions":[
 		{
-			"name": "changeState",
-			"args": ["light", "off"]
+			"name": "climbUp",
+			"args": ["stool"]
 		}
 	]
 }
