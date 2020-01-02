@@ -209,7 +209,10 @@ def execute(actions, goal_file=None):
 
           elif(actions[action_index][0] == "moveTo"):
             if "husky" in fixed:
-                  raise Exception("Husky can not move as it is on a stool")    
+                  raise Exception("Husky can not move as it is on a stool")  
+            if abs(p.getBasePositionAndOrientation(id_lookup[actions[action_index][1]])[0][2] - 
+              p.getBasePositionAndOrientation(husky)[0][2]) > 1:
+                  raise Exception("Object on different height, please use stool")
             target = actions[action_index][1]
             x1, y1, o1, done = moveTo(x1, y1, o1, [husky, robotID], id_lookup[target], 
                                     tolerances[target], 
