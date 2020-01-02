@@ -29,5 +29,10 @@ def initParser():
                             required=False,
                             default=1.0,
                             help='How quickly to step through the visualization')
+    parser.add_argument('--goal',
+                            type=str,
+                            required=False,
+                            default='./jsons/home_goals/goal0-tut1.json',
+                            help='Path og goal file')
     return parser.parse_args()
  

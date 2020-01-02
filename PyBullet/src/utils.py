@@ -229,6 +229,11 @@ def checkGoal(goal_file, constraints, states, id_lookup):
 
     for goal in goals:
         obj = goal['object']
+        if 'paper' in obj:
+            tgt = findConstraintTo(obj, constraints)
+            if 'paper' in tgt:
+                success = False
+
         if obj == 'dirt':
             success = success and dirtClean
 

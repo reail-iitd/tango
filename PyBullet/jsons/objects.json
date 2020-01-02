@@ -365,7 +365,16 @@
             "constraints": ["noise"],
 			"tolerance": 1,
 			"constraint_link": -1,
-			"constraint_pos": [[0, 0, 0]],
+			"constraint_pos": [[0, 0, 0.2]],
+			"ur5_dist": [0.3,0,0]
+		},
+		{
+            "name": "paper2",
+            "urdf": "models/urdf/paper.urdf",
+            "constraints": ["noise"],
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0.2]],
 			"ur5_dist": [0.3,0,0]
 		},
 		{

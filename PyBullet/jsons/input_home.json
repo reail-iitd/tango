@@ -1,12 +1,8 @@
 {
 	"actions":[
 		{
-			"name": "changeState",
-			"args": ["fridge", "open"]
-		},
-		{
 			"name": "pickNplaceAonB",
-			"args": ["milk", "fridge"]
+			"args": ["apple", "paper"]
 		}
 	]
 }

@@ -1,0 +1,11 @@
+{
+	"goals":[
+		{
+			"object": "paper",
+			"target": "",
+			"state": "",
+			"position": "",
+			"tolerance": 0
+		}
+	]
+}

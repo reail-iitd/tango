@@ -8,6 +8,7 @@ from base_camera import BaseCamera
 import multiprocessing as mp
 import time
 from src.parser import *
+from os import listdir
 
 args = initParser()
 
@@ -71,8 +72,8 @@ def convertActionsFromFile(action_file):
     return(inp)
 
 def simulator(queue_from_webapp_to_simulator, queue_from_simulator_to_webapp, queue_for_error):
-    import husky_ur5
-    import src.actions
+    # import husky_ur5
+    # import src.actions
     import sys
     queue_from_simulator_to_webapp.put(True)
     print ("Waiting")
@@ -101,16 +102,22 @@ def simulator(queue_from_webapp_to_simulator, queue_from_simulator_to_webapp, qu
         else:
             try:
                 done = husky_ur5.execute(inp, goal_file)
+                print("Done: ", done)
             except Exception as e:
                 print (str(e))
                 queue_for_error.put(str(e))
             if (done):
+                foldername = 'dataset/home/' + goal_file.split("\\")[3].split(".")[0] + '/' + args.world.split('\\')[3].split(".")[0]
+                if len(listdir(foldername)) == 0:
+                    husky_ur5.saveDatapoint(foldername + '/' + '0')
+                else:    
+                    husky_ur5.saveDatapoint(foldername + '/' + str(int(listdir(foldername)[-1].split('.')[0]) + 1))
                 queue_for_error.put("You have completed this tutorial.")
             called_undo_before = False
 
 @app.route('/', methods = ["GET"])
 def index():
-    queue_from_webapp_to_simulator.put({"restart": None})
+    queue_from_webapp_to_simulator.put({"restart": args.goal})
     should_webapp_start = queue_from_simulator_to_webapp.get()
     if (request.method == "GET"):
         return render_template('index.html', list_of_predicates = dict_of_predicates.keys(), workerId = workerId, world_objects = world_objects)
