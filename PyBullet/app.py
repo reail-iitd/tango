@@ -77,7 +77,7 @@ def simulator(queue_from_webapp_to_simulator, queue_from_simulator_to_webapp, qu
     import sys
     queue_from_simulator_to_webapp.put(True)
     print ("Waiting")
-    husky_ur5.firstImage()
+    # husky_ur5.firstImage()
     goal_file = None
     while True:
         inp = queue_from_webapp_to_simulator.get()
@@ -92,9 +92,9 @@ def simulator(queue_from_webapp_to_simulator, queue_from_simulator_to_webapp, qu
         elif "restart" in inp:
             goal_file = inp["restart"]
             print ("hello")
-            husky_ur5.destroy()
-            del sys.modules["husky_ur5"]
-            del sys.modules["src.actions"]
+            # husky_ur5.destroy()
+            # del sys.modules["husky_ur5"]
+            # del sys.modules["src.actions"]
             import husky_ur5
             import src.actions
             husky_ur5.firstImage()
