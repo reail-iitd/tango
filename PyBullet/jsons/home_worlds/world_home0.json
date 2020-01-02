@@ -160,6 +160,12 @@
 			"states": []	
 		},
 		{
+			"name": "light",
+			"position": [2, 4.9, 0.5],
+			"orientation": [],
+			"states": []	
+		},
+		{
 			"name": "bottle_blue",
 			"position": [1,-4,0],
 			"orientation": [],

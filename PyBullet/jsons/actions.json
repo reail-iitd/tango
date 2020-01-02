@@ -164,5 +164,14 @@
                 [["moveZ", "object-Z"]]
 			]
 		}
+,
+		{
+			"name": "switchOff",
+			"args": ["object"],
+			"execution":[
+                ["moveTo", "object"],
+                ["changeState", "light", "off"]
+            ]
+		}
 	]
 }

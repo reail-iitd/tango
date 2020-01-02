@@ -1,0 +1,11 @@
+{
+	"goals":[
+		{
+			"object": "light",
+			"target": "",
+			"state": "",
+			"position": "",
+			"tolerance": 0
+		}
+	]
+}

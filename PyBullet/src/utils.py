@@ -216,7 +216,7 @@ def findConstraintTo(obj1,constraints):
         return constraints[obj1][0]
     return ""
 
-def checkGoal(goal_file, constraints, states, id_lookup):
+def checkGoal(goal_file, constraints, states, id_lookup, light):
     """
     Check if goal conditions are true for the current state
     """
@@ -229,6 +229,10 @@ def checkGoal(goal_file, constraints, states, id_lookup):
 
     for goal in goals:
         obj = goal['object']
+        if obj == 'light':
+            if light:
+                success = False
+
         if 'paper' in obj:
             tgt = findConstraintTo(obj, constraints)
             if 'paper' in tgt:
@@ -315,7 +319,7 @@ def objDistance(obj1, obj2, id_lookup):
     (x2, y2, z2), _ = p.getBasePositionAndOrientation(id_lookup[obj2])
     return math.sqrt((x-x2)**2 + (y-y2)**2 + (z-z2)**2)
 
-def saveImage(lastTime, imageCount, display, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id):
+def saveImage(lastTime, imageCount, display, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id, light):
     current = current_milli_time()
     if (current - lastTime) < 100:
         return lastTime, imageCount
@@ -354,6 +358,8 @@ def saveImage(lastTime, imageCount, display, ax, o1, cam, dist, yaw, pitch, camT
             rgb = img_arr[2]
         elif display == "tp":
             rgb = img_arr2[2]
+            if not light:
+                rgb = np.divide(rgb, 2)
         plt.imsave("logs/"+str(imageCount)+".jpg", arr=np.reshape(rgb, (pixelHeight, pixelWidth, 4)) * (1. / 255.))
     return current, imageCount+1
 

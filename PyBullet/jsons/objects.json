@@ -421,6 +421,15 @@
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.0]],
 			"ur5_dist": [0.2,0,0]
+		},
+		{
+            "name": "light",
+            "urdf": "models/urdf/light.urdf",
+            "constraints": ["horizontal"],
+			"tolerance": 0.9,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0.0]],
+			"ur5_dist": [0.2,0,0]
 		}
 	]
 }

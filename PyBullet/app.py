@@ -31,7 +31,8 @@ dict_of_predicates = {
         "Climb down an object": {"Object to climb down from": "dropdown-objects"},
         "Apply object on another object": {"Object to apply": "dropdown-objects", "Object to apply on": "dropdown-objects"},
         "Stick object to destination": {"Object to stick": "dropdown-objects", "Destination object to stick on": "dropdown-objects"},
-        "Clean object": {"Object to clean": "dropdown-objects"}
+        "Clean object": {"Object to clean": "dropdown-objects"},
+        "Switch Object on/off": {"Object to switch state": "dropdown-objects", "On or off": "dropdown-states"}
     }
 
 dict_predicate_to_action = {
@@ -46,7 +47,8 @@ dict_predicate_to_action = {
     "Climb down an object": "climbDown",
     "Apply object on another object": "apply",
     "Stick object to destination": "stick",
-    "Clean object": "clean"
+    "Clean object": "clean",
+    "Switch Object on/off": "changeState"
 }
 
 # Unnecessary (can be removed)
@@ -54,7 +56,7 @@ d = json.load(open(args.world))["entities"]
 world_objects = []
 renamed_objects = {}
 constraints_dict = json.load(open("jsons/constraints.json"))
-dropdown_states = ["open", "close"]
+dropdown_states = ["open", "close", "off"]
 for obj in d:
     if (("ignore" in obj) and (obj["ignore"] == "true")):
         continue
@@ -108,6 +110,8 @@ def simulator(queue_from_webapp_to_simulator, queue_from_simulator_to_webapp, qu
                 queue_for_error.put(str(e))
             if (done):
                 foldername = 'dataset/home/' + goal_file.split("\\")[3].split(".")[0] + '/' + args.world.split('\\')[3].split(".")[0]
+                if not os.path.exists(os.path.dirname(foldername)):
+                    os.makedirs(foldername)
                 if len(listdir(foldername)) == 0:
                     husky_ur5.saveDatapoint(foldername + '/' + '0')
                 else:    

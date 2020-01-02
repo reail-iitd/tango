@@ -35,6 +35,7 @@ cleaner = False
 
 # Connect to Bullet using GUI mode
 light = p.connect(p.GUI)
+lightOn = True
 
 # Add input arguments
 args = initParser()
@@ -124,36 +125,36 @@ datapoint = Datapoint()
  
 
 def changeView(direction):
-  global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount, perspective
+  global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount, perspective, lightOn
   camTargetPos = [x1, y1, 0]
   dist = dist - 0.5 if direction == "in" else dist + 0.5 if direction == "out" else dist
   yaw = yaw - 25 if direction == "left" else yaw + 25 if direction == "right" else yaw
   print(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos)
   perspective = "tp" if perspective == "fp" and direction == None else "fp" if direction == None else perspective
-  lastTime, imageCount = saveImage(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id)
+  lastTime, imageCount = saveImage(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id, lightOn)
 
 
 def showObject(obj):
-  global world_states, x1, y1, o1, imageCount
+  global world_states, x1, y1, o1, imageCount, lightOn
   ((x, y, z), (a1, b1, c1, d1)) = p.getBasePositionAndOrientation(id_lookup[obj])
-  _, imageCount = saveImage(0, imageCount, 'fp', ax, math.atan2(y,x)%(2*math.pi), cam, 2, yaw, pitch, [x, y, z], wall_id)
+  _, imageCount = saveImage(0, imageCount, 'fp', ax, math.atan2(y,x)%(2*math.pi), cam, 2, yaw, pitch, [x, y, z], wall_id, lightOn)
   time.sleep(0.5)
-  _, imageCount = saveImage(0, imageCount, 'fp', ax, math.atan2(y,x)%(2*math.pi), cam, 7, yaw, pitch, [x, y, z], wall_id)
+  _, imageCount = saveImage(0, imageCount, 'fp', ax, math.atan2(y,x)%(2*math.pi), cam, 7, yaw, pitch, [x, y, z], wall_id, lightOn)
   time.sleep(1)
   firstImage()
 
 def undo():
-  global world_states, x1, y1, o1, imageCount, constraints
+  global world_states, x1, y1, o1, imageCount, constraints, lightOn
   x1, y1, o1, constraints, world_states = restoreOnInput(world_states, x1, y1, o1, constraints)
-  _, imageCount = saveImage(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id)
+  _, imageCount = saveImage(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id, lightOn)
 
 def firstImage():
-  global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount
+  global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount, lightOn
   camTargetPos = [x1, y1, 0]
-  _, imageCount= saveImage(-250, imageCount, perspective, ax, o1, cam, dist, 50, pitch, camTargetPos, wall_id)
+  _, imageCount= saveImage(-250, imageCount, perspective, ax, o1, cam, dist, 50, pitch, camTargetPos, wall_id, lightOn)
 
 def execute(actions, goal_file=None):
-  global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount, cleaner
+  global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount, cleaner, lightOn
   # List of low level actions
   datapoint.addSymbolicAction(actions)
   actions = convertActions(actions)
@@ -163,7 +164,7 @@ def execute(actions, goal_file=None):
   waiting = False
   startTime = time.time()
   lastTime = startTime
-  datapoint.addPoint([x1, y1, 0, o1], sticky, fixed, cleaner, 'Start', constraints, getAllPositionsAndOrientations(id_lookup))
+  datapoint.addPoint([x1, y1, 0, o1], sticky, fixed, cleaner, 'Start', constraints, getAllPositionsAndOrientations(id_lookup), lightOn)
 
   # Start simulation
   if True:
@@ -174,7 +175,7 @@ def execute(actions, goal_file=None):
           camTargetPos = [x1, y1, 0]
           if (args.logging or args.display) and (counter % COUNTER_MOD == 0):
             # start_image = time.time()
-            lastTime, imageCount = saveImage(lastTime, imageCount, "fp", ax, o1, cam, 3, yaw, pitch, camTargetPos, wall_id)
+            lastTime, imageCount = saveImage(lastTime, imageCount, "fp", ax, o1, cam, 3, yaw, pitch, camTargetPos, wall_id, lightOn)
             # image_save_time = time.time() - start_image
             # print ("Image save time", image_save_time)
           x1, y1, o1, keyboard = moveKeyboard(x1, y1, o1, [husky, robotID])
@@ -192,8 +193,8 @@ def execute(actions, goal_file=None):
 
           if action_index >= len(actions):
             yaw = 180*(math.atan2(y1,x1)%(2*math.pi))/math.pi - 90
-            lastTime, imageCount = saveImage(lastTime, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id)
-            return checkGoal(goal_file, constraints, states, id_lookup)
+            lastTime, imageCount = saveImage(lastTime, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id, lightOn)
+            return checkGoal(goal_file, constraints, states, id_lookup, lightOn)
 
           if(actions[action_index][0] == "move"):
             if "husky" in fixed:
@@ -271,7 +272,11 @@ def execute(actions, goal_file=None):
             state = actions[action_index][2]
             if state == "stuck" and not actions[action_index][1] in sticky:
                 raise Exception("Object not sticky")  
-            done = changeState(id_lookup[actions[action_index][1]], states[actions[action_index][1]][state])   
+            if actions[action_index][1] == 'light':
+              lightOn = False
+              done = True
+            else:
+              done = changeState(id_lookup[actions[action_index][1]], states[actions[action_index][1]][state])   
 
           elif(actions[action_index][0] == "climbUp"):
             target = id_lookup[actions[action_index][1]]
@@ -316,7 +321,7 @@ def execute(actions, goal_file=None):
           if done:
             startTime = time.time()
             if not actions[action_index][0] == "saveBulletState":
-              datapoint.addPoint([x1, y1, 0, o1], sticky, fixed, cleaner, actions[action_index], constraints, getAllPositionsAndOrientations(id_lookup))
+              datapoint.addPoint([x1, y1, 0, o1], sticky, fixed, cleaner, actions[action_index], constraints, getAllPositionsAndOrientations(id_lookup), lightOn)
             action_index += 1
             if action_index < len(actions):
               print("Executing action: ", actions[action_index])
