@@ -59,6 +59,7 @@ if (args.logging or args.display):
   cons_link_lookup,
   ur5_dist,
   states) = initHuskyUR5(args.world, object_file)
+print ("The world file is", args.world)
 
 # Initialize dictionary of wing positions
 wings = initWingPos(wings_file)

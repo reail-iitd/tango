@@ -9,6 +9,8 @@ import multiprocessing as mp
 import time
 from src.parser import *
 from os import listdir
+import pandas as pd
+import random
 
 args = initParser()
 
@@ -18,6 +20,9 @@ queue_for_error = mp.Queue()
 workerId = None
 app = Flask(__name__)
 moves_to_show = []
+MAX_GOALS = 8
+GOAL_LIST = ["goal1-milk-fridge.json", "goal2-fruits-cupboard.json", "goal3-clean-dirt.json", "goal4-stick-paper.json", "goal5-cubes-box.json", "goal6-bottles-dumpster.json", "goal7-weight-paper.json", "goal8-light-off.json"]
+MAX_SCENES = 10
 
 dict_of_predicates = {
 		# "Move object to destination":{"source-object" : "dropdown-objects", "destination (near object)": "dropdown-objects"},
@@ -92,8 +97,10 @@ def simulator(queue_from_webapp_to_simulator, queue_from_simulator_to_webapp, qu
         elif "showObject" in inp:
             husky_ur5.showObject(inp["showObject"])
         elif "restart" in inp:
-            goal_file = inp["restart"]
-            print ("hello")
+            goal_file = inp["restart"][0]
+            if inp["restart"][1] != None:
+                args.world = inp["restart"][1]
+                print ("hello")
             # husky_ur5.destroy()
             # del sys.modules["husky_ur5"]
             # del sys.modules["src.actions"]
@@ -116,15 +123,42 @@ def simulator(queue_from_webapp_to_simulator, queue_from_simulator_to_webapp, qu
                     husky_ur5.saveDatapoint(foldername + '/' + '0')
                 else:    
                     husky_ur5.saveDatapoint(foldername + '/' + str(int(listdir(foldername)[-1].split('.')[0]) + 1))
-                queue_for_error.put("You have completed this tutorial.")
+                goal_num, scene_num = inp["Number"]
+                ID = inp["ID"]
+                df = pd.read_csv("database.csv")
+                df = df.append({"ID": ID, "Goal": goal_num, "Scene": scene_num}, ignore_index = True)
+                df.to_csv("database.csv")
+                queue_for_error.put("You have completed this task.")
             called_undo_before = False
 
 @app.route('/', methods = ["GET"])
 def index():
-    queue_from_webapp_to_simulator.put({"restart": args.goal})
-    should_webapp_start = queue_from_simulator_to_webapp.get()
+    goal_file = None
+    if workerId != None:
+        df = pd.read_csv("database.csv")
+        df = df[df["ID"] == workerId]
+        goals = df["Goal"].tolist()
+        scenes = df["Scene"].tolist()
+        current_goal = -1
+        current_scene = -1
+        for i in range(1, MAX_GOALS + 1):
+            if i not in goals:
+                current_goal = i
+                break
+        if current_goal == -1:
+            current_goal = random.randint(1,MAX_GOALS)
+        for i in range(MAX_SCENES):
+            if i not in scenes:
+                current_scene = i
+                break
+        if current_scene == -1:
+            current_scene = random.randint(0,MAX_SCENES-1)
+        goal_file = "jsons/home_goals/" + GOAL_LIST[current_goal - 1]
+        scene_file = "jsons/home_worlds/world_home" + str(current_scene) + ".json"
+        queue_from_webapp_to_simulator.put({"restart": (goal_file, scene_file), "Number" : (current_goal, current_scene), "ID": workerId})
+        should_webapp_start = queue_from_simulator_to_webapp.get()
     if (request.method == "GET"):
-        return render_template('index.html', list_of_predicates = dict_of_predicates.keys(), workerId = workerId, world_objects = world_objects)
+        return render_template('index.html', list_of_predicates = dict_of_predicates.keys(), workerId = workerId, world_objects = world_objects, goal_file = goal_file)
 
 @app.route('/tutorial/1', methods = ["GET"])
 def show_tutorial1():
@@ -132,7 +166,7 @@ def show_tutorial1():
 
 @app.route('/tutorial/2', methods = ["GET"])
 def show_tutorial2():
-    queue_from_webapp_to_simulator.put({"restart": None})
+    queue_from_webapp_to_simulator.put({"restart": (None,None), "Number": (-1, -1), "ID": workerId})
     should_webapp_start = queue_from_simulator_to_webapp.get()
     return render_template('tutorial2.html', list_of_predicates = dict_of_predicates.keys(), workerId = workerId, world_objects = world_objects)
 
@@ -142,7 +176,7 @@ def show_tutorial3():
 
 @app.route('/tutorial/4', methods = ["GET"])
 def show_tutorial4():
-    queue_from_webapp_to_simulator.put({"restart": "jsons/home_goals/goal0-tut1.json"})
+    queue_from_webapp_to_simulator.put({"restart": ("jsons/home_goals/goal0-tut1.json",None), "Number": (-1, -1), "ID": workerId})
     should_webapp_start = queue_from_simulator_to_webapp.get()
     return render_template('tutorial4.html', list_of_predicates = dict_of_predicates.keys(), workerId = workerId, world_objects = world_objects)
 
@@ -152,7 +186,7 @@ def show_tutorial5():
 
 @app.route('/tutorial/6', methods = ["GET"])
 def show_tutorial6():
-    queue_from_webapp_to_simulator.put({"restart": "jsons/home_goals/goal0-tut2.json"})
+    queue_from_webapp_to_simulator.put({"restart": ("jsons/home_goals/goal0-tut2.json",None), "Number": (-1, -1), "ID": workerId})
     should_webapp_start = queue_from_simulator_to_webapp.get()
     return render_template('tutorial6.html', list_of_predicates = dict_of_predicates.keys(), workerId = workerId, world_objects = world_objects)
 
@@ -162,7 +196,7 @@ def show_tutorial7():
 
 @app.route('/tutorial/8', methods = ["GET"])
 def show_tutorial8():
-    queue_from_webapp_to_simulator.put({"restart": "jsons/home_goals/goal0-tut3.json"})
+    queue_from_webapp_to_simulator.put({"restart": ("jsons/home_goals/goal0-tut3.json",None), "Number": (-1, -1), "ID": workerId})
     should_webapp_start = queue_from_simulator_to_webapp.get()
     return render_template('tutorial8.html', list_of_predicates = dict_of_predicates.keys(), workerId = workerId, world_objects = world_objects)
 
