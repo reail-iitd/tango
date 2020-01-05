@@ -347,7 +347,7 @@ def execute(actions, goal_file=None):
     executeHelper(actions, goal_file)
   except Exception as e:
     datapoint.addSymbolicAction("Error = " + str(e))
-    datapoint.addPoint(None, None, None, None, 'Error = ' + str(e), None, None)
+    datapoint.addPoint(None, None, None, None, 'Error = ' + str(e), None, None, None)
     raise e
 
 def saveDatapoint(filename):
