@@ -32,7 +32,7 @@ class Datapoint:
 		self.lighton.append(deepcopy(light))
 
 	def addSymbolicAction(self, HLaction):
-		self.symbolicActions.append(HLaction['actions'])
+		self.symbolicActions.append(HLaction)
 
 	def toString(self, delimiter='\n', metrics=False):
 		string = 'Symbolic actions:\n'

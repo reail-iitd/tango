@@ -154,10 +154,10 @@ def firstImage():
   camTargetPos = [x1, y1, 0]
   _, imageCount= saveImage(-250, imageCount, perspective, ax, o1, cam, dist, 50, pitch, camTargetPos, wall_id, lightOn)
 
-def execute(actions, goal_file=None):
-  global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount, cleaner, lightOn
+def executeHelper(actions, goal_file=None):
+  global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount, cleaner, lightOn, datapoint
   # List of low level actions
-  datapoint.addSymbolicAction(actions)
+  datapoint.addSymbolicAction(actions['actions'])
   actions = convertActions(actions)
   print(actions)
   action_index = 0
@@ -341,7 +341,17 @@ def execute(actions, goal_file=None):
           # print ("Fraction", image_save_time/total_time_taken)
           # start_here = time.time()
 
+def execute(actions, goal_file=None):
+  global datapoint
+  try:
+    executeHelper(actions, goal_file)
+  except Exception as e:
+    datapoint.addSymbolicAction("Error = " + str(e))
+    datapoint.addPoint(None, None, None, None, 'Error = ' + str(e), None, None)
+    raise e
+
 def saveDatapoint(filename):
+  global datapoint
   f = open(filename + '.datapoint', 'wb')
   pickle.dump(datapoint, f)
   f.close()
