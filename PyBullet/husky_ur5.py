@@ -344,7 +344,7 @@ def executeHelper(actions, goal_file=None):
 def execute(actions, goal_file=None):
   global datapoint
   try:
-    executeHelper(actions, goal_file)
+    return executeHelper(actions, goal_file)
   except Exception as e:
     datapoint.addSymbolicAction("Error = " + str(e))
     datapoint.addPoint(None, None, None, None, 'Error = ' + str(e), None, None, None)
@@ -354,6 +354,7 @@ def saveDatapoint(filename):
   global datapoint
   f = open(filename + '.datapoint', 'wb')
   pickle.dump(datapoint, f)
+  f.flush()
   f.close()
 
 def getDatapoint():
