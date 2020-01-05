@@ -115,6 +115,7 @@ def simulator(queue_from_webapp_to_simulator, queue_from_simulator_to_webapp, qu
             except Exception as e:
                 print (str(e))
                 queue_for_error.put(str(e))
+                done = False
             if (done):
                 foldername = 'dataset/home/' + goal_file.split("\\")[3].split(".")[0] + '/' + args.world.split('\\')[3].split(".")[0]
                 try:   
