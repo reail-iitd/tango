@@ -210,11 +210,20 @@ def execute(actions, goal_file=None):
             x1, y1, o1, done = move(x1, y1, o1, [husky, robotID], target, keyboard, speed, up=True)
 
           elif(actions[action_index][0] == "moveTo"):
-            if "husky" in fixed:
+            if objDistance("husky", actions[action_index][1], id_lookup) > 2 and "husky" in fixed:
                   raise Exception("Husky can not move as it is on a stool")  
             if abs(p.getBasePositionAndOrientation(id_lookup[actions[action_index][1]])[0][2] - 
               p.getBasePositionAndOrientation(husky)[0][2]) > 1:
                   raise Exception("Object on different height, please use stool")
+            target = actions[action_index][1]
+            x1, y1, o1, done = moveTo(x1, y1, o1, [husky, robotID], id_lookup[target], 
+                                    tolerances[target], 
+                                    keyboard,
+                                    speed)
+
+          elif(actions[action_index][0] == "moveToXY"):
+            if objDistance("husky", actions[action_index][1], id_lookup) > 2 and "husky" in fixed:
+                  raise Exception("Husky can not move as it is on a stool")  
             target = actions[action_index][1]
             x1, y1, o1, done = moveTo(x1, y1, o1, [husky, robotID], id_lookup[target], 
                                     tolerances[target], 

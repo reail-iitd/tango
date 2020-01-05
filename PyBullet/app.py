@@ -117,7 +117,9 @@ def simulator(queue_from_webapp_to_simulator, queue_from_simulator_to_webapp, qu
                 queue_for_error.put(str(e))
             if (done):
                 foldername = 'dataset/home/' + goal_file.split("\\")[3].split(".")[0] + '/' + args.world.split('\\')[3].split(".")[0]
-                if not os.path.exists(os.path.dirname(foldername)):
+                try:   
+                    a = len(listdir(foldername))
+                except Exception as e:
                     os.makedirs(foldername)
                 if len(listdir(foldername)) == 0:
                     husky_ur5.saveDatapoint(foldername + '/' + '0')
