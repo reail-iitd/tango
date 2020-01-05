@@ -139,7 +139,7 @@
 			"name": "table",
 			"urdf": "table/table.urdf",
 			"constraints": [],
-			"tolerance": 1,
+			"tolerance": 1.5,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.7], [0, 0.1, 0.7], [0, -0.1, 0.7], [1, 0, 0.7], [1, 0.1, 0.7], [1, -0.1, 0.7], [-1, 0, 0.7], [-1, 0.1, 0.7], [-1, -0.1, 0.7]],
 			"ur5_dist": [0,0,0]

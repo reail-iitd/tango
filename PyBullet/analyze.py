@@ -8,5 +8,5 @@ def printDatapoint(filename):
 	print(datapoint.toString(metrics=False))
 	f.close()
 
-filename = './dataset/home/goal8-light-off/world_home2/7'
+filename = './dataset/home/goal5-cubes-box/world_home1/4'
 printDatapoint(filename)
