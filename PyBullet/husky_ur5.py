@@ -145,7 +145,9 @@ def showObject(obj):
   firstImage()
 
 def undo():
-  global world_states, x1, y1, o1, imageCount, constraints, lightOn
+  global world_states, x1, y1, o1, imageCount, constraints, lightOn, datapoint
+  datapoint.addSymbolicAction("Undo")
+  datapoint.addPoint(None, None, None, None, 'Undo', None, None, None)
   x1, y1, o1, constraints, world_states = restoreOnInput(world_states, x1, y1, o1, constraints)
   _, imageCount = saveImage(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id, lightOn)
 

@@ -37,7 +37,7 @@ class Datapoint:
 	def toString(self, delimiter='\n', metrics=False):
 		string = 'Symbolic actions:\n'
 		for action in self.symbolicActions:
-			if str(action[0]) == 'E':
+			if str(action[0]) == 'E' or str(action[0]) == 'U':
 				string = string + action + '\n'
 				continue
 			string = string + "\n".join(map(str, action)) + '\n'
