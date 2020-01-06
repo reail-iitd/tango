@@ -167,7 +167,7 @@ def executeHelper(actions, goal_file=None):
   waiting = False
   startTime = time.time()
   lastTime = startTime
-  datapoint.addPoint([x1, y1, 0, o1], sticky, fixed, cleaner, 'Start', constraints, getAllPositionsAndOrientations(id_lookup), lightOn)
+  datapoint.addPoint([x1, y1, 0, o1], sticky, fixed, cleaner, 'Start', constraints, getAllPositionsAndOrientations(id_lookup), lightOn, dirtClean)
 
   # Start simulation
   if True:
@@ -333,7 +333,7 @@ def executeHelper(actions, goal_file=None):
           if done:
             startTime = time.time()
             if not actions[action_index][0] == "saveBulletState":
-              datapoint.addPoint([x1, y1, 0, o1], sticky, fixed, cleaner, actions[action_index], constraints, getAllPositionsAndOrientations(id_lookup), lightOn)
+              datapoint.addPoint([x1, y1, 0, o1], sticky, fixed, cleaner, actions[action_index], constraints, getAllPositionsAndOrientations(id_lookup), lightOn, dirtClean)
             action_index += 1
             if action_index < len(actions):
               print("Executing action: ", actions[action_index])
@@ -349,7 +349,7 @@ def execute(actions, goal_file=None):
     return executeHelper(actions, goal_file)
   except Exception as e:
     datapoint.addSymbolicAction("Error = " + str(e))
-    datapoint.addPoint(None, None, None, None, 'Error = ' + str(e), None, None, None)
+    datapoint.addPoint(None, None, None, None, 'Error = ' + str(e), None, None, None, None)
     raise e
 
 def saveDatapoint(filename):

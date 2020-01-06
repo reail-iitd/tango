@@ -20,8 +20,10 @@ class Datapoint:
 		self.symbolicActions = []
 		# Light state
 		self.lighton = []
+		# Dirt Cleaned
+		self.dirtClean = []
 
-	def addPoint(self, pos, sticky, fixed, cleaner, action, cons, metric, light):
+	def addPoint(self, pos, sticky, fixed, cleaner, action, cons, metric, light, dirtClean):
 		self.position.append(deepcopy(pos))
 		self.sticky.append(deepcopy(sticky))
 		self.fixed.append(deepcopy(fixed))
@@ -30,6 +32,7 @@ class Datapoint:
 		self.constraints.append(deepcopy(cons))
 		self.metrics.append(deepcopy(metric))
 		self.lighton.append(deepcopy(light))
+		self.dirtClean.append(deepcopy(dirtClean))
 
 	def addSymbolicAction(self, HLaction):
 		self.symbolicActions.append(HLaction)
@@ -48,6 +51,7 @@ class Datapoint:
 				'Sticky - ' + str(self.sticky[i]) + delimiter + \
 				'Fixed - ' + str(self.fixed[i]) + delimiter + \
 				'Cleaner? - ' + str(self.cleaner[i]) + delimiter + \
+				'Dirt-Cleaned? - ' + str(self.dirtClean[i]) + delimiter + \
 				'Light On? - ' + str(self.lighton[i]) + delimiter + \
 				'Action - ' + str(self.actions[i]) + delimiter + \
 				'Constraints - ' + str(self.constraints[i]) + delimiter
