@@ -417,7 +417,7 @@
             "name": "dirt",
             "urdf": "models/urdf/dirt.urdf",
             "constraints": ["horizontal", "noise"],
-			"tolerance": 0.9,
+			"tolerance": 1.5,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.0]],
 			"ur5_dist": [0.2,0,0]

@@ -128,21 +128,21 @@
 		},
 		{
 			"name": "cube_gray",
-			"position": [-2.3,-4.5,1.55],
+			"position": [-2.4,4.5,1.55],
 			"orientation": [],
 			"states": [],
 			"rename": "cube_gray"
 		},
 		{
 			"name": "cube_green",
-			"position": [-2.3,-4.4,1.55],
+			"position": [-2.5,4.5,1.55],
 			"orientation": [],
 			"states": [],
 			"rename": "cube_green"	
 		},
 		{
 			"name": "cube_red",
-			"position": [-2.3,-4.6,1.55],
+			"position": [-2.6,4.5,1.55],
 			"orientation": [],
 			"states": [],
 			"rename": "cube_red"	

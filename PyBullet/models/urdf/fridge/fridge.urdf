@@ -21,11 +21,11 @@
         <color rgba="1 1 1 1"/>
       </material>
     </visual>
-    <collision concave="yes">
+<!--     <collision concave="yes">
       <origin rpy="1.57 0 1.57" xyz="0 0 0"/>
       <geometry>
         <mesh filename="models/meshes/fridge/fridge.obj" scale="10 10 10"/>
       </geometry>
-    </collision>
+    </collision> -->
   </link>
 </robot>

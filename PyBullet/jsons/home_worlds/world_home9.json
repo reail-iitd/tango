@@ -128,7 +128,7 @@
 		},
 		{
 			"name": "cube_gray",
-			"position": [-0.5,4.2,0.7],
+			"position": [-2.6,4.5,1.55],
 			"orientation": [],
 			"states": [],
 			"rename": "cube_gray"
