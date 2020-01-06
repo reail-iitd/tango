@@ -216,7 +216,7 @@ def findConstraintTo(obj1,constraints):
         return constraints[obj1][0]
     return ""
 
-def checkGoal(goal_file, constraints, states, id_lookup, light):
+def checkGoal(goal_file, constraints, states, id_lookup, light, dirtClean):
     """
     Check if goal conditions are true for the current state
     """

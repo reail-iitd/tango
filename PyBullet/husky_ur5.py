@@ -157,7 +157,7 @@ def firstImage():
   _, imageCount= saveImage(-250, imageCount, perspective, ax, o1, cam, dist, 50, pitch, camTargetPos, wall_id, lightOn)
 
 def executeHelper(actions, goal_file=None):
-  global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount, cleaner, lightOn, datapoint
+  global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount, cleaner, lightOn, datapoint, dirtClean
   # List of low level actions
   datapoint.addSymbolicAction(actions['actions'])
   actions = convertActions(actions)
@@ -197,7 +197,7 @@ def executeHelper(actions, goal_file=None):
           if action_index >= len(actions):
             yaw = 180*(math.atan2(y1,x1)%(2*math.pi))/math.pi - 90
             lastTime, imageCount = saveImage(lastTime, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id, lightOn)
-            return checkGoal(goal_file, constraints, states, id_lookup, lightOn)
+            return checkGoal(goal_file, constraints, states, id_lookup, lightOn, dirtClean)
 
           if(actions[action_index][0] == "move"):
             if "husky" in fixed:
