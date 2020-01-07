@@ -28,5 +28,6 @@
 			"position": "cupboard",
 			"tolerance": 2
 		}
-	]
+	],
+	"text": "Put all the cubes inside the box."
 }
