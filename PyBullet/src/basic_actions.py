@@ -44,7 +44,7 @@ def move(x1, y1, o1, object_list, target_coordinates, keyboard, speed, tolerance
     return x1, y1, o1, False
 
 
-def moveTo(x1, y1, o1, object_list, target, tolerance, keyboard, speed):
+def moveTo(x1, y1, o1, object_list, target, tolerance, keyboard, speed, offset):
     """
     Move robot towards a target object
     :params: 
@@ -64,7 +64,7 @@ def moveTo(x1, y1, o1, object_list, target, tolerance, keyboard, speed):
     """
     if keyboard:
         return x1, y1, o1, False
-    y2 = p.getBasePositionAndOrientation(target)[0][1]
+    y2 = p.getBasePositionAndOrientation(target)[0][1] + offset
     x2 = p.getBasePositionAndOrientation(target)[0][0]
     z2 = p.getBasePositionAndOrientation(target)[0][2]
     target_coordinates = [x2, y2, z2]

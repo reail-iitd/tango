@@ -221,7 +221,7 @@ def executeHelper(actions, goal_file=None):
             x1, y1, o1, done = moveTo(x1, y1, o1, [husky, robotID], id_lookup[target], 
                                     tolerances[target], 
                                     keyboard,
-                                    speed)
+                                    speed, 0)
 
           elif(actions[action_index][0] == "moveToXY"):
             if objDistance("husky", actions[action_index][1], id_lookup) > 2 and "husky" in fixed:
@@ -230,7 +230,7 @@ def executeHelper(actions, goal_file=None):
             x1, y1, o1, done = moveTo(x1, y1, o1, [husky, robotID], id_lookup[target], 
                                     tolerances[target], 
                                     keyboard,
-                                    speed)
+                                    speed, 1 if actions[action_index][1] == 'cupboard' else 0)
 
           elif(actions[action_index][0] == "changeWing"):
             if time.time()-startTime > 1.8:
@@ -294,7 +294,7 @@ def executeHelper(actions, goal_file=None):
             target = id_lookup[actions[action_index][1]]
             (x2, y2, z2), _ = p.getBasePositionAndOrientation(target)
             targetLoc = [x2, y2, z2+0.4]
-            x1, y1, o1, done = move(x1, y1, o1, [husky, robotID], targetLoc, keyboard, speed, tolerance=0.1, up=True)
+            x1, y1, o1, done = move(x1, y1, o1, [husky, robotID], targetLoc, keyboard, speed, tolerance=0.15, up=True)
           
           elif(actions[action_index][0] == "climbDown"):
             target = id_lookup[actions[action_index][1]]

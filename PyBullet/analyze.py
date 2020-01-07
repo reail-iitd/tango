@@ -2,6 +2,27 @@ from src.datapoint import Datapoint
 import pickle
 from os import listdir
 
+GOAL_LIST = ["goal1-milk-fridge.json", "goal2-fruits-cupboard.json", "goal3-clean-dirt.json", "goal4-stick-paper.json", "goal5-cubes-box.json", "goal6-bottles-dumpster.json", "goal7-weight-paper.json", "goal8-light-off.json"]
+
+def printNumDatapoints():
+	totalpoints = 0
+	for goal in GOAL_LIST:
+		print('Goal = ' + goal)
+		goalpoints = 0
+		for world in range(10):
+			directory = './dataset/home/' + goal.split('.')[0] + '/world_home' + str(world)
+			try:
+				numpoints = len(listdir(directory))
+			except Exception as e:
+				numpoints = 0
+			goalpoints += numpoints
+			print(numpoints, end = ' ')
+		totalpoints += goalpoints
+		print('\nTotal goal ' + goal + ' points = ' + str(goalpoints))
+	print('Gross total points = ' + str(totalpoints))
+
+
+
 def printDatapoint(filename):
 	print(filename)
 	f = open(filename + '.datapoint', 'rb')
@@ -9,8 +30,8 @@ def printDatapoint(filename):
 	print(datapoint.toString(metrics=False))
 	f.close()
 
-filename = './dataset/home/goal3-clean-dirt/world_home5/5'
-printDatapoint(filename)
+# filename = './dataset/home/goal1-milk-fridge/world_home5/0'
+# printDatapoint(filename)
 
 # for goal in ['goal5-cubes-box', 'goal8-light-off']:
 # 	for world in range(10):
@@ -25,3 +46,5 @@ printDatapoint(filename)
 # 			pickle.dump(datapoint, f)
 # 			f.flush()
 # 			f.close()
+
+printNumDatapoints()

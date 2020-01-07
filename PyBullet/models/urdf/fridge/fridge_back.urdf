@@ -24,7 +24,7 @@
     <collision concave="yes">
       <origin rpy="1.57 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="models/meshes/fridge/fridge_back.obj" scale="10 10 10"/>
+        <mesh filename="models/meshes/fridge/fridge_back.obj" scale="9 9 9"/>
       </geometry>
     </collision>
   </link>

@@ -231,7 +231,7 @@
 		},
 		{
 			"name": "milk",
-			"position": [-3,2.5,0.2],
+			"position": [3.5,4,0.2],
 			"orientation": [],
 			"states": []	
 		},
