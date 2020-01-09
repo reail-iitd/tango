@@ -299,8 +299,8 @@
 		{
 			"name": "stick",
 			"urdf": "models/urdf/stick.urdf",
-			"constraints": ["noise"],
-			"tolerance": 0.5,
+			"constraints": [],
+			"tolerance": 0.9,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0]],
 			"ur5_dist": [0,0,0]

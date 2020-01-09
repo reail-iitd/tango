@@ -32,6 +32,8 @@ sticky = []
 fixed = []
 # Has cleaner
 cleaner = False
+# Has stick
+stick = False
 
 # Connect to Bullet using GUI mode
 light = p.connect(p.GUI)
@@ -147,7 +149,7 @@ def showObject(obj):
 def undo():
   global world_states, x1, y1, o1, imageCount, constraints, lightOn, datapoint
   datapoint.addSymbolicAction("Undo")
-  datapoint.addPoint(None, None, None, None, 'Undo', None, None, None)
+  datapoint.addPoint(None, None, None, None, 'Undo', None, None, None, None, None)
   x1, y1, o1, constraints, world_states = restoreOnInput(world_states, x1, y1, o1, constraints)
   _, imageCount = saveImage(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id, lightOn)
 
@@ -157,7 +159,7 @@ def firstImage():
   _, imageCount= saveImage(-250, imageCount, perspective, ax, o1, cam, dist, 50, pitch, camTargetPos, wall_id, lightOn)
 
 def executeHelper(actions, goal_file=None):
-  global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount, cleaner, lightOn, datapoint, dirtClean
+  global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount, cleaner, lightOn, datapoint, dirtClean, stick
   # List of low level actions
   datapoint.addSymbolicAction(actions['actions'])
   actions = convertActions(actions)
@@ -167,7 +169,7 @@ def executeHelper(actions, goal_file=None):
   waiting = False
   startTime = time.time()
   lastTime = startTime
-  datapoint.addPoint([x1, y1, 0, o1], sticky, fixed, cleaner, 'Start', constraints, getAllPositionsAndOrientations(id_lookup), lightOn, dirtClean)
+  datapoint.addPoint([x1, y1, 0, o1], sticky, fixed, cleaner, 'Start', constraints, getAllPositionsAndOrientations(id_lookup), lightOn, dirtClean, stick)
 
   # Start simulation
   if True:
@@ -215,7 +217,7 @@ def executeHelper(actions, goal_file=None):
             if objDistance("husky", actions[action_index][1], id_lookup) > 2 and "husky" in fixed:
                   raise Exception("Husky can not move as it is on a stool")  
             if abs(p.getBasePositionAndOrientation(id_lookup[actions[action_index][1]])[0][2] - 
-              p.getBasePositionAndOrientation(husky)[0][2]) > 1:
+              p.getBasePositionAndOrientation(husky)[0][2]) > 1 and not stick:
                   raise Exception("Object on different height, please use stool")
             target = actions[action_index][1]
             x1, y1, o1, done = moveTo(x1, y1, o1, [husky, robotID], id_lookup[target], 
@@ -259,6 +261,8 @@ def executeHelper(actions, goal_file=None):
                   or "sponge" in actions[action_index][1] 
                   or "vacuum" in actions[action_index][1]):
                   cleaner = True
+              if ("stick" in actions[action_index][1]):
+                  stick = True
               cid = constrain(actions[action_index][1], 
                               actions[action_index][2], 
                               cons_link_lookup, 
@@ -270,6 +274,8 @@ def executeHelper(actions, goal_file=None):
               waiting = True
 
           elif(actions[action_index][0] == "removeConstraint"):
+            if ("stick" in actions[action_index][1]):
+                  stick = False
             if time.time()-startTime > 1:
               done = True; waiting = False
             if not waiting and not done:
@@ -279,7 +285,7 @@ def executeHelper(actions, goal_file=None):
               waiting = True
 
           elif(actions[action_index][0] == "changeState"):
-            if checkUR5constrained(constraints):
+            if checkUR5constrained(constraints) and not stick:
                 raise Exception("Gripper is not free, can not change state")
             state = actions[action_index][2]
             if state == "stuck" and not actions[action_index][1] in sticky:
@@ -333,7 +339,7 @@ def executeHelper(actions, goal_file=None):
           if done:
             startTime = time.time()
             if not actions[action_index][0] == "saveBulletState":
-              datapoint.addPoint([x1, y1, 0, o1], sticky, fixed, cleaner, actions[action_index], constraints, getAllPositionsAndOrientations(id_lookup), lightOn, dirtClean)
+              datapoint.addPoint([x1, y1, 0, o1], sticky, fixed, cleaner, actions[action_index], constraints, getAllPositionsAndOrientations(id_lookup), lightOn, dirtClean, stick)
             action_index += 1
             if action_index < len(actions):
               print("Executing action: ", actions[action_index])
@@ -349,7 +355,7 @@ def execute(actions, goal_file=None):
     return executeHelper(actions, goal_file)
   except Exception as e:
     datapoint.addSymbolicAction("Error = " + str(e))
-    datapoint.addPoint(None, None, None, None, 'Error = ' + str(e), None, None, None, None)
+    datapoint.addPoint(None, None, None, None, 'Error = ' + str(e), None, None, None, None, None)
     raise e
 
 def saveDatapoint(filename):

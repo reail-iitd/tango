@@ -225,7 +225,7 @@
 
 		{
 			"name": "stick",
-			"position": [3,0,0.2],
+			"position": [2.7,0,0.2],
 			"orientation": [],
 			"states": []	
 		},
