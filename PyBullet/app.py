@@ -126,7 +126,7 @@ def simulator(queue_from_webapp_to_simulator, queue_from_simulator_to_webapp, qu
                 if len(listdir(foldername)) == 0:
                     husky_ur5.saveDatapoint(foldername + '/' + '0')
                 else:    
-                    husky_ur5.saveDatapoint(foldername + '/' + str(int(listdir(foldername)[-1].split('.')[0]) + 1))
+                    husky_ur5.saveDatapoint(foldername + '/' + str(a))
                 queue_for_error.put("You have completed this tutorial.")
                 # queue_from_webapp_to_simulator.put({"restart": args.goal})
             called_undo_before = False

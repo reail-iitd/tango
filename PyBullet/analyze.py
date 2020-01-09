@@ -33,18 +33,18 @@ def printDatapoint(filename):
 # filename = './dataset/home/goal1-milk-fridge/world_home5/0'
 # printDatapoint(filename)
 
-for goal in ["goal1-milk-fridge.json", "goal3-clean-dirt.json", "goal5-cubes-box.json", "goal8-light-off.json"]:
-	for world in range(10):
-		directory = './dataset/home/' + goal.split('.')[0] + '/world_home' + str(world) + '/'
-		for point in range(len(listdir(directory))):
-			file = directory + str(point) + '.datapoint'
-			f = open(file, 'rb')
-			datapoint = pickle.load(f)
-			f.close()
-			f = open(file, 'wb')
-			datapoint.stick = [False] * len(datapoint.lighton)
-			pickle.dump(datapoint, f)
-			f.flush()
-			f.close()
+# for goal in ["goal1-milk-fridge.json", "goal3-clean-dirt.json", "goal5-cubes-box.json", "goal8-light-off.json"]:
+# 	for world in range(10):
+# 		directory = './dataset/home/' + goal.split('.')[0] + '/world_home' + str(world) + '/'
+# 		for point in range(len(listdir(directory))):
+# 			file = directory + str(point) + '.datapoint'
+# 			f = open(file, 'rb')
+# 			datapoint = pickle.load(f)
+# 			f.close()
+# 			f = open(file, 'wb')
+# 			datapoint.stick = [False] * len(datapoint.lighton)
+# 			pickle.dump(datapoint, f)
+# 			f.flush()
+# 			f.close()
 
-# printNumDatapoints()
+printNumDatapoints()
