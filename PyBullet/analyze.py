@@ -33,9 +33,9 @@ def printDatapoint(filename):
 # filename = './dataset/home/goal1-milk-fridge/world_home5/0'
 # printDatapoint(filename)
 
-for goal in ["goal1-milk-fridge.json", "goal3-clean-dirt.json", "goal5-cubes-box.json", "goal7-weight-paper.json", "goal8-light-off.json"]:
+for goal in ["goal1-milk-fridge.json", "goal3-clean-dirt.json", "goal5-cubes-box.json", "goal8-light-off.json"]:
 	for world in range(10):
-		directory = './dataset/home/' + goal + '/world_home' + str(world) + '/'
+		directory = './dataset/home/' + goal.split('.')[0] + '/world_home' + str(world) + '/'
 		for point in range(len(listdir(directory))):
 			file = directory + str(point) + '.datapoint'
 			f = open(file, 'rb')
