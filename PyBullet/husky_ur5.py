@@ -165,7 +165,7 @@ def executeHelper(actions, goal_file=None):
   actions = convertActions(actions)
   print(actions)
   action_index = 0
-  done = False
+  done = False; done1 = False
   waiting = False
   startTime = time.time()
   lastTime = startTime
@@ -220,19 +220,43 @@ def executeHelper(actions, goal_file=None):
               p.getBasePositionAndOrientation(husky)[0][2]) > 1 and not stick:
                   raise Exception("Object on different height, please use stool")
             target = actions[action_index][1]
-            x1, y1, o1, done = moveTo(x1, y1, o1, [husky, robotID], id_lookup[target], 
-                                    tolerances[target], 
-                                    keyboard,
-                                    speed, 0)
+            if target == 'door' or target == 'dumpster':
+              if not done1:
+                x1, y1, o1, done1 = moveTo(x1, y1, o1, [husky, robotID], id_lookup['floor'], 
+                                        tolerances[target], 
+                                        keyboard,
+                                        speed, 0)
+              else:
+                x1, y1, o1, done = move(x1, y1, o1, [husky, robotID], [2.9, 4.4, 0],
+                                        keyboard,
+                                        speed, 1, 0)
+                done1 = not done
+            else:
+              x1, y1, o1, done = moveTo(x1, y1, o1, [husky, robotID], id_lookup[target], 
+                                      tolerances[target], 
+                                      keyboard,
+                                      speed, 0)
 
           elif(actions[action_index][0] == "moveToXY"):
             if objDistance("husky", actions[action_index][1], id_lookup) > 2 and "husky" in fixed:
                   raise Exception("Husky can not move as it is on a stool")  
             target = actions[action_index][1]
-            x1, y1, o1, done = moveTo(x1, y1, o1, [husky, robotID], id_lookup[target], 
-                                    tolerances[target], 
-                                    keyboard,
-                                    speed, 1 if actions[action_index][1] == 'cupboard' else 0)
+            if target == 'door' or target == 'dumpster':
+              if not done1:
+                x1, y1, o1, done1 = moveTo(x1, y1, o1, [husky, robotID], id_lookup['floor'], 
+                                        tolerances[target], 
+                                        keyboard,
+                                        speed, 0)
+              else:
+                x1, y1, o1, done = move(x1, y1, o1, [husky, robotID], [2.9, 4.4, 0],
+                                        keyboard,
+                                        speed, 1, 0)
+                done1 = not done
+            else:
+              x1, y1, o1, done = moveTo(x1, y1, o1, [husky, robotID], id_lookup[target], 
+                                      tolerances[target], 
+                                      keyboard,
+                                      speed, 1 if actions[action_index][1] == 'cupboard' else 0)
 
           elif(actions[action_index][0] == "changeWing"):
             if time.time()-startTime > 1.8:
