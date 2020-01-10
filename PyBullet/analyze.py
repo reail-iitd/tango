@@ -27,10 +27,12 @@ def printDatapoint(filename):
 	print(filename)
 	f = open(filename + '.datapoint', 'rb')
 	datapoint = pickle.load(f)
-	print(datapoint.toString(metrics=False))
+	print(datapoint.toString(subSymbolic=False, metrics=False))
 	f.close()
 
-# filename = './dataset/home/goal1-milk-fridge/world_home5/0'
+filename = './dataset/home/goal7-weight-paper/world_home7/'
+for i in range(len(listdir(filename))):
+	printDatapoint(filename+str(i))
 # printDatapoint(filename)
 
 # for goal in ["goal1-milk-fridge.json", "goal3-clean-dirt.json", "goal5-cubes-box.json", "goal8-light-off.json"]:
@@ -47,4 +49,4 @@ def printDatapoint(filename):
 # 			f.flush()
 # 			f.close()
 
-printNumDatapoints()
+# printNumDatapoints()

@@ -216,6 +216,12 @@ def findConstraintTo(obj1,constraints):
         return constraints[obj1][0]
     return ""
 
+def findConstraintWith(obj1,constraints):
+    for obj in constraints.keys():
+        if obj1 in constraints[obj][0]:
+            return obj
+    return ""
+
 def checkGoal(goal_file, constraints, states, id_lookup, light, dirtClean):
     """
     Check if goal conditions are true for the current state
@@ -226,6 +232,7 @@ def checkGoal(goal_file, constraints, states, id_lookup, light, dirtClean):
         file = json.load(handle)
     goals = file['goals']
     success = True
+    print(constraints, goals)
 
     for goal in goals:
         obj = goal['object']
@@ -234,8 +241,9 @@ def checkGoal(goal_file, constraints, states, id_lookup, light, dirtClean):
                 success = False
 
         if 'paper' in obj:
-            tgt = findConstraintTo(obj, constraints)
-            if 'paper' in tgt:
+            tgt = findConstraintWith(obj, constraints)
+            print('Paper target = ' + tgt)
+            if tgt == "":
                 success = False
 
         if obj == 'dirt':

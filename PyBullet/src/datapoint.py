@@ -40,13 +40,15 @@ class Datapoint:
 	def addSymbolicAction(self, HLaction):
 		self.symbolicActions.append(HLaction)
 
-	def toString(self, delimiter='\n', metrics=False):
+	def toString(self, delimiter='\n', subSymbolic=False, metrics=False):
 		string = 'Symbolic actions:\n'
 		for action in self.symbolicActions:
 			if str(action[0]) == 'E' or str(action[0]) == 'U':
 				string = string + action + '\n'
 				continue
 			string = string + "\n".join(map(str, action)) + '\n'
+		if not subSymbolic:
+			return string
 		string += 'States:\n'
 		for i in range(len(self.position)):
 			string = string + 'State ' + str(i) + ' ----------- ' + delimiter + \
