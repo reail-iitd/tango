@@ -240,7 +240,7 @@ def checkGoal(goal_file, constraints, states, id_lookup, light, dirtClean):
             if light:
                 success = False
 
-        if 'paper' in obj:
+        if 'paper' in obj and goal['target'] == "":
             tgt = findConstraintWith(obj, constraints)
             print('Paper target = ' + tgt)
             if tgt == "":

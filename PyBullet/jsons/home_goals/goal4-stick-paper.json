@@ -2,7 +2,7 @@
 	"goals":[
 		{
 			"object": "paper",
-			"target": "wall",
+			"target": "walls",
 			"state": "",
 			"position": "",
 			"tolerance": 0

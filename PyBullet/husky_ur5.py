@@ -93,7 +93,7 @@ dist = 5
 pitch = -35.0
 
 # Start video recording
-p.setRealTimeSimulation(1) 
+p.setRealTimeSimulation(0) 
 ax = 0; fig = 0; cam = []
 if args.display:
       ax, cam = initDisplay("both")
@@ -318,7 +318,7 @@ def executeHelper(actions, goal_file=None):
               lightOn = False
               done = True
             else:
-              done = changeState(id_lookup[actions[action_index][1]], states[actions[action_index][1]][state])   
+              done = changeState(id_lookup[actions[action_index][1]], states[actions[action_index][1]][state]) if actions[action_index][1] != 'paper' else True
 
           elif(actions[action_index][0] == "climbUp"):
             target = id_lookup[actions[action_index][1]]
