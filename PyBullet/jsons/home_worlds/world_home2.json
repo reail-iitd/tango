@@ -168,14 +168,14 @@
 		},
 		{
 			"name": "bottle_gray",
-			"position": [1.2,-4,0],
+			"position": [-2.5,-1,0],
 			"orientation": [],
 			"states": [],
 			"rename": "bottle_gray"	
 		},
 		{
 			"name": "bottle_red",
-			"position": [1.4,-4,0],
+			"position": [1.6,4.3,0],
 			"orientation": [],
 			"states": [],
 			"rename": "bottle_red"

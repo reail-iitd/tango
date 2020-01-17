@@ -175,7 +175,7 @@
 		},
 		{
 			"name": "bottle_red",
-			"position": [1.4,-4,0],
+			"position": [-2.6,-4.5,1.5],
 			"orientation": [],
 			"states": [],
 			"rename": "bottle_red"
