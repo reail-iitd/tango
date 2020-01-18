@@ -366,8 +366,8 @@ def saveImage(lastTime, imageCount, display, ax, o1, cam, dist, yaw, pitch, camT
             rgb = img_arr[2]
         elif display == "tp":
             rgb = img_arr2[2]
-            if not light:
-                rgb = np.divide(rgb, 2)
+        if not light:
+            rgb = np.divide(rgb, 2)
         plt.imsave("logs/"+str(imageCount)+".jpg", arr=np.reshape(rgb, (pixelHeight, pixelWidth, 4)) * (1. / 255.))
     return current, imageCount+1
 

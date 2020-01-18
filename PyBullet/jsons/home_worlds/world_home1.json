@@ -243,13 +243,13 @@
 		},
 		{
 			"name": "glue",
-			"position": [0.7,4.4,0.7],
+			"position": [-2.5,-4.4,0.7],
 			"orientation": [],
 			"states": []	
 		},
 		{
 			"name": "tape",
-			"position": [0.2,4.4,0.7],
+			"position": [-2.5,4.4,1.2],
 			"orientation": [],
 			"states": {}
 		},

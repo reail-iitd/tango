@@ -313,6 +313,8 @@ def executeHelper(actions, goal_file=None):
                 raise Exception("Gripper is not free, can not change state")
             state = actions[action_index][2]
             if state == "stuck" and not actions[action_index][1] in sticky:
+                removeConstraint(constraints, actions[action_index][1], "")
+                del constraints[actions[action_index][1]]
                 raise Exception("Object not sticky")  
             if actions[action_index][1] == 'light':
               lightOn = False

@@ -249,7 +249,7 @@
 		},
 		{
 			"name": "tape",
-			"position": [0.2,4.4,0.7],
+			"position": [-0.5,-4.4,0.7],
 			"orientation": [],
 			"states": {}
 		},
