@@ -165,7 +165,7 @@
 			"name": "book",
 			"urdf": "models/urdf/book.urdf",
 			"constraints": ["horizontal", "noise"],
-			"tolerance": 1,
+			"tolerance": 1.2,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0], [0, -0.1, 0], [0, 0.1, 0]],
 			"ur5_dist": [0.3,0,0]
@@ -210,7 +210,7 @@
             "name": "tray2",
             "urdf": "models/urdf/tray.urdf",
             "constraints": ["horizontal", "noise"],
-			"tolerance": 0.9,
+			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.05], [0, 0.1, 0.05], [0, -0.1, 0.05]],
 			"ur5_dist": [0.3,0,0]
@@ -273,7 +273,7 @@
             "name": "banana",
             "urdf": "models/urdf/banana.urdf",
             "constraints": ["noise"],
-			"tolerance": 1,
+			"tolerance": 1.2,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, -0.05]],
 			"ur5_dist": [0.3,0,0]
@@ -291,7 +291,7 @@
 			"name": "ball",
 			"urdf": "models/urdf/ball.urdf",
 			"constraints": ["noise"],
-			"tolerance": 0.5,
+			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0]],
 			"ur5_dist": [0,0,0]
@@ -338,7 +338,7 @@
             "constraints": [],
 			"tolerance": 1,
 			"constraint_link": -1,
-			"constraint_pos": [[0.1, -1, 1],[0.1, 0, 1],[0.1, 1, 1]],
+			"constraint_pos": [[0.05, -1, 1],[0.1, 0, 1],[0.1, 1, 1]],
 			"ur5_dist": [0.5,0,0]
 		},
 		{
@@ -365,7 +365,7 @@
             "constraints": ["noise"],
 			"tolerance": 1,
 			"constraint_link": -1,
-			"constraint_pos": [[0, 0, 0.2]],
+			"constraint_pos": [[0, 0, 0.2], [0, 0, 0.4]],
 			"ur5_dist": [0.3,0,0]
 		},
 		{
@@ -380,7 +380,7 @@
 		{
             "name": "stool",
             "urdf": "models/urdf/stool.urdf",
-            "constraints": ["horizontal", "noise"],
+            "constraints": ["horizontal"],
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.7], [0.2, 0, 0.6], [-0.2, 0, 0.6]],

@@ -194,13 +194,13 @@
 		},
 		{
 			"name": "orange",
-			"position": [3.2,2.4,1],
+			"position": [3,2.4,1],
 			"orientation": [],
 			"states": []	
 		},
 		{
 			"name": "banana",
-			"position": [3.2,2.6,1],
+			"position": [3.2,2.6,0.6],
 			"orientation": [],
 			"states": []	
 		},

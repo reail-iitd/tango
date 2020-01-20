@@ -217,10 +217,11 @@ def findConstraintTo(obj1,constraints):
     return ""
 
 def findConstraintWith(obj1,constraints):
+    l = []
     for obj in constraints.keys():
         if obj1 in constraints[obj][0]:
-            return obj
-    return ""
+            l.append(obj)
+    return l
 
 def checkGoal(goal_file, constraints, states, id_lookup, light, dirtClean):
     """
@@ -242,9 +243,12 @@ def checkGoal(goal_file, constraints, states, id_lookup, light, dirtClean):
 
         if 'paper' in obj and goal['target'] == "":
             tgt = findConstraintWith(obj, constraints)
-            print('Paper target = ' + tgt)
-            if tgt == "":
-                success = False
+            print('Paper target = ' + str(tgt))
+            heavy = False
+            for t in tgt:
+                if not (t == "" or 'paper' in t):
+                    heavy = True
+            success = success and heavy
 
         if obj == 'dirt':
             success = success and dirtClean
@@ -265,8 +269,7 @@ def checkGoal(goal_file, constraints, states, id_lookup, light, dirtClean):
                 abs(y2-y1) <= 0.01 and 
                 abs(a2-a1) <= 0.01 and 
                 abs(b2-b2) <= 0.01 and 
-                abs(c2-c1) <= 0.01 and 
-                abs(d2-d2) <= 0.01)
+                abs(c2-c1) <= 0.02)
             success = success and done
 
         if goal['position'] != "":

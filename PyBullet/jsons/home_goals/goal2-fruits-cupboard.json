@@ -2,32 +2,32 @@
 	"goals":[
 		{
 			"object": "apple",
-			"target": "cupboard",
+			"target": "",
 			"state": "",
-			"position": "",
-			"tolerance": 0
+			"position": "cupboard",
+			"tolerance": 1.5
 		},
 		{
 			"object": "orange",
-			"target": "cupboard",
+			"target": "",
 			"state": "",
-			"position": "",
-			"tolerance": 0
+			"position": "cupboard",
+			"tolerance": 1.5
 		},
 		{
 			"object": "banana",
-			"target": "cupboard",
+			"target": "",
 			"state": "",
-			"position": "",
-			"tolerance": 0
+			"position": "cupboard",
+			"tolerance": 1.5
 		},
 		{
 			"object": "cupboard",
 			"target": "",
-			"state": "close",
+			"state": "open",
 			"position": "",
 			"tolerance": 0
 		}
 	],
-	"text": "Put all the fruits inside the cupboard."
+	"text": "Put all the fruits inside the cupboard and keep cupboard open."
 }

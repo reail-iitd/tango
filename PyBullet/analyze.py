@@ -30,7 +30,7 @@ def printDatapoint(filename):
 	print(datapoint.toString(subSymbolic=False, metrics=False))
 	f.close()
 
-filename = './dataset/home/goal4-stick-paper/world_home0/'
+filename = './dataset/home/goal7-weight-paper/world_home3/'
 for i in range(len(listdir(filename))):
 	printDatapoint(filename+str(i))
 # printDatapoint(filename)
