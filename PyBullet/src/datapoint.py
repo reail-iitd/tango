@@ -24,6 +24,8 @@ class Datapoint:
 		self.dirtClean = []
 		# Stick with object
 		self.stick = []
+		# Time
+		self.time = 0
 
 	def addPoint(self, pos, sticky, fixed, cleaner, action, cons, metric, light, dirtClean, stick):
 		self.position.append(deepcopy(pos))
