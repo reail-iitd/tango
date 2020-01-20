@@ -82,18 +82,17 @@ for i in range(len(listdir(filename))):
 
 printNumDatapoints()
 
-# goal = 'goal5-cubes-box.json'
-# for world in range(10):
-# 	directory = './dataset/home/' + goal.split('.')[0] + '/world_home' + str(world) + '/'
-# 	times = []; actions = []; subactions = []
-# 	for point in range(len(listdir(directory))):
-# 		file = directory + str(point) + '.datapoint'
-# 		f = open(file, 'rb')
-# 		datapoint = pickle.load(f)
-# 		times.append(totalTime(datapoint))
-# 		actions.append(len(datapoint.symbolicActions))
-# 		subactions.append(len(datapoint.actions))
-# 	# print('World ' + str(world) + ' min = ' + str(min(times)) + ' avg = ' + str(mean(times)) + ' max = ' + str(max(times)))
-# 	# print('World ' + str(world) + ' min = ' + str(min(actions)) + ' avg = ' + str(mean(actions)) + ' max = ' + str(max(actions)))
-# 	# print('World ' + str(world) + ' min = ' + str(min(subactions)) + ' avg = ' + str(mean(subactions)) + ' max = ' + str(max(subactions)))
-	
+goal = 'goal1-milk-fridge.json'
+for world in range(10):
+	directory = './dataset/home/' + goal.split('.')[0] + '/world_home' + str(world) + '/'
+	times = []; actions = []; subactions = []
+	for point in range(len(listdir(directory))):
+		file = directory + str(point) + '.datapoint'
+		f = open(file, 'rb')
+		datapoint = pickle.load(f)
+		times.append(totalTime(datapoint))
+		actions.append(len(datapoint.symbolicActions))
+		subactions.append(len(datapoint.actions))
+	# print('World ' + str(world) + ' min = ' + str(min(times)) + ' avg = ' + str(mean(times)) + ' max = ' + str(max(times)))
+	# print('World ' + str(world) + ' min = ' + str(min(actions)) + ' avg = ' + str(mean(actions)) + ' max = ' + str(max(actions)))
+	print('World ' + str(world) + ' min = ' + str(min(subactions)) + ' avg = ' + str(mean(subactions)) + ' max = ' + str(max(subactions)))
