@@ -243,7 +243,7 @@
 		},
 		{
 			"name": "glue",
-			"position": [0.7,4.4,0.7],
+			"position": [-0.7,-4.4,0.7],
 			"orientation": [],
 			"states": []	
 		},

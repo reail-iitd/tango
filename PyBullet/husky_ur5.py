@@ -93,7 +93,7 @@ dist = 5
 pitch = -35.0
 
 # Start video recording
-p.setRealTimeSimulation(0) 
+p.setRealTimeSimulation(1) 
 ax = 0; fig = 0; cam = []
 if args.display:
       ax, cam = initDisplay("both")
