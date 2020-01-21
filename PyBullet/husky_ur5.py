@@ -11,6 +11,7 @@ from src.utils import *
 from src.basic_actions import *
 from src.actions import *
 from src.datapoint import Datapoint
+from operator import sub
 import math
 import pickle
 
@@ -126,6 +127,9 @@ if 'home' in args.world:
 # Initialize datapoint
 datapoint = Datapoint()
  
+# Print manipulation region bounding boxes
+# for obj in id_lookup.keys():
+#   print(obj, p.getAABB(id_lookup[obj]))
 
 def changeView(direction):
   global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount, perspective, lightOn
@@ -268,6 +272,7 @@ def executeHelper(actions, goal_file=None):
             if time.time()-startTime > 1:
               done = True; waiting = False
             if not waiting and not done:
+              bounding_box = p.getAABB(id_lookup[actions[action_index][1]])
               if checkUR5constrained(constraints) and actions[action_index][2] == 'ur5':
                   raise Exception("Gripper is not free, can not hold object")
               if actions[action_index][2] == actions[action_index][1]:
@@ -287,6 +292,9 @@ def executeHelper(actions, goal_file=None):
                   cleaner = True
               if ("stick" in actions[action_index][1]):
                   stick = True
+              if (('tray' in actions[action_index][2] or 'book' in actions[action_index][2])
+                  and  max(map(sub, bounding_box[1], bounding_box[0])) > 0.5):
+                  raise Exception("Object too big to be placed")
               cid = constrain(actions[action_index][1], 
                               actions[action_index][2], 
                               cons_link_lookup, 
