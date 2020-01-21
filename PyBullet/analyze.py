@@ -61,9 +61,9 @@ def printDatapoint(filename):
 	totalTime(datapoint)
 	f.close()
 
-filename = './dataset/home/goal7-weight-paper/world_home3/'
-for i in range(len(listdir(filename))):
-	printDatapoint(filename+str(i))
+# filename = './dataset/home/goal6-bottles-dumpster/world_home9/'
+# for i in range(len(listdir(filename))):
+# 	printDatapoint(filename+str(i))
 # printDatapoint(filename)
 
 # for goal in ["goal1-milk-fridge.json", "goal3-clean-dirt.json", "goal5-cubes-box.json", "goal8-light-off.json"]:
@@ -82,17 +82,17 @@ for i in range(len(listdir(filename))):
 
 printNumDatapoints()
 
-goal = 'goal1-milk-fridge.json'
-for world in range(10):
-	directory = './dataset/home/' + goal.split('.')[0] + '/world_home' + str(world) + '/'
-	times = []; actions = []; subactions = []
-	for point in range(len(listdir(directory))):
-		file = directory + str(point) + '.datapoint'
-		f = open(file, 'rb')
-		datapoint = pickle.load(f)
-		times.append(totalTime(datapoint))
-		actions.append(len(datapoint.symbolicActions))
-		subactions.append(len(datapoint.actions))
-	# print('World ' + str(world) + ' min = ' + str(min(times)) + ' avg = ' + str(mean(times)) + ' max = ' + str(max(times)))
-	# print('World ' + str(world) + ' min = ' + str(min(actions)) + ' avg = ' + str(mean(actions)) + ' max = ' + str(max(actions)))
-	print('World ' + str(world) + ' min = ' + str(min(subactions)) + ' avg = ' + str(mean(subactions)) + ' max = ' + str(max(subactions)))
+# goal = 'goal1-milk-fridge.json'
+# for world in range(10):
+# 	directory = './dataset/home/' + goal.split('.')[0] + '/world_home' + str(world) + '/'
+# 	times = []; actions = []; subactions = []
+# 	for point in range(len(listdir(directory))):
+# 		file = directory + str(point) + '.datapoint'
+# 		f = open(file, 'rb')
+# 		datapoint = pickle.load(f)
+# 		times.append(totalTime(datapoint))
+# 		actions.append(len(datapoint.symbolicActions))
+# 		subactions.append(len(datapoint.actions))
+# 	# print('World ' + str(world) + ' min = ' + str(min(times)) + ' avg = ' + str(mean(times)) + ' max = ' + str(max(times)))
+# 	# print('World ' + str(world) + ' min = ' + str(min(actions)) + ' avg = ' + str(mean(actions)) + ' max = ' + str(max(actions)))
+# 	print('World ' + str(world) + ' min = ' + str(min(subactions)) + ' avg = ' + str(mean(subactions)) + ' max = ' + str(max(subactions)))
