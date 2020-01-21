@@ -61,9 +61,9 @@ def printDatapoint(filename):
 	totalTime(datapoint)
 	f.close()
 
-# filename = './dataset/home/goal6-bottles-dumpster/world_home9/'
-# for i in range(len(listdir(filename))):
-# 	printDatapoint(filename+str(i))
+filename = './dataset/home/goal6-bottles-dumpster/world_home9/'
+for i in range(len(listdir(filename))):
+	printDatapoint(filename+str(i))
 # printDatapoint(filename)
 
 # for goal in ["goal1-milk-fridge.json", "goal3-clean-dirt.json", "goal5-cubes-box.json", "goal8-light-off.json"]:
@@ -80,7 +80,7 @@ def printDatapoint(filename):
 # 			f.flush()
 # 			f.close()
 
-printNumDatapoints()
+# printNumDatapoints()
 
 # goal = 'goal1-milk-fridge.json'
 # for world in range(10):
