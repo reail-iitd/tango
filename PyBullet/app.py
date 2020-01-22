@@ -22,6 +22,7 @@ moves_to_show = []
 MAX_GOALS = 8
 GOAL_LIST = ["goal1-milk-fridge.json", "goal2-fruits-cupboard.json", "goal3-clean-dirt.json", "goal4-stick-paper.json", "goal5-cubes-box.json", "goal6-bottles-dumpster.json", "goal7-weight-paper.json", "goal8-light-off.json"]
 MAX_SCENES = 10
+start_time = time.time()
 
 dict_of_predicates = {
         # "Move object to destination":{"source-object" : "dropdown-objects", "destination (near object)": "dropdown-objects"},
@@ -133,6 +134,10 @@ def simulator(queue_from_webapp_to_simulator, queue_from_simulator_to_webapp, qu
 
 @app.route('/', methods = ["GET"])
 def index():
+    global workerId
+    global start_time
+    if (time.time() - start_time >= 60):
+        workerId = None
     goal_file = "jsons/home_goals/" + GOAL_LIST[random.randint(0,MAX_GOALS - 1)]
     queue_from_webapp_to_simulator.put({"restart": goal_file})
     should_webapp_start = queue_from_simulator_to_webapp.get()
@@ -182,6 +187,8 @@ def show_tutorial8():
 @app.route('/workerId', methods = ["POST"])
 def addworkerid():
     global workerId
+    global start_time
+    start_time = time.time()
     workerId = request.form["workerId"]
     print (workerId)
     return ""
