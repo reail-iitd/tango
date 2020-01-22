@@ -61,7 +61,7 @@ d = json.load(open(args.world))["entities"]
 world_objects = []
 renamed_objects = {}
 constraints_dict = json.load(open("jsons/constraints.json"))
-dropdown_states = ["open", "close", "off"]
+dropdown_states = ["open", "close"]
 for obj in d:
     if (("ignore" in obj) and (obj["ignore"] == "true")):
         continue
@@ -136,7 +136,7 @@ def simulator(queue_from_webapp_to_simulator, queue_from_simulator_to_webapp, qu
 def index():
     global workerId
     global start_time
-    if (time.time() - start_time >= 60):
+    if (time.time() - start_time >= 3600):
         workerId = None
     goal_file = "jsons/home_goals/" + GOAL_LIST[random.randint(0,MAX_GOALS - 1)]
     queue_from_webapp_to_simulator.put({"restart": goal_file})
