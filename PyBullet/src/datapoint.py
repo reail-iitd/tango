@@ -67,3 +67,18 @@ class Datapoint:
 				string = string + 'All metric - ' + str(self.metrics) + delimiter
 		return string
 
+	def readableSymbolicActions(self):
+		string = 'Symbolic actions:\n\n'
+		for action in self.symbolicActions:
+			if str(action[0]) == 'E' or str(action[0]) == 'U':
+				string = string + action + '\n'
+				continue
+			assert len(action) == 1
+			dic = action[0]
+			l = dic["args"]
+			string = string + dic["name"] + "(" + str(l[0])
+			for i in range(1, len(l)):
+				string = string + ", " + str(l[i])
+			string = string + ")\n"
+		return string
+			# string = string + "\n".join(map(str, action)) + '\n'
