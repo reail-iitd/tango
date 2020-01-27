@@ -54,16 +54,25 @@ def totalTime(dp):
 
 
 def printDatapoint(filename):
-	print(filename)
+	# print(filename)
 	f = open(filename + '.datapoint', 'rb')
 	datapoint = pickle.load(f)
-	print(datapoint.toString(subSymbolic=False, metrics=False))
+	# print(datapoint.toString(subSymbolic=False, metrics=False))
+	print (datapoint.readableSymbolicActions())
 	totalTime(datapoint)
 	f.close()
 
-filename = './dataset/home/goal8-light-off/world_home9/'
-for i in range(len(listdir(filename))):
-	printDatapoint(filename+str(i))
+filename = './dataset/home/goal1-milk-fridge/world_home'
+print ("Put the milk carton inside the fridge.\n\n")
+for home_num in range(10):
+	filename_home = filename + str(home_num) + "/"
+	print ("World Number " + str(home_num) + "\n\n")
+	try:
+		for i in range(len(listdir(filename_home))):
+			# print (filename_home)
+			printDatapoint(filename_home+str(i))
+	except FileNotFoundError:
+		continue
 # printDatapoint(filename)
 
 # for goal in ["goal1-milk-fridge.json", "goal3-clean-dirt.json", "goal5-cubes-box.json", "goal8-light-off.json"]:
