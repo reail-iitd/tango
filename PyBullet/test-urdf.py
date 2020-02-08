@@ -390,8 +390,8 @@ def destroy():
   p.disconnect()
                      
 
-urdf = 'Table.SLDPRT/urdf/Table.SLDPRT.urdf'
-position = [2, 0, 1]
-object_id = p.loadURDF(urdf, list(position))
+# urdf = 'models/urdf/drill.urdf'
+# position = [2, 0, 1]
+# object_id = p.loadURDF(urdf, list(position))
 executeHelper([]) 
 

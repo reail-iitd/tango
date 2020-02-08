@@ -31,34 +31,10 @@
 			"states": {}
 		},
 		{
-			"name": "table2",
-			"position": [-1, -4.5, 0],
-			"orientation": [],
-			"states": []
-		},
-		{
 			"name": "big-tray",
 			"position": [2.5, -2, 0],
 			"orientation": [],
 			"states": []
-		},
-		{
-			"name": "cube_gray",
-			"position": [1.5,4.2,0.7],
-			"orientation": [],
-			"states": []	
-		},
-		{
-			"name": "cube_green",
-			"position": [1.5,4.3,0.7],
-			"orientation": [],
-			"states": []	
-		},
-		{
-			"name": "cube_red",
-			"position": [1.5,4.4,0.7],
-			"orientation": [],
-			"states": []	
 		},
 		{
 			"name": "tray",
@@ -73,39 +49,115 @@
 			"states": []	
 		},
 		{
-			"name": "bottle_blue",
-			"position": [1,-4,0],
-			"orientation": [],
-			"states": []	
-		},
-		{
-			"name": "bottle_gray",
-			"position": [1.2,-4,0],
-			"orientation": [],
-			"states": []	
-		},
-		{
-			"name": "bottle_red",
-			"position": [1.4,-4,0],
-			"orientation": [],
-			"states": []	
-		},
-		{
 			"name": "box",
-			"position": [-3,-2,0],
+			"position": [-4,-4.5,0],
 			"orientation": [],
 			"states": []	
 		},
 		{
-			"name": "ball",
-			"position": [-3,-3,0.2],
+			"name": "crate_green",
+			"position": [-2,-2.5,0],
 			"orientation": [],
-			"states": []
+			"states": []	
+		},
+		{
+			"name": "crate_red",
+			"position": [-2.5,-2.5,0],
+			"orientation": [],
+			"states": []	
+		},
+		{
+			"name": "crate_peach",
+			"position": [-1.5,-2.5,0],
+			"orientation": [],
+			"states": []	
 		},
 		{
 			"name": "stick",
 			"position": [3,0,0.2],
 			"orientation": [],
+			"states": []	
+		},
+		{
+			"name": "long-shelf",
+			"position": [-4,-3,0],
+			"orientation": [],
+			"states": []	
+		},
+		{
+			"name": "cupboard_back",
+			"position": [-2.5,-5,0],
+			"orientation": [],
+			"states": {},
+			"ignore": "true"
+		},
+		{
+			"name": "cupboard",
+			"position": [-2.5,-4.5,0],
+			"orientation": [],
+			"states": 
+				{
+					"close": [[-2.5, -4.5, 0], [0, 0, 0]],
+					"open": [[-3, -3.5, 0], [0, 0, 1.57]]
+				}
+		},
+		{
+			"name": "lift_base",
+			"position": [-3.5,-0.45,0],
+			"orientation": [],
+			"states": {},
+			"ignore": "true"
+		},
+		{
+			"name": "lift",
+			"position": [-3.5,-0.45,0.9],
+			"orientation": [],
+			"states": 
+				{
+					"down": [[-3.5,-0.45,0.0], [0, 0, 0]],
+					"up": [[-3.5,-0.45,0.9], [0, 0, 0]]
+				}
+		},
+		{
+			"name": "worktable",
+			"position": [-2.5,4.5,1.2],
+			"orientation": [],
+			"states": []	
+		},
+		{
+			"name": "drill",
+			"position": [-2.5,4.5,2.2],
+			"orientation": [],
+			"states": []	
+		},
+		{
+			"name": "screwdriver",
+			"position": [-2.2,4.5,2.2],
+			"orientation": [],
+			"states": []	
+		},
+		{
+			"name": "screw",
+			"position": [-2.6,4.5,2.2],
+			"orientation": [],
+			"states": []	
+		},
+		{
+			"name": "nail",
+			"position": [-2.7,4.5,2.2],
+			"orientation": [],
+			"states": []	
+		},
+		{
+			"name": "hammer",
+			"position": [2.7,4.5,1],
+			"orientation": [],
+			"states": []	
+		},
+		{
+			"name": "ladder",
+			"position": [2.7,-3.5,4],
+			"orientation": [0,0,0,0.1],
 			"states": []	
 		}
 	]

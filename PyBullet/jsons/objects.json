@@ -73,6 +73,24 @@
 			"ur5_dist": [0,0,0]
 		},
 		{
+			"name": "lift_base",
+			"urdf": "models/urdf/lift/lift_base.urdf",
+			"constraints": [],
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0]],
+			"ur5_dist": [0,0,0]
+		},
+		{
+			"name": "lift",
+			"urdf": "models/urdf/lift/lift.urdf",
+			"constraints": [],
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0.0, 0.1], [0.0, 0.0, 0.5], [0.0, 0.0, 0.9]],
+			"ur5_dist": [0,0,0]
+		},
+		{
 			"name": "floor_warehouse",
 			"urdf": "models/urdf/warehouse/floor.urdf",
 			"constraints": [],
@@ -430,6 +448,105 @@
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.0]],
 			"ur5_dist": [0.2,0,0]
+		},
+		{
+            "name": "long-shelf",
+            "urdf": "models/urdf/long-shelf.urdf",
+            "constraints": [],
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0.05, -1, 1],[0.1, 0, 1],[0.1, 1, 1]],
+			"ur5_dist": [0.5,0,0]
+		},
+		{
+            "name": "crate_green",
+            "urdf": "models/urdf/crate_green.urdf",
+            "constraints": ["horizontal"],
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0.2]],
+			"ur5_dist": [0.5,0,0]
+		},
+		{
+            "name": "crate_red",
+            "urdf": "models/urdf/crate_red.urdf",
+            "constraints": ["horizontal"],
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0.2]],
+			"ur5_dist": [0.5,0,0]
+		},
+		{
+            "name": "crate_peach",
+            "urdf": "models/urdf/crate_peach.urdf",
+            "constraints": ["horizontal"],
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0.2]],
+			"ur5_dist": [0.5,0,0]
+		},
+		{
+            "name": "worktable",
+            "urdf": "models/urdf/worktable.urdf",
+            "constraints": ["horizontal"],
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0.7]],
+			"ur5_dist": [1,0,0]
+		},
+		{
+            "name": "drill",
+            "urdf": "models/urdf/drill.urdf",
+            "constraints": [],
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0.7]],
+			"ur5_dist": [0.6,0,0]
+		},
+		{
+            "name": "screwdriver",
+            "urdf": "models/urdf/screwdriver.urdf",
+            "constraints": [],
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0.5, 0, 0]],
+			"ur5_dist": [0.5,0,0]
+		},
+		{
+            "name": "screw",
+            "urdf": "models/urdf/screw.urdf",
+            "constraints": [],
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0.5, 0, 0]],
+			"ur5_dist": [0.5,0,0]
+		},
+		{
+            "name": "nail",
+            "urdf": "models/urdf/nail.urdf",
+            "constraints": [],
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0.5, 0, 0]],
+			"ur5_dist": [0.5,0,0]
+		},
+		{
+            "name": "hammer",
+            "urdf": "models/urdf/hammer.urdf",
+            "constraints": [],
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0.5, 0.5, 0]],
+			"ur5_dist": [0.5,0,0]
+		},
+		{
+            "name": "ladder",
+            "urdf": "models/urdf/ladder.urdf",
+            "constraints": ["horizontal"],
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 1.2]],
+			"ur5_dist": [1,0,0]
 		}
 	]
 }
