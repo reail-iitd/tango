@@ -547,6 +547,51 @@
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 1.2]],
 			"ur5_dist": [1,0,0]
+		},
+		{
+            "name": "trolley",
+            "urdf": "models/urdf/trolley.urdf",
+            "constraints": ["horizontal"],
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0.1], [0, 0, 0.5], [0, 0, 0.9]],
+			"ur5_dist": [1,0,0]
+		},
+		{
+            "name": "brick",
+            "urdf": "models/urdf/brick.urdf",
+            "constraints": ["horizontal"],
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0.2], [0, 0, 0.3], [0, 0, 0.4]],
+			"ur5_dist": [0.7,0,0]
+		},
+		{
+            "name": "blow_dryer",
+            "urdf": "models/urdf/blow_dryer.urdf",
+            "constraints": [],
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0.2]],
+			"ur5_dist": [0.5,0,0]
+		},
+		{
+            "name": "can",
+            "urdf": "models/urdf/can.urdf",
+            "constraints": [],
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0]],
+			"ur5_dist": [0.5,0,0]
+		},
+		{
+            "name": "battery",
+            "urdf": "models/urdf/battery.urdf",
+            "constraints": ["horizontal"],
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0]],
+			"ur5_dist": [0.5,0,0]
 		}
 	]
 }

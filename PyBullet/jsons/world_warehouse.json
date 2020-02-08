@@ -31,12 +31,6 @@
 			"states": {}
 		},
 		{
-			"name": "big-tray",
-			"position": [2.5, -2, 0],
-			"orientation": [],
-			"states": []
-		},
-		{
 			"name": "tray",
 			"position": [2.5, 4.5, 0.7],
 			"orientation": [],
@@ -156,7 +150,37 @@
 		},
 		{
 			"name": "ladder",
-			"position": [2.7,-3.5,4],
+			"position": [2.7,-3.5,0],
+			"orientation": [0,0,0,0.1],
+			"states": []	
+		},
+		{
+			"name": "trolley",
+			"position": [2.7,-1.5,0],
+			"orientation": [0,0,0,0.1],
+			"states": []	
+		},
+		{
+			"name": "brick",
+			"position": [2.7,2.5,0],
+			"orientation": [0,0,0,0.1],
+			"states": []	
+		},
+		{
+			"name": "blow_dryer",
+			"position": [2.7,3,0],
+			"orientation": [0,0,0,0.1],
+			"states": []	
+		},
+		{
+			"name": "can",
+			"position": [2.7,4,0],
+			"orientation": [0,0,0,0.1],
+			"states": []	
+		},
+		{
+			"name": "battery",
+			"position": [-2.7,3,2],
 			"orientation": [0,0,0,0.1],
 			"states": []	
 		}
