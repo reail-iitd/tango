@@ -7,7 +7,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.1]],
-			"ur5_dist": [0,0,0]
+			"ur5_dist": [0,0,0],
+			"properties": [],
+			"size": [9.010036954106878, 10.009163830666301, 0.10916690626474984]
 		},
 		{
 			"name": "walls",
@@ -16,7 +18,9 @@
 			"tolerance": 0,
 			"constraint_link": -1,
 			"constraint_pos": [[-3, 3, 1], [-3, 2, 1], [-3, 1, 1], [-3, -1, 1], [-3, -2, 1]],
-			"ur5_dist": [0,0,0]
+			"ur5_dist": [0,0,0],
+			"properties": ["Surface"],
+			"size": [7.0115513618847265, 10.007572382703602, 2.007573682546185]
 		},
 		{
 			"name": "ledge",
@@ -25,7 +29,9 @@
 			"tolerance": 0,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0]],
-			"ur5_dist": [0,0,0]
+			"ur5_dist": [0,0,0],
+			"properties": [],
+			"size": [1.0101219131603423, 10.002793282615704, 0.20279625883862007]
 		},
 		{
 			"name": "door",
@@ -34,7 +40,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 1], [0, 0, 2]],
-			"ur5_dist": [0,0,0]
+			"ur5_dist": [0,0,0],
+			"properties": ["Can_Open"],
+			"size": [0.10407038343807695, 1.002080345095028, 1.602079164394274]
 		},
 		{
 			"name": "fridge_back",
@@ -43,7 +51,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0]],
-			"ur5_dist": [0,0,0]
+			"ur5_dist": [0,0,0],
+			"properties": [],
+			"size": [0.7219999839067457, 0.40785992053529263, 1.0823221787609039]
 		},
 		{
 			"name": "fridge",
@@ -52,7 +62,9 @@
 			"tolerance": 1.1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0.4, 0.5], [0.5, 0.4, 0.5], [-0.5, 0.4, 0.5], [0, 0.4, 0.8], [0, 0.4, 0.2]],
-			"ur5_dist": [0,0,0]
+			"ur5_dist": [0,0,0],
+			"properties": ["Container", "Surface", "Can_Open"],
+			"size": [0.7219999839067457, 0.40785992053529263, 1.0823221787609039]
 		},
 		{
 			"name": "cupboard_back",
@@ -61,7 +73,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0]],
-			"ur5_dist": [0,0,0]
+			"ur5_dist": [0,0,0],
+			"properties": [],
+			"size": [1.0027969752543706, 0.5047863562602029, 1.5023976731489332]
 		},
 		{
 			"name": "cupboard",
@@ -70,7 +84,9 @@
 			"tolerance": 1.2,
 			"constraint_link": -1,
 			"constraint_pos": [[0, -0.4, 0.5], [0.5, -0.4, 0.5], [-0.5, -0.4, 0.5], [0, -0.4, 0.8], [0, -0.4, 0.2]],
-			"ur5_dist": [0,0,0]
+			"ur5_dist": [0,0,0],
+			"properties": ["Container", "Surface", "Can_Open"],
+			"size": [1.0027969752543706, 0.5047863562602029, 1.5023976731489332]
 		},
 		{
 			"name": "lift_base",
@@ -79,7 +95,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0]],
-			"ur5_dist": [0,0,0]
+			"ur5_dist": [0,0,0],
+			"properties": [],
+			"size": [1.6520000655651095, 0.9027323709577209, 0.9227163802884321]
 		},
 		{
 			"name": "lift",
@@ -88,7 +106,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0.0, 0.1], [0.0, 0.0, 0.5], [0.0, 0.0, 0.9]],
-			"ur5_dist": [0,0,0]
+			"ur5_dist": [0,0,0],
+			"properties": ["Surface"],
+			"size": [1.6, 0.9, 0.1]
 		},
 		{
 			"name": "floor_warehouse",
@@ -97,7 +117,9 @@
 			"tolerance": 0,
 			"constraint_link": -1,
 			"constraint_pos": [[-1.5, 0.4, 0]],
-			"ur5_dist": [0,0,0]
+			"ur5_dist": [0,0,0],
+			"properties": [],
+			"size": [9.010833280543151, 10.009164464802515, 1.109166561606162]
 		},
 		{
 			"name": "ramp",
@@ -106,7 +128,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0]],
-			"ur5_dist": [1,0,0]
+			"ur5_dist": [1,0,0],
+			"properties": ["Movable"],
+			"size": [2.303183524526599, 2.3031690901636157, 1.140539660442852]
 		},
 		{
 			"name": "husky",
@@ -115,7 +139,9 @@
 			"tolerance": 0,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0]],
-			"ur5_dist": [0,0,0]
+			"ur5_dist": [0,0,0],
+			"properties": ["Movable"],
+			"size": [1, 1, 0.5]
 		},
 		{
 			"name": "ur5",
@@ -124,7 +150,9 @@
 			"tolerance": 0,
 			"constraint_link": 9,
 			"constraint_pos": [[0.2, 0, 0]],
-			"ur5_dist": [0,0,0]
+			"ur5_dist": [0,0,0],
+			"properties": [],
+			"size": [1, 1, 0.2]
 		},
 		{
 			"name": "r2d2",
@@ -133,7 +161,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0]],
-			"ur5_dist": [0,0,0]
+			"ur5_dist": [0,0,0],
+			"properties": [],
+			"size": []
 		},
 		{
 			"name": "quadcopter",
@@ -142,7 +172,9 @@
 			"tolerance": 0.5,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.2]],
-			"ur5_dist": [0.5,0,0]
+			"ur5_dist": [0.5,0,0],
+			"properties": [],
+			"size": []
 		},
 		{
 			"name": "plane",
@@ -151,7 +183,9 @@
 			"tolerance": 0,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0]],
-			"ur5_dist": [0,0,0]
+			"ur5_dist": [0,0,0],
+			"properties": [],
+			"size": []
 		},
 		{
 			"name": "table",
@@ -160,7 +194,9 @@
 			"tolerance": 1.5,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.7], [0, 0.1, 0.7], [0, -0.1, 0.7], [1, 0, 0.7], [1, 0.1, 0.7], [1, -0.1, 0.7], [-1, 0, 0.7], [-1, 0.1, 0.7], [-1, -0.1, 0.7]],
-			"ur5_dist": [0,0,0]
+			"ur5_dist": [0,0,0],
+			"properties": ["Surface"],
+			"size": [1.5, 1, 0.7]
 		},
 		{
 			"name": "table2",
@@ -168,7 +204,10 @@
 			"constraints": [],
 			"tolerance": 1,
 			"constraint_link": -1,
-			"constraint_pos": [[0, 0, 0.7], [0, 0.1, 0.7], [0, -0.1, 0.7], [1, 0, 0.7], [1, 0.1, 0.7], [1, -0.1, 0.7], [-1, 0, 0.7], [-1, 0.1, 0.7], [-1, -0.1, 0.7]],			"ur5_dist": [0,0,0]
+			"constraint_pos": [[0, 0, 0.7], [0, 0.1, 0.7], [0, -0.1, 0.7], [1, 0, 0.7], [1, 0.1, 0.7], [1, -0.1, 0.7], [-1, 0, 0.7], [-1, 0.1, 0.7], [-1, -0.1, 0.7]],			
+			"ur5_dist": [0,0,0],
+			"properties": [],
+			"size": [1.5, 1, 0.7]
 		},
 		{
 			"name": "big-tray",
@@ -177,7 +216,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.1], [0, 0, 0.2], [0, 0, 0.3]],
-			"ur5_dist": [0.2,0,0]
+			"ur5_dist": [0.2,0,0],
+			"properties": ["Surface"],
+			"size": [0.5961959706885631, 0.5960834355978338, 0.14209830405492302]
 		},
 		{
 			"name": "book",
@@ -186,7 +227,9 @@
 			"tolerance": 1.2,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0], [0, -0.1, 0], [0, 0.1, 0]],
-			"ur5_dist": [0.3,0,0]
+			"ur5_dist": [0.3,0,0],
+			"properties": ["Sruface", "Movable", "Stickable"],
+			"size": [0.22303208635546046, 0.25227114700453024, 0.03804426601167754]
 		},	
         {
             "name": "cube_red",
@@ -195,7 +238,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, -0.05]],
-			"ur5_dist": [0.1,0,0]
+			"ur5_dist": [0.1,0,0],
+			"properties": ["Movable", "Surface", "Stickable"],
+			"size": [0.075, 0.075, 0.075]
         },
         {
             "name": "cube_green",
@@ -204,7 +249,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, -0.05]],
-			"ur5_dist": [0.1,0,0]
+			"ur5_dist": [0.1,0,0],
+			"properties": ["Movable", "Surface", "Stickable"],
+			"size": [0.075, 0.075, 0.075]
         },
         {
             "name": "cube_gray",
@@ -213,7 +260,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, -0.05]],
-			"ur5_dist": [0.1,0,0]
+			"ur5_dist": [0.1,0,0],
+			"properties": ["Movable", "Surface", "Stickable"],
+			"size": [0.075, 0.075, 0.075]
         },
         {
             "name": "tray",
@@ -222,7 +271,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.05], [0, 0.1, 0.05], [0, -0.1, 0.05]],
-			"ur5_dist": [0.3,0,0]
+			"ur5_dist": [0.3,0,0],
+			"properties": ["Surface", "Movable"],
+			"size": [0.48583259848999666, 0.3795273285709371, 0.042004044886600145]
         },
         {
             "name": "tray2",
@@ -231,7 +282,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.05], [0, 0.1, 0.05], [0, -0.1, 0.05]],
-			"ur5_dist": [0.3,0,0]
+			"ur5_dist": [0.3,0,0],
+			"properties": ["Surface", "Movable"],
+			"size": [0.48583259848999666, 0.3795273285709371, 0.042004044886600145]
         },
         {
             "name": "bottle_blue",
@@ -240,7 +293,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, -0.05]],
-			"ur5_dist": [0.2,0,0]
+			"ur5_dist": [0.2,0,0],
+			"properties": ["Movable"],
+			"size": [0.1801503898526885, 0.531016302519911, 0.14531518712428243]
         },
         {
             "name": "bottle_red",
@@ -249,7 +304,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, -0.05]],
-			"ur5_dist": [0.2,0,0]
+			"ur5_dist": [0.2,0,0],
+			"properties": ["Movable"],
+			"size": [0.1801503898526885, 0.531016302519911, 0.14531518712428243]
         },
         {
             "name": "bottle_gray",
@@ -258,7 +315,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, -0.05]],
-			"ur5_dist": [0.2,0,0]
+			"ur5_dist": [0.2,0,0],
+			"properties": ["Movable"],
+			"size": [0.1801503898526885, 0.531016302519911, 0.14531518712428243]
         },
         {
             "name": "box",
@@ -267,7 +326,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.1], [0, 0, 0.2], [0, 0, 0.3], [0, 0, 0.4]],
-			"ur5_dist": [0.4,0,0]
+			"ur5_dist": [0.4,0,0],
+			"properties": ["Container", "Movable"],
+			"size": [0.5, 0.5, 0.5]
         },
         {
             "name": "apple",
@@ -276,7 +337,9 @@
 			"tolerance": 1.2,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, -0.05]],
-			"ur5_dist": [0.3,0,0]
+			"ur5_dist": [0.3,0,0],
+			"properties": ["Movable"],
+			"size": [0.2, 0.2, 0.2]
         },
         {
             "name": "orange",
@@ -285,7 +348,9 @@
 			"tolerance": 1.4,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, -0.05]],
-			"ur5_dist": [0.3,0,0]
+			"ur5_dist": [0.3,0,0],
+			"properties": [],
+			"size": [0.2, 0.2, 0.2]
         },
         {
             "name": "banana",
@@ -294,7 +359,9 @@
 			"tolerance": 1.2,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, -0.05]],
-			"ur5_dist": [0.3,0,0]
+			"ur5_dist": [0.3,0,0],
+			"properties": ["Movable"],
+			"size": [0.3, 0.4, 0.2]
         },
 		{
 			"name": "chair",
@@ -303,7 +370,9 @@
 			"tolerance": 1.2,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.7], [0, 0.05, 0.7], [0, -0.05, 0.7], [0.05, 0, 0.7], [0.05, 0.05, 0.7], [0.05, -0.05, 0.7], [-0.05, 0, 0.7], [-0.05, 0.05, 0.7], [-0.05, -0.05, 0.7]],
-			"ur5_dist": [0,0,0]
+			"ur5_dist": [0,0,0],
+			"properties": ["Movable", "Surface"],
+			"size": [0.6753641115745864, 0.7348689428536055, 1.08671272602937]
 		},
 		{
 			"name": "ball",
@@ -312,7 +381,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0]],
-			"ur5_dist": [0,0,0]
+			"ur5_dist": [0,0,0],
+			"properties": ["Movable"],
+			"size": [0.5, 0.5, 0.5]
 		},
 		{
 			"name": "stick",
@@ -321,7 +392,9 @@
 			"tolerance": 1.3,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0]],
-			"ur5_dist": [0,0,0]
+			"ur5_dist": [0,0,0],
+			"properties": ["Movable"],
+			"size": [0.9438066196976278, 1.1314170264793888, 0.024280076846450848]
 		},
 		{
 			"name": "dumpster",
@@ -330,7 +403,9 @@
 			"tolerance": 0.5,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.2], [0, -0.1, 0.2], [0, 0.1, 0.2], [0, 0, 0.5], [0, -0.1, 0.5], [0, 0.1, 0.5]],
-			"ur5_dist": [0,0,0]
+			"ur5_dist": [0,0,0],
+			"properties": ["Container"],
+			"size": [0.9226872558593744, 1.319763911756163, 0.6490487756559069]
 		},
 		{
 			"name": "couch",
@@ -339,7 +414,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.5], [0, -1, 0.5], [0, 1, 0.5]],
-			"ur5_dist": [0,0,0]
+			"ur5_dist": [0,0,0],
+			"properties": ["Surface"],
+			"size": [1.0269156463291766, 2.4050686729960757, 0.9050373108379153]
 		},
 		{
             "name": "milk",
@@ -348,7 +425,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0]],
-			"ur5_dist": [0.3,0,0]
+			"ur5_dist": [0.3,0,0],
+			"properties": ["Movable"],
+			"size": [0.1, 0.1, 0.3]
 		},
 		{
             "name": "shelf",
@@ -357,7 +436,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0.05, -1, 1],[0.1, 0, 1],[0.1, 1, 1]],
-			"ur5_dist": [0.5,0,0]
+			"ur5_dist": [0.5,0,0],
+			"properties": ["Surface"],
+			"size": [0.3858249393791855, 1.208304550679312, 1.0883037761453194]
 		},
 		{
             "name": "glue",
@@ -366,7 +447,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0]],
-			"ur5_dist": [0.3,0,0]
+			"ur5_dist": [0.3,0,0],
+			"properties": ["Movable"],
+			"size": [0.06505574555803717, 0.05839369635047653, 0.14349653513970173]
 		},
 		{
             "name": "tape",
@@ -375,7 +458,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0]],
-			"ur5_dist": [0.3,0,0]
+			"ur5_dist": [0.3,0,0],
+			"properties": ["Movable"],
+			"size": [0.2068716648186365, 0.2819246205046184, 0.022563125551291252]
 		},
 		{
             "name": "paper",
@@ -384,7 +469,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.2], [0, 0, 0.4]],
-			"ur5_dist": [0.3,0,0]
+			"ur5_dist": [0.3,0,0],
+			"properties": ["Stickable", "Movable", "Surface", "Non_Rigid"],
+			"size": [0.3731691016716554, 0.508881460545366, 0.018834636337409894]
 		},
 		{
             "name": "paper2",
@@ -393,7 +480,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.2]],
-			"ur5_dist": [0.3,0,0]
+			"ur5_dist": [0.3,0,0],
+			"properties": ["Stickable", "Movable", "Surface", "Non_Rigid"],
+			"size": [0.3731691016716554, 0.508881460545366, 0.018834636337409894]
 		},
 		{
             "name": "stool",
@@ -402,7 +491,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.7], [0.2, 0, 0.6], [-0.2, 0, 0.6]],
-			"ur5_dist": [0.7,0,0]
+			"ur5_dist": [0.7,0,0],
+			"properties": ["Movable", "Surface"],
+			"size": []
 		},
 		{
             "name": "mop",
@@ -411,7 +502,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.0]],
-			"ur5_dist": [0.2,0,0.6]
+			"ur5_dist": [0.2,0,0.6],
+			"properties": ["Movable", "Cleaning_Agent"],
+			"size": [0.6653718927187342, 0.46157286658181595, 1.7064137077906325]
 		},
 		{
             "name": "sponge",
@@ -420,7 +513,9 @@
 			"tolerance": 0.8,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.0]],
-			"ur5_dist": [0.2,0,0]
+			"ur5_dist": [0.2,0,0],
+			"properties": ["Movable", "Cleaning_Agent"],
+			"size": [0.09549000025765153, 0.0609098156203256, 0.043638814762210265]
 		},
 		{
             "name": "vacuum",
@@ -429,7 +524,9 @@
 			"tolerance": 0.8,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.0]],
-			"ur5_dist": [0.2,0,0]
+			"ur5_dist": [0.2,0,0],
+			"properties": ["Movable", "Cleaning_Agent"],
+			"size": [0.28284344223466196, 1.118842717652634, 0.34544671273321187]
 		},
 		{
             "name": "dirt",
@@ -438,7 +535,9 @@
 			"tolerance": 1.5,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.0]],
-			"ur5_dist": [0.2,0,0]
+			"ur5_dist": [0.2,0,0],
+			"properties": ["Is_Dirty"],
+			"size": [1, 1, 0.01]
 		},
 		{
             "name": "light",
@@ -447,7 +546,9 @@
 			"tolerance": 2,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.0]],
-			"ur5_dist": [0.2,0,0]
+			"ur5_dist": [0.2,0,0],
+			"properties": ["Switchable"],
+			"size": [0.2, 0.2, 0.4]
 		},
 		{
             "name": "long-shelf",
@@ -456,7 +557,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0.05, -1, 1],[0.1, 0, 1],[0.1, 1, 1]],
-			"ur5_dist": [0.5,0,0]
+			"ur5_dist": [0.5,0,0],
+			"properties": ["Surface"],
+			"size": [0.8965892210784543, 0.886253386789698, 2.375405983551601]
 		},
 		{
             "name": "crate_green",
@@ -465,7 +568,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.2]],
-			"ur5_dist": [0.5,0,0]
+			"ur5_dist": [0.5,0,0],
+			"properties": ["Movable"],
+			"size": [1.3652350685384478, 0.8985965646377405, 1.220265452599977]
 		},
 		{
             "name": "crate_red",
@@ -474,7 +579,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.2]],
-			"ur5_dist": [0.5,0,0]
+			"ur5_dist": [0.5,0,0],
+			"properties": ["Movable"],
+			"size": [1.3652350685384478, 0.8985965646377405, 1.220265452599977]
 		},
 		{
             "name": "crate_peach",
@@ -483,7 +590,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.2]],
-			"ur5_dist": [0.5,0,0]
+			"ur5_dist": [0.5,0,0],
+			"properties": ["Movable"],
+			"size": [1.3652350685384478, 0.8985965646377405, 1.220265452599977]
 		},
 		{
             "name": "worktable",
@@ -492,7 +601,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.7]],
-			"ur5_dist": [1,0,0]
+			"ur5_dist": [1,0,0],
+			"properties": ["Surface"],
+			"size": [1.5, 1, 0.7]
 		},
 		{
             "name": "drill",
@@ -501,7 +612,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.7]],
-			"ur5_dist": [0.6,0,0]
+			"ur5_dist": [0.6,0,0],
+			"properties": ["Movable"],
+			"size": [0.462038763970682, 0.35246136683483265, 0.4301267235548709]
 		},
 		{
             "name": "screwdriver",
@@ -510,7 +623,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0.5, 0, 0]],
-			"ur5_dist": [0.5,0,0]
+			"ur5_dist": [0.5,0,0],
+			"properties": ["Movable"],
+			"size": [0.33129549436550443, 0.3691647837924812, 0.19479972515756572]
 		},
 		{
             "name": "screw",
@@ -519,7 +634,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0.5, 0, 0]],
-			"ur5_dist": [0.5,0,0]
+			"ur5_dist": [0.5,0,0],
+			"properties": ["Movable"],
+			"size": [0.12845508294277241, 0.11350281241934823, 0.09259762872238309]
 		},
 		{
             "name": "nail",
@@ -528,7 +645,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0.5, 0, 0]],
-			"ur5_dist": [0.5,0,0]
+			"ur5_dist": [0.5,0,0],
+			"properties": ["Movable"],
+			"size": [0.1031365320604607, 0.16202366338785446, 0.22667897952269023]
 		},
 		{
             "name": "hammer",
@@ -537,7 +656,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0.5, 0.5, 0]],
-			"ur5_dist": [0.5,0,0]
+			"ur5_dist": [0.5,0,0],
+			"properties": ["Movable"],
+			"size": [0.4058450714320294, 0.07870391293686119, 0.20809894335804602]
 		},
 		{
             "name": "ladder",
@@ -546,7 +667,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 1.2]],
-			"ur5_dist": [1,0,0]
+			"ur5_dist": [1,0,0],
+			"properties": ["Movable", "Sirface"],
+			"size": [1.033596482736728, 1.2079832740124998, 1.3426087814199004]
 		},
 		{
             "name": "trolley",
@@ -555,7 +678,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.1], [0, 0, 0.5], [0, 0, 0.9]],
-			"ur5_dist": [1,0,0]
+			"ur5_dist": [1,0,0],
+			"properties": ["Surface", "Movable"],
+			"size": [1.2531188428088198, 0.8574631528494203, 1.2695374973159583]
 		},
 		{
             "name": "brick",
@@ -564,7 +689,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.2], [0, 0, 0.3], [0, 0, 0.4]],
-			"ur5_dist": [0.7,0,0]
+			"ur5_dist": [0.7,0,0],
+			"properties": ["Movable"],
+			"size": [0.48811813227873024, 0.23223500585111623, 0.14875597023641607]
 		},
 		{
             "name": "blow_dryer",
@@ -573,7 +700,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.2]],
-			"ur5_dist": [0.5,0,0]
+			"ur5_dist": [0.5,0,0],
+			"properties": ["Cleaning_Agent", "Movable"],
+			"size": [0.13850035183582676, 0.5475782774476405, 0.3422265814933868]
 		},
 		{
             "name": "can",
@@ -582,7 +711,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0]],
-			"ur5_dist": [0.5,0,0]
+			"ur5_dist": [0.5,0,0],
+			"properties": ["Movable"],
+			"size": []
 		},
 		{
             "name": "battery",
@@ -591,7 +722,9 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0]],
-			"ur5_dist": [0.5,0,0]
+			"ur5_dist": [0.5,0,0],
+			"properties": ["Movable"],
+			"size": [0.4126587016100549, 0.8099574774040237, 0.8134449114740092]
 		}
 	]
 }
