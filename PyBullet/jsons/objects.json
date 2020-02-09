@@ -718,13 +718,101 @@
 		{
             "name": "battery",
             "urdf": "models/urdf/battery.urdf",
-            "constraints": ["horizontal"],
+            "constraints": [],
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0]],
 			"ur5_dist": [0.5,0,0],
 			"properties": ["Movable"],
 			"size": [0.4126587016100549, 0.8099574774040237, 0.8134449114740092]
+		},
+		{
+            "name": "spraypaint",
+            "urdf": "models/urdf/spraypaint.urdf",
+            "constraints": [],
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0]],
+			"ur5_dist": [0.5,0,0],
+			"properties": ["Movable"],
+			"size": [0.5701704064141255, 0.3938340811414711, 0.6661218646669056]
+		},
+		{
+            "name": "welder",
+            "urdf": "models/urdf/welder.urdf",
+            "constraints": [],
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0]],
+			"ur5_dist": [0.5,0,0],
+			"properties": ["Movable"],
+			"size": [0.2204769719020856, 0.18665555930825084, 0.8674473291156621]
+		},
+		{
+            "name": "generator",
+            "urdf": "models/urdf/generator.urdf",
+            "constraints": [],
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0]],
+			"ur5_dist": [0.5,0,0],
+			"properties": [],
+			"size": [1.1130053108027544, 0.6680480939119935, 0.7301819686889646]
+		},
+		{
+            "name": "gasoline",
+            "urdf": "models/urdf/gasoline.urdf",
+            "constraints": [],
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0]],
+			"ur5_dist": [0.5,0,0],
+			"properties": ["Movable"],
+			"size": [0.6078787707409101, 0.7019358782029874, 0.19615690837521282]
+		},
+		{
+            "name": "coal",
+            "urdf": "models/urdf/coal.urdf",
+            "constraints": ["horizontal"],
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0]],
+			"ur5_dist": [0.5,0,0],
+			"properties": ["Movable"],
+			"size": [0.3900127964019777, 0.44355839638992656, 0.2103824624000845]
+		},
+		{
+            "name": "water_dispenser",
+            "urdf": "models/urdf/water_dispenser.urdf",
+            "constraints": ["horizontal"],
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0]],
+			"ur5_dist": [1,0,0],
+			"properties": [],
+			"size": [0.4646956909179689, 0.46842596538691517, 0.8118151996752161]
+		},
+		{
+            "name": "toolbox",
+            "urdf": "models/urdf/toolbox.urdf",
+            "constraints": ["horizontal"],
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0.1], [0, 0, 0.3], [0, 0, 0.5], [0, 0, 0.7]],
+			"ur5_dist": [1,0,0],
+			"properties": ["Movable", "Container"],
+			"size": [0.6069072211862316, 0.5072875158649168, 0.4089299983859731]
+		},
+		{
+            "name": "wood_cutter",
+            "urdf": "models/urdf/wood_cutter.urdf",
+            "constraints": ["horizontal"],
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0.1]],
+			"ur5_dist": [1,0,0],
+			"properties": ["Movable"],
+			"size": [0.8128181773084169, 0.2689644035213048, 0.2992464901265526]
 		}
 	]
 }

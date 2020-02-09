@@ -183,6 +183,54 @@
 			"position": [-2.7,3,2],
 			"orientation": [0,0,0,0.1],
 			"states": []	
+		},
+		{
+			"name": "spraypaint",
+			"position": [-2.7,2,2],
+			"orientation": [0,0,0,0.1],
+			"states": []	
+		},
+		{
+			"name": "welder",
+			"position": [-2.7,1.5,2],
+			"orientation": [0,0,0,0.1],
+			"states": []	
+		},
+		{
+			"name": "generator",
+			"position": [-2,5,3],
+			"orientation": [0,0,0,0.1],
+			"states": []	
+		},
+		{
+			"name": "gasoline",
+			"position": [-2,-3, 0],
+			"orientation": [0,0,0,0.1],
+			"states": []	
+		},
+		{
+			"name": "coal",
+			"position": [-2, 3, 2],
+			"orientation": [],
+			"states": []	
+		},
+		{
+			"name": "water_dispenser",
+			"position": [-4, 2, 1],
+			"orientation": [],
+			"states": []	
+		},
+		{
+			"name": "toolbox",
+			"position": [4, 2, 1],
+			"orientation": [],
+			"states": []	
+		},
+		{
+			"name": "wood_cutter",
+			"position": [4, 3, 1],
+			"orientation": [],
+			"states": []	
 		}
 	]
 }
