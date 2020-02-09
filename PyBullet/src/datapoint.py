@@ -1,5 +1,9 @@
 from copy import deepcopy
 
+tools = ['stool', 'tray', 'tray2', 'lift', 'ramp', 'big-tray', 'book', 'box', 'chair',\
+		'stick', 'glue', 'tape', 'mop', 'sponge', 'vacuum', 'drill', 'screwdriver',\
+		'hammer', 'ladder', 'trolley', 'brick', 'blow_dryer']
+
 class Datapoint:
 	def __init__(self):
 		# Robot position list
@@ -81,4 +85,15 @@ class Datapoint:
 				string = string + ", " + str(l[i])
 			string = string + ")\n"
 		return string
-			# string = string + "\n".join(map(str, action)) + '\n'
+
+	def getGraph(self):
+		pass
+
+	def getTools(self, goal_objects):
+		usedTools = []
+		for action in self.actions:
+			if 'Start' in action or 'Error' in action: continue
+			for obj in action[1:]:
+				if (not obj in goal_objects) and (not obj in usedTools) and obj in tools:
+					usedTools.append(obj)
+		return usedTools

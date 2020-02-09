@@ -52,7 +52,6 @@ def totalTime(dp):
 		time += dt
 	return time
 
-
 def printDatapoint(filename):
 	# print(filename)
 	f = open(filename + '.datapoint', 'rb')
