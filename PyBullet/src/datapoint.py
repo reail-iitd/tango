@@ -34,8 +34,8 @@ class Datapoint:
 		self.constraints = []
 		# Symbolic actions
 		self.symbolicActions = []
-		# Light state
-		self.lighton = []
+		# Objects on
+		self.on = []
 		# Dirt Cleaned
 		self.dirtClean = []
 		# Stick with object
@@ -43,7 +43,7 @@ class Datapoint:
 		# Time
 		self.time = 0
 
-	def addPoint(self, pos, sticky, fixed, cleaner, action, cons, metric, light, dirtClean, stick):
+	def addPoint(self, pos, sticky, fixed, cleaner, action, cons, metric, on, dirtClean, stick):
 		self.position.append(deepcopy(pos))
 		self.sticky.append(deepcopy(sticky))
 		self.fixed.append(deepcopy(fixed))
@@ -51,7 +51,7 @@ class Datapoint:
 		self.actions.append(deepcopy(action))
 		self.constraints.append(deepcopy(cons))
 		self.metrics.append(deepcopy(metric))
-		self.lighton.append(deepcopy(light))
+		self.on.append(deepcopy(on))
 		self.dirtClean.append(deepcopy(dirtClean))
 		self.stick.append(deepcopy(stick))
 
@@ -76,7 +76,7 @@ class Datapoint:
 				'Cleaner? - ' + str(self.cleaner[i]) + delimiter + \
 				'Dirt-Cleaned? - ' + str(self.dirtClean[i]) + delimiter + \
 				'Stick with robot? - ' + str(self.stick[i]) + delimiter + \
-				'Light On? - ' + str(self.lighton[i]) + delimiter + \
+				'Objects On - ' + str(self.on[i]) + delimiter + \
 				'Action - ' + str(self.actions[i]) + delimiter + \
 				'Constraints - ' + str(self.constraints[i]) + delimiter
 			if metrics:
@@ -113,7 +113,7 @@ class Datapoint:
 			states = []
 			if obj in 'dumpster': states.append('Outside') 
 			if 'Switchable' in node['properties']:
-				states.append('On') if self.lighton[index] else states.append('Off')
+				states.append('On') if obj in self.on[index] else states.append('Off')
 			if 'Can_Open' in node['properties']:
 				states.append('Close') if isInState(obj, allStates[world][obj]['close'], metrics[obj]) else states.append('Open')
 			if 'Stickable' in node['properties']:

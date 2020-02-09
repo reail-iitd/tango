@@ -57,11 +57,11 @@ def printDatapoint(filename):
 	f = open(filename + '.datapoint', 'rb')
 	datapoint = pickle.load(f)
 	# print(datapoint.toString(subSymbolic=False, metrics=False))
-	print (datapoint.readableSymbolicActions())
+	print (datapoint.toString(subSymbolic=True))
 	totalTime(datapoint)
 	f.close()
 
-filename = './dataset/home/goal1-milk-fridge/world_home'
+filename = './dataset/home/goal8-light-off/world_home'
 print ("Put the milk carton inside the fridge.\n\n")
 for home_num in range(10):
 	filename_home = filename + str(home_num) + "/"
@@ -72,9 +72,9 @@ for home_num in range(10):
 			printDatapoint(filename_home+str(i))
 	except FileNotFoundError:
 		continue
-# printDatapoint(filename)
+printDatapoint(filename)
 
-# for goal in ["goal1-milk-fridge.json", "goal3-clean-dirt.json", "goal5-cubes-box.json", "goal8-light-off.json"]:
+# for goal in GOAL_LIST:
 # 	for world in range(10):
 # 		directory = './dataset/home/' + goal.split('.')[0] + '/world_home' + str(world) + '/'
 # 		for point in range(len(listdir(directory))):
@@ -83,7 +83,10 @@ for home_num in range(10):
 # 			datapoint = pickle.load(f)
 # 			f.close()
 # 			f = open(file, 'wb')
-# 			datapoint.stick = [False] * len(datapoint.lighton)
+# 			datapoint.on = []
+# 			for i in range(len(datapoint.lighton)):
+# 				a = ['light'] if datapoint.lighton[i] else []
+# 				datapoint.on.append(a)
 # 			pickle.dump(datapoint, f)
 # 			f.flush()
 # 			f.close()

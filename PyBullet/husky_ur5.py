@@ -31,6 +31,8 @@ enclosures = ['fridge', 'cupboard']
 sticky = []
 # Fixed objects
 fixed = []
+# Objects on
+on = ['light']
 # Has cleaner
 cleaner = False
 # Has stick
@@ -38,7 +40,6 @@ stick = False
 
 # Connect to Bullet using GUI mode
 light = p.connect(p.GUI)
-lightOn = True
 
 # Add input arguments
 args = initParser()
@@ -132,38 +133,38 @@ datapoint = Datapoint()
 #   print(obj, p.getAABB(id_lookup[obj]))
 
 def changeView(direction):
-  global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount, perspective, lightOn
+  global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount, perspective, on
   camTargetPos = [x1, y1, 0]
   dist = dist - 0.5 if direction == "in" else dist + 0.5 if direction == "out" else dist
   yaw = yaw - 25 if direction == "left" else yaw + 25 if direction == "right" else yaw
   print(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos)
   perspective = "tp" if perspective == "fp" and direction == None else "fp" if direction == None else perspective
-  lastTime, imageCount = saveImage(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id, lightOn)
+  lastTime, imageCount = saveImage(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id, on)
 
 
 def showObject(obj):
-  global world_states, x1, y1, o1, imageCount, lightOn
+  global world_states, x1, y1, o1, imageCount, on
   ((x, y, z), (a1, b1, c1, d1)) = p.getBasePositionAndOrientation(id_lookup[obj])
-  _, imageCount = saveImage(0, imageCount, 'fp', ax, math.atan2(y,x)%(2*math.pi), cam, 2, yaw, pitch, [x, y, z], wall_id, lightOn)
+  _, imageCount = saveImage(0, imageCount, 'fp', ax, math.atan2(y,x)%(2*math.pi), cam, 2, yaw, pitch, [x, y, z], wall_id, on)
   time.sleep(0.5)
-  _, imageCount = saveImage(0, imageCount, 'fp', ax, math.atan2(y,x)%(2*math.pi), cam, 7, yaw, pitch, [x, y, z], wall_id, lightOn)
+  _, imageCount = saveImage(0, imageCount, 'fp', ax, math.atan2(y,x)%(2*math.pi), cam, 7, yaw, pitch, [x, y, z], wall_id, on)
   time.sleep(1)
   firstImage()
 
 def undo():
-  global world_states, x1, y1, o1, imageCount, constraints, lightOn, datapoint
+  global world_states, x1, y1, o1, imageCount, constraints, on, datapoint
   datapoint.addSymbolicAction("Undo")
   datapoint.addPoint(None, None, None, None, 'Undo', None, None, None, None, None)
   x1, y1, o1, constraints, world_states = restoreOnInput(world_states, x1, y1, o1, constraints)
-  _, imageCount = saveImage(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id, lightOn)
+  _, imageCount = saveImage(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id, on)
 
 def firstImage():
-  global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount, lightOn
+  global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount, on
   camTargetPos = [x1, y1, 0]
-  _, imageCount= saveImage(-250, imageCount, perspective, ax, o1, cam, dist, 50, pitch, camTargetPos, wall_id, lightOn)
+  _, imageCount= saveImage(-250, imageCount, perspective, ax, o1, cam, dist, 50, pitch, camTargetPos, wall_id, on)
 
 def executeHelper(actions, goal_file=None):
-  global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount, cleaner, lightOn, datapoint, dirtClean, stick
+  global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount, cleaner, on, datapoint, dirtClean, stick
   # List of low level actions
   datapoint.addSymbolicAction(actions['actions'])
   actions = convertActions(actions)
@@ -173,7 +174,7 @@ def executeHelper(actions, goal_file=None):
   waiting = False
   startTime = time.time()
   lastTime = startTime
-  datapoint.addPoint([x1, y1, 0, o1], sticky, fixed, cleaner, 'Start', constraints, getAllPositionsAndOrientations(id_lookup), lightOn, dirtClean, stick)
+  datapoint.addPoint([x1, y1, 0, o1], sticky, fixed, cleaner, 'Start', constraints, getAllPositionsAndOrientations(id_lookup), on, dirtClean, stick)
 
   # Start simulation
   if True:
@@ -184,7 +185,7 @@ def executeHelper(actions, goal_file=None):
           camTargetPos = [x1, y1, 0]
           if (args.logging or args.display) and (counter % COUNTER_MOD == 0):
             # start_image = time.time()
-            lastTime, imageCount = saveImage(lastTime, imageCount, "fp", ax, o1, cam, 3, yaw, pitch, camTargetPos, wall_id, lightOn)
+            lastTime, imageCount = saveImage(lastTime, imageCount, "fp", ax, o1, cam, 3, yaw, pitch, camTargetPos, wall_id, on)
             # image_save_time = time.time() - start_image
             # print ("Image save time", image_save_time)
           # Move UR5 by keyboard
@@ -203,8 +204,8 @@ def executeHelper(actions, goal_file=None):
 
           if action_index >= len(actions):
             yaw = 180*(math.atan2(y1,x1)%(2*math.pi))/math.pi - 90
-            lastTime, imageCount = saveImage(lastTime, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id, lightOn)
-            return checkGoal(goal_file, constraints, states, id_lookup, lightOn, dirtClean)
+            lastTime, imageCount = saveImage(lastTime, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id, on)
+            return checkGoal(goal_file, constraints, states, id_lookup, on, dirtClean)
 
           if(actions[action_index][0] == "move"):
             if "husky" in fixed:
@@ -325,8 +326,11 @@ def executeHelper(actions, goal_file=None):
                 removeConstraint(constraints, actions[action_index][1], "")
                 del constraints[actions[action_index][1]]
                 raise Exception("Object not sticky")  
-            if actions[action_index][1] == 'light':
-              lightOn = False
+            if actions[action_index][2] == 'on' or actions[action_index][2] == 'off':
+              if actions[action_index][1] in on:
+                on.remove(actions[action_index][1])
+              else:
+                on.append(actions[action_index][1])
               done = True
             else:
               done = changeState(id_lookup[actions[action_index][1]], states[actions[action_index][1]][state]) if actions[action_index][1] != 'paper' else True
@@ -374,7 +378,7 @@ def executeHelper(actions, goal_file=None):
           if done:
             startTime = time.time()
             if not actions[action_index][0] == "saveBulletState":
-              datapoint.addPoint([x1, y1, 0, o1], sticky, fixed, cleaner, actions[action_index], constraints, getAllPositionsAndOrientations(id_lookup), lightOn, dirtClean, stick)
+              datapoint.addPoint([x1, y1, 0, o1], sticky, fixed, cleaner, actions[action_index], constraints, getAllPositionsAndOrientations(id_lookup), on, dirtClean, stick)
             action_index += 1
             if action_index < len(actions):
               print("Executing action: ", actions[action_index])
