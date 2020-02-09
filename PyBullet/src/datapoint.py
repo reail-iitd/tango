@@ -1,8 +1,20 @@
 from copy import deepcopy
+from src.utils import *
+import json
 
 tools = ['stool', 'tray', 'tray2', 'lift', 'ramp', 'big-tray', 'book', 'box', 'chair',\
 		'stick', 'glue', 'tape', 'mop', 'sponge', 'vacuum', 'drill', 'screwdriver',\
 		'hammer', 'ladder', 'trolley', 'brick', 'blow_dryer']
+
+skip = ['ur5', 'cupboard_back', 'fridge_back']
+
+objects = None
+with open('jsons/objects.json', 'r') as handle:
+    objects = json.load(handle)['objects']
+
+allStates = None
+with open('jsons/states.json', 'r') as handle:
+    allStates = json.load(handle)
 
 class Datapoint:
 	def __init__(self):
@@ -86,8 +98,52 @@ class Datapoint:
 			string = string + ")\n"
 		return string
 
-	def getGraph(self):
-		pass
+	def getGraph(self, world='home', index=0):
+		metrics = self.metrics[index]
+		sceneobjects = list(metrics.keys())
+		globalidlookup = globalIDLookup(sceneobjects, objects)
+		nodes = []
+		for obj in sceneobjects:
+			if in skip: continue
+			node = {}; objID = globalidlookup[obj]
+			node['id'] = objID
+			node['name'] = obj
+			node['properties'] = objects[objID]['properties']
+			if 'Movable' in node['properties'] and obj in self.fixed[index]: node['properties'].remove('Movable')
+			states = []
+			if obj in 'dumpster': states.append('Outside') 
+			if 'Switchable' in node['properties']:
+				states.append('On') if self.lighton[index] else states.append('Off')
+			if 'Can_Open' in node['properties']:
+				states.append('Close') if isInState(obj, allStates[world][obj]['close'], metrics[obj]) else states.append('Open')
+			if 'Stickable' in node['properties']:
+				states.append('Sticky') if obj in self.sticky[index] else states.append('Non_Sticky')
+			if 'Is_Dirty' in node['properties']:
+				states.append('Dirty') if not self.dirtClean[index] else states.append('Clean')
+			if 'Movable' in node['properties']:
+				states.append('Grabbed') if obj in grabbedObj(self.constraints[index]) else states.append('Free')
+			node['states'] = states
+			node['position'] = metrics[obj]
+			node['size'] = objects[objID]['size']
+			nodes.append(node)
+		edges = []
+		for i in range(len(sceneobjects)):
+			obj1 = sceneobjects[i]
+			if obj1 in skip: continue
+			for j in range(len(sceneobjects)):
+				obj2 = sceneobjects[j]
+				if obj2 in skip or i == j: continue
+				obj1ID = globalidlookup[obj1]; obj2ID = globalidlookup[obj2]
+				if checkNear(obj1, obj2, metrics):
+					edges.append({'from': obj1ID, 'to': obj2ID, 'relation': 'Close'}) 
+				if checkIn(obj1, obj2, objects[obj1ID], objects[obj2ID], metrics, self.constraints[index]):
+					edges.append({'from': obj1ID, 'to': obj2ID, 'relation': 'Inside'}) 
+				if checkOn(obj1, obj2, objects[obj1ID], objects[obj2ID], metrics, self.constraints[index]):
+					edges.append({'from': obj1ID, 'to': obj2ID, 'relation': 'On'}) 
+				if obj2 == 'walls' and 'Stickable' in objects[obj1ID]['properties'] and isInState(obj1, allStates[world][obj1]['stuck'], metrics[obj2ID]):
+					edges.append({'from': obj1ID, 'to': obj2ID, 'relation': 'Stuck'}) 
+				edges.append({'from': obj1ID, 'to': obj2ID, 'distance': getDirectedDist(obj1, obj2, metrics)})
+		return {'graph_'+str(index): {'nodes': nodes, 'edges': edges}}
 
 	def getTools(self, goal_objects):
 		usedTools = []

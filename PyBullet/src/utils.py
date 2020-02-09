@@ -288,6 +288,15 @@ def checkUR5constrained(constraints):
             return True
     return False
 
+def grabbedObj(constraints):
+    """
+    Return the object which is currently grabbed by urdf
+    """
+    for obj in constraints.keys():
+        if constraints[obj][0] == 'ur5':
+            return obj
+    return ""
+
 def checkInside(constraints, states, id_lookup, obj, enclosures):
     """
     Check if object is inside cupboard or fridge
@@ -323,6 +332,22 @@ def isClosed(enclosure, states, id_lookup):
             abs(b2-b2) <= 0.01 and 
             abs(c2-c1) <= 0.01 and 
             abs(d2-d2) <= 0.01)
+    return closed
+
+def isInState(enclosure, state, position):
+    """
+    Check if enclosure is closed or not
+    """
+    positionAndOrientation = state
+    q=p.getQuaternionFromEuler(positionAndOrientation[1])
+    ((x1, y1, z1), (a1, b1, c1, d1)) = position
+    ((x2, y2, z2), (a2, b2, c2, d2)) = (positionAndOrientation[0], q)
+    closed = (abs(x2-x1) <= 0.07 and 
+            abs(y2-y1) <= 0.07 and 
+            abs(a2-a1) <= 0.07 and 
+            abs(b2-b2) <= 0.07 and 
+            abs(c2-c1) <= 0.07 and 
+            abs(d2-d2) <= 0.07)
     return closed
 
 def objDistance(obj1, obj2, id_lookup):
@@ -378,3 +403,50 @@ def deleteAll(path):
     filesToRemove = [os.path.join(path,f) for f in os.listdir(path)]
     for f in filesToRemove:
         os.remove(f) 
+
+# Datapoint utils
+
+def globalIDLookup(objs, objects):
+    gidlookup = {}
+    for i in range(len(objects)):
+        if objects[i]['name'] in objs:
+            gidlookup[objects[i]['name']] = i
+    return gidlookup
+
+def checkNear(obj1, obj2, metrics):
+    (x1, y1, z1) = metrics[obj1][0]
+    (x2, y2, z2) = metrics[obj2][0]
+    return abs(distance.euclidean((x1, y1, z1), (x2, y2, z2))) < 3
+
+def checkIn(obj1, obj2, obj1G, obj2G, metrics, constraints):
+    if 'Container' in obj2G['properties']:
+        (x1, y1, z1) = metrics[obj1][0]
+        (x2, y2, z2) = metrics[obj2][0]
+        (l, w, h) = obj2G['size']
+        inside = abs(x2-x1) < l and abs(y2-y1) < 1.5*w and abs(z1-z2) < h
+        tgt = findConstraintTo(obj1, constraints)
+        while not (tgt == "" or tgt == obj2):
+            tgt = findConstraintTo(tgt, constraints)        
+        return inside or (tgt == obj2)
+    return False
+
+def checkOn(obj1, obj2, obj1G, obj2G, metrics, constraints):
+    if 'Surface' in obj2G['properties']:
+        (x1, y1, z1) = metrics[obj1][0]
+        (x2, y2, z2) = metrics[obj2][0]
+        (l, w, h) = obj2G['size']
+        on = abs(x2-x1) < l + 0.2 and abs(y2-y1) < w + 0.2 and z1 > z2 + 0.75*h
+        tgt = findConstraintTo(obj1, constraints)
+        while not (tgt == "" or tgt == obj2):
+            tgt = findConstraintTo(tgt, constraints)        
+        return on or (tgt == obj2)
+    return False
+
+def getDirectedDist(obj1, obj2, metrics):
+    """
+    Returns delX, delY, delZ, delO from obj1 to obj2
+    """
+    (x1, y1, z1) = metrics[obj1][0]
+    (x2, y2, z2) = metrics[obj2][0]
+    return [x2-x1, y2-y1, z2-z1, math.atan2((y2-y1),(x2-x1))%(2*math.pi)]
+

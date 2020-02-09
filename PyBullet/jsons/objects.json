@@ -228,7 +228,7 @@
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0], [0, -0.1, 0], [0, 0.1, 0]],
 			"ur5_dist": [0.3,0,0],
-			"properties": ["Sruface", "Movable", "Stickable"],
+			"properties": ["Sruface", "Movable"],
 			"size": [0.22303208635546046, 0.25227114700453024, 0.03804426601167754]
 		},	
         {
@@ -239,7 +239,7 @@
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, -0.05]],
 			"ur5_dist": [0.1,0,0],
-			"properties": ["Movable", "Surface", "Stickable"],
+			"properties": ["Movable", "Surface"],
 			"size": [0.075, 0.075, 0.075]
         },
         {
@@ -250,7 +250,7 @@
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, -0.05]],
 			"ur5_dist": [0.1,0,0],
-			"properties": ["Movable", "Surface", "Stickable"],
+			"properties": ["Movable", "Surface"],
 			"size": [0.075, 0.075, 0.075]
         },
         {
@@ -261,7 +261,7 @@
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, -0.05]],
 			"ur5_dist": [0.1,0,0],
-			"properties": ["Movable", "Surface", "Stickable"],
+			"properties": ["Movable", "Surface"],
 			"size": [0.075, 0.075, 0.075]
         },
         {
@@ -493,7 +493,7 @@
 			"constraint_pos": [[0, 0, 0.7], [0.2, 0, 0.6], [-0.2, 0, 0.6]],
 			"ur5_dist": [0.7,0,0],
 			"properties": ["Movable", "Surface"],
-			"size": []
+			"size": [0.2662385553408462, 0.26600597815999016, 0.3962101611999587]
 		},
 		{
             "name": "mop",
