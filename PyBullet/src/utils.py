@@ -441,3 +441,11 @@ def getDirectedDist(obj1, obj2, metrics):
     (x2, y2, z2) = metrics[obj2][0]
     return [x2-x1, y2-y1, z2-z1, math.atan2((y2-y1),(x2-x1))%(2*math.pi)]
 
+
+def grabbedObj(obj, constraints):
+    """
+    Check if object is grabbed by robot
+    """
+    return (obj in constraints.keys() and constraints[obj] == 'ur5')
+
+

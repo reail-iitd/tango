@@ -121,7 +121,7 @@ class Datapoint:
 			if 'Is_Dirty' in node['properties']:
 				states.append('Dirty') if not self.dirtClean[index] else states.append('Clean')
 			if 'Movable' in node['properties']:
-				states.append('Grabbed') if self.constraints[index][obj] == 'ur5' else states.append('Free')
+				states.append('Grabbed') if grabbedObj(obj, self.constraints[index]) else states.append('Free')
 			node['states'] = states
 			node['position'] = metrics[obj]
 			node['size'] = objects[objID]['size']
@@ -140,7 +140,7 @@ class Datapoint:
 					edges.append({'from': obj1ID, 'to': obj2ID, 'relation': 'Inside'}) 
 				if checkOn(obj1, obj2, objects[obj1ID], objects[obj2ID], metrics, self.constraints[index]):
 					edges.append({'from': obj1ID, 'to': obj2ID, 'relation': 'On'}) 
-				if obj2 == 'walls' and 'Stickable' in objects[obj1ID]['properties'] and isInState(obj1, allStates[world][obj1]['stuck'], metrics[obj2ID]):
+				if obj2 == 'walls' and 'Stickable' in objects[obj1ID]['properties'] and isInState(obj1, allStates[world][obj1]['stuck'], metrics[obj1]):
 					edges.append({'from': obj1ID, 'to': obj2ID, 'relation': 'Stuck'}) 
 				edges.append({'from': obj1ID, 'to': obj2ID, 'distance': getDirectedDist(obj1, obj2, metrics)})
 		return {'graph_'+str(index): {'nodes': nodes, 'edges': edges}}
