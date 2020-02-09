@@ -624,7 +624,7 @@
 			"constraint_link": -1,
 			"constraint_pos": [[0.5, 0, 0]],
 			"ur5_dist": [0.5,0,0],
-			"properties": ["Movable"],
+			"properties": ["Movable", "Printable"],
 			"size": [0.33129549436550443, 0.3691647837924812, 0.19479972515756572]
 		},
 		{
@@ -635,7 +635,7 @@
 			"constraint_link": -1,
 			"constraint_pos": [[0.5, 0, 0]],
 			"ur5_dist": [0.5,0,0],
-			"properties": ["Movable"],
+			"properties": ["Movable", "Printable"],
 			"size": [0.12845508294277241, 0.11350281241934823, 0.09259762872238309]
 		},
 		{
@@ -646,7 +646,7 @@
 			"constraint_link": -1,
 			"constraint_pos": [[0.5, 0, 0]],
 			"ur5_dist": [0.5,0,0],
-			"properties": ["Movable"],
+			"properties": ["Movable", "Printable"],
 			"size": [0.1031365320604607, 0.16202366338785446, 0.22667897952269023]
 		},
 		{
@@ -657,7 +657,7 @@
 			"constraint_link": -1,
 			"constraint_pos": [[0.5, 0.5, 0]],
 			"ur5_dist": [0.5,0,0],
-			"properties": ["Movable"],
+			"properties": ["Movable", "Printable"],
 			"size": [0.4058450714320294, 0.07870391293686119, 0.20809894335804602]
 		},
 		{
@@ -668,7 +668,7 @@
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 1.2]],
 			"ur5_dist": [1,0,0],
-			"properties": ["Movable", "Sirface"],
+			"properties": ["Movable", "Surface"],
 			"size": [1.033596482736728, 1.2079832740124998, 1.3426087814199004]
 		},
 		{
@@ -690,7 +690,7 @@
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0.2], [0, 0, 0.3], [0, 0, 0.4]],
 			"ur5_dist": [0.7,0,0],
-			"properties": ["Movable"],
+			"properties": ["Movable", "Printable"],
 			"size": [0.48811813227873024, 0.23223500585111623, 0.14875597023641607]
 		},
 		{
@@ -712,7 +712,7 @@
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, 0]],
 			"ur5_dist": [0.5,0,0],
-			"properties": ["Movable"],
+			"properties": ["Movable", "Printable"],
 			"size": []
 		},
 		{
@@ -813,6 +813,28 @@
 			"ur5_dist": [1,0,0],
 			"properties": ["Movable", "Switchable"],
 			"size": [0.8128181773084169, 0.2689644035213048, 0.2992464901265526]
+		},
+		{
+            "name": "3d_printer",
+            "urdf": "models/urdf/3d_printer.urdf",
+            "constraints": ["horizontal"],
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0.1]],
+			"ur5_dist": [1,0,0],
+			"properties": [],
+			"size": [0.6853899917602542, 0.7273299942016607, 0.4464100064089287]
+		},
+		{
+            "name": "wood",
+            "urdf": "models/urdf/wood.urdf",
+            "constraints": ["horizontal"],
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0.1]],
+			"ur5_dist": [1,0,0],
+			"properties": ["Movable", "Cuttable"],
+			"size": [0.3762686296118587, 0.3494801914488308, 0.33424923394164674]
 		}
 	]
 }

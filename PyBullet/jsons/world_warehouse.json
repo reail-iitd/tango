@@ -231,6 +231,18 @@
 			"position": [4, 3, 1],
 			"orientation": [],
 			"states": []	
+		},
+		{
+			"name": "3d_printer",
+			"position": [-3, 4, 1.6],
+			"orientation": [],
+			"states": []	
+		},
+		{
+			"name": "wood",
+			"position": [-4, 4, 3],
+			"orientation": [],
+			"states": []	
 		}
 	]
 }
