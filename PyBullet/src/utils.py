@@ -288,15 +288,6 @@ def checkUR5constrained(constraints):
             return True
     return False
 
-def grabbedObj(constraints):
-    """
-    Return the object which is currently grabbed by urdf
-    """
-    for obj in constraints.keys():
-        if constraints[obj][0] == 'ur5':
-            return obj
-    return ""
-
 def checkInside(constraints, states, id_lookup, obj, enclosures):
     """
     Check if object is inside cupboard or fridge

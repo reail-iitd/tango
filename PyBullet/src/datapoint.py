@@ -121,7 +121,7 @@ class Datapoint:
 			if 'Is_Dirty' in node['properties']:
 				states.append('Dirty') if not self.dirtClean[index] else states.append('Clean')
 			if 'Movable' in node['properties']:
-				states.append('Grabbed') if obj in grabbedObj(self.constraints[index]) else states.append('Free')
+				states.append('Grabbed') if self.constraints[index][obj] == 'ur5' else states.append('Free')
 			node['states'] = states
 			node['position'] = metrics[obj]
 			node['size'] = objects[objID]['size']
