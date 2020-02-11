@@ -111,7 +111,8 @@ class Datapoint:
 			node['properties'] = objects[objID]['properties']
 			if 'Movable' in node['properties'] and obj in self.fixed[index]: node['properties'].remove('Movable')
 			states = []
-			if obj in 'dumpster': states.append('Outside') else states.append('Inside')
+			if obj in 'dumpster': states.append('Outside')
+			else: states.append('Inside')
 			if 'Switchable' in node['properties']:
 				states.append('On') if obj in self.on[index] else states.append('Off')
 			if 'Can_Open' in node['properties']:
