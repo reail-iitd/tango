@@ -163,8 +163,10 @@ def firstImage():
   camTargetPos = [x1, y1, 0]
   _, imageCount= saveImage(-250, imageCount, perspective, ax, o1, cam, dist, 50, pitch, camTargetPos, wall_id, on)
 
+keyboard = False
+
 def executeHelper(actions, goal_file=None):
-  global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount, cleaner, on, datapoint, dirtClean, stick
+  global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount, cleaner, on, datapoint, dirtClean, stick, keyboard
   # List of low level actions
   datapoint.addSymbolicAction(actions['actions'])
   actions = convertActions(actions)
@@ -188,7 +190,6 @@ def executeHelper(actions, goal_file=None):
             lastTime, imageCount = saveImage(lastTime, imageCount, "fp", ax, o1, cam, 3, yaw, pitch, camTargetPos, wall_id, on)
             # image_save_time = time.time() - start_image
             # print ("Image save time", image_save_time)
-          keyboard = False
           # Move UR5 by keyboard
           # x1, y1, o1, keyboard = moveKeyboard(x1, y1, o1, [husky, robotID])
           # moveUR5Keyboard(robotID, wings, gotoWing)
