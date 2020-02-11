@@ -188,6 +188,7 @@ def executeHelper(actions, goal_file=None):
             lastTime, imageCount = saveImage(lastTime, imageCount, "fp", ax, o1, cam, 3, yaw, pitch, camTargetPos, wall_id, on)
             # image_save_time = time.time() - start_image
             # print ("Image save time", image_save_time)
+          keyboard = False
           # Move UR5 by keyboard
           # x1, y1, o1, keyboard = moveKeyboard(x1, y1, o1, [husky, robotID])
           # moveUR5Keyboard(robotID, wings, gotoWing)
