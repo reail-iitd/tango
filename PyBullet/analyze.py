@@ -1,9 +1,10 @@
 from src.datapoint import Datapoint
 import pickle
-from os import listdir
+from os import listdir, remove, rename
 import math
 from scipy.spatial import distance
 from statistics import mean 
+from shutil import copyfile
 
 GOAL_LIST = ["goal1-milk-fridge.json", "goal2-fruits-cupboard.json", "goal3-clean-dirt.json", "goal4-stick-paper.json", "goal5-cubes-box.json", "goal6-bottles-dumpster.json", "goal7-weight-paper.json", "goal8-light-off.json"]
 
@@ -53,57 +54,88 @@ def totalTime(dp):
 	return time
 
 def printDatapoint(filename):
-	# print(filename)
+	print(filename)
 	f = open(filename + '.datapoint', 'rb')
 	datapoint = pickle.load(f)
 	# print(datapoint.toString(subSymbolic=False, metrics=False))
-	print (datapoint.toString(subSymbolic=True))
+	print (datapoint.toString(subSymbolic=False))
 	totalTime(datapoint)
 	f.close()
 
-filename = './dataset/home/goal8-light-off/world_home'
-print ("Put the milk carton inside the fridge.\n\n")
-for home_num in range(10):
-	filename_home = filename + str(home_num) + "/"
-	print ("World Number " + str(home_num) + "\n\n")
-	try:
-		for i in range(len(listdir(filename_home))):
-			# print (filename_home)
-			printDatapoint(filename_home+str(i))
-	except FileNotFoundError:
-		continue
-printDatapoint(filename)
+def keepNewDatapoints(idx=1):
+	for goal in GOAL_LIST:
+		print('Goal = ' + goal)
+		for world in range(10):
+			directoryOld = './dataset1/home/' + goal.split('.')[0] + '/world_home' + str(world)
+			directory = './dataset' + str(idx) + '/home/' + goal.split('.')[0] + '/world_home' + str(world)
+			try: numpoints = len(listdir(directory))
+			except Exception as e: numpoints = 0
+			try: oldpoints = len(listdir(directoryOld))
+			except Exception as e: oldpoints = 0
+			for i in range(numpoints):
+				if i < oldpoints: remove(directory + '/' + str(i) + '.datapoint')
+				else: rename(directory + '/' + str(i) + '.datapoint', directory + '/' + str(i - oldpoints) + '.datapoint')
 
-# for goal in GOAL_LIST:
-# 	for world in range(10):
-# 		directory = './dataset/home/' + goal.split('.')[0] + '/world_home' + str(world) + '/'
-# 		for point in range(len(listdir(directory))):
-# 			file = directory + str(point) + '.datapoint'
-# 			f = open(file, 'rb')
-# 			datapoint = pickle.load(f)
-# 			f.close()
-# 			f = open(file, 'wb')
-# 			datapoint.on = []
-# 			for i in range(len(datapoint.lighton)):
-# 				a = ['light'] if datapoint.lighton[i] else []
-# 				datapoint.on.append(a)
-# 			pickle.dump(datapoint, f)
-# 			f.flush()
-# 			f.close()
+def printAllDatapoints():
+	for goal in GOAL_LIST:
+		print('Goal = ' + goal)
+		for world in range(10):
+			directory = './dataset4/home/' + goal.split('.')[0] + '/world_home' + str(world)
+			try:
+				points = listdir(directory)
+			except Exception as e:
+				continue
+			for point in points:
+				printDatapoint(directory + '/' + point.split('.')[0])
 
+def changeAllDatapoints():
+	for goal in GOAL_LIST:
+		for world in range(10):
+			directory = './dataset/home/' + goal.split('.')[0] + '/world_home' + str(world) + '/'
+			for point in range(len(listdir(directory))):
+				file = directory + str(point) + '.datapoint'
+				f = open(file, 'rb')
+				datapoint = pickle.load(f)
+				f.close()
+				f = open(file, 'wb')
+				datapoint.on = []
+				for i in range(len(datapoint.lighton)):
+					a = ['light'] if datapoint.lighton[i] else []
+					datapoint.on.append(a)
+				pickle.dump(datapoint, f)
+				f.flush()
+				f.close()
+
+def getTiming(goal='goal1-milk-fridge.json'):
+	for world in range(10):
+		directory = './dataset/home/' + goal.split('.')[0] + '/world_home' + str(world) + '/'
+		times = []; actions = []; subactions = []
+		for point in range(len(listdir(directory))):
+			file = directory + str(point) + '.datapoint'
+			f = open(file, 'rb')
+			datapoint = pickle.load(f)
+			times.append(totalTime(datapoint))
+			actions.append(len(datapoint.symbolicActions))
+			subactions.append(len(datapoint.actions))
+		# print('World ' + str(world) + ' min = ' + str(min(times)) + ' avg = ' + str(mean(times)) + ' max = ' + str(max(times)))
+		# print('World ' + str(world) + ' min = ' + str(min(actions)) + ' avg = ' + str(mean(actions)) + ' max = ' + str(max(actions)))
+		print('World ' + str(world) + ' min = ' + str(min(subactions)) + ' avg = ' + str(mean(subactions)) + ' max = ' + str(max(subactions)))
+
+def combineDatasets(idx=1):
+	for goal in GOAL_LIST:
+		for world in range(10):
+			directoryOld = './dataset/home/' + goal.split('.')[0] + '/world_home' + str(world)
+			directory = './dataset'+ str(idx) + '/home/' + goal.split('.')[0] + '/world_home' + str(world)
+			try: numpoints = len(listdir(directory))
+			except Exception as e: numpoints = 0
+			try: oldpoints = len(listdir(directoryOld))
+			except Exception as e: oldpoints = 0
+			for i in range(numpoints):
+				copyfile(directory + '/' + str(i) + '.datapoint', directoryOld + '/' + str(i + oldpoints) + '.datapoint')
+
+
+# keepNewDatapoints(4)
+# printAllDatapoints()
 printNumDatapoints()
+# combineDatasets(4)
 
-# goal = 'goal1-milk-fridge.json'
-# for world in range(10):
-# 	directory = './dataset/home/' + goal.split('.')[0] + '/world_home' + str(world) + '/'
-# 	times = []; actions = []; subactions = []
-# 	for point in range(len(listdir(directory))):
-# 		file = directory + str(point) + '.datapoint'
-# 		f = open(file, 'rb')
-# 		datapoint = pickle.load(f)
-# 		times.append(totalTime(datapoint))
-# 		actions.append(len(datapoint.symbolicActions))
-# 		subactions.append(len(datapoint.actions))
-# 	# print('World ' + str(world) + ' min = ' + str(min(times)) + ' avg = ' + str(mean(times)) + ' max = ' + str(max(times)))
-# 	# print('World ' + str(world) + ' min = ' + str(min(actions)) + ' avg = ' + str(mean(actions)) + ' max = ' + str(max(actions)))
-# 	print('World ' + str(world) + ' min = ' + str(min(subactions)) + ' avg = ' + str(mean(subactions)) + ' max = ' + str(max(subactions)))
