@@ -12,6 +12,7 @@ edge2idx = {}
 for i,edge in enumerate(EDGES):
 	edge2idx[edge] = i
 NUMOBJECTS = len(json.load(open("jsons/objects.json", "r"))["objects"])
+print(NUMOBJECTS)
 EMBEDDING_DIM = 32
 N_TIMESEPS = 2
 GRAPH_HIDDEN = 32

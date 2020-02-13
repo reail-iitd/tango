@@ -42,13 +42,13 @@ class LayerNormGRUCell(RNNCellBase):
     def forward(self, input, hx):
         self.check_forward_input(input)
         self.check_forward_hidden(input, hx)
-        return _LayerNormGRUCell(
+        return self._LayerNormGRUCell(
             input, hx,
             self.weight_ih, self.weight_hh, self.ln,
             self.bias_ih, self.bias_hh,
         )
 
-    def _LayerNormGRUCell(input, hidden, w_ih, w_hh, ln, b_ih=None, b_hh=None):
+    def _LayerNormGRUCell(self, input, hidden, w_ih, w_hh, ln, b_ih=None, b_hh=None):
     	
 	    gi = F.linear(input, w_ih, b_ih)
 	    gh = F.linear(hidden, w_hh, b_hh)

@@ -8,6 +8,7 @@ from src.datapoint import Datapoint
 def get_graph_data(pathToDatapoint):
 
 	datapoint = pickle.load(open(pathToDatapoint, "rb"))
+	print(datapoint.getTools([]))
 	if "home" in pathToDatapoint:
 		graph_data = datapoint.getGraph(world = "home")["graph_0"] #Initial Graph
 
