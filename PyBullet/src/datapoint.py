@@ -98,7 +98,7 @@ class Datapoint:
 			string = string + ")\n"
 		return string
 
-	def getGraph(self, world='home', index=0):
+	def getGraph(self, world='home', index=0, distance = False):
 		metrics = self.metrics[index]
 		sceneobjects = list(metrics.keys())
 		globalidlookup = globalIDLookup(sceneobjects, objects)
@@ -143,7 +143,8 @@ class Datapoint:
 					edges.append({'from': obj1ID, 'to': obj2ID, 'relation': 'On'}) 
 				if obj2 == 'walls' and 'Stickable' in objects[obj1ID]['properties'] and isInState(obj1, allStates[world][obj1]['stuck'], metrics[obj1]):
 					edges.append({'from': obj1ID, 'to': obj2ID, 'relation': 'Stuck'}) 
-				edges.append({'from': obj1ID, 'to': obj2ID, 'distance': getDirectedDist(obj1, obj2, metrics)})
+				if distance:
+					edges.append({'from': obj1ID, 'to': obj2ID, 'distance': getDirectedDist(obj1, obj2, metrics)})
 		return {'graph_'+str(index): {'nodes': nodes, 'edges': edges}}
 
 	def getTools(self, goal_objects):

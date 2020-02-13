@@ -38,7 +38,7 @@ def get_graph_data(pathToDatapoint):
 
 		adjacency_matrix[edge_type_idx, src_idx, tgt_idx] = True
 
-	return (adjacency_matrix, node_states, node_names, node_ids, n_nodes)
+	return (adjacency_matrix, node_states, node_ids, node_names, n_nodes)
 
 class Dataset():
 	def __init__(self, program_dir):
@@ -48,8 +48,11 @@ class Dataset():
 			if (len(files) > 0):
 				for file in files:
 					file_path = path + "/" + file
-					print (file_path)
-					graphs.append(get_graph_data(file_path))
+					# print (file_path)
+					try:
+						graphs.append(get_graph_data(file_path))
+					except AttributeError:
+						print ("Could not read ", file_path)
 
 		self.graphs = graphs
 
