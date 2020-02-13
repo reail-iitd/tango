@@ -1,0 +1,3114 @@
+{
+  "graph_0": {
+    "nodes": [
+      {
+        "id": 0,
+        "name": "floor",
+        "properties": [],
+        "states": [
+          "Inside"
+        ],
+        "position": [
+          [
+            1.0,
+            0.0,
+            -0.1
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "size": [
+          9.010036954106878,
+          10.009163830666301,
+          0.10916690626474984
+        ]
+      },
+      {
+        "id": 1,
+        "name": "walls",
+        "properties": [
+          "Surface"
+        ],
+        "states": [
+          "Inside"
+        ],
+        "position": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "size": [
+          7.0115513618847265,
+          10.007572382703602,
+          2.007573682546185
+        ]
+      },
+      {
+        "id": 2,
+        "name": "ledge",
+        "properties": [],
+        "states": [
+          "Inside"
+        ],
+        "position": [
+          [
+            3.5,
+            0.0,
+            1.8
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "size": [
+          1.0101219131603423,
+          10.002793282615704,
+          0.20279625883862007
+        ]
+      },
+      {
+        "id": 3,
+        "name": "door",
+        "properties": [
+          "Can_Open"
+        ],
+        "states": [
+          "Inside",
+          "Close"
+        ],
+        "position": [
+          [
+            3.4,
+            4.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "size": [
+          0.10407038343807695,
+          1.002080345095028,
+          1.602079164394274
+        ]
+      },
+      {
+        "id": 5,
+        "name": "fridge",
+        "properties": [
+          "Container",
+          "Surface",
+          "Can_Open"
+        ],
+        "states": [
+          "Inside",
+          "Close"
+        ],
+        "position": [
+          [
+            -2.5,
+            4.2,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "size": [
+          0.7219999839067457,
+          0.40785992053529263,
+          1.0823221787609039
+        ]
+      },
+      {
+        "id": 7,
+        "name": "cupboard",
+        "properties": [
+          "Container",
+          "Surface",
+          "Can_Open"
+        ],
+        "states": [
+          "Inside",
+          "Close"
+        ],
+        "position": [
+          [
+            -2.5,
+            -4.2,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "size": [
+          1.0027969752543706,
+          0.5047863562602029,
+          1.5023976731489332
+        ]
+      },
+      {
+        "id": 12,
+        "name": "husky",
+        "properties": [
+          "Movable"
+        ],
+        "states": [
+          "Inside",
+          "Free"
+        ],
+        "position": [
+          [
+            -6.627675992843311e-17,
+            2.627121025833192e-16,
+            0.012557950174032856
+          ],
+          [
+            -1.3929557053748436e-16,
+            -3.4522558918776075e-17,
+            -7.681305067635709e-18,
+            1.0
+          ]
+        ],
+        "size": [
+          1,
+          1,
+          0.5
+        ]
+      },
+      {
+        "id": 17,
+        "name": "table",
+        "properties": [
+          "Surface"
+        ],
+        "states": [
+          "Inside"
+        ],
+        "position": [
+          [
+            0.0,
+            4.5,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "size": [
+          1.5,
+          1,
+          0.7
+        ]
+      },
+      {
+        "id": 18,
+        "name": "table2",
+        "properties": [],
+        "states": [
+          "Inside"
+        ],
+        "position": [
+          [
+            -1.0,
+            -4.5,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "size": [
+          1.5,
+          1,
+          0.7
+        ]
+      },
+      {
+        "id": 37,
+        "name": "couch",
+        "properties": [
+          "Surface"
+        ],
+        "states": [
+          "Inside"
+        ],
+        "position": [
+          [
+            2.5,
+            -3.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "size": [
+          1.0269156463291766,
+          2.4050686729960757,
+          0.9050373108379153
+        ]
+      },
+      {
+        "id": 19,
+        "name": "big-tray",
+        "properties": [
+          "Surface"
+        ],
+        "states": [
+          "Inside"
+        ],
+        "position": [
+          [
+            2.496556300553773,
+            1.222440268772467,
+            0.004706006440834598
+          ],
+          [
+            -2.085617381454407e-06,
+            0.00017825899372381622,
+            -3.880029888948123e-05,
+            0.9999999833569589
+          ]
+        ],
+        "size": [
+          0.5961959706885631,
+          0.5960834355978338,
+          0.14209830405492302
+        ]
+      },
+      {
+        "id": 20,
+        "name": "book",
+        "properties": [
+          "Sruface",
+          "Movable"
+        ],
+        "states": [
+          "Inside",
+          "Free"
+        ],
+        "position": [
+          [
+            0.09348393552202262,
+            4.235184021251251,
+            0.6259893427420296
+          ],
+          [
+            0.00040194171077530553,
+            1.5941496293541975e-06,
+            0.001245130218816043,
+            0.9999991440451627
+          ]
+        ],
+        "size": [
+          0.22303208635546046,
+          0.25227114700453024,
+          0.03804426601167754
+        ]
+      },
+      {
+        "id": 42,
+        "name": "paper",
+        "properties": [
+          "Stickable",
+          "Movable",
+          "Surface",
+          "Non_Rigid"
+        ],
+        "states": [
+          "Inside",
+          "Non_Sticky",
+          "Free"
+        ],
+        "position": [
+          [
+            -1.4374728569482007,
+            -4.301833261702985,
+            0.6079746011439894
+          ],
+          [
+            0.00038657033120532264,
+            -1.2887143561972818e-05,
+            -2.285123994881853e-05,
+            0.999999924937558
+          ]
+        ],
+        "size": [
+          0.3731691016716554,
+          0.508881460545366,
+          0.018834636337409894
+        ]
+      },
+      {
+        "id": 43,
+        "name": "paper2",
+        "properties": [
+          "Stickable",
+          "Movable",
+          "Surface",
+          "Non_Rigid"
+        ],
+        "states": [
+          "Inside",
+          "Non_Sticky",
+          "Free"
+        ],
+        "position": [
+          [
+            -1.3385090154170765,
+            -4.443008458019498,
+            0.5959901365436141
+          ],
+          [
+            0.0003891780263742961,
+            -1.2421684548636287e-05,
+            -0.00010306325318201215,
+            0.9999999188820624
+          ]
+        ],
+        "size": [
+          0.3731691016716554,
+          0.508881460545366,
+          0.018834636337409894
+        ]
+      },
+      {
+        "id": 23,
+        "name": "cube_gray",
+        "properties": [
+          "Movable",
+          "Surface"
+        ],
+        "states": [
+          "Inside",
+          "Free"
+        ],
+        "position": [
+          [
+            -0.49057201602561973,
+            4.190774126163629,
+            0.6624885793624988
+          ],
+          [
+            2.4949216219799765e-06,
+            -2.3667829872566884e-05,
+            -0.0005135940489469215,
+            0.9999998678273723
+          ]
+        ],
+        "size": [
+          0.075,
+          0.075,
+          0.075
+        ]
+      },
+      {
+        "id": 22,
+        "name": "cube_green",
+        "properties": [
+          "Movable",
+          "Surface"
+        ],
+        "states": [
+          "Inside",
+          "Free"
+        ],
+        "position": [
+          [
+            -0.4756750180947441,
+            4.348737999831163,
+            0.6624885793624989
+          ],
+          [
+            2.494921622242329e-06,
+            -2.3667829871495326e-05,
+            -0.0005135940489469173,
+            0.9999998678273723
+          ]
+        ],
+        "size": [
+          0.075,
+          0.075,
+          0.075
+        ]
+      },
+      {
+        "id": 21,
+        "name": "cube_red",
+        "properties": [
+          "Movable",
+          "Surface"
+        ],
+        "states": [
+          "Inside",
+          "Free"
+        ],
+        "position": [
+          [
+            -0.48075956024537714,
+            4.455436202259642,
+            0.6624885793624989
+          ],
+          [
+            2.494921622294493e-06,
+            -2.3667829871621365e-05,
+            -0.0005135940489469188,
+            0.9999998678273723
+          ]
+        ],
+        "size": [
+          0.075,
+          0.075,
+          0.075
+        ]
+      },
+      {
+        "id": 24,
+        "name": "tray",
+        "properties": [
+          "Surface",
+          "Movable"
+        ],
+        "states": [
+          "Inside",
+          "Free"
+        ],
+        "position": [
+          [
+            0.4860440110085587,
+            4.556706355596207,
+            0.6318997862258976
+          ],
+          [
+            -1.4155342923563952e-06,
+            -2.873883789314888e-07,
+            0.00023082046754099663,
+            0.9999999733599124
+          ]
+        ],
+        "size": [
+          0.48583259848999666,
+          0.3795273285709371,
+          0.042004044886600145
+        ]
+      },
+      {
+        "id": 25,
+        "name": "tray2",
+        "properties": [
+          "Surface",
+          "Movable"
+        ],
+        "states": [
+          "Inside",
+          "Free"
+        ],
+        "position": [
+          [
+            -0.5345057386646223,
+            -4.517986211259957,
+            0.6318999458812521
+          ],
+          [
+            -1.2277785560330864e-06,
+            -1.5839269815182885e-07,
+            -0.0004172101282450335,
+            0.9999999129670843
+          ]
+        ],
+        "size": [
+          0.48583259848999666,
+          0.3795273285709371,
+          0.042004044886600145
+        ]
+      },
+      {
+        "id": 49,
+        "name": "light",
+        "properties": [
+          "Switchable"
+        ],
+        "states": [
+          "Inside",
+          "On"
+        ],
+        "position": [
+          [
+            2.0,
+            4.9,
+            0.66926
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "size": [
+          0.2,
+          0.2,
+          0.4
+        ]
+      },
+      {
+        "id": 26,
+        "name": "bottle_blue",
+        "properties": [
+          "Movable"
+        ],
+        "states": [
+          "Inside",
+          "Free"
+        ],
+        "position": [
+          [
+            0.9230860573461208,
+            -4.03473898744569,
+            -0.12024130152836633
+          ],
+          [
+            -0.22708115308161747,
+            0.6536545231229445,
+            0.6802610529467114,
+            -0.2416915682432276
+          ]
+        ],
+        "size": [
+          0.1801503898526885,
+          0.531016302519911,
+          0.14531518712428243
+        ]
+      },
+      {
+        "id": 28,
+        "name": "bottle_gray",
+        "properties": [
+          "Movable"
+        ],
+        "states": [
+          "Inside",
+          "Free"
+        ],
+        "position": [
+          [
+            1.2039278476531814,
+            -3.936458434487195,
+            -0.12046315487111074
+          ],
+          [
+            0.6895752611979789,
+            -0.05913541363659885,
+            -0.06776701323635832,
+            0.7186073990119993
+          ]
+        ],
+        "size": [
+          0.1801503898526885,
+          0.531016302519911,
+          0.14531518712428243
+        ]
+      },
+      {
+        "id": 27,
+        "name": "bottle_red",
+        "properties": [
+          "Movable"
+        ],
+        "states": [
+          "Inside",
+          "Free"
+        ],
+        "position": [
+          [
+            1.4384797031472307,
+            -4.014166444136192,
+            -0.12065209274700515
+          ],
+          [
+            -0.06316737281729584,
+            0.6892175964000482,
+            0.7190524719818759,
+            -0.06286915269553543
+          ]
+        ],
+        "size": [
+          0.1801503898526885,
+          0.531016302519911,
+          0.14531518712428243
+        ]
+      },
+      {
+        "id": 29,
+        "name": "box",
+        "properties": [
+          "Container",
+          "Movable"
+        ],
+        "states": [
+          "Inside",
+          "Free"
+        ],
+        "position": [
+          [
+            -2.97738736596089,
+            -0.09812417951254894,
+            0.1734169300578443
+          ],
+          [
+            -5.839321287167338e-07,
+            0.00039667364080898444,
+            -0.0002963841050939303,
+            0.9999998774030645
+          ]
+        ],
+        "size": [
+          0.5,
+          0.5,
+          0.5
+        ]
+      },
+      {
+        "id": 30,
+        "name": "apple",
+        "properties": [
+          "Movable"
+        ],
+        "states": [
+          "Inside",
+          "Free"
+        ],
+        "position": [
+          [
+            -0.897012029532679,
+            -4.490361323079259,
+            0.6214542226705666
+          ],
+          [
+            -0.6302368731652687,
+            0.29199448604974226,
+            -0.3227006896807758,
+            0.6429657601295451
+          ]
+        ],
+        "size": [
+          0.2,
+          0.2,
+          0.2
+        ]
+      },
+      {
+        "id": 31,
+        "name": "orange",
+        "properties": [],
+        "states": [
+          "Inside"
+        ],
+        "position": [
+          [
+            -1.0375434342481957,
+            -4.642288063370715,
+            0.6242694013685894
+          ],
+          [
+            -0.5974140116223847,
+            0.37776799165532143,
+            -0.37805366560746917,
+            0.5978823204600635
+          ]
+        ],
+        "size": [
+          0.2,
+          0.2,
+          0.2
+        ]
+      },
+      {
+        "id": 32,
+        "name": "banana",
+        "properties": [
+          "Movable"
+        ],
+        "states": [
+          "Inside",
+          "Free"
+        ],
+        "position": [
+          [
+            -1.005433540860992,
+            -4.199180086621069,
+            0.6209432367602387
+          ],
+          [
+            0.4111369494675815,
+            -0.41434831595737665,
+            0.7363447244111214,
+            -0.3421671063642544
+          ]
+        ],
+        "size": [
+          0.3,
+          0.4,
+          0.2
+        ]
+      },
+      {
+        "id": 33,
+        "name": "chair",
+        "properties": [
+          "Movable",
+          "Surface"
+        ],
+        "states": [
+          "Inside",
+          "Free"
+        ],
+        "position": [
+          [
+            1.0983275219676134,
+            4.5156953338209265,
+            0.0018522773529565401
+          ],
+          [
+            -0.0003923180589553669,
+            0.0003914691593944189,
+            0.027021069907845516,
+            0.9996347105915606
+          ]
+        ],
+        "size": [
+          0.6753641115745864,
+          0.7348689428536055,
+          1.08671272602937
+        ]
+      },
+      {
+        "id": 34,
+        "name": "ball",
+        "properties": [
+          "Movable"
+        ],
+        "states": [
+          "Inside",
+          "Free"
+        ],
+        "position": [
+          [
+            -2.99963515258963,
+            1.8798348163509917,
+            0.23985647823621856
+          ],
+          [
+            0.019849496789922337,
+            -0.025530408748347,
+            -0.004233181847024249,
+            0.9994679964249877
+          ]
+        ],
+        "size": [
+          0.5,
+          0.5,
+          0.5
+        ]
+      },
+      {
+        "id": 35,
+        "name": "stick",
+        "properties": [
+          "Movable"
+        ],
+        "states": [
+          "Inside",
+          "Free"
+        ],
+        "position": [
+          [
+            2.913959626131103,
+            -0.040470355555454605,
+            -0.10957712752213189
+          ],
+          [
+            -0.21981537428191386,
+            0.46437135860548256,
+            -0.0724636304775247,
+            0.8548622490168911
+          ]
+        ],
+        "size": [
+          0.9438066196976278,
+          1.1314170264793888,
+          0.024280076846450848
+        ]
+      },
+      {
+        "id": 36,
+        "name": "dumpster",
+        "properties": [
+          "Container"
+        ],
+        "states": [
+          "Outside"
+        ],
+        "position": [
+          [
+            4.5,
+            3.8,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "size": [
+          0.9226872558593744,
+          1.319763911756163,
+          0.6490487756559069
+        ]
+      },
+      {
+        "id": 38,
+        "name": "milk",
+        "properties": [
+          "Movable"
+        ],
+        "states": [
+          "Inside",
+          "Free"
+        ],
+        "position": [
+          [
+            -2.524215833034035,
+            4.399741084018329,
+            1.2039296560832582
+          ],
+          [
+            1.3422394642372644e-06,
+            -3.4666690358274587e-07,
+            -0.0001649497829969502,
+            0.9999999863948236
+          ]
+        ],
+        "size": [
+          0.1,
+          0.1,
+          0.3
+        ]
+      },
+      {
+        "id": 39,
+        "name": "shelf",
+        "properties": [
+          "Surface"
+        ],
+        "states": [
+          "Inside"
+        ],
+        "position": [
+          [
+            2.9,
+            3.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "size": [
+          0.3858249393791855,
+          1.208304550679312,
+          1.0883037761453194
+        ]
+      },
+      {
+        "id": 40,
+        "name": "glue",
+        "properties": [
+          "Movable"
+        ],
+        "states": [
+          "Inside",
+          "Free"
+        ],
+        "position": [
+          [
+            0.7039867726326011,
+            4.347017747449651,
+            0.6256218972019303
+          ],
+          [
+            0.0004024772765502862,
+            2.7653157225394694e-06,
+            0.004423389035858925,
+            0.9999901357682646
+          ]
+        ],
+        "size": [
+          0.06505574555803717,
+          0.05839369635047653,
+          0.14349653513970173
+        ]
+      },
+      {
+        "id": 41,
+        "name": "tape",
+        "properties": [
+          "Movable"
+        ],
+        "states": [
+          "Inside",
+          "Free"
+        ],
+        "position": [
+          [
+            0.1629984626134084,
+            4.300766817996683,
+            0.6106488623008226
+          ],
+          [
+            0.10315556525516235,
+            -0.1175546327249671,
+            0.9843699248413839,
+            0.08096720786561831
+          ]
+        ],
+        "size": [
+          0.2068716648186365,
+          0.2819246205046184,
+          0.022563125551291252
+        ]
+      },
+      {
+        "id": 44,
+        "name": "stool",
+        "properties": [
+          "Movable",
+          "Surface"
+        ],
+        "states": [
+          "Inside",
+          "Free"
+        ],
+        "position": [
+          [
+            0.21667789815696337,
+            -4.4541112089274995,
+            0.17069673657148204
+          ],
+          [
+            9.910823816078114e-07,
+            0.0003976107142895522,
+            7.976154002565123e-05,
+            0.9999999177714138
+          ]
+        ],
+        "size": [
+          0.2662385553408462,
+          0.26600597815999016,
+          0.3962101611999587
+        ]
+      },
+      {
+        "id": 45,
+        "name": "mop",
+        "properties": [
+          "Movable",
+          "Cleaning_Agent"
+        ],
+        "states": [
+          "Inside",
+          "Free"
+        ],
+        "position": [
+          [
+            -1.5588094155001129,
+            4.0462588478347,
+            -0.021495072232362068
+          ],
+          [
+            -0.09385015492938409,
+            -0.09389002453556297,
+            -0.07038382939506425,
+            0.9886470190478139
+          ]
+        ],
+        "size": [
+          0.6653718927187342,
+          0.46157286658181595,
+          1.7064137077906325
+        ]
+      },
+      {
+        "id": 46,
+        "name": "sponge",
+        "properties": [
+          "Movable",
+          "Cleaning_Agent"
+        ],
+        "states": [
+          "Inside",
+          "Free"
+        ],
+        "position": [
+          [
+            2.4847905203834544,
+            1.1251257160618662,
+            0.18078029947645535
+          ],
+          [
+            -9.683561991502632e-07,
+            0.00016016791114355594,
+            -0.05701380221071973,
+            0.9983733774008497
+          ]
+        ],
+        "size": [
+          0.09549000025765153,
+          0.0609098156203256,
+          0.043638814762210265
+        ]
+      },
+      {
+        "id": 47,
+        "name": "vacuum",
+        "properties": [
+          "Movable",
+          "Cleaning_Agent"
+        ],
+        "states": [
+          "Inside",
+          "Free"
+        ],
+        "position": [
+          [
+            2.8359920087387867,
+            -0.822286274469874,
+            0.0732564947598207
+          ],
+          [
+            -0.12207837393652908,
+            0.8072322550621246,
+            0.04894939468531555,
+            0.5753928343004207
+          ]
+        ],
+        "size": [
+          0.28284344223466196,
+          1.118842717652634,
+          0.34544671273321187
+        ]
+      },
+      {
+        "id": 48,
+        "name": "dirt",
+        "properties": [
+          "Is_Dirty"
+        ],
+        "states": [
+          "Inside",
+          "Dirty"
+        ],
+        "position": [
+          [
+            -2.470243357445497,
+            -0.776902270241777,
+            0.16926
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "size": [
+          1,
+          1,
+          0.01
+        ]
+      }
+    ],
+    "edges": [
+      {
+        "from": 0,
+        "to": 1,
+        "relation": "Close"
+      },
+      {
+        "from": 0,
+        "to": 12,
+        "relation": "Close"
+      },
+      {
+        "from": 0,
+        "to": 19,
+        "relation": "Close"
+      },
+      {
+        "from": 0,
+        "to": 35,
+        "relation": "Close"
+      },
+      {
+        "from": 0,
+        "to": 46,
+        "relation": "Close"
+      },
+      {
+        "from": 0,
+        "to": 47,
+        "relation": "Close"
+      },
+      {
+        "from": 1,
+        "to": 0,
+        "relation": "Close"
+      },
+      {
+        "from": 1,
+        "to": 12,
+        "relation": "Close"
+      },
+      {
+        "from": 1,
+        "to": 19,
+        "relation": "Close"
+      },
+      {
+        "from": 1,
+        "to": 29,
+        "relation": "Close"
+      },
+      {
+        "from": 1,
+        "to": 35,
+        "relation": "Close"
+      },
+      {
+        "from": 1,
+        "to": 46,
+        "relation": "Close"
+      },
+      {
+        "from": 1,
+        "to": 47,
+        "relation": "Close"
+      },
+      {
+        "from": 1,
+        "to": 48,
+        "relation": "Close"
+      },
+      {
+        "from": 2,
+        "to": 1,
+        "relation": "On"
+      },
+      {
+        "from": 2,
+        "to": 19,
+        "relation": "Close"
+      },
+      {
+        "from": 2,
+        "to": 35,
+        "relation": "Close"
+      },
+      {
+        "from": 2,
+        "to": 46,
+        "relation": "Close"
+      },
+      {
+        "from": 2,
+        "to": 47,
+        "relation": "Close"
+      },
+      {
+        "from": 3,
+        "to": 19,
+        "relation": "Close"
+      },
+      {
+        "from": 3,
+        "to": 49,
+        "relation": "Close"
+      },
+      {
+        "from": 3,
+        "to": 33,
+        "relation": "Close"
+      },
+      {
+        "from": 3,
+        "to": 36,
+        "relation": "Close"
+      },
+      {
+        "from": 3,
+        "to": 39,
+        "relation": "Close"
+      },
+      {
+        "from": 3,
+        "to": 40,
+        "relation": "Close"
+      },
+      {
+        "from": 5,
+        "to": 17,
+        "relation": "Close"
+      },
+      {
+        "from": 5,
+        "to": 20,
+        "relation": "Close"
+      },
+      {
+        "from": 5,
+        "to": 23,
+        "relation": "Close"
+      },
+      {
+        "from": 5,
+        "to": 22,
+        "relation": "Close"
+      },
+      {
+        "from": 5,
+        "to": 21,
+        "relation": "Close"
+      },
+      {
+        "from": 5,
+        "to": 34,
+        "relation": "Close"
+      },
+      {
+        "from": 5,
+        "to": 38,
+        "relation": "Close"
+      },
+      {
+        "from": 5,
+        "to": 41,
+        "relation": "Close"
+      },
+      {
+        "from": 5,
+        "to": 45,
+        "relation": "Close"
+      },
+      {
+        "from": 7,
+        "to": 18,
+        "relation": "Close"
+      },
+      {
+        "from": 7,
+        "to": 42,
+        "relation": "Close"
+      },
+      {
+        "from": 7,
+        "to": 43,
+        "relation": "Close"
+      },
+      {
+        "from": 7,
+        "to": 25,
+        "relation": "Close"
+      },
+      {
+        "from": 7,
+        "to": 30,
+        "relation": "Close"
+      },
+      {
+        "from": 7,
+        "to": 31,
+        "relation": "Close"
+      },
+      {
+        "from": 7,
+        "to": 32,
+        "relation": "Close"
+      },
+      {
+        "from": 7,
+        "to": 44,
+        "relation": "Close"
+      },
+      {
+        "from": 12,
+        "to": 0,
+        "relation": "Close"
+      },
+      {
+        "from": 12,
+        "to": 1,
+        "relation": "Close"
+      },
+      {
+        "from": 12,
+        "to": 19,
+        "relation": "Close"
+      },
+      {
+        "from": 12,
+        "to": 29,
+        "relation": "Close"
+      },
+      {
+        "from": 12,
+        "to": 35,
+        "relation": "Close"
+      },
+      {
+        "from": 12,
+        "to": 46,
+        "relation": "Close"
+      },
+      {
+        "from": 12,
+        "to": 47,
+        "relation": "Close"
+      },
+      {
+        "from": 12,
+        "to": 48,
+        "relation": "Close"
+      },
+      {
+        "from": 17,
+        "to": 5,
+        "relation": "Close"
+      },
+      {
+        "from": 17,
+        "to": 20,
+        "relation": "Close"
+      },
+      {
+        "from": 17,
+        "to": 23,
+        "relation": "Close"
+      },
+      {
+        "from": 17,
+        "to": 22,
+        "relation": "Close"
+      },
+      {
+        "from": 17,
+        "to": 21,
+        "relation": "Close"
+      },
+      {
+        "from": 17,
+        "to": 24,
+        "relation": "Close"
+      },
+      {
+        "from": 17,
+        "to": 49,
+        "relation": "Close"
+      },
+      {
+        "from": 17,
+        "to": 33,
+        "relation": "Close"
+      },
+      {
+        "from": 17,
+        "to": 38,
+        "relation": "Close"
+      },
+      {
+        "from": 17,
+        "to": 40,
+        "relation": "Close"
+      },
+      {
+        "from": 17,
+        "to": 41,
+        "relation": "Close"
+      },
+      {
+        "from": 17,
+        "to": 45,
+        "relation": "Close"
+      },
+      {
+        "from": 18,
+        "to": 7,
+        "relation": "Close"
+      },
+      {
+        "from": 18,
+        "to": 42,
+        "relation": "Close"
+      },
+      {
+        "from": 18,
+        "to": 43,
+        "relation": "Close"
+      },
+      {
+        "from": 18,
+        "to": 25,
+        "relation": "Close"
+      },
+      {
+        "from": 18,
+        "to": 26,
+        "relation": "Close"
+      },
+      {
+        "from": 18,
+        "to": 28,
+        "relation": "Close"
+      },
+      {
+        "from": 18,
+        "to": 27,
+        "relation": "Close"
+      },
+      {
+        "from": 18,
+        "to": 30,
+        "relation": "Close"
+      },
+      {
+        "from": 18,
+        "to": 31,
+        "relation": "Close"
+      },
+      {
+        "from": 18,
+        "to": 32,
+        "relation": "Close"
+      },
+      {
+        "from": 18,
+        "to": 44,
+        "relation": "Close"
+      },
+      {
+        "from": 37,
+        "to": 26,
+        "relation": "Close"
+      },
+      {
+        "from": 37,
+        "to": 28,
+        "relation": "Close"
+      },
+      {
+        "from": 37,
+        "to": 27,
+        "relation": "Close"
+      },
+      {
+        "from": 37,
+        "to": 35,
+        "relation": "Close"
+      },
+      {
+        "from": 37,
+        "to": 44,
+        "relation": "Close"
+      },
+      {
+        "from": 37,
+        "to": 47,
+        "relation": "Close"
+      },
+      {
+        "from": 19,
+        "to": 0,
+        "relation": "Close"
+      },
+      {
+        "from": 19,
+        "to": 1,
+        "relation": "Close"
+      },
+      {
+        "from": 19,
+        "to": 2,
+        "relation": "Close"
+      },
+      {
+        "from": 19,
+        "to": 3,
+        "relation": "Close"
+      },
+      {
+        "from": 19,
+        "to": 12,
+        "relation": "Close"
+      },
+      {
+        "from": 19,
+        "to": 35,
+        "relation": "Close"
+      },
+      {
+        "from": 19,
+        "to": 39,
+        "relation": "Close"
+      },
+      {
+        "from": 19,
+        "to": 46,
+        "relation": "Close"
+      },
+      {
+        "from": 19,
+        "to": 47,
+        "relation": "Close"
+      },
+      {
+        "from": 20,
+        "to": 5,
+        "relation": "Close"
+      },
+      {
+        "from": 20,
+        "to": 17,
+        "relation": "Close"
+      },
+      {
+        "from": 20,
+        "to": 17,
+        "relation": "On"
+      },
+      {
+        "from": 20,
+        "to": 23,
+        "relation": "Close"
+      },
+      {
+        "from": 20,
+        "to": 22,
+        "relation": "Close"
+      },
+      {
+        "from": 20,
+        "to": 21,
+        "relation": "Close"
+      },
+      {
+        "from": 20,
+        "to": 24,
+        "relation": "Close"
+      },
+      {
+        "from": 20,
+        "to": 49,
+        "relation": "Close"
+      },
+      {
+        "from": 20,
+        "to": 33,
+        "relation": "Close"
+      },
+      {
+        "from": 20,
+        "to": 38,
+        "relation": "Close"
+      },
+      {
+        "from": 20,
+        "to": 40,
+        "relation": "Close"
+      },
+      {
+        "from": 20,
+        "to": 41,
+        "relation": "Close"
+      },
+      {
+        "from": 20,
+        "to": 45,
+        "relation": "Close"
+      },
+      {
+        "from": 42,
+        "to": 7,
+        "relation": "Close"
+      },
+      {
+        "from": 42,
+        "to": 18,
+        "relation": "Close"
+      },
+      {
+        "from": 42,
+        "to": 43,
+        "relation": "Close"
+      },
+      {
+        "from": 42,
+        "to": 25,
+        "relation": "Close"
+      },
+      {
+        "from": 42,
+        "to": 26,
+        "relation": "Close"
+      },
+      {
+        "from": 42,
+        "to": 28,
+        "relation": "Close"
+      },
+      {
+        "from": 42,
+        "to": 27,
+        "relation": "Close"
+      },
+      {
+        "from": 42,
+        "to": 30,
+        "relation": "Close"
+      },
+      {
+        "from": 42,
+        "to": 31,
+        "relation": "Close"
+      },
+      {
+        "from": 42,
+        "to": 32,
+        "relation": "Close"
+      },
+      {
+        "from": 42,
+        "to": 44,
+        "relation": "Close"
+      },
+      {
+        "from": 43,
+        "to": 7,
+        "relation": "Close"
+      },
+      {
+        "from": 43,
+        "to": 18,
+        "relation": "Close"
+      },
+      {
+        "from": 43,
+        "to": 42,
+        "relation": "Close"
+      },
+      {
+        "from": 43,
+        "to": 25,
+        "relation": "Close"
+      },
+      {
+        "from": 43,
+        "to": 26,
+        "relation": "Close"
+      },
+      {
+        "from": 43,
+        "to": 28,
+        "relation": "Close"
+      },
+      {
+        "from": 43,
+        "to": 27,
+        "relation": "Close"
+      },
+      {
+        "from": 43,
+        "to": 30,
+        "relation": "Close"
+      },
+      {
+        "from": 43,
+        "to": 31,
+        "relation": "Close"
+      },
+      {
+        "from": 43,
+        "to": 32,
+        "relation": "Close"
+      },
+      {
+        "from": 43,
+        "to": 44,
+        "relation": "Close"
+      },
+      {
+        "from": 23,
+        "to": 5,
+        "relation": "Close"
+      },
+      {
+        "from": 23,
+        "to": 17,
+        "relation": "Close"
+      },
+      {
+        "from": 23,
+        "to": 17,
+        "relation": "On"
+      },
+      {
+        "from": 23,
+        "to": 20,
+        "relation": "Close"
+      },
+      {
+        "from": 23,
+        "to": 22,
+        "relation": "Close"
+      },
+      {
+        "from": 23,
+        "to": 21,
+        "relation": "Close"
+      },
+      {
+        "from": 23,
+        "to": 24,
+        "relation": "Close"
+      },
+      {
+        "from": 23,
+        "to": 49,
+        "relation": "Close"
+      },
+      {
+        "from": 23,
+        "to": 33,
+        "relation": "Close"
+      },
+      {
+        "from": 23,
+        "to": 38,
+        "relation": "Close"
+      },
+      {
+        "from": 23,
+        "to": 40,
+        "relation": "Close"
+      },
+      {
+        "from": 23,
+        "to": 41,
+        "relation": "Close"
+      },
+      {
+        "from": 23,
+        "to": 45,
+        "relation": "Close"
+      },
+      {
+        "from": 22,
+        "to": 5,
+        "relation": "Close"
+      },
+      {
+        "from": 22,
+        "to": 17,
+        "relation": "Close"
+      },
+      {
+        "from": 22,
+        "to": 17,
+        "relation": "On"
+      },
+      {
+        "from": 22,
+        "to": 20,
+        "relation": "Close"
+      },
+      {
+        "from": 22,
+        "to": 23,
+        "relation": "Close"
+      },
+      {
+        "from": 22,
+        "to": 21,
+        "relation": "Close"
+      },
+      {
+        "from": 22,
+        "to": 24,
+        "relation": "Close"
+      },
+      {
+        "from": 22,
+        "to": 49,
+        "relation": "Close"
+      },
+      {
+        "from": 22,
+        "to": 33,
+        "relation": "Close"
+      },
+      {
+        "from": 22,
+        "to": 38,
+        "relation": "Close"
+      },
+      {
+        "from": 22,
+        "to": 40,
+        "relation": "Close"
+      },
+      {
+        "from": 22,
+        "to": 41,
+        "relation": "Close"
+      },
+      {
+        "from": 22,
+        "to": 45,
+        "relation": "Close"
+      },
+      {
+        "from": 21,
+        "to": 5,
+        "relation": "Close"
+      },
+      {
+        "from": 21,
+        "to": 17,
+        "relation": "Close"
+      },
+      {
+        "from": 21,
+        "to": 17,
+        "relation": "On"
+      },
+      {
+        "from": 21,
+        "to": 20,
+        "relation": "Close"
+      },
+      {
+        "from": 21,
+        "to": 23,
+        "relation": "Close"
+      },
+      {
+        "from": 21,
+        "to": 22,
+        "relation": "Close"
+      },
+      {
+        "from": 21,
+        "to": 24,
+        "relation": "Close"
+      },
+      {
+        "from": 21,
+        "to": 49,
+        "relation": "Close"
+      },
+      {
+        "from": 21,
+        "to": 33,
+        "relation": "Close"
+      },
+      {
+        "from": 21,
+        "to": 38,
+        "relation": "Close"
+      },
+      {
+        "from": 21,
+        "to": 40,
+        "relation": "Close"
+      },
+      {
+        "from": 21,
+        "to": 41,
+        "relation": "Close"
+      },
+      {
+        "from": 21,
+        "to": 45,
+        "relation": "Close"
+      },
+      {
+        "from": 24,
+        "to": 17,
+        "relation": "Close"
+      },
+      {
+        "from": 24,
+        "to": 17,
+        "relation": "On"
+      },
+      {
+        "from": 24,
+        "to": 20,
+        "relation": "Close"
+      },
+      {
+        "from": 24,
+        "to": 23,
+        "relation": "Close"
+      },
+      {
+        "from": 24,
+        "to": 22,
+        "relation": "Close"
+      },
+      {
+        "from": 24,
+        "to": 21,
+        "relation": "Close"
+      },
+      {
+        "from": 24,
+        "to": 49,
+        "relation": "Close"
+      },
+      {
+        "from": 24,
+        "to": 33,
+        "relation": "Close"
+      },
+      {
+        "from": 24,
+        "to": 39,
+        "relation": "Close"
+      },
+      {
+        "from": 24,
+        "to": 40,
+        "relation": "Close"
+      },
+      {
+        "from": 24,
+        "to": 41,
+        "relation": "Close"
+      },
+      {
+        "from": 24,
+        "to": 45,
+        "relation": "Close"
+      },
+      {
+        "from": 25,
+        "to": 7,
+        "relation": "Close"
+      },
+      {
+        "from": 25,
+        "to": 18,
+        "relation": "Close"
+      },
+      {
+        "from": 25,
+        "to": 42,
+        "relation": "Close"
+      },
+      {
+        "from": 25,
+        "to": 43,
+        "relation": "Close"
+      },
+      {
+        "from": 25,
+        "to": 26,
+        "relation": "Close"
+      },
+      {
+        "from": 25,
+        "to": 28,
+        "relation": "Close"
+      },
+      {
+        "from": 25,
+        "to": 27,
+        "relation": "Close"
+      },
+      {
+        "from": 25,
+        "to": 30,
+        "relation": "Close"
+      },
+      {
+        "from": 25,
+        "to": 31,
+        "relation": "Close"
+      },
+      {
+        "from": 25,
+        "to": 32,
+        "relation": "Close"
+      },
+      {
+        "from": 25,
+        "to": 44,
+        "relation": "Close"
+      },
+      {
+        "from": 49,
+        "to": 3,
+        "relation": "Close"
+      },
+      {
+        "from": 49,
+        "to": 17,
+        "relation": "Close"
+      },
+      {
+        "from": 49,
+        "to": 20,
+        "relation": "Close"
+      },
+      {
+        "from": 49,
+        "to": 23,
+        "relation": "Close"
+      },
+      {
+        "from": 49,
+        "to": 22,
+        "relation": "Close"
+      },
+      {
+        "from": 49,
+        "to": 21,
+        "relation": "Close"
+      },
+      {
+        "from": 49,
+        "to": 24,
+        "relation": "Close"
+      },
+      {
+        "from": 49,
+        "to": 33,
+        "relation": "Close"
+      },
+      {
+        "from": 49,
+        "to": 36,
+        "relation": "Close"
+      },
+      {
+        "from": 49,
+        "to": 39,
+        "relation": "Close"
+      },
+      {
+        "from": 49,
+        "to": 40,
+        "relation": "Close"
+      },
+      {
+        "from": 49,
+        "to": 41,
+        "relation": "Close"
+      },
+      {
+        "from": 26,
+        "to": 18,
+        "relation": "Close"
+      },
+      {
+        "from": 26,
+        "to": 37,
+        "relation": "Close"
+      },
+      {
+        "from": 26,
+        "to": 42,
+        "relation": "Close"
+      },
+      {
+        "from": 26,
+        "to": 43,
+        "relation": "Close"
+      },
+      {
+        "from": 26,
+        "to": 25,
+        "relation": "Close"
+      },
+      {
+        "from": 26,
+        "to": 28,
+        "relation": "Close"
+      },
+      {
+        "from": 26,
+        "to": 27,
+        "relation": "Close"
+      },
+      {
+        "from": 26,
+        "to": 30,
+        "relation": "Close"
+      },
+      {
+        "from": 26,
+        "to": 31,
+        "relation": "Close"
+      },
+      {
+        "from": 26,
+        "to": 32,
+        "relation": "Close"
+      },
+      {
+        "from": 26,
+        "to": 44,
+        "relation": "Close"
+      },
+      {
+        "from": 28,
+        "to": 18,
+        "relation": "Close"
+      },
+      {
+        "from": 28,
+        "to": 37,
+        "relation": "Close"
+      },
+      {
+        "from": 28,
+        "to": 42,
+        "relation": "Close"
+      },
+      {
+        "from": 28,
+        "to": 43,
+        "relation": "Close"
+      },
+      {
+        "from": 28,
+        "to": 25,
+        "relation": "Close"
+      },
+      {
+        "from": 28,
+        "to": 26,
+        "relation": "Close"
+      },
+      {
+        "from": 28,
+        "to": 27,
+        "relation": "Close"
+      },
+      {
+        "from": 28,
+        "to": 30,
+        "relation": "Close"
+      },
+      {
+        "from": 28,
+        "to": 31,
+        "relation": "Close"
+      },
+      {
+        "from": 28,
+        "to": 32,
+        "relation": "Close"
+      },
+      {
+        "from": 28,
+        "to": 44,
+        "relation": "Close"
+      },
+      {
+        "from": 27,
+        "to": 18,
+        "relation": "Close"
+      },
+      {
+        "from": 27,
+        "to": 37,
+        "relation": "Close"
+      },
+      {
+        "from": 27,
+        "to": 42,
+        "relation": "Close"
+      },
+      {
+        "from": 27,
+        "to": 43,
+        "relation": "Close"
+      },
+      {
+        "from": 27,
+        "to": 25,
+        "relation": "Close"
+      },
+      {
+        "from": 27,
+        "to": 26,
+        "relation": "Close"
+      },
+      {
+        "from": 27,
+        "to": 28,
+        "relation": "Close"
+      },
+      {
+        "from": 27,
+        "to": 30,
+        "relation": "Close"
+      },
+      {
+        "from": 27,
+        "to": 31,
+        "relation": "Close"
+      },
+      {
+        "from": 27,
+        "to": 32,
+        "relation": "Close"
+      },
+      {
+        "from": 27,
+        "to": 44,
+        "relation": "Close"
+      },
+      {
+        "from": 29,
+        "to": 1,
+        "relation": "Close"
+      },
+      {
+        "from": 29,
+        "to": 12,
+        "relation": "Close"
+      },
+      {
+        "from": 29,
+        "to": 34,
+        "relation": "Close"
+      },
+      {
+        "from": 29,
+        "to": 48,
+        "relation": "Close"
+      },
+      {
+        "from": 30,
+        "to": 7,
+        "relation": "Close"
+      },
+      {
+        "from": 30,
+        "to": 18,
+        "relation": "Close"
+      },
+      {
+        "from": 30,
+        "to": 42,
+        "relation": "Close"
+      },
+      {
+        "from": 30,
+        "to": 43,
+        "relation": "Close"
+      },
+      {
+        "from": 30,
+        "to": 43,
+        "relation": "On"
+      },
+      {
+        "from": 30,
+        "to": 25,
+        "relation": "Close"
+      },
+      {
+        "from": 30,
+        "to": 26,
+        "relation": "Close"
+      },
+      {
+        "from": 30,
+        "to": 28,
+        "relation": "Close"
+      },
+      {
+        "from": 30,
+        "to": 27,
+        "relation": "Close"
+      },
+      {
+        "from": 30,
+        "to": 31,
+        "relation": "Close"
+      },
+      {
+        "from": 30,
+        "to": 32,
+        "relation": "Close"
+      },
+      {
+        "from": 30,
+        "to": 44,
+        "relation": "Close"
+      },
+      {
+        "from": 31,
+        "to": 7,
+        "relation": "Close"
+      },
+      {
+        "from": 31,
+        "to": 18,
+        "relation": "Close"
+      },
+      {
+        "from": 31,
+        "to": 42,
+        "relation": "Close"
+      },
+      {
+        "from": 31,
+        "to": 42,
+        "relation": "On"
+      },
+      {
+        "from": 31,
+        "to": 43,
+        "relation": "Close"
+      },
+      {
+        "from": 31,
+        "to": 43,
+        "relation": "On"
+      },
+      {
+        "from": 31,
+        "to": 25,
+        "relation": "Close"
+      },
+      {
+        "from": 31,
+        "to": 26,
+        "relation": "Close"
+      },
+      {
+        "from": 31,
+        "to": 28,
+        "relation": "Close"
+      },
+      {
+        "from": 31,
+        "to": 27,
+        "relation": "Close"
+      },
+      {
+        "from": 31,
+        "to": 30,
+        "relation": "Close"
+      },
+      {
+        "from": 31,
+        "to": 32,
+        "relation": "Close"
+      },
+      {
+        "from": 31,
+        "to": 44,
+        "relation": "Close"
+      },
+      {
+        "from": 32,
+        "to": 7,
+        "relation": "Close"
+      },
+      {
+        "from": 32,
+        "to": 18,
+        "relation": "Close"
+      },
+      {
+        "from": 32,
+        "to": 42,
+        "relation": "Close"
+      },
+      {
+        "from": 32,
+        "to": 43,
+        "relation": "Close"
+      },
+      {
+        "from": 32,
+        "to": 43,
+        "relation": "On"
+      },
+      {
+        "from": 32,
+        "to": 25,
+        "relation": "Close"
+      },
+      {
+        "from": 32,
+        "to": 26,
+        "relation": "Close"
+      },
+      {
+        "from": 32,
+        "to": 28,
+        "relation": "Close"
+      },
+      {
+        "from": 32,
+        "to": 27,
+        "relation": "Close"
+      },
+      {
+        "from": 32,
+        "to": 30,
+        "relation": "Close"
+      },
+      {
+        "from": 32,
+        "to": 31,
+        "relation": "Close"
+      },
+      {
+        "from": 32,
+        "to": 44,
+        "relation": "Close"
+      },
+      {
+        "from": 33,
+        "to": 3,
+        "relation": "Close"
+      },
+      {
+        "from": 33,
+        "to": 17,
+        "relation": "Close"
+      },
+      {
+        "from": 33,
+        "to": 20,
+        "relation": "Close"
+      },
+      {
+        "from": 33,
+        "to": 23,
+        "relation": "Close"
+      },
+      {
+        "from": 33,
+        "to": 22,
+        "relation": "Close"
+      },
+      {
+        "from": 33,
+        "to": 21,
+        "relation": "Close"
+      },
+      {
+        "from": 33,
+        "to": 24,
+        "relation": "Close"
+      },
+      {
+        "from": 33,
+        "to": 49,
+        "relation": "Close"
+      },
+      {
+        "from": 33,
+        "to": 39,
+        "relation": "Close"
+      },
+      {
+        "from": 33,
+        "to": 40,
+        "relation": "Close"
+      },
+      {
+        "from": 33,
+        "to": 41,
+        "relation": "Close"
+      },
+      {
+        "from": 33,
+        "to": 45,
+        "relation": "Close"
+      },
+      {
+        "from": 34,
+        "to": 5,
+        "relation": "Close"
+      },
+      {
+        "from": 34,
+        "to": 29,
+        "relation": "Close"
+      },
+      {
+        "from": 34,
+        "to": 38,
+        "relation": "Close"
+      },
+      {
+        "from": 34,
+        "to": 45,
+        "relation": "Close"
+      },
+      {
+        "from": 34,
+        "to": 48,
+        "relation": "Close"
+      },
+      {
+        "from": 35,
+        "to": 0,
+        "relation": "Close"
+      },
+      {
+        "from": 35,
+        "to": 1,
+        "relation": "Close"
+      },
+      {
+        "from": 35,
+        "to": 2,
+        "relation": "Close"
+      },
+      {
+        "from": 35,
+        "to": 12,
+        "relation": "Close"
+      },
+      {
+        "from": 35,
+        "to": 37,
+        "relation": "Close"
+      },
+      {
+        "from": 35,
+        "to": 19,
+        "relation": "Close"
+      },
+      {
+        "from": 35,
+        "to": 46,
+        "relation": "Close"
+      },
+      {
+        "from": 35,
+        "to": 47,
+        "relation": "Close"
+      },
+      {
+        "from": 36,
+        "to": 3,
+        "relation": "Close"
+      },
+      {
+        "from": 36,
+        "to": 49,
+        "relation": "Close"
+      },
+      {
+        "from": 36,
+        "to": 39,
+        "relation": "Close"
+      },
+      {
+        "from": 38,
+        "to": 5,
+        "relation": "Close"
+      },
+      {
+        "from": 38,
+        "to": 5,
+        "relation": "On"
+      },
+      {
+        "from": 38,
+        "to": 17,
+        "relation": "Close"
+      },
+      {
+        "from": 38,
+        "to": 20,
+        "relation": "Close"
+      },
+      {
+        "from": 38,
+        "to": 23,
+        "relation": "Close"
+      },
+      {
+        "from": 38,
+        "to": 22,
+        "relation": "Close"
+      },
+      {
+        "from": 38,
+        "to": 21,
+        "relation": "Close"
+      },
+      {
+        "from": 38,
+        "to": 34,
+        "relation": "Close"
+      },
+      {
+        "from": 38,
+        "to": 41,
+        "relation": "Close"
+      },
+      {
+        "from": 38,
+        "to": 45,
+        "relation": "Close"
+      },
+      {
+        "from": 39,
+        "to": 3,
+        "relation": "Close"
+      },
+      {
+        "from": 39,
+        "to": 19,
+        "relation": "Close"
+      },
+      {
+        "from": 39,
+        "to": 24,
+        "relation": "Close"
+      },
+      {
+        "from": 39,
+        "to": 49,
+        "relation": "Close"
+      },
+      {
+        "from": 39,
+        "to": 33,
+        "relation": "Close"
+      },
+      {
+        "from": 39,
+        "to": 36,
+        "relation": "Close"
+      },
+      {
+        "from": 39,
+        "to": 40,
+        "relation": "Close"
+      },
+      {
+        "from": 39,
+        "to": 46,
+        "relation": "Close"
+      },
+      {
+        "from": 40,
+        "to": 3,
+        "relation": "Close"
+      },
+      {
+        "from": 40,
+        "to": 17,
+        "relation": "Close"
+      },
+      {
+        "from": 40,
+        "to": 17,
+        "relation": "On"
+      },
+      {
+        "from": 40,
+        "to": 20,
+        "relation": "Close"
+      },
+      {
+        "from": 40,
+        "to": 23,
+        "relation": "Close"
+      },
+      {
+        "from": 40,
+        "to": 22,
+        "relation": "Close"
+      },
+      {
+        "from": 40,
+        "to": 21,
+        "relation": "Close"
+      },
+      {
+        "from": 40,
+        "to": 24,
+        "relation": "Close"
+      },
+      {
+        "from": 40,
+        "to": 49,
+        "relation": "Close"
+      },
+      {
+        "from": 40,
+        "to": 33,
+        "relation": "Close"
+      },
+      {
+        "from": 40,
+        "to": 39,
+        "relation": "Close"
+      },
+      {
+        "from": 40,
+        "to": 41,
+        "relation": "Close"
+      },
+      {
+        "from": 40,
+        "to": 45,
+        "relation": "Close"
+      },
+      {
+        "from": 41,
+        "to": 5,
+        "relation": "Close"
+      },
+      {
+        "from": 41,
+        "to": 17,
+        "relation": "Close"
+      },
+      {
+        "from": 41,
+        "to": 17,
+        "relation": "On"
+      },
+      {
+        "from": 41,
+        "to": 20,
+        "relation": "Close"
+      },
+      {
+        "from": 41,
+        "to": 23,
+        "relation": "Close"
+      },
+      {
+        "from": 41,
+        "to": 22,
+        "relation": "Close"
+      },
+      {
+        "from": 41,
+        "to": 21,
+        "relation": "Close"
+      },
+      {
+        "from": 41,
+        "to": 24,
+        "relation": "Close"
+      },
+      {
+        "from": 41,
+        "to": 49,
+        "relation": "Close"
+      },
+      {
+        "from": 41,
+        "to": 33,
+        "relation": "Close"
+      },
+      {
+        "from": 41,
+        "to": 38,
+        "relation": "Close"
+      },
+      {
+        "from": 41,
+        "to": 40,
+        "relation": "Close"
+      },
+      {
+        "from": 41,
+        "to": 45,
+        "relation": "Close"
+      },
+      {
+        "from": 44,
+        "to": 7,
+        "relation": "Close"
+      },
+      {
+        "from": 44,
+        "to": 18,
+        "relation": "Close"
+      },
+      {
+        "from": 44,
+        "to": 37,
+        "relation": "Close"
+      },
+      {
+        "from": 44,
+        "to": 42,
+        "relation": "Close"
+      },
+      {
+        "from": 44,
+        "to": 43,
+        "relation": "Close"
+      },
+      {
+        "from": 44,
+        "to": 25,
+        "relation": "Close"
+      },
+      {
+        "from": 44,
+        "to": 26,
+        "relation": "Close"
+      },
+      {
+        "from": 44,
+        "to": 28,
+        "relation": "Close"
+      },
+      {
+        "from": 44,
+        "to": 27,
+        "relation": "Close"
+      },
+      {
+        "from": 44,
+        "to": 30,
+        "relation": "Close"
+      },
+      {
+        "from": 44,
+        "to": 31,
+        "relation": "Close"
+      },
+      {
+        "from": 44,
+        "to": 32,
+        "relation": "Close"
+      },
+      {
+        "from": 45,
+        "to": 5,
+        "relation": "Close"
+      },
+      {
+        "from": 45,
+        "to": 17,
+        "relation": "Close"
+      },
+      {
+        "from": 45,
+        "to": 20,
+        "relation": "Close"
+      },
+      {
+        "from": 45,
+        "to": 23,
+        "relation": "Close"
+      },
+      {
+        "from": 45,
+        "to": 22,
+        "relation": "Close"
+      },
+      {
+        "from": 45,
+        "to": 21,
+        "relation": "Close"
+      },
+      {
+        "from": 45,
+        "to": 24,
+        "relation": "Close"
+      },
+      {
+        "from": 45,
+        "to": 33,
+        "relation": "Close"
+      },
+      {
+        "from": 45,
+        "to": 34,
+        "relation": "Close"
+      },
+      {
+        "from": 45,
+        "to": 38,
+        "relation": "Close"
+      },
+      {
+        "from": 45,
+        "to": 40,
+        "relation": "Close"
+      },
+      {
+        "from": 45,
+        "to": 41,
+        "relation": "Close"
+      },
+      {
+        "from": 46,
+        "to": 0,
+        "relation": "Close"
+      },
+      {
+        "from": 46,
+        "to": 1,
+        "relation": "Close"
+      },
+      {
+        "from": 46,
+        "to": 2,
+        "relation": "Close"
+      },
+      {
+        "from": 46,
+        "to": 12,
+        "relation": "Close"
+      },
+      {
+        "from": 46,
+        "to": 19,
+        "relation": "Close"
+      },
+      {
+        "from": 46,
+        "to": 19,
+        "relation": "On"
+      },
+      {
+        "from": 46,
+        "to": 35,
+        "relation": "Close"
+      },
+      {
+        "from": 46,
+        "to": 39,
+        "relation": "Close"
+      },
+      {
+        "from": 46,
+        "to": 47,
+        "relation": "Close"
+      },
+      {
+        "from": 47,
+        "to": 0,
+        "relation": "Close"
+      },
+      {
+        "from": 47,
+        "to": 1,
+        "relation": "Close"
+      },
+      {
+        "from": 47,
+        "to": 2,
+        "relation": "Close"
+      },
+      {
+        "from": 47,
+        "to": 12,
+        "relation": "Close"
+      },
+      {
+        "from": 47,
+        "to": 37,
+        "relation": "Close"
+      },
+      {
+        "from": 47,
+        "to": 19,
+        "relation": "Close"
+      },
+      {
+        "from": 47,
+        "to": 35,
+        "relation": "Close"
+      },
+      {
+        "from": 47,
+        "to": 46,
+        "relation": "Close"
+      },
+      {
+        "from": 48,
+        "to": 1,
+        "relation": "Close"
+      },
+      {
+        "from": 48,
+        "to": 12,
+        "relation": "Close"
+      },
+      {
+        "from": 48,
+        "to": 29,
+        "relation": "Close"
+      },
+      {
+        "from": 48,
+        "to": 34,
+        "relation": "Close"
+      }
+    ]
+  }
+}

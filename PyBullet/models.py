@@ -82,6 +82,30 @@ class GraphEncoder(nn.Module):
 
         return node_hidden
 
+class Decoder(nn.Module):
+
+    def __init__(self):
+        super(Decoder, self).__init__()
+        object2logit = nn.Sequential()
+        object2logit.add_module(
+            'fc1',
+            fc_block(
+                GRAPH_HIDDEN + NUM_GOALS,
+                LOGIT_HIDDEN,
+                False,
+                nn.Tanh))
+        object2logit.add_module(
+            'fc2',
+            fc_block(
+                LOGIT_HIDDEN,
+                1,
+                False,
+                nn.Sigmoid))
+        self.object2logit = object2logit
+
+    def forward(self, x):
+        return self.object2logit(x)
+
 class AttrProxy(object):
     """
     Translates index lookups into attribute lookups.

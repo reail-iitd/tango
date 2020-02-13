@@ -6,9 +6,11 @@ import pickle
 from src.datapoint import Datapoint
 
 def get_graph_data(pathToDatapoint):
+	goal_num = int(pathToDatapoint.split("/")[-3][4])
+	goal_vec = np.zeros(NUM_GOALS)
+	goal_vec[goal_num - 1] = 1
 
 	datapoint = pickle.load(open(pathToDatapoint, "rb"))
-	print(datapoint.getTools([]))
 	if "home" in pathToDatapoint:
 		graph_data = datapoint.getGraph(world = "home")["graph_0"] #Initial Graph
 
@@ -39,7 +41,7 @@ def get_graph_data(pathToDatapoint):
 
 		adjacency_matrix[edge_type_idx, src_idx, tgt_idx] = True
 
-	return (adjacency_matrix, node_states, node_ids, node_names, n_nodes)
+	return (adjacency_matrix, node_states, node_ids, node_names, n_nodes, datapoint.getTools([]), goal_vec)
 
 class Dataset():
 	def __init__(self, program_dir):
@@ -50,10 +52,7 @@ class Dataset():
 				for file in files:
 					file_path = path + "/" + file
 					# print (file_path)
-					try:
-						graphs.append(get_graph_data(file_path))
-					except AttributeError:
-						print ("Could not read ", file_path)
+					graphs.append(get_graph_data(file_path))
 
 		self.graphs = graphs
 
