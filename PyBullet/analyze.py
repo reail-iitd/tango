@@ -97,14 +97,15 @@ def changeAllDatapoints():
 				f = open(file, 'rb')
 				datapoint = pickle.load(f)
 				f.close()
-				f = open(file, 'wb')
-				datapoint.on = []
-				for i in range(len(datapoint.lighton)):
-					a = ['light'] if datapoint.lighton[i] else []
-					datapoint.on.append(a)
-				pickle.dump(datapoint, f)
-				f.flush()
-				f.close()
+				if not hasattr(datapoint, 'on'):
+					f = open(file, 'wb')
+					datapoint.on = []
+					for i in range(len(datapoint.lighton)):
+						a = ['light'] if datapoint.lighton[i] else []
+						datapoint.on.append(a)
+					pickle.dump(datapoint, f)
+					f.flush()
+					f.close()
 
 def getTiming(goal='goal1-milk-fridge.json'):
 	for world in range(10):
@@ -136,6 +137,7 @@ def combineDatasets(idx=1):
 
 # keepNewDatapoints(4)
 # printAllDatapoints()
-printNumDatapoints()
+# printNumDatapoints()
+changeAllDatapoints()
 # combineDatasets(4)
 
