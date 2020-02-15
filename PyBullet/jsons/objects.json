@@ -349,7 +349,7 @@
 			"constraint_link": -1,
 			"constraint_pos": [[0, 0, -0.05]],
 			"ur5_dist": [0.3,0,0],
-			"properties": [],
+			"properties": ["Movable"],
 			"size": [0.2, 0.2, 0.2]
         },
         {
