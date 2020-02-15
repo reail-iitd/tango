@@ -446,6 +446,6 @@ def grabbedObj(obj, constraints):
     """
     Check if object is grabbed by robot
     """
-    return (obj in constraints.keys() and constraints[obj] == 'ur5')
+    return (obj in constraints.keys() and constraints[obj][0] == 'ur5')
 
 
