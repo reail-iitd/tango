@@ -5,12 +5,12 @@
 			"args": []
 		},
 		{
-			"name": "moveTo",
-			"args": ["board"]
+			"name": "apply",
+			"args": ["glue", "paper"]
 		},
 		{
 			"name": "pick",
-			"args": ["board"]
+			"args": ["paper"]
 		},
 		{
 			"name": "moveUp",
@@ -18,15 +18,11 @@
 		},
 		{
 			"name": "stick",
-			"args": ["board", "wall_warehouse"]		
+			"args": ["paper", "wall_warehouse"]		
 		},
 		{
-			"name": "pickNplaceAonB",
-			"args": ["screw", "board"]		
-		},
-		{
-			"name": "drive",
-			"args": ["screw", "screwdriver"]		
+			"name": "moveTo",
+			"args": ["paper"]
 		}
 	]
 }

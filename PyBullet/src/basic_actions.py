@@ -131,9 +131,6 @@ def changeState(obj, positionAndOrientation):
     q=p.getQuaternionFromEuler(positionAndOrientation[1])
     ((x1, y1, z1), (a1, b1, c1, d1)) = p.getBasePositionAndOrientation(obj)
     ((x2, y2, z2), (a2, b2, c2, d2)) = (positionAndOrientation[0], q)
-    print('- ')
-    print(((x1, y1, z1), (a1, b1, c1, d1)))
-    print(((x2, y2, z2), (a2, b2, c2, d2)))
     done = True
     x1 = x1 + 0.01*sign(x2-x1); done = done and abs(x2-x1) <= 0.01
     y1 = y1 + 0.01*sign(y2-y1); done = done and abs(y2-y1) <= 0.01

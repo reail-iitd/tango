@@ -3,19 +3,16 @@
   name="board.SLDPRT">
   <link
     name="board.SLDPRT">
+    <contact>
+      <lateral_friction value="0.5"/>
+      <rolling_friction value="1.0"/>
+      <contact_cfm value="0.0"/>
+      <contact_erp value="1.0"/>
+    </contact>
     <inertial>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <mass
-        value="7.8817" />
-      <inertia
-        ixx="0"
-        ixy="0"
-        ixz="0"
-        iyy="0"
-        iyz="0"
-        izz="0" />
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="1"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
     </inertial>
     <visual>
       <origin rpy="1.57 0 -1.57" xyz="0 0 0"/>

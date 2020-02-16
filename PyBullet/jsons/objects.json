@@ -951,11 +951,11 @@
 		{
             "name": "board",
             "urdf": "models/urdf/board.urdf",
-            "constraints": ["horizontal"],
+            "constraints": [],
 			"tolerance": 1.5,
 			"constraint_link": -1,
 			"constraint_cpos": [[0, 0, 0]],
-			"constraint_pos": [[0, 0.5, 0.5], [0, -0.5, 0.5], [0, 0.5, -0.5], [0, -0.5, -0.5]],
+			"constraint_pos": [[0, 0, 0], [0, 0.5, 0.5], [0, -0.5, 0.5], [0, 0.5, -0.5], [0, -0.5, -0.5]],
 			"ur5_dist": [1,0,0],
 			"properties": ["Movable", "Stickable"],
 			"size": [0.04114780292861148, 1.7071888288617423, 1.302906840432176]

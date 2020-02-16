@@ -361,7 +361,9 @@ def executeHelper(actions, goal_file=None):
                 on.append(actions[action_index][1])
               done = True
             else:
-              done = changeState(id_lookup[actions[action_index][1]], states[actions[action_index][1]][state]) if actions[action_index][1] != 'paper' else True
+              if actions[action_index][1] == "board" or 'paper' in actions[action_index][1]:
+                p.changeDynamics(id_lookup[actions[action_index][1]], -1, mass=0)
+              done = changeState(id_lookup[actions[action_index][1]], states[actions[action_index][1]][state]) 
 
           elif(actions[action_index][0] == "climbUp"):
             target = id_lookup[actions[action_index][1]]
