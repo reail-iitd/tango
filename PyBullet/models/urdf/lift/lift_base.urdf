@@ -21,11 +21,5 @@
         <color rgba="0.23 0.2 0.2 1"/>
       </material>
     </visual>
-    <collision concave="yes">
-      <origin rpy="1.57 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="models/meshes/lift/lift_base.obj" scale="10 10 10"/>
-      </geometry>
-    </collision>
   </link>
 </robot>

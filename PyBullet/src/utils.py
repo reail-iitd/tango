@@ -335,6 +335,7 @@ def isInState(enclosure, state, position):
     ((x2, y2, z2), (a2, b2, c2, d2)) = (positionAndOrientation[0], q)
     closed = (abs(x2-x1) <= 0.07 and 
             abs(y2-y1) <= 0.07 and 
+            abs(z2-z1) <= 0.07 and 
             abs(a2-a1) <= 0.07 and 
             abs(b2-b2) <= 0.07 and 
             abs(c2-c1) <= 0.07 and 

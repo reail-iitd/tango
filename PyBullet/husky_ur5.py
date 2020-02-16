@@ -59,6 +59,8 @@ if (args.logging or args.display):
   ground_list,
   fixed_orientation,
   tolerances, 
+  properties,
+  cons_cpos_lookup,
   cons_pos_lookup, 
   cons_link_lookup,
   ur5_dist,
@@ -277,6 +279,13 @@ def executeHelper(actions, goal_file=None):
               done = True; waiting = False
             if not waiting and not done:
               bounding_box = p.getAABB(id_lookup[actions[action_index][1]])
+              if actions[action_index][2] == 'ur5' and not "Movable" in properties[actions[action_index][1]]:
+                  raise Exception("Object '" + action[action_index][1] + "' is not grabbable")
+              if (actions[action_index][2] == 'ur5'
+                  and "Heavy" in properties[actions[action_index][1]]
+                  and len(findConstraintWith(actions[action_index][1], constraints)) > 0
+                  and "Heavy" in properties[findConstraintWith(actions[action_index][1], constraints)[0]]):
+                  raise Exception("Robot can not hold stack of heavy objects")
               if checkUR5constrained(constraints) and actions[action_index][2] == 'ur5':
                   raise Exception("Gripper is not free, can not hold object")
               if actions[action_index][2] == actions[action_index][1]:
@@ -302,6 +311,7 @@ def executeHelper(actions, goal_file=None):
               cid = constrain(actions[action_index][1], 
                               actions[action_index][2], 
                               cons_link_lookup, 
+                              cons_cpos_lookup,
                               cons_pos_lookup,
                               id_lookup,
                               constraints,

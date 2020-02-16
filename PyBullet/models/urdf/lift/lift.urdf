@@ -15,17 +15,17 @@
     <visual>
       <origin rpy="1.57 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="models/meshes/lift/lift.obj" scale="10 10 10"/>
+        <mesh filename="models/meshes/lift/lift.obj" scale="10 25 10"/>
       </geometry>
       <material name="tray_material">
         <color rgba="1 0 0 0.8"/>
       </material>
     </visual>
-<!--     <collision concave="yes">
+    <collision>
       <origin rpy="1.57 0 1.57" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="models/meshes/fridge/fridge.obj" scale="10 10 10"/>
+        <mesh filename="models/meshes/fridge/fridge.obj" scale="10 25 10"/>
       </geometry>
-    </collision> -->
+    </collision>
   </link>
 </robot>

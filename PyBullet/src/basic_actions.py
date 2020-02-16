@@ -75,7 +75,7 @@ def moveTo(x1, y1, o1, object_list, target, tolerance, keyboard, speed, offset):
     return move(x1, y1, o1, object_list, target_coordinates, keyboard, speed, tolerance)
 
 
-def constrain(obj1, obj2, link, pos, id_lookup, constraints, ur5_dist):
+def constrain(obj1, obj2, link, cpos, pos, id_lookup, constraints, ur5_dist):
     """
     Constrain two objects
     :params: 
@@ -99,12 +99,12 @@ def constrain(obj1, obj2, link, pos, id_lookup, constraints, ur5_dist):
     if obj2 == "ur5":
         cid = p.createConstraint(id_lookup[obj2], link[obj2], id_lookup[obj1], link[obj1], p.JOINT_POINT2POINT, [0, 0, 0], 
                                 parentFramePosition=ur5_dist[obj1],
-                                childFramePosition=pos[obj1][0],
+                                childFramePosition=cpos[obj1][0],
                                 childFrameOrientation=[0,0,0,0])
     else:
         cid = p.createConstraint(id_lookup[obj2], link[obj2], id_lookup[obj1], link[obj1], p.JOINT_POINT2POINT, [0, 0, 0], 
                                 parentFramePosition=pos[obj2][count],
-                                childFramePosition=pos[obj1][0],
+                                childFramePosition=cpos[obj1][0],
                                 childFrameOrientation=[0,0,0,0])
     return cid
 
@@ -134,6 +134,7 @@ def changeState(obj, positionAndOrientation):
     done = True
     x1 = x1 + 0.01*sign(x2-x1); done = done and abs(x2-x1) <= 0.01
     y1 = y1 + 0.01*sign(y2-y1); done = done and abs(y2-y1) <= 0.01
+    z1 = z1 + 0.01*sign(z2-z1); done = done and abs(z2-z1) <= 0.01
     a1 = a1 + 0.01*sign(a2-a1); done = done and abs(a2-a1) <= 0.01
     b1 = b1 + 0.01*sign(b2-b2); done = done and abs(b2-b2) <= 0.01
     c1 = c1 + 0.01*sign(c2-c1); done = done and abs(c2-c1) <= 0.01
