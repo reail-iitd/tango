@@ -1,0 +1,12 @@
+{
+	"goals":[
+		{
+			"object": "board",
+			"target": "",
+			"state": "fixed",
+			"position": "",
+			"tolerance": 1.5
+		}
+	],
+	"text": "Fix paper to wall"
+}

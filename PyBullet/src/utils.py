@@ -211,6 +211,24 @@ def restoreOnInput(world_states, x1, y1, o1, constraints):
         return x, y, o, constraints, world_states
     return x1, y1, o1, constraints, world_states
 
+def isInState(enclosure, state, position):
+    """
+    Check if enclosure is closed or not
+    """
+    positionAndOrientation = state
+    q=p.getQuaternionFromEuler(positionAndOrientation[1])
+    ((x1, y1, z1), (a1, b1, c1, d1)) = position
+    ((x2, y2, z2), (a2, b2, c2, d2)) = (positionAndOrientation[0], q)
+    closed = (abs(x2-x1) <= 0.07 and 
+            abs(y2-y1) <= 0.07 and 
+            abs(z2-z1) <= 0.07 and 
+            abs(a2-a1) <= 0.07 and 
+            abs(b2-b2) <= 0.07 and 
+            abs(c2-c1) <= 0.07 and 
+            abs(d2-d2) <= 0.07)
+    print(((x2, y2, z2), (a2, b2, c2, d2)), position)
+    return closed
+
 def findConstraintTo(obj1,constraints):
     if obj1 in constraints.keys():
         return constraints[obj1][0]
@@ -223,7 +241,7 @@ def findConstraintWith(obj1,constraints):
             l.append(obj)
     return l
 
-def checkGoal(goal_file, constraints, states, id_lookup, light, dirtClean):
+def checkGoal(goal_file, constraints, states, id_lookup, light, dirtClean, sticky, fixed):
     """
     Check if goal conditions are true for the current state
     """
@@ -233,7 +251,7 @@ def checkGoal(goal_file, constraints, states, id_lookup, light, dirtClean):
         file = json.load(handle)
     goals = file['goals']
     success = True
-    print(constraints, goals)
+    print(constraints, goals, sticky, fixed)
 
     for goal in goals:
         obj = goal['object']
@@ -241,7 +259,7 @@ def checkGoal(goal_file, constraints, states, id_lookup, light, dirtClean):
             if light:
                 success = False
 
-        if 'paper' in obj and goal['target'] == "":
+        if 'paper' in obj and goal['state'] == "":
             tgt = findConstraintWith(obj, constraints)
             print('Paper target = ' + str(tgt))
             heavy = False
@@ -260,16 +278,18 @@ def checkGoal(goal_file, constraints, states, id_lookup, light, dirtClean):
             success = success and (tgt == goal['target'])
 
         if goal['state'] != "":
-            positionAndOrientation = states[obj][goal['state']]
-            q=p.getQuaternionFromEuler(positionAndOrientation[1])
-            ((x1, y1, z1), (a1, b1, c1, d1)) = p.getBasePositionAndOrientation(id_lookup[obj])
-            ((x2, y2, z2), (a2, b2, c2, d2)) = (positionAndOrientation[0], q)
-            done = (True and 
-                abs(x2-x1) <= 0.01 and 
-                abs(y2-y1) <= 0.01 and 
-                abs(a2-a1) <= 0.01 and 
-                abs(b2-b2) <= 0.01 and 
-                abs(c2-c1) <= 0.02)
+            finalstate = goal['state']
+            if finalstate == 'stuck' and not obj in sticky:
+                success = False
+            if finalstate == 'fixed':
+                finalstate == 'stuck'
+                success = (success and (
+                            ('nail' in findConstraintWith(obj, constraints) 
+                                and 'nail' in fixed) or
+                            ('screw' in findConstraintWith(obj, constraints) 
+                                and 'screw' in fixed)))
+            st = states[obj][finalstate]
+            done = isInState(obj, st, p.getBasePositionAndOrientation(id_lookup[obj]))
             success = success and done
 
         if goal['position'] != "":
@@ -323,23 +343,6 @@ def isClosed(enclosure, states, id_lookup):
             abs(b2-b2) <= 0.01 and 
             abs(c2-c1) <= 0.01 and 
             abs(d2-d2) <= 0.01)
-    return closed
-
-def isInState(enclosure, state, position):
-    """
-    Check if enclosure is closed or not
-    """
-    positionAndOrientation = state
-    q=p.getQuaternionFromEuler(positionAndOrientation[1])
-    ((x1, y1, z1), (a1, b1, c1, d1)) = position
-    ((x2, y2, z2), (a2, b2, c2, d2)) = (positionAndOrientation[0], q)
-    closed = (abs(x2-x1) <= 0.07 and 
-            abs(y2-y1) <= 0.07 and 
-            abs(z2-z1) <= 0.07 and 
-            abs(a2-a1) <= 0.07 and 
-            abs(b2-b2) <= 0.07 and 
-            abs(c2-c1) <= 0.07 and 
-            abs(d2-d2) <= 0.07)
     return closed
 
 def objDistance(obj1, obj2, id_lookup):

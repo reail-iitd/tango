@@ -1,6 +1,6 @@
 import json
 
-def convertActions(inp):
+def convertActions(inp, world):
     action_list = []
 
     for high_level_action in inp['actions']:
@@ -105,7 +105,7 @@ def convertActions(inp):
                 ["constrain", "ramp", "floor_warehouse"]
             ])
 
-        elif high_level_action['name'] == 'stick':
+        elif high_level_action['name'] == 'stick' and 'home' in world:
                 action_list.extend([
                 ["moveTo", args[0]],
                 ["changeWing", "up"],
@@ -113,6 +113,23 @@ def convertActions(inp):
                 ["move", [-2,3,0]],
                 ["constrain", args[0], args[1]],
                 ["changeState", args[0], "stuck"]
+            ])
+
+        elif high_level_action['name'] == 'stick' and 'factory' in world:
+                action_list.extend([
+                ["moveTo", args[1]],
+                ["checkGrabbed", args[0]],
+                ["constrain", args[0], args[1]],
+                ["changeState", args[0], "stuck"]
+            ])
+
+        elif high_level_action['name'] == 'drive':
+                action_list.extend([
+                ["moveTo", args[1]],
+                ["changeWing", "up"],
+                ["constrain", args[1], "ur5"],
+                ["moveTo", args[0]],
+                ["addTo", args[0], "fixed"]
             ])
 
         elif high_level_action['name'] == 'apply':

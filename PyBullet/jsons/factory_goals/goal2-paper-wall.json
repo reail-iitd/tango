@@ -5,8 +5,8 @@
 			"target": "",
 			"state": "stuck",
 			"position": "",
-			"tolerance": 0
+			"tolerance": 1.5
 		}
 	],
-	"text": "Stick the paper to the wall."
+	"text": "Stick paper to wall"
 }

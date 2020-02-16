@@ -128,6 +128,8 @@ perspective = "tp"
 wall_id = -1
 if 'home' in args.world:
   wall_id = id_lookup['walls']
+if 'factory' in args.world:
+  wall_id = id_lookup['wall_warehouse']
 
 # Initialize datapoint
 datapoint = Datapoint()
@@ -173,7 +175,7 @@ def executeHelper(actions, goal_file=None):
   global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount, cleaner, on, datapoint, dirtClean, stick, keyboard
   # List of low level actions
   datapoint.addSymbolicAction(actions['actions'])
-  actions = convertActions(actions)
+  actions = convertActions(actions, args.world)
   print(actions)
   action_index = 0
   done = False; done1 = False
@@ -211,7 +213,7 @@ def executeHelper(actions, goal_file=None):
           if action_index >= len(actions):
             yaw = 180*(math.atan2(y1,x1)%(2*math.pi))/math.pi - 90
             lastTime, imageCount = saveImage(lastTime, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id, on)
-            return checkGoal(goal_file, constraints, states, id_lookup, on, dirtClean)
+            return checkGoal(goal_file, constraints, states, id_lookup, on, dirtClean, sticky, fixed)
 
           if(actions[action_index][0] == "move"):
             if "husky" in fixed:
@@ -221,7 +223,12 @@ def executeHelper(actions, goal_file=None):
 
           elif(actions[action_index][0] == "moveZ"):
             if "husky" in fixed:
-                  raise Exception("Husky can not move as it is on a stool")    
+                  raise Exception("Husky can not move as it is on a stool") 
+            if (actions[action_index][1][0] == -1.5
+                and actions[action_index][1][1] == 1.5
+                and actions[action_index][1][2] == 1
+                and findConstraintTo('ramp', constraints) != 'floor_warehouse'):
+                  raise Exception("Can not move up withuot ramp")
             target = actions[action_index][1]
             x1, y1, o1, done = move(x1, y1, o1, [husky, robotID], target, keyboard, speed, up=True)
 
@@ -275,6 +282,11 @@ def executeHelper(actions, goal_file=None):
               done = True
             pose = actions[action_index][1]
             gotoWing(robotID, wings[pose])
+
+          elif(actions[action_index][0] == "checkGrabbed"):
+            if not grabbedObj(actions[action_index][1],constraints):
+              raise Exception("Object not grabbed by the robot")
+            done = True
 
           elif(actions[action_index][0] == "constrain"):
             if time.time()-startTime > 1:
@@ -336,10 +348,12 @@ def executeHelper(actions, goal_file=None):
             if checkUR5constrained(constraints) and not stick:
                 raise Exception("Gripper is not free, can not change state")
             state = actions[action_index][2]
-            if state == "stuck" and not actions[action_index][1] in sticky:
-                removeConstraint(constraints, actions[action_index][1], "")
-                del constraints[actions[action_index][1]]
-                raise Exception("Object not sticky")  
+            if "Stickable" not in properties[actions[action_index][1]]:
+                raise Exception("Object not stickable")
+            # if state == "stuck" and not "board" in actions[action_index][1] and not actions[action_index][1] in sticky:
+            #     removeConstraint(constraints, actions[action_index][1], "")
+            #     del constraints[actions[action_index][1]]
+            #     raise Exception("Object not sticky")  
             if actions[action_index][2] == 'on' or actions[action_index][2] == 'off':
               if actions[action_index][1] in on:
                 on.remove(actions[action_index][1])
@@ -376,6 +390,10 @@ def executeHelper(actions, goal_file=None):
             if actions[action_index][2] == "sticky":
               sticky.append(obj) 
             elif actions[action_index][2] == "fixed":
+              if obj == "screw" and not grabbedObj("screwdriver",constraints):
+                  raise Exception("Driving a screw needs screwdriver")
+              if obj == "nail" and not grabbedObj("hammer",constraints):
+                  raise Exception("Driving a nail needs hammer")
               fixed.append(obj) 
             done = True 
           
@@ -394,7 +412,7 @@ def executeHelper(actions, goal_file=None):
 
           if done:
             startTime = time.time()
-            if not actions[action_index][0] == "saveBulletState":
+            if not actions[action_index][0] == "saveBulletState" and not "check" in actions[action_index][0]:
               datapoint.addPoint([x1, y1, 0, o1], sticky, fixed, cleaner, actions[action_index], constraints, getAllPositionsAndOrientations(id_lookup), on, dirtClean, stick)
             action_index += 1
             if action_index < len(actions):

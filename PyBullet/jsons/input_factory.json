@@ -5,40 +5,28 @@
 			"args": []
 		},
 		{
-			"name": "pickNplaceAonB",
-			"args": ["crate_green", "lift"]
-		},
-		{
-			"name": "pickNplaceAonB",
-			"args": ["crate_red", "crate_green"]
-		},
-		{
-			"name": "changeState",
-			"args": ["lift", "up"]		
-		},
-		{
 			"name": "moveTo",
-			"args": ["crate_peach"]
+			"args": ["board"]
 		},
 		{
 			"name": "pick",
-			"args": ["crate_peach"]
+			"args": ["board"]
 		},
 		{
 			"name": "moveUp",
 			"args": []
 		},
 		{
-			"name": "place",
-			"args": ["crate_peach", "platform"]
+			"name": "stick",
+			"args": ["board", "wall_warehouse"]		
 		},
 		{
 			"name": "pickNplaceAonB",
-			"args": ["crate_red", "crate_peach"]		
+			"args": ["screw", "board"]		
 		},
 		{
-			"name": "pickNplaceAonB",
-			"args": ["crate_green", "crate_red"]		
+			"name": "drive",
+			"args": ["screw", "screwdriver"]		
 		}
 	]
 }

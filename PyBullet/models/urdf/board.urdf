@@ -5,20 +5,20 @@
     name="board.SLDPRT">
     <inertial>
       <origin
-        xyz="1.1864E-16 -0.0065482 4.00948366304985E-19"
+        xyz="0 0 0"
         rpy="0 0 0" />
       <mass
         value="7.8817" />
       <inertia
-        ixx="0.33236"
-        ixy="9.99919999999999E-18"
-        ixz="1.4679E-16"
-        iyy="1.0594"
-        iyz="-1.84220531702745E-17"
-        izz="0.72741" />
+        ixx="0"
+        ixy="0"
+        ixz="0"
+        iyy="0"
+        iyz="0"
+        izz="0" />
     </inertial>
     <visual>
-      <origin rpy="1.57 0.1 -1.57" xyz="0 0 0"/>
+      <origin rpy="1.57 0 -1.57" xyz="0 0 0"/>
       <geometry>
         <mesh filename="models/meshes/board/board.obj" scale="1.5 1.5 1.5"/>
       </geometry>
@@ -27,7 +27,7 @@
       </material>
     </visual>
     <collision>
-      <origin rpy="1.57 0.1 -1.57" xyz="0 0 0"/>
+      <origin rpy="1.57 0 -1.57" xyz="0 0 0"/>
       <geometry>
         <mesh filename="models/meshes/board/board.obj" scale="1.5 1.5 1.5"/>
       </geometry>
