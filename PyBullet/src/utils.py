@@ -222,10 +222,10 @@ def isInState(enclosure, state, position):
     closed = (abs(x2-x1) <= 0.07 and 
             abs(y2-y1) <= 0.07 and 
             abs(z2-z1) <= 0.07 and 
-            abs(a2-a1) <= 1 and 
-            abs(b2-b2) <= 1 and 
-            abs(c2-c1) <= 1 and 
-            abs(d2-d2) <= 1)
+            abs(a2-a1) <= 0.07 and 
+            abs(b2-b2) <= 0.07 and 
+            abs(c2-c1) <= 0.07 and 
+            abs(d2-d2) <= 0.07)
     print(((x2, y2, z2), (a2, b2, c2, d2)), position)
     return closed
 
