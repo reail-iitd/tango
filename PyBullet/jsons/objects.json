@@ -856,7 +856,18 @@
 			"constraint_pos": [[0, 0, 0.1]],
 			"ur5_dist": [1,0,0],
 			"properties": [],
-			"size": [0.3762686296118587, 0.3494801914488308, 0.33424923394164674]
+			"size": [0.0020000000000000018, 0.0020000000000000018, 0.002]
+		},
+		{
+            "name": "board",
+            "urdf": "models/urdf/board.urdf",
+            "constraints": ["Movable"],
+			"tolerance": 1,
+			"constraint_link": -1,
+			"constraint_pos": [[0, 0, 0.1]],
+			"ur5_dist": [1,0,0],
+			"properties": [],
+			"size": [0.0020000000000000018, 0.0020000000000000018, 0.002]
 		}
 	]
 }
