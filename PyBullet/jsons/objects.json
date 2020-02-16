@@ -133,6 +133,18 @@
 			"size": [9.010833280543151, 10.009164464802515, 1.109166561606162]
 		},
 		{
+			"name": "wall_warehouse",
+			"urdf": "models/urdf/warehouse/wall.urdf",
+			"constraints": [],
+			"tolerance": 0,
+			"constraint_link": -1,
+			"constraint_cpos": [],
+			"constraint_pos": [[0, 0, 1]],
+			"ur5_dist": [0,0,0],
+			"properties": [],
+			"size": [4.607173084838527, 5.105662370119152, 1.4056627154783432]
+		},
+		{
 			"name": "ramp",
 			"urdf": "models/urdf/warehouse/ramp.urdf",
 			"constraints": ["on_ground", "fixed_orientation"],

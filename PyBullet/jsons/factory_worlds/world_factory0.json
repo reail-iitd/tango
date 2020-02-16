@@ -7,6 +7,12 @@
 			"states": {}
 		},
 		{
+			"name": "wall_warehouse",
+			"position": [-4.5,5,1],
+			"orientation": [],
+			"states": {}
+		},
+		{
 			"name": "ramp",
 			"position": [2.5,4,0],
 			"orientation": [],
