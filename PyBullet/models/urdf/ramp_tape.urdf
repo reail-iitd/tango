@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<robot name="banana">
+<robot name="walls">
   <link name="base_link">
     <contact>
       <lateral_friction value="0.5"/>
@@ -13,19 +13,13 @@
       <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
     </inertial>
     <visual>
-      <origin rpy="1.57 0 -1.57" xyz="0 0 0"/>
+      <origin rpy="1.57 0 0.78539816339" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="models/meshes/long-shelf/long-shelf.stl"  scale="1 1 1"/>
+        <mesh filename="models/meshes/ramp_tape/ramp_tape.STL" scale="10 10 10"/>
       </geometry>
       <material name="tray_material">
-        <color rgba="0.3 0.3 0.3 1"/>
+        <color rgba="1 1 0 1"/>
       </material>
     </visual>
-    <collision concave="yes">
-      <origin rpy="1.57 0 -1.57" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="models/meshes/long-shelf/long-shelf.stl" scale="1 1 1"/>
-      </geometry>
-    </collision>
   </link>
 </robot>

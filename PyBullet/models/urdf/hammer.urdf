@@ -13,7 +13,7 @@
       <inertia ixx="0.2" ixy="0.2" ixz="0.2" iyy="0.2" iyz="0.2" izz="0.2"/>
     </inertial>
     <visual>
-      <origin rpy="0 1.57 0" xyz="0 0 0"/>
+      <origin rpy="0 1.57 0" xyz="0 0 0.1"/>
       <geometry>
         <mesh filename="models/meshes/hammer/hammer.obj" scale="0.1 0.1 0.1"/>
       </geometry>
@@ -22,7 +22,7 @@
       </material>
     </visual>
     <collision>
-      <origin rpy="0 1.57 0" xyz="0 0 0"/>
+      <origin rpy="0 1.57 0" xyz="0 0 0.1"/>
       <geometry>
         <mesh filename="models/meshes/hammer/hammer.obj" scale="0.1 0.1 0.1"/>
       </geometry>

@@ -6,7 +6,7 @@ tools = ['stool', 'tray', 'tray2', 'lift', 'ramp', 'big-tray', 'book', 'box', 'c
 		'stick', 'glue', 'tape', 'mop', 'sponge', 'vacuum', 'drill', 'screwdriver',\
 		'hammer', 'ladder', 'trolley', 'brick', 'blow_dryer']
 
-skip = ['ur5', 'cupboard_back', 'fridge_back']
+skip = ['ur5', 'cupboard_back', 'fridge_back', 'ramp_tape']
 
 objects = None
 with open('jsons/objects.json', 'r') as handle:
