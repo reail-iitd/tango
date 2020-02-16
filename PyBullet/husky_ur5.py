@@ -33,6 +33,8 @@ sticky = []
 fixed = []
 # Objects on
 on = ['light']
+# Cut objects
+cut = []
 # Has cleaner
 cleaner = False
 # Has stick
@@ -368,6 +370,9 @@ def executeHelper(actions, goal_file=None):
 
           elif(actions[action_index][0] == "addTo"):
             obj = actions[action_index][1]
+            if (actions[action_index][2] == "sticky" 
+              and not "Stickable" in properties[actions[action_index][1]]):
+              raise Exception("Object is not stickable, cannot apply glue/tape agent")
             if actions[action_index][2] == "sticky":
               sticky.append(obj) 
             elif actions[action_index][2] == "fixed":
