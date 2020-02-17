@@ -772,7 +772,7 @@
             "name": "blow_dryer",
             "urdf": "models/urdf/blow_dryer.urdf",
             "constraints": [],
-			"tolerance": 1,
+			"tolerance": 1.5,
 			"constraint_link": -1,
 			"constraint_cpos": [[0, 0, 0]],
 			"constraint_pos": [],
@@ -967,10 +967,34 @@
 			"tolerance": 1.5,
 			"constraint_link": -1,
 			"constraint_cpos": [[0, 0, 0]],
-			"constraint_pos": [[0, 0, 0], [0, 0.5, 0.5], [0, -0.5, 0.5], [0, 0.5, -0.5], [0, -0.5, -0.5]],
+			"constraint_pos": [[0, 0, 0.1], [0, 0, 0.3], [0, 0.0, 0.5]],
 			"ur5_dist": [1,0,0],
 			"properties": ["Container"],
-			"size": [0.04114780292861148, 1.7071888288617423, 1.302906840432176]
+			"size": [0.7117785949707027, 0.668990600585941, 1.0213038570078161]
+		},
+		{
+            "name": "water",
+            "urdf": "models/urdf/water.urdf",
+            "constraints": ["horizontal"],
+			"tolerance": 1.5,
+			"constraint_link": -1,
+			"constraint_cpos": [],
+			"constraint_pos": [],
+			"ur5_dist": [1,0,0],
+			"properties": ["Is_Dirty"],
+			"size": [0.8345343274474145, 0.5250720222890379, 0.02599804323646715]
+		},
+		{
+            "name": "oil",
+            "urdf": "models/urdf/oil.urdf",
+            "constraints": ["horizontal"],
+			"tolerance": 1.5,
+			"constraint_link": -1,
+			"constraint_cpos": [],
+			"constraint_pos": [],
+			"ur5_dist": [1,0,0],
+			"properties": ["Is_Dirty", "Oily"],
+			"size": [0.8345343274474145, 0.5250720222890379, 0.02599804323646715]
 		}
 	]
 }

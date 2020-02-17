@@ -5,32 +5,24 @@
 			"args": []
 		},
 		{
-			"name": "moveTo",
-			"args": ["wood_cutter"]
-		},
-		{
 			"name": "moveUp",
 			"args": []
 		},
 		{
 			"name": "moveTo",
-			"args": ["wood"]
+			"args": ["mop"]
 		},
 		{
 			"name": "pick",
-			"args": ["wood"]
+			"args": ["mop"]
 		},
 		{
-			"name": "fuel",
-			"args": ["generator", "wood"]
+			"name": "moveDown",
+			"args": []
 		},
 		{
-			"name": "drop",
-			"args": ["wood"]
-		},
-		{
-			"name": "changeState",
-			"args": ["generator", "on"]		
+			"name": "clean",
+			"args": ["oil"]		
 		}
 	]
 }

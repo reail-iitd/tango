@@ -173,12 +173,6 @@
 			"states": []	
 		},
 		{
-			"name": "can",
-			"position": [1,4.5,0.7],
-			"orientation": [0,0,0,0.1],
-			"states": []	
-		},
-		{
 			"name": "battery",
 			"position": [-4,3,1],
 			"orientation": [0,0,0,0.1],
@@ -257,8 +251,14 @@
 			"states": []	
 		},
 		{
-			"name": "bin",
-			"position": [-4.1,4.3,1],
+			"name": "oil",
+			"position": [-2,-3,0],
+			"orientation": [],
+			"states": {}
+		},
+		{
+			"name": "water",
+			"position": [-1,-3,0],
 			"orientation": [],
 			"states": {}
 		},
@@ -270,6 +270,12 @@
 			{
 				"stuck": [[-4.3, 3.1, 1.5], [0, 0, 0]]
 			}
+		},
+		{
+			"name": "mop",
+			"position": [-4.3,4.3,1],
+			"orientation": [],
+			"states": {}
 		},
 		{
 			"name": "paper",

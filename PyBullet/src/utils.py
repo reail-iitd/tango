@@ -27,9 +27,6 @@ img_arr = []; img_arr2 = []
 
 projectionMatrix = p.computeProjectionMatrixFOV(fov, aspect, nearPlane, farPlane)
 
-# Dirt clean
-dirtClean = False
-
 def initDisplay(display):
     plt.axis('off')
     plt.rcParams["figure.figsize"] = [8,6]
@@ -241,7 +238,7 @@ def findConstraintWith(obj1,constraints):
             l.append(obj)
     return l
 
-def checkGoal(goal_file, constraints, states, id_lookup, on, dirtClean, sticky, fixed):
+def checkGoal(goal_file, constraints, states, id_lookup, on, clean, sticky, fixed):
     """
     Check if goal conditions are true for the current state
     """
@@ -268,8 +265,8 @@ def checkGoal(goal_file, constraints, states, id_lookup, on, dirtClean, sticky, 
                     heavy = True
             success = success and heavy
 
-        if obj == 'dirt':
-            success = success and dirtClean
+        if obj == 'dirt' or obj == "water" or obj == "oil":
+            success = success and obj in clean
 
         if goal['target'] != "":
             tgt = findConstraintTo(obj, constraints)

@@ -1,0 +1,26 @@
+{
+	"goals":[
+		{
+			"object": "screwdriver",
+			"target": "worktable",
+			"state": "",
+			"position": "",
+			"tolerance": 1.5
+		},
+		{
+			"object": "drill",
+			"target": "worktable",
+			"state": "",
+			"position": "",
+			"tolerance": 1.5
+		},
+		{
+			"object": "welder",
+			"target": "worktable",
+			"state": "",
+			"position": "",
+			"tolerance": 1.5
+		}
+	],
+	"text": "Keep all crates on the platform"
+}

@@ -41,6 +41,8 @@ cut = []
 cleaner = False
 # Has stick
 stick = False
+# Objects cleaned
+clean = []
 
 # Connect to Bullet using GUI mode
 light = p.connect(p.GUI)
@@ -174,7 +176,7 @@ def firstImage():
 keyboard = False
 
 def executeHelper(actions, goal_file=None):
-  global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount, cleaner, on, datapoint, dirtClean, stick, keyboard
+  global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount, cleaner, on, datapoint, clean, stick, keyboard
   # List of low level actions
   datapoint.addSymbolicAction(actions['actions'])
   actions = convertActions(actions, args.world)
@@ -184,7 +186,7 @@ def executeHelper(actions, goal_file=None):
   waiting = False
   startTime = time.time()
   lastTime = startTime
-  datapoint.addPoint([x1, y1, 0, o1], sticky, fixed, cleaner, 'Start', constraints, getAllPositionsAndOrientations(id_lookup), on, dirtClean, stick)
+  datapoint.addPoint([x1, y1, 0, o1], sticky, fixed, cleaner, 'Start', constraints, getAllPositionsAndOrientations(id_lookup), on, clean, stick)
 
   # Start simulation
   if True:
@@ -215,7 +217,7 @@ def executeHelper(actions, goal_file=None):
           if action_index >= len(actions):
             yaw = 180*(math.atan2(y1,x1)%(2*math.pi))/math.pi - 90
             lastTime, imageCount = saveImage(lastTime, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id, on)
-            return checkGoal(goal_file, constraints, states, id_lookup, on, dirtClean, sticky, fixed)
+            return checkGoal(goal_file, constraints, states, id_lookup, on, clean, sticky, fixed)
 
           if(actions[action_index][0] == "move"):
             if "husky" in fixed:
@@ -317,7 +319,8 @@ def executeHelper(actions, goal_file=None):
                   raise Exception("Object too far away, move closer to it")
               if ("mop" in actions[action_index][1] 
                   or "sponge" in actions[action_index][1] 
-                  or "vacuum" in actions[action_index][1]):
+                  or "vacuum" in actions[action_index][1]
+                  or "blow_dryer" in actions[action_index][1]):
                   cleaner = True
               if ("stick" in actions[action_index][1]):
                   stick = True
@@ -385,10 +388,17 @@ def executeHelper(actions, goal_file=None):
             x1, y1, o1, done = move(x1, y1, o1, [husky, robotID], targetLoc, keyboard, speed, up=True)
 
           elif(actions[action_index][0] == "clean"):
+            if actions[action_index][1] in clean:
+                raise Exception("Object already clean")
             if not cleaner:
                 raise Exception("No cleaning agent with the robot")
+            if ("Oily" in properties[actions[action_index][1]]
+              and grabbedObj('blow_dryer', constraints)):
+                raise Exception("Can not clean oily substance with blow dryer")
+            if grabbedObj('blow_dryer', constraints) and not 'blow_dryer' in on:
+                raise Exception("Please switch on blow dryer")
             p.changeVisualShape(id_lookup[actions[action_index][1]], -1, rgbaColor = [1, 1, 1, 0])
-            dirtClean = True
+            clean.append(actions[action_index][1])
             done = True
 
           elif(actions[action_index][0] == "addTo"):
@@ -449,7 +459,7 @@ def executeHelper(actions, goal_file=None):
           if done:
             startTime = time.time()
             if not actions[action_index][0] == "saveBulletState" and not "check" in actions[action_index][0]:
-              datapoint.addPoint([x1, y1, 0, o1], sticky, fixed, cleaner, actions[action_index], constraints, getAllPositionsAndOrientations(id_lookup), on, dirtClean, stick)
+              datapoint.addPoint([x1, y1, 0, o1], sticky, fixed, cleaner, actions[action_index], constraints, getAllPositionsAndOrientations(id_lookup), on, clean, stick)
             action_index += 1
             if action_index < len(actions):
               print("Executing action: ", actions[action_index])
