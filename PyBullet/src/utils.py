@@ -347,7 +347,7 @@ def objDistance(obj1, obj2, id_lookup):
     (x2, y2, z2), _ = p.getBasePositionAndOrientation(id_lookup[obj2])
     return math.sqrt((x-x2)**2 + (y-y2)**2 + (z-z2)**2)
 
-def saveImage(lastTime, imageCount, display, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id, light):
+def saveImage(lastTime, imageCount, display, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id, on):
     current = current_milli_time()
     if (current - lastTime) < 100:
         return lastTime, imageCount
@@ -369,6 +369,9 @@ def saveImage(lastTime, imageCount, display, ax, o1, cam, dist, yaw, pitch, camT
         if wall_id > -1:
             p.changeVisualShape(wall_id, -1, rgbaColor = [1, 1, 1, 1])
     if display == "tp" or display == "both":
+        print(camTargetPos,
+                                                            dist, yaw, pitch,
+                                                            roll, upAxisIndex)
         viewMatrixTP = p.computeViewMatrixFromYawPitchRoll(camTargetPos,
                                                             dist, yaw, pitch,
                                                             roll, upAxisIndex)
@@ -386,7 +389,7 @@ def saveImage(lastTime, imageCount, display, ax, o1, cam, dist, yaw, pitch, camT
             rgb = img_arr[2]
         elif display == "tp":
             rgb = img_arr2[2]
-        if not light:
+        if not "light" in on:
             rgb = np.divide(rgb, 2)
         plt.imsave("logs/"+str(imageCount)+".jpg", arr=np.reshape(rgb, (pixelHeight, pixelWidth, 4)) * (1. / 255.))
     return current, imageCount+1

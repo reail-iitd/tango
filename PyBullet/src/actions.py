@@ -137,6 +137,12 @@ def convertActions(inp, world):
                 ["cut", args[0], args[1]]
             ])
 
+        elif high_level_action['name'] == 'print':
+                action_list.extend([
+                ["moveTo", "3d_printer"],
+                ["print", args[0]]
+            ])
+
         elif high_level_action['name'] == 'drive':
                 action_list.extend([
                 ["moveTo", args[1]],

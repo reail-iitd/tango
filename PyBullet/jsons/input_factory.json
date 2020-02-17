@@ -10,19 +10,15 @@
 		},
 		{
 			"name": "moveTo",
-			"args": ["mop"]
+			"args": ["3d_printer"]
 		},
 		{
-			"name": "pick",
-			"args": ["mop"]
+			"name": "print",
+			"args": ["can"]
 		},
 		{
 			"name": "moveDown",
 			"args": []
-		},
-		{
-			"name": "clean",
-			"args": ["oil"]		
 		}
 	]
 }

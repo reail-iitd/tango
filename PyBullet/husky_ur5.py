@@ -442,6 +442,32 @@ def executeHelper(actions, goal_file=None):
                 raise Exception("Object " + actions[action_index][2] + " is not a cutter")
             cut.append(obj) 
             done = True 
+
+          elif(actions[action_index][0] == "print"):
+            obj = actions[action_index][1]
+            if obj in id_lookup.keys():
+                raise Exception("Object already in world")
+            object_list = []
+            with open(object_file, 'r') as handle:
+                object_list = json.load(handle)['objects']
+            (oid, horizontal_cons, gnd,
+                fix, tol, prop, cpos, pos, link, d) = loadObject(obj, [-2.5, 4, 1.7], [], object_list)
+            if not "Printable" in prop:
+                raise Exception("Object can not be printed")
+            if horizontal_cons: horizontal.append(oid)
+            if gnd: ground.append(oid)
+            if fix: fixed_orientation[oid] = p.getBasePositionAndOrientation(oid)[1]
+            object_lookup[oid] = obj
+            properties[obj] = prop
+            cons_cpos_lookup[obj] = cpos
+            id_lookup[obj] = oid
+            states[obj] = []
+            cons_pos_lookup[obj] = pos
+            cons_link_lookup[obj] = link
+            ur5_dist[obj] = d
+            tolerances[obj] = tol
+            print("Printed new object", obj, oid)
+            done = True 
           
           elif(actions[action_index][0] == "removeFrom"):
             obj = actions[action_index][1]
