@@ -123,6 +123,20 @@ def convertActions(inp, world):
                 ["changeState", args[0], "stuck"]
             ])
 
+        elif high_level_action['name'] == 'fuel':
+                action_list.extend([
+                ["moveTo", args[0]],
+                ["checkGrabbed", args[1]],
+                ["fuel", args[0], args[1]]
+            ])
+
+        elif high_level_action['name'] == 'cut':
+                action_list.extend([
+                ["moveTo", args[0]],
+                ["checkGrabbed", args[1]],
+                ["cut", args[0], args[1]]
+            ])
+
         elif high_level_action['name'] == 'drive':
                 action_list.extend([
                 ["moveTo", args[1]],

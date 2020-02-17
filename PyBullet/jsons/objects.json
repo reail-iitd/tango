@@ -801,7 +801,7 @@
 			"constraint_cpos": [[0, 0, 0]],
 			"constraint_pos": [],
 			"ur5_dist": [0.5,0,0],
-			"properties": ["Movable"],
+			"properties": ["Movable", "Fuel"],
 			"size": [0.4126587016100549, 0.8099574774040237, 0.8134449114740092]
 		},
 		{
@@ -832,12 +832,12 @@
             "name": "generator",
             "urdf": "models/urdf/generator.urdf",
             "constraints": [],
-			"tolerance": 1,
+			"tolerance": 1.5,
 			"constraint_link": -1,
 			"constraint_cpos": [],
 			"constraint_pos": [],
 			"ur5_dist": [0.5,0,0],
-			"properties": ["Switchable"],
+			"properties": ["Switchable", "Can_Fuel"],
 			"size": [1.1130053108027544, 0.6680480939119935, 0.7301819686889646]
 		},
 		{
@@ -849,7 +849,7 @@
 			"constraint_cpos": [[0, 0, 0]],
 			"constraint_pos": [],
 			"ur5_dist": [0.5,0,0],
-			"properties": ["Movable"],
+			"properties": ["Movable", "Fuel"],
 			"size": [0.6078787707409101, 0.7019358782029874, 0.19615690837521282]
 		},
 		{
@@ -861,8 +861,8 @@
 			"constraint_cpos": [[0, 0, 0]],
 			"constraint_pos": [],
 			"ur5_dist": [0.5,0,0],
-			"properties": ["Movable"],
-			"size": [0.3900127964019777, 0.44355839638992656, 0.2103824624000845]
+			"properties": ["Movable", "Fuel"],
+			"size": [0.5430577645877692, 0.40778460826983487, 0.44543958416835316]
 		},
 		{
             "name": "water_dispenser",
@@ -897,7 +897,7 @@
 			"constraint_cpos": [[0, 0, 0]],
 			"constraint_pos": [],
 			"ur5_dist": [1,0,0],
-			"properties": ["Movable", "Switchable"],
+			"properties": ["Movable", "Switchable", "Cutter"],
 			"size": [0.8128181773084169, 0.2689644035213048, 0.2992464901265526]
 		},
 		{
@@ -921,7 +921,7 @@
 			"constraint_cpos": [[0, 0, 0]],
 			"constraint_pos": [],
 			"ur5_dist": [1,0,0],
-			"properties": ["Movable", "Cuttable"],
+			"properties": ["Movable", "Cuttable", "Fuel"],
 			"size": [0.3762686296118587, 0.3494801914488308, 0.33424923394164674]
 		},
 		{
@@ -958,6 +958,18 @@
 			"constraint_pos": [[0, 0, 0], [0, 0.5, 0.5], [0, -0.5, 0.5], [0, 0.5, -0.5], [0, -0.5, -0.5]],
 			"ur5_dist": [1,0,0],
 			"properties": ["Movable", "Stickable"],
+			"size": [0.04114780292861148, 1.7071888288617423, 1.302906840432176]
+		},
+		{
+            "name": "bin",
+            "urdf": "models/urdf/bin.urdf",
+            "constraints": ["horizontal"],
+			"tolerance": 1.5,
+			"constraint_link": -1,
+			"constraint_cpos": [[0, 0, 0]],
+			"constraint_pos": [[0, 0, 0], [0, 0.5, 0.5], [0, -0.5, 0.5], [0, 0.5, -0.5], [0, -0.5, -0.5]],
+			"ur5_dist": [1,0,0],
+			"properties": ["Container"],
 			"size": [0.04114780292861148, 1.7071888288617423, 1.302906840432176]
 		}
 	]

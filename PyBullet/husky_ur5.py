@@ -33,6 +33,8 @@ sticky = []
 fixed = []
 # Objects on
 on = ['light']
+# Has been fueled
+fueled = []
 # Cut objects
 cut = []
 # Has cleaner
@@ -348,13 +350,18 @@ def executeHelper(actions, goal_file=None):
             if checkUR5constrained(constraints) and not stick:
                 raise Exception("Gripper is not free, can not change state")
             state = actions[action_index][2]
-            if "Stickable" not in properties[actions[action_index][1]]:
+            if (actions[action_index][2] == 'stuck' 
+                and "Stickable" not in properties[actions[action_index][1]]):
                 raise Exception("Object not stickable")
             # if state == "stuck" and not "board" in actions[action_index][1] and not actions[action_index][1] in sticky:
             #     removeConstraint(constraints, actions[action_index][1], "")
             #     del constraints[actions[action_index][1]]
             #     raise Exception("Object not sticky")  
             if actions[action_index][2] == 'on' or actions[action_index][2] == 'off':
+              if (actions[action_index][2] == 'on'
+                and "Can_Fuel" in properties[actions[action_index][1]]
+                and not actions[action_index][1] in fueled):
+                raise Exception("First add fuel to object and then switch on")
               if actions[action_index][1] in on:
                 on.remove(actions[action_index][1])
               else:
@@ -392,11 +399,38 @@ def executeHelper(actions, goal_file=None):
             if actions[action_index][2] == "sticky":
               sticky.append(obj) 
             elif actions[action_index][2] == "fixed":
+              if obj in fixed:
+                  raise Exception("Object already driven")
               if obj == "screw" and not grabbedObj("screwdriver",constraints):
                   raise Exception("Driving a screw needs screwdriver")
               if obj == "nail" and not grabbedObj("hammer",constraints):
                   raise Exception("Driving a nail needs hammer")
               fixed.append(obj) 
+            done = True 
+
+          elif(actions[action_index][0] == "fuel"):
+            obj = actions[action_index][1]
+            if obj in fueled:
+                raise Exception("Object has already been fueled")
+            if not "Fuel" in properties[actions[action_index][2]]:
+                raise Exception("Objects is not a fuel")
+            if ("Cuttable" in properties[actions[action_index][2]]
+                and not actions[action_index][2] in cut):
+                raise Exception("Object needs to be cut before being used as a fuel")
+            if not "Can_Fuel" in properties[obj]:
+                raise Exception("Can not fuel object " + obj)
+            fueled.append(obj) 
+            done = True 
+
+          elif(actions[action_index][0] == "cut"):
+            obj = actions[action_index][1]
+            if obj in cut:
+                raise Exception("Object has already been cut")
+            if not "Cuttable" in properties[obj]:
+                raise Exception("Objects " + obj + " is not cuttable")
+            if not "Cutter" in properties[actions[action_index][2]]:
+                raise Exception("Object " + actions[action_index][2] + " is not a cutter")
+            cut.append(obj) 
             done = True 
           
           elif(actions[action_index][0] == "removeFrom"):

@@ -1,0 +1,12 @@
+{
+	"goals":[
+		{
+			"object": "generator",
+			"target": "",
+			"state": "",
+			"position": "",
+			"tolerance": 1.5
+		}
+	],
+	"text": "Switch on generator"
+}

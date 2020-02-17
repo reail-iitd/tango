@@ -240,7 +240,7 @@
 		},
 		{
 			"name": "wood",
-			"position": [-4, 4, 1],
+			"position": [-4, -1.2, 1],
 			"orientation": [],
 			"states": []	
 		},
@@ -255,6 +255,12 @@
 			"position": [-0.4, 0.6, 0],
 			"orientation": [],
 			"states": []	
+		},
+		{
+			"name": "bin",
+			"position": [-4.1,4.3,1],
+			"orientation": [],
+			"states": {}
 		},
 		{
 			"name": "board",

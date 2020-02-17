@@ -241,7 +241,7 @@ def findConstraintWith(obj1,constraints):
             l.append(obj)
     return l
 
-def checkGoal(goal_file, constraints, states, id_lookup, light, dirtClean, sticky, fixed):
+def checkGoal(goal_file, constraints, states, id_lookup, on, dirtClean, sticky, fixed):
     """
     Check if goal conditions are true for the current state
     """
@@ -255,8 +255,8 @@ def checkGoal(goal_file, constraints, states, id_lookup, light, dirtClean, stick
 
     for goal in goals:
         obj = goal['object']
-        if obj == 'light':
-            if light:
+        if obj == 'light' or obj == 'generator':
+            if not obj in on:
                 success = False
 
         if 'paper' in obj and goal['state'] == "":

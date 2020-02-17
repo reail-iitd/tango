@@ -5,24 +5,32 @@
 			"args": []
 		},
 		{
-			"name": "apply",
-			"args": ["glue", "paper"]
-		},
-		{
-			"name": "pick",
-			"args": ["paper"]
+			"name": "moveTo",
+			"args": ["wood_cutter"]
 		},
 		{
 			"name": "moveUp",
 			"args": []
 		},
 		{
-			"name": "stick",
-			"args": ["paper", "wall_warehouse"]		
+			"name": "moveTo",
+			"args": ["wood"]
 		},
 		{
-			"name": "moveTo",
-			"args": ["paper"]
+			"name": "pick",
+			"args": ["wood"]
+		},
+		{
+			"name": "fuel",
+			"args": ["generator", "wood"]
+		},
+		{
+			"name": "drop",
+			"args": ["wood"]
+		},
+		{
+			"name": "changeState",
+			"args": ["generator", "on"]		
 		}
 	]
 }
