@@ -1,0 +1,26 @@
+{
+	"goals":[
+		{
+			"object": "part1",
+			"target": "",
+			"state": "",
+			"position": "",
+			"tolerance": 1.5
+		},
+		{
+			"object": "part2",
+			"target": "",
+			"state": "",
+			"position": "",
+			"tolerance": 1.5
+		},
+		{
+			"object": "part3",
+			"target": "",
+			"state": "",
+			"position": "",
+			"tolerance": 1.5
+		}
+	],
+	"text": "Assemble and paint all parts"
+}

@@ -43,6 +43,12 @@ cleaner = False
 stick = False
 # Objects cleaned
 clean = []
+# Objects drilled
+drilled = []
+# Objects welded
+welded = []
+# Objects painted
+painted = []
 
 # Connect to Bullet using GUI mode
 light = p.connect(p.GUI)
@@ -176,7 +182,7 @@ def firstImage():
 keyboard = False
 
 def executeHelper(actions, goal_file=None):
-  global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount, cleaner, on, datapoint, clean, stick, keyboard
+  global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount, cleaner, on, datapoint, clean, stick, keyboard, drilled, welded, painted
   # List of low level actions
   datapoint.addSymbolicAction(actions['actions'])
   actions = convertActions(actions, args.world)
@@ -217,7 +223,7 @@ def executeHelper(actions, goal_file=None):
           if action_index >= len(actions):
             yaw = 180*(math.atan2(y1,x1)%(2*math.pi))/math.pi - 90
             lastTime, imageCount = saveImage(lastTime, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id, on)
-            return checkGoal(goal_file, constraints, states, id_lookup, on, clean, sticky, fixed)
+            return checkGoal(goal_file, constraints, states, id_lookup, on, clean, sticky, fixed, drilled, welded, painted)
 
           if(actions[action_index][0] == "move"):
             if "husky" in fixed:
@@ -403,19 +409,38 @@ def executeHelper(actions, goal_file=None):
 
           elif(actions[action_index][0] == "addTo"):
             obj = actions[action_index][1]
-            if (actions[action_index][2] == "sticky" 
-              and not "Stickable" in properties[actions[action_index][1]]):
-              raise Exception("Object is not stickable, cannot apply glue/tape agent")
             if actions[action_index][2] == "sticky":
+              if obj in sticky:
+                  raise Exception("Object already sticky")
+              if not "Stickable" in properties[actions[action_index][1]]:
+                raise Exception("Object is not stickable, cannot apply glue/tape agent")
               sticky.append(obj) 
             elif actions[action_index][2] == "fixed":
               if obj in fixed:
                   raise Exception("Object already driven")
               if obj == "screw" and not grabbedObj("screwdriver",constraints):
                   raise Exception("Driving a screw needs screwdriver")
-              if obj == "nail" and not grabbedObj("hammer",constraints):
-                  raise Exception("Driving a nail needs hammer")
+              if obj == "screw" and not findConstraintTo(obj, constraints) in drilled:
+                  raise Exception("Driving a screw needs object to be drilled first")
+              if obj == "nail" and not (grabbedObj("hammer",constraints) or grabbedObj("brick",constraints)):
+                  raise Exception("Driving a nail needs hammer or brick")
               fixed.append(obj) 
+            if actions[action_index][2] == "drilled":
+              if obj in drilled:
+                  raise Exception("Object already drilled")
+              drilled.append(obj) 
+            if actions[action_index][2] == "welded":
+              if obj in welded:
+                  raise Exception("Object already welded")
+              if findConstraintTo(obj, constraints) != "assembly_station":
+                  raise Exception("First place object on assembly station")
+              welded.append(obj)
+              horizontal_list.append(id_lookup[obj])
+            if actions[action_index][2] == "painted":
+              if obj in painted:
+                  raise Exception("Object already painted")
+              p.changeVisualShape(id_lookup[obj], -1, rgbaColor = [1, 0.4, 0.1, 1])
+              painted.append(obj)
             done = True 
 
           elif(actions[action_index][0] == "fuel"):

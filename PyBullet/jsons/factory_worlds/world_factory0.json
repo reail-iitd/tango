@@ -173,12 +173,6 @@
 			"states": []	
 		},
 		{
-			"name": "battery",
-			"position": [-4,3,1],
-			"orientation": [0,0,0,0.1],
-			"states": []	
-		},
-		{
 			"name": "spraypaint",
 			"position": [4,2,0],
 			"orientation": [0,0,0,0.1],
@@ -209,12 +203,6 @@
 			"states": []	
 		},
 		{
-			"name": "water_dispenser",
-			"position": [-4, 2, 1],
-			"orientation": [],
-			"states": []	
-		},
-		{
 			"name": "toolbox",
 			"position": [4, -1, 0],
 			"orientation": [],
@@ -234,7 +222,7 @@
 		},
 		{
 			"name": "wood",
-			"position": [-4, -1.2, 1],
+			"position": [-4, 2, 1],
 			"orientation": [],
 			"states": []	
 		},
@@ -295,6 +283,30 @@
 		{
 			"name": "tape",
 			"position": [1.1,4.1,0.7],
+			"orientation": [],
+			"states": {}
+		},
+		{
+			"name": "assembly_station",
+			"position": [-4.1, -1.5, 0],
+			"orientation": [],
+			"states": {}
+		},
+		{
+			"name": "part1",
+			"position": [-3.9, -1.5, 0.2],
+			"orientation": [],
+			"states": {}
+		},
+		{
+			"name": "part2",
+			"position": [-3.8, -1.5, 0.2],
+			"orientation": [],
+			"states": {}
+		},
+		{
+			"name": "part3",
+			"position": [-3.7, -1.5, 0.2],
 			"orientation": [],
 			"states": {}
 		}

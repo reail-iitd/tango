@@ -152,6 +152,30 @@ def convertActions(inp, world):
                 ["addTo", args[0], "fixed"]
             ])
 
+        elif high_level_action['name'] == 'weld':
+                action_list.extend([
+                ["moveTo", args[0]],
+                ["checkGrabbed", "welder"],
+                ["changeWing", "up"],
+                ["addTo", args[0], "welded"]
+            ])
+
+        elif high_level_action['name'] == 'paint':
+                action_list.extend([
+                ["moveTo", args[0]],
+                ["checkGrabbed", "spraypaint"],
+                ["changeWing", "up"],
+                ["addTo", args[0], "painted"]
+            ])
+
+        elif high_level_action['name'] == 'drill':
+                action_list.extend([
+                ["moveTo", args[0]],
+                ["checkGrabbed", "drill"],
+                ["changeWing", "up"],
+                ["addTo", args[0], "drilled"]
+            ])
+
         elif high_level_action['name'] == 'apply':
                 action_list.extend([
                 ["moveTo", args[0]],

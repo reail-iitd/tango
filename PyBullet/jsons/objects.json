@@ -555,7 +555,7 @@
 		{
             "name": "mop",
             "urdf": "models/urdf/mop.urdf",
-            "constraints": ["horizontal", "noise"],
+            "constraints": ["horizontal"],
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_cpos": [[0, 0, 0]],
@@ -676,7 +676,7 @@
             "name": "drill",
             "urdf": "models/urdf/drill.urdf",
             "constraints": [],
-			"tolerance": 1,
+			"tolerance": 1.5,
 			"constraint_link": -1,
 			"constraint_cpos": [[0, 0, 0]],
 			"constraint_pos": [],
@@ -957,7 +957,7 @@
 			"constraint_cpos": [[0, 0, 0]],
 			"constraint_pos": [[0, 0, 0], [0, 0.5, 0.5], [0, -0.5, 0.5], [0, 0.5, -0.5], [0, -0.5, -0.5]],
 			"ur5_dist": [1,0,0],
-			"properties": ["Movable", "Stickable"],
+			"properties": ["Movable", "Stickable", "Drillable"],
 			"size": [0.04114780292861148, 1.7071888288617423, 1.302906840432176]
 		},
 		{
@@ -994,6 +994,54 @@
 			"constraint_pos": [],
 			"ur5_dist": [1,0,0],
 			"properties": ["Is_Dirty", "Oily"],
+			"size": [0.8345343274474145, 0.5250720222890379, 0.02599804323646715]
+		},
+		{
+            "name": "assembly_station",
+            "urdf": "models/urdf/assembly/assembly_station.urdf",
+            "constraints": [],
+			"tolerance": 1.5,
+			"constraint_link": -1,
+			"constraint_cpos": [],
+			"constraint_pos": [[0, 0, 0.2], [0, 0, 0.4], [0, 0, 0.6]],
+			"ur5_dist": [1,0,0],
+			"properties": [],
+			"size": [0.8345343274474145, 0.5250720222890379, 0.02599804323646715]
+		},
+		{
+            "name": "part1",
+            "urdf": "models/urdf/assembly/part1.urdf",
+            "constraints": [],
+			"tolerance": 1.5,
+			"constraint_link": -1,
+			"constraint_cpos": [[0, 0, 0]],
+			"constraint_pos": [],
+			"ur5_dist": [1,0,0],
+			"properties": ["Movable", "Weldable", "Can_Paint"],
+			"size": [0.8345343274474145, 0.5250720222890379, 0.02599804323646715]
+		},
+		{
+            "name": "part2",
+            "urdf": "models/urdf/assembly/part2.urdf",
+            "constraints": [],
+			"tolerance": 1.5,
+			"constraint_link": -1,
+			"constraint_cpos": [[0, 0, 0]],
+			"constraint_pos": [],
+			"ur5_dist": [1,0,0],
+			"properties": ["Movable", "Weldable", "Can_Paint"],
+			"size": [0.8345343274474145, 0.5250720222890379, 0.02599804323646715]
+		},
+		{
+            "name": "part3",
+            "urdf": "models/urdf/assembly/part3.urdf",
+            "constraints": [],
+			"tolerance": 1.5,
+			"constraint_link": -1,
+			"constraint_cpos": [[0, 0, 0]],
+			"constraint_pos": [],
+			"ur5_dist": [1,0,0],
+			"properties": ["Movable", "Weldable", "Can_Paint"],
 			"size": [0.8345343274474145, 0.5250720222890379, 0.02599804323646715]
 		}
 	]
