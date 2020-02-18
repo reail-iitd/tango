@@ -736,7 +736,7 @@
             "name": "ladder",
             "urdf": "models/urdf/ladder.urdf",
             "constraints": ["horizontal"],
-			"tolerance": 1,
+			"tolerance": 2,
 			"constraint_link": -1,
 			"constraint_cpos": [[1, 0, 0]],
 			"constraint_pos": [[0, 0, 1.2]],

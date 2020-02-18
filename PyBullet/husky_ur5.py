@@ -384,7 +384,8 @@ def executeHelper(actions, goal_file=None):
           elif(actions[action_index][0] == "climbUp"):
             target = id_lookup[actions[action_index][1]]
             (x2, y2, z2), _ = p.getBasePositionAndOrientation(target)
-            targetLoc = [x2, y2, z2+0.4]
+            height = 1.2 if target == 'ladder' else 0.4
+            targetLoc = [x2, y2, z2 + height]
             x1, y1, o1, done = move(x1, y1, o1, [husky, robotID], targetLoc, keyboard, speed, tolerance=0.15, up=True)
           
           elif(actions[action_index][0] == "climbDown"):

@@ -1,60 +1,20 @@
 {
 	"actions":[
 		{
-			"name": "moveTo",
-			"args": ["spraypaint"]
-		},		
+			"name": "pushTo",
+			"args": ["ladder", "long_shelf"]
+		},
+		{
+			"name": "climbUp",
+			"args": ["ladder"]
+		},
 		{
 			"name": "pick",
-			"args": ["spraypaint"]
-		},	
-		{
-			"name": "paint",
-			"args": ["part1"]
+			"args": ["coal"]
 		},
 		{
-			"name": "paint",
-			"args": ["part2"]
-		},
-		{
-			"name": "paint",
-			"args": ["part3"]
-		},
-		{
-			"name": "drop",
-			"args": ["spraypaint"]
-		},
-		{
-			"name": "pickNplaceAonB",
-			"args": ["part1", "assembly_station"]
-		},
-		{
-			"name": "pickNplaceAonB",
-			"args": ["part2", "assembly_station"]
-		},
-		{
-			"name": "pickNplaceAonB",
-			"args": ["part3", "assembly_station"]
-		},
-		{
-			"name": "moveTo",
-			"args": ["welder"]
-		},		
-		{
-			"name": "pick",
-			"args": ["welder"]
-		},
-		{
-			"name": "weld",
-			"args": ["part1"]
-		},
-		{
-			"name": "weld",
-			"args": ["part2"]
-		},
-		{
-			"name": "weld",
-			"args": ["part3"]
+			"name": "climbDown",
+			"args": ["ladder"]
 		}
 	]
 }
