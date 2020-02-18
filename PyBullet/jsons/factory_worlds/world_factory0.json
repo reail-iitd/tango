@@ -73,7 +73,7 @@
 			"states": []	
 		},
 		{
-			"name": "long-shelf",
+			"name": "long_shelf",
 			"position": [-4,-3,0],
 			"orientation": [],
 			"states": []	
@@ -306,6 +306,12 @@
 		},
 		{
 			"name": "part3",
+			"position": [-3.7, -1.5, 0.2],
+			"orientation": [],
+			"states": {}
+		},
+		{
+			"name": "stool",
 			"position": [-3.7, -1.5, 0.2],
 			"orientation": [],
 			"states": {}

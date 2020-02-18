@@ -109,7 +109,7 @@ dist = 5
 pitch = -35.0
 
 # Start video recording
-p.setRealTimeSimulation(1) 
+p.setRealTimeSimulation(0) 
 ax = 0; fig = 0; cam = []
 if args.display:
       ax, cam = initDisplay("both")
@@ -323,6 +323,9 @@ def executeHelper(actions, goal_file=None):
               if (actions[action_index][2] == 'ur5' 
                   and(objDistance(actions[action_index][1], actions[action_index][2], id_lookup)) > 2):
                   raise Exception("Object too far away, move closer to it")
+              if (actions[action_index][2] == 'ur5' and abs(p.getBasePositionAndOrientation(id_lookup[actions[action_index][1]])[0][2] - 
+                  p.getBasePositionAndOrientation(husky)[0][2]) > 1):
+                    raise Exception("Object on different height, please use stool/ladder")
               if ("mop" in actions[action_index][1] 
                   or "sponge" in actions[action_index][1] 
                   or "vacuum" in actions[action_index][1]
@@ -384,7 +387,7 @@ def executeHelper(actions, goal_file=None):
           elif(actions[action_index][0] == "climbUp"):
             target = id_lookup[actions[action_index][1]]
             (x2, y2, z2), _ = p.getBasePositionAndOrientation(target)
-            height = 1.2 if target == 'ladder' else 0.4
+            height = 2 if actions[action_index][1] == 'ladder' else 0.4
             targetLoc = [x2, y2, z2 + height]
             x1, y1, o1, done = move(x1, y1, o1, [husky, robotID], targetLoc, keyboard, speed, tolerance=0.15, up=True)
           

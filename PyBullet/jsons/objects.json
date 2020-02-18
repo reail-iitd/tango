@@ -543,10 +543,10 @@
 		{
             "name": "stool",
             "urdf": "models/urdf/stool.urdf",
-            "constraints": ["horizontal"],
+            "constraints": ["horizontal", "on_ground"],
 			"tolerance": 1,
 			"constraint_link": -1,
-			"constraint_cpos": [[0, 0, -0.7]],
+			"constraint_cpos": [[0, 0, 0]],
 			"constraint_pos": [[0, 0, 0.7], [0.2, 0, 0.6], [-0.2, 0, 0.6]],
 			"ur5_dist": [0.7,0,0],
 			"properties": ["Movable", "Surface"],
@@ -613,10 +613,10 @@
 			"size": [0.2, 0.2, 0.4]
 		},
 		{
-            "name": "long-shelf",
-            "urdf": "models/urdf/long-shelf.urdf",
+            "name": "long_shelf",
+            "urdf": "models/urdf/long_shelf.urdf",
             "constraints": [],
-			"tolerance": 1,
+			"tolerance": 2.5,
 			"constraint_link": -1,
 			"constraint_cpos": [],
 			"constraint_pos": [[0.05, -1, 1],[0.1, 0, 1],[0.1, 1, 1]],
@@ -735,14 +735,14 @@
 		{
             "name": "ladder",
             "urdf": "models/urdf/ladder.urdf",
-            "constraints": ["horizontal"],
-			"tolerance": 2,
+            "constraints": ["horizontal", "on_ground"],
+			"tolerance": 1.5,
 			"constraint_link": -1,
 			"constraint_cpos": [[1, 0, 0]],
 			"constraint_pos": [[0, 0, 1.2]],
-			"ur5_dist": [1,0,0],
+			"ur5_dist": [0,0,1],
 			"properties": ["Movable", "Surface"],
-			"size": [1.033596482736728, 1.2079832740124998, 1.3426087814199004]
+			"size": [0.6913508256667034, 0.8577207093512484, 1.5235394416522627]
 		},
 		{
             "name": "trolley",
@@ -754,7 +754,7 @@
 			"constraint_pos": [[0, 0, 0.1], [0, 0, 0.5], [0, 0, 0.9]],
 			"ur5_dist": [1,0,0],
 			"properties": ["Surface", "Movable"],
-			"size": [1.2531188428088198, 0.8574631528494203, 1.2695374973159583]
+			"size": [0.6913508256667034, 0.8577207093512484, 0.5235394416522627]
 		},
 		{
             "name": "brick",
