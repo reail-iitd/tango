@@ -105,7 +105,7 @@
 			"constraint_cpos": [],
 			"constraint_pos": [[0, 0, 0]],
 			"ur5_dist": [0,0,0],
-			"properties": ["Can_Lift"],
+			"properties": [],
 			"size": [1.6520000655651095, 0.9027323709577209, 0.9227163802884321]
 		},
 		{
@@ -117,7 +117,7 @@
 			"constraint_cpos": [],
 			"constraint_pos": [[0, 0.0, 0.4], [0.0, 0.0, 0.7], [0.0, 0.0, 1.2]],
 			"ur5_dist": [0,0,0],
-			"properties": ["Surface"],
+			"properties": ["Surface", "Can_Lift"],
 			"size": [1.6, 0.9, 0.1]
 		},
 		{
@@ -705,7 +705,7 @@
 			"constraint_cpos": [[0.5, 0, 0]],
 			"constraint_pos": [],
 			"ur5_dist": [0.5,0,0],
-			"properties": ["Movable", "Printable"],
+			"properties": ["Movable", "Printable", "Drivable"],
 			"size": [0.12845508294277241, 0.11350281241934823, 0.09259762872238309]
 		},
 		{
@@ -717,7 +717,7 @@
 			"constraint_cpos": [[0.5, 0, 0]],
 			"constraint_pos": [],
 			"ur5_dist": [0.5,0,0],
-			"properties": ["Movable", "Printable"],
+			"properties": ["Movable", "Printable", "Drivable"],
 			"size": [0.1031365320604607, 0.16202366338785446, 0.22667897952269023]
 		},
 		{

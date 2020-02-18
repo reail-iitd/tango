@@ -58,7 +58,7 @@ def printDatapoint(filename):
 	f = open(filename + '.datapoint', 'rb')
 	datapoint = pickle.load(f)
 	# print(datapoint.toString(subSymbolic=False, metrics=False))
-	print (datapoint.toString(subSymbolic=False))
+	print (datapoint.toString(subSymbolic=True))
 	totalTime(datapoint)
 	f.close()
 
@@ -80,7 +80,7 @@ def printAllDatapoints():
 	for goal in GOAL_LIST:
 		print('Goal = ' + goal)
 		for world in range(10):
-			directory = './dataset4/home/' + goal.split('.')[0] + '/world_home' + str(world)
+			directory = './dataset/home/' + goal.split('.')[0] + '/world_home' + str(world)
 			try:
 				points = listdir(directory)
 			except Exception as e:
@@ -97,12 +97,10 @@ def changeAllDatapoints():
 				f = open(file, 'rb')
 				datapoint = pickle.load(f)
 				f.close()
-				if not hasattr(datapoint, 'on'):
+				if True:
 					f = open(file, 'wb')
-					datapoint.on = []
-					for i in range(len(datapoint.lighton)):
-						a = ['light'] if datapoint.lighton[i] else []
-						datapoint.on.append(a)
+					datapoint.world = 'world_home' + str(world)
+					datapoint.goal = goal.split('.')[0]
 					pickle.dump(datapoint, f)
 					f.flush()
 					f.close()
@@ -136,8 +134,9 @@ def combineDatasets(idx=1):
 
 
 # keepNewDatapoints(4)
-# printAllDatapoints()
+printAllDatapoints()
 # printNumDatapoints()
-changeAllDatapoints()
+# changeAllDatapoints()
 # combineDatasets(4)
+# printDatapoint("test")
 

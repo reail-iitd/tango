@@ -223,7 +223,6 @@ def isInState(enclosure, state, position):
             abs(b2-b2) <= 0.07 and 
             abs(c2-c1) <= 0.07 and 
             abs(d2-d2) <= 0.07)
-    print(((x2, y2, z2), (a2, b2, c2, d2)), position)
     return closed
 
 def findConstraintTo(obj1,constraints):
@@ -454,5 +453,44 @@ def grabbedObj(obj, constraints):
     Check if object is grabbed by robot
     """
     return (obj in constraints.keys() and constraints[obj][0] == 'ur5')
+
+def getGoalObjects(world_name, goal_name):
+    """
+    Return set of objects in goal
+    """
+    if "home" in world_name:
+        if goal_name == "goal1-milk-fridge":
+            return ["milk", "fridge"]
+        elif goal_name == "goal2-fruits-cupboard":
+            return ["cupboard", "apple", "banana", "orange"]
+        elif goal_name == "goal3-clean-dirt":
+            return ["dirt"]
+        elif goal_name == "goal4-stick-paper":
+            return ["paper", "wall"]
+        elif goal_name == "goal5-cubes-box":
+            return ["box", "cube_red", "cube_green", "cube_gray"]
+        elif goal_name == "goal6-bottles-dumpster":
+            return ["dumpster", "bottle_blue", "bottle_gray", "bottle_red"]
+        elif goal_name == "goal7-weight-paper":
+            return ["paper"]
+        elif goal_name == "goal8-light-off":
+            return ["light"]
+    if "factory" in world_name:
+        if goal_name == "goal1-crates-platform":
+            return ["crate_green", "crate_red", "crate_peach", "platform"]
+        elif goal_name == "goal2-paper-wall":
+            return ["paper", "wall_warehouse"]
+        elif goal_name == "goal3-board-wall":
+            return ["board", "wall_warehouse"]
+        elif goal_name == "goal4-generator-on":
+            return ["generator"]
+        elif goal_name == "goal5-assemble-parts":
+            return ["assembly_station", "part1", "part2", "part3"]
+        elif goal_name == "goal6-tools-workbench":
+            return ["workbench", "screwdriver", "welder", "drill"]
+        elif goal_name == "goal7-clean-water":
+            return ["water"]
+        elif goal_name == "goal8-clean-oil":
+            return ["oil"]
 
 

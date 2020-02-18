@@ -143,6 +143,12 @@ if 'factory' in args.world:
 
 # Initialize datapoint
 datapoint = Datapoint()
+try:
+    g = args.goal.split("\\")[-1].split(".")[0]; w = args.world.split('\\')[3].split(".")[0]
+except:
+    g = args.goal.split("/")[-1].split(".")[0]; w = args.world.split('/')[3].split(".")[0]
+datapoint.world = w
+datapoint.goal = g
  
 # Print manipulation region bounding boxes
 # for obj in id_lookup.keys():
@@ -170,7 +176,7 @@ def showObject(obj):
 def undo():
   global world_states, x1, y1, o1, imageCount, constraints, on, datapoint
   datapoint.addSymbolicAction("Undo")
-  datapoint.addPoint(None, None, None, None, 'Undo', None, None, None, None, None)
+  datapoint.addPoint(None, None, None, None, 'Undo', None, None, None, None, None, None, None, None, None, None)
   x1, y1, o1, constraints, world_states = restoreOnInput(world_states, x1, y1, o1, constraints)
   _, imageCount = saveImage(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id, on)
 
@@ -182,7 +188,7 @@ def firstImage():
 keyboard = False
 
 def executeHelper(actions, goal_file=None):
-  global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount, cleaner, on, datapoint, clean, stick, keyboard, drilled, welded, painted
+  global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount, cleaner, on, datapoint, clean, stick, keyboard, drilled, welded, painted, fueled, cut
   # List of low level actions
   datapoint.addSymbolicAction(actions['actions'])
   actions = convertActions(actions, args.world)
@@ -192,7 +198,7 @@ def executeHelper(actions, goal_file=None):
   waiting = False
   startTime = time.time()
   lastTime = startTime
-  datapoint.addPoint([x1, y1, 0, o1], sticky, fixed, cleaner, 'Start', constraints, getAllPositionsAndOrientations(id_lookup), on, clean, stick)
+  datapoint.addPoint([x1, y1, 0, o1], sticky, fixed, cleaner, 'Start', constraints, getAllPositionsAndOrientations(id_lookup), on, clean, stick, welded, drilled, painted, fueled, cut)
 
   # Start simulation
   if True:
@@ -514,7 +520,7 @@ def executeHelper(actions, goal_file=None):
           if done:
             startTime = time.time()
             if not actions[action_index][0] == "saveBulletState" and not "check" in actions[action_index][0]:
-              datapoint.addPoint([x1, y1, 0, o1], sticky, fixed, cleaner, actions[action_index], constraints, getAllPositionsAndOrientations(id_lookup), on, clean, stick)
+              datapoint.addPoint([x1, y1, 0, o1], sticky, fixed, cleaner, actions[action_index], constraints, getAllPositionsAndOrientations(id_lookup), on, clean, stick, welded, drilled, painted, fueled, cut)
             action_index += 1
             if action_index < len(actions):
               print("Executing action: ", actions[action_index])
@@ -530,7 +536,7 @@ def execute(actions, goal_file=None):
     return executeHelper(actions, goal_file)
   except Exception as e:
     datapoint.addSymbolicAction("Error = " + str(e))
-    datapoint.addPoint(None, None, None, None, 'Error = ' + str(e), None, None, None, None, None)
+    datapoint.addPoint(None, None, None, None, 'Error = ' + str(e), None, None, None, None, None, None, None, None, None, None)
     raise e
 
 def saveDatapoint(filename):

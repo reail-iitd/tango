@@ -18,6 +18,10 @@ with open('jsons/states.json', 'r') as handle:
 
 class Datapoint:
 	def __init__(self):
+		# World
+		self.world = ""
+		# Goal
+		self.goal = ""
 		# Robot position list
 		self.position = []
 		# Metrics of all objects
@@ -36,14 +40,24 @@ class Datapoint:
 		self.symbolicActions = []
 		# Objects on
 		self.on = []
-		# Dirt Cleaned
-		self.dirtClean = []
+		# Objects Cleaned
+		self.clean = []
 		# Stick with object
 		self.stick = []
+		# Objects fueled
+		self.fueled = []
+		# Objects welded
+		self.welded = []
+		# Objects painted
+		self.painted = []
+		# Objects drilled
+		self.drilled = []
+		# Objects cut
+		self.cut = []
 		# Time
 		self.time = 0
 
-	def addPoint(self, pos, sticky, fixed, cleaner, action, cons, metric, on, dirtClean, stick):
+	def addPoint(self, pos, sticky, fixed, cleaner, action, cons, metric, on, clean, stick, welded, drilled, painted, fueled, cut):
 		self.position.append(deepcopy(pos))
 		self.sticky.append(deepcopy(sticky))
 		self.fixed.append(deepcopy(fixed))
@@ -52,14 +66,20 @@ class Datapoint:
 		self.constraints.append(deepcopy(cons))
 		self.metrics.append(deepcopy(metric))
 		self.on.append(deepcopy(on))
-		self.dirtClean.append(deepcopy(dirtClean))
+		self.clean.append(deepcopy(clean))
 		self.stick.append(deepcopy(stick))
+		self.welded.append(deepcopy(welded))
+		self.drilled.append(deepcopy(drilled))
+		self.painted.append(deepcopy(painted))
+		self.fueled.append(deepcopy(fueled))
+		self.cut.append(deepcopy(cut))
 
 	def addSymbolicAction(self, HLaction):
 		self.symbolicActions.append(HLaction)
 
 	def toString(self, delimiter='\n', subSymbolic=False, metrics=False):
-		string = 'Symbolic actions:\n'
+		string = "World = " + self.world + "\nGoal = " + self.goal
+		string += '\nSymbolic actions:\n'
 		for action in self.symbolicActions:
 			if str(action[0]) == 'E' or str(action[0]) == 'U':
 				string = string + action + '\n'
@@ -74,9 +94,14 @@ class Datapoint:
 				'Sticky - ' + str(self.sticky[i]) + delimiter + \
 				'Fixed - ' + str(self.fixed[i]) + delimiter + \
 				'Cleaner? - ' + str(self.cleaner[i]) + delimiter + \
-				'Dirt-Cleaned? - ' + str(self.dirtClean[i]) + delimiter + \
+				'Objects-Cleaned? - ' + str(self.clean[i]) + delimiter + \
 				'Stick with robot? - ' + str(self.stick[i]) + delimiter + \
 				'Objects On - ' + str(self.on[i]) + delimiter + \
+				'Objects welded - ' + str(self.welded[i]) + delimiter + \
+				'Objects drilled - ' + str(self.drilled[i]) + delimiter + \
+				'Objects painted - ' + str(self.painted[i]) + delimiter + \
+				'Objects fueled - ' + str(self.fueled[i]) + delimiter + \
+				'Objects cut - ' + str(self.cut[i]) + delimiter + \
 				'Action - ' + str(self.actions[i]) + delimiter + \
 				'Constraints - ' + str(self.constraints[i]) + delimiter
 			if metrics:
@@ -98,7 +123,8 @@ class Datapoint:
 			string = string + ")\n"
 		return string
 
-	def getGraph(self, world='home', index=0):
+	def getGraph(self, index=0):
+		world = 'home' if 'home' in self.world else 'factory' if 'factory' in self.world else 'outdoor'
 		metrics = self.metrics[index]
 		sceneobjects = list(metrics.keys())
 		globalidlookup = globalIDLookup(sceneobjects, objects)
@@ -117,12 +143,26 @@ class Datapoint:
 				states.append('On') if obj in self.on[index] else states.append('Off')
 			if 'Can_Open' in node['properties']:
 				states.append('Close') if isInState(obj, allStates[world][obj]['close'], metrics[obj]) else states.append('Open')
+			if 'Can_Lift' in node['properties']:
+				states.append('Up') if isInState(obj, allStates[world][obj]['up'], metrics[obj]) else states.append('Down')
 			if 'Stickable' in node['properties']:
 				states.append('Sticky') if obj in self.sticky[index] else states.append('Non_Sticky')
 			if 'Is_Dirty' in node['properties']:
-				states.append('Dirty') if not self.dirtClean[index] else states.append('Clean')
+				states.append('Dirty') if not obj in self.clean[index] else states.append('Clean')
 			if 'Movable' in node['properties']:
 				states.append('Grabbed') if grabbedObj(obj, self.constraints[index]) else states.append('Free')
+			if 'Weldable' in node['properties']:
+				states.append('Welded') if obj in self.welded[index] else states.append('Not_Welded')
+			if 'Drillable' in node['properties']:
+				states.append('Drilled') if obj in self.drilled[index] else states.append('Not_Drilled')
+			if 'Drivable' in node['properties']:
+				states.append('Driven') if obj in self.fixed[index] else states.append('Not_Driven')
+			if 'Can_Fuel' in node['properties']:
+				states.append('Fueled') if obj in self.fueled[index] else states.append('Not_Fueled')
+			if 'Cuttable' in node['properties']:
+				states.append('Cut') if obj in self.cut[index] else states.append('Not_Cut')
+			if 'Can_Paint' in node['properties']:
+				states.append('Painted') if obj in self.cut[index] else states.append('Not_Painted')
 			node['states'] = states
 			node['position'] = metrics[obj]
 			node['size'] = objects[objID]['size']
@@ -146,7 +186,8 @@ class Datapoint:
 				edges.append({'from': obj1ID, 'to': obj2ID, 'distance': getDirectedDist(obj1, obj2, metrics)})
 		return {'graph_'+str(index): {'nodes': nodes, 'edges': edges}}
 
-	def getTools(self, goal_objects):
+	def getTools(self):
+		goal_objects = getGoalObjects(self.world, self.goal)
 		usedTools = []
 		for action in self.actions:
 			if 'Start' in action or 'Error' in action: continue
