@@ -28,10 +28,12 @@ def move(x1, y1, o1, object_list, target_coordinates, keyboard, speed, tolerance
     delz = 0
     (x1, y1, z1) = p.getBasePositionAndOrientation(object_list[0])[0]
     x2 = target_coordinates[0]; y2 = target_coordinates[1]; z2 = target_coordinates[2]
-    diff = math.atan2((y2-y1),(x2-x1))%(2*math.pi) - (o1%(2*math.pi))
-    if abs(diff) > 0.05:
-        o1 = o1 + 0.004*speed if diff > 0 else o1 - 0.004*speed
-    elif abs(distance.euclidean((x1, y1, z1), (x2, y2, z2))) > tolerance + 0.1: 
+    robot, dest = o1%(2*math.pi), math.atan2((y2-y1),(x2-x1))%(2*math.pi)
+    left = (robot - dest)%(2*math.pi); right = (dest - robot)%(2*math.pi)
+    dist = abs(distance.euclidean((x1, y1, z1), (x2, y2, z2)))
+    if dist > 0.3 and left > 0.05 and right > 0.05:
+        o1 = o1 + 0.004*speed if left > right else o1 - 0.004*speed 
+    elif dist > tolerance + 0.1: 
         x1 += math.cos(o1)*0.008*speed
         y1 += math.sin(o1)*0.008*speed
         delz = 0.008*speed*sign(z2-z1) if up else 0

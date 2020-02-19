@@ -9,7 +9,7 @@
     </contact>
     <inertial>
       <origin
-        xyz="0 0 -0.1"
+        xyz="0 0 0.2"
         rpy="0 0 0" />
       <mass
         value="1.99" />
@@ -22,7 +22,7 @@
         izz="1.0053" />
     </inertial>
     <visual>
-      <origin rpy="1.57 0 0" xyz="0 0 -0.1"/>
+      <origin rpy="1.57 0 3.14" xyz="0 0 0.2"/>
       <geometry>
         <mesh filename="models/meshes/trolley/trolley.stl" scale="10 10 10"/>
       </geometry>
@@ -31,7 +31,7 @@
       </material>
     </visual>
     <collision>
-      <origin rpy="1.57 0 0" xyz="0 0 -0.1"/>
+      <origin rpy="1.57 0 3.14" xyz="0 0 0.2"/>
       <geometry>
         <mesh filename="models/meshes/trolley/trolley.stl" scale="10 10 10"/>
       </geometry>

@@ -182,7 +182,8 @@ def undo():
 
 def firstImage():
   global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount, on
-  camTargetPos = [x1, y1, 0]
+  z = 1 if p.getBasePositionAndOrientation(id_lookup['husky'])[0][2] > 0.5 else 0
+  camTargetPos = [x1, y1, z]
   _, imageCount= saveImage(-250, imageCount, perspective, ax, o1, cam, dist, 50, pitch, camTargetPos, wall_id, on)
 
 keyboard = False
@@ -206,7 +207,8 @@ def executeHelper(actions, goal_file=None):
       counter = 0
       while(True):
           counter += 1
-          camTargetPos = [x1, y1, 0]
+          z = 1 if p.getBasePositionAndOrientation(id_lookup['husky'])[0][2] > 0.5 else 0
+          camTargetPos = [x1, y1, z]
           if (args.logging or args.display) and (counter % COUNTER_MOD == 0):
             # start_image = time.time()
             lastTime, imageCount = saveImage(lastTime, imageCount, "fp", ax, o1, cam, 3, yaw, pitch, camTargetPos, wall_id, on)
@@ -242,9 +244,11 @@ def executeHelper(actions, goal_file=None):
                   raise Exception("Husky can not move as it is on a stool") 
             if (actions[action_index][1][0] == -1.5
                 and actions[action_index][1][1] == 1.5
-                and actions[action_index][1][2] == 1
-                and findConstraintTo('ramp', constraints) != 'floor_warehouse'):
+                and actions[action_index][1][2] == 1):
+                if (findConstraintTo('ramp', constraints) != 'floor_warehouse'):
                   raise Exception("Can not move up withuot ramp")
+                if grabbedObj("stool", constraints):
+                  if id_lookup["stool"] in ground_list: ground_list.remove(id_lookup["stool"])
             target = actions[action_index][1]
             x1, y1, o1, done = move(x1, y1, o1, [husky, robotID], target, keyboard, speed, up=True)
 
@@ -254,6 +258,9 @@ def executeHelper(actions, goal_file=None):
             if abs(p.getBasePositionAndOrientation(id_lookup[actions[action_index][1]])[0][2] - 
               p.getBasePositionAndOrientation(husky)[0][2]) > 1 and not stick:
                   raise Exception("Object on different height, please use stool")
+            if (p.getBasePositionAndOrientation(id_lookup[actions[action_index][1]])[0][2] - 
+              p.getBasePositionAndOrientation(husky)[0][2] < -0.5):
+                  raise Exception("Object on lower level, please move down")
             target = actions[action_index][1]
             if target == 'door' or target == 'dumpster':
               if not done1:
@@ -301,7 +308,7 @@ def executeHelper(actions, goal_file=None):
 
           elif(actions[action_index][0] == "checkGrabbed"):
             if not grabbedObj(actions[action_index][1],constraints):
-              raise Exception("Object not grabbed by the robot")
+              raise Exception("Object '" + actions[action_index][1] + "' not grabbed by the robot")
             done = True
 
           elif(actions[action_index][0] == "constrain"):
@@ -400,7 +407,9 @@ def executeHelper(actions, goal_file=None):
           elif(actions[action_index][0] == "climbDown"):
             target = id_lookup[actions[action_index][1]]
             (x2, y2, z2), _ = p.getBasePositionAndOrientation(target)
-            targetLoc = [x2, y2+(2 if y2 < 0 else -2), 0]
+            on_height = p.getBasePositionAndOrientation(id_lookup["husky"])[0][2] > 0.5
+            opposite = -1 if on_height else 1
+            targetLoc = [x2, y2+(opposite * 1.7 if y2 < 0 else -1.7 * opposite), 1 if on_height else 0]
             x1, y1, o1, done = move(x1, y1, o1, [husky, robotID], targetLoc, keyboard, speed, up=True)
 
           elif(actions[action_index][0] == "clean"):

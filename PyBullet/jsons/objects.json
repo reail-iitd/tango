@@ -115,7 +115,7 @@
 			"tolerance": 1.5,
 			"constraint_link": -1,
 			"constraint_cpos": [],
-			"constraint_pos": [[0, 0.0, 0.4], [0.0, 0.0, 0.7], [0.0, 0.0, 1.2]],
+			"constraint_pos": [[0, 0.0, 0.2], [0.0, 0.0, 0.5], [0.0, 0.0, 1]],
 			"ur5_dist": [0,0,0],
 			"properties": ["Surface", "Can_Lift"],
 			"size": [1.6, 0.9, 0.1]
@@ -548,7 +548,7 @@
 			"constraint_link": -1,
 			"constraint_cpos": [[0, 0, 0]],
 			"constraint_pos": [[0, 0, 0.7], [0.2, 0, 0.6], [-0.2, 0, 0.6]],
-			"ur5_dist": [0.7,0,0],
+			"ur5_dist": [0.7,0,0.7],
 			"properties": ["Movable", "Surface"],
 			"size": [0.2662385553408462, 0.26600597815999016, 0.3962101611999587]
 		},
@@ -748,13 +748,13 @@
             "name": "trolley",
             "urdf": "models/urdf/trolley.urdf",
             "constraints": ["horizontal"],
-			"tolerance": 1,
+			"tolerance": 1.2,
 			"constraint_link": -1,
-			"constraint_cpos": [[0, 0, -0.1]],
-			"constraint_pos": [[0, 0, 0.1], [0, 0, 0.5], [0, 0, 0.9]],
-			"ur5_dist": [1,0,0],
+			"constraint_cpos": [[0, 0, 0]],
+			"constraint_pos": [[0, 0, 0], [0, 0, 0.5], [0, 0, 1]],
+			"ur5_dist": [0,0,0],
 			"properties": ["Surface", "Movable"],
-			"size": [0.6913508256667034, 0.8577207093512484, 0.5235394416522627]
+			"size": [1.0813508256667034, 0.8577207093512484, 0.5235394416522627]
 		},
 		{
             "name": "brick",

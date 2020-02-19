@@ -16,11 +16,11 @@
 	"Open/Close object":
 		{
 			"Object to open or close": ["paper2", "light", "floor", "bottle_blue", "bottle_gray", "cube_green", "dumpster", "big-tray", "walls", "ledge", "big-tray", "paper", "gray cube", "cube_green","cube_red", "tray", "tray2", "bottle_blue", "bottle_gray", "bottle_red", "box", "apple", "orange", "banana", "quadcopter", "chair", "ball", "stick", "dumpster", "milk", "shelf", "glue", "tape", "bigger_table", "book", "cube_gray", "mop", "smaller_table", "sponge", "vacuum", "couch", "stool", "dirt"],
-			"Open or Close it": ["off"]
+			"Open or Close it": ["off", "on", "up", "down"]
 		},
 	"Pick Object": 
 		{
-			"Object to pick": ["light", "floor", "dumpster", "ledge", "stool", "fridge", "cupboard", "chair", "walls", "door", "big-tray", "bigger_table", "smaller_table", "couch"]
+			"Object to pick": ["light", "floor", "dumpster", "ledge", "fridge", "cupboard", "chair", "walls", "door", "big-tray", "bigger_table", "smaller_table", "couch"]
 		},
 	"Drop Object on destination": 
 		{

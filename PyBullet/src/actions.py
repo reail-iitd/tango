@@ -66,7 +66,7 @@ def convertActions(inp, world):
         
         elif high_level_action['name'] == 'moveDown':
             action_list.extend([
-                ["move", [-0.6, 0.6, 1]],
+                ["move", [-0.601, 0.603, 1]],
                 ["moveZ", [0.5, -0.5, 0]]
             ])
 
@@ -145,10 +145,9 @@ def convertActions(inp, world):
 
         elif high_level_action['name'] == 'drive':
                 action_list.extend([
-                ["moveTo", args[1]],
-                ["changeWing", "up"],
-                ["constrain", args[1], "ur5"],
                 ["moveTo", args[0]],
+                ["checkGrabbed", args[1]],
+                ["changeWing", "up"],
                 ["addTo", args[0], "fixed"]
             ])
 
