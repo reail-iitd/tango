@@ -50,7 +50,7 @@
 		},
 		{
 			"name": "crate_green",
-			"position": [-1,-4.5,0],
+			"position": [-4,3,1],
 			"orientation": [],
 			"states": []	
 		},
@@ -62,7 +62,7 @@
 		},
 		{
 			"name": "crate_peach",
-			"position": [1.5,-4.5,0],
+			"position": [-2.5,-4.75,1.5],
 			"orientation": [],
 			"states": []	
 		},
@@ -104,7 +104,7 @@
 		},
 		{
 			"name": "lift",
-			"position": [-3.5,-0.45,0],
+			"position": [-3.5,-0.45,0.9],
 			"orientation": [],
 			"states": 
 				{
@@ -121,6 +121,18 @@
 		{
 			"name": "drill",
 			"position": [-2.5,4.5,1.7],
+			"orientation": [],
+			"states": []	
+		},
+		{
+			"name": "screwdriver",
+			"position": [-2.2,4.5,1.7],
+			"orientation": [],
+			"states": []	
+		},
+		{
+			"name": "nail",
+			"position": [-2.1,4.5,1.7],
 			"orientation": [],
 			"states": []	
 		},
@@ -192,7 +204,7 @@
 		},
 		{
 			"name": "wood_cutter",
-			"position": [4, 1, 0],
+			"position": [-2.5, -4.75, 1],
 			"orientation": [],
 			"states": []	
 		},
@@ -222,7 +234,7 @@
 		},
 		{
 			"name": "oil",
-			"position": [-3.3, 1.5, 1],
+			"position": [-2,-3,0],
 			"orientation": [],
 			"states": {}
 		},
@@ -234,7 +246,7 @@
 		},
 		{
 			"name": "board",
-			"position": [0.2, 4.2, 0],
+			"position": [-1.9, -4.65, 0],
 			"orientation": [],
 			"states": 
 			{
@@ -249,7 +261,7 @@
 		},
 		{
 			"name": "paper",
-			"position": [1.1,4.5,0.7],
+			"position": [-2.5, 4.5, 2],
 			"orientation": [],
 			"states": 
 			{
@@ -258,7 +270,7 @@
 		},
 		{
 			"name": "glue",
-			"position": [1.1,4.3,0.7],
+			"position": [0.25,-4.5,0],
 			"orientation": [],
 			"states": []	
 		},
@@ -276,25 +288,25 @@
 		},
 		{
 			"name": "part1",
-			"position": [-3.7, -1.5, 0.2],
+			"position": [-2.5, -4.75, 1],
 			"orientation": [],
 			"states": {}
 		},
 		{
 			"name": "part2",
-			"position": [-3.55, -1.5, 0.2],
+			"position": [1.5, 4.3, 1],
 			"orientation": [],
 			"states": {}
 		},
 		{
 			"name": "part3",
-			"position": [-3.3, -1.5, 0.2],
+			"position": [-3.3, 1.5, 1.2],
 			"orientation": [],
 			"states": {}
 		},
 		{
 			"name": "stool",
-			"position": [3.7, 2.5, 0.2],
+			"position": [-3.7, -1.5, 0.2],
 			"orientation": [],
 			"states": {}
 		}

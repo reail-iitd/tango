@@ -9,7 +9,7 @@
     </contact>
     <inertial>
       <origin
-        xyz="1.2996E-17 1.20353843572399E-16 0.16926"
+        xyz="0 0 -0.1"
         rpy="0 0 0" />
       <mass
         value="1.99" />

@@ -62,7 +62,7 @@
 		},
 		{
 			"name": "crate_peach",
-			"position": [1.5,-4.5,0],
+			"position": [-4,-3,2.4],
 			"orientation": [],
 			"states": []	
 		},
@@ -120,7 +120,19 @@
 		},
 		{
 			"name": "drill",
-			"position": [-2.5,4.5,1.7],
+			"position": [-2.5,-4.75, 1.6],
+			"orientation": [],
+			"states": []	
+		},
+		{
+			"name": "screwdriver",
+			"position": [-2.2,4.5,1.7],
+			"orientation": [],
+			"states": []	
+		},
+		{
+			"name": "screw",
+			"position": [-2.4,-4.75, 1.6],
 			"orientation": [],
 			"states": []	
 		},
@@ -150,7 +162,7 @@
 		},
 		{
 			"name": "blow_dryer",
-			"position": [1.2,4.5,0.7],
+			"position": [-2.5, -4.75, 1.2],
 			"orientation": [0,0,0,0.1],
 			"states": []	
 		},
@@ -180,7 +192,7 @@
 		},
 		{
 			"name": "coal",
-			"position": [-3.7, -3, 2],
+			"position": [-2.5, -4.7, 0.3],
 			"orientation": [],
 			"states": []	
 		},
@@ -222,19 +234,19 @@
 		},
 		{
 			"name": "oil",
-			"position": [-3.3, 1.5, 1],
+			"position": [-2,-3,0],
 			"orientation": [],
 			"states": {}
 		},
 		{
 			"name": "water",
-			"position": [-1,-3,0],
+			"position": [1.5,3,0],
 			"orientation": [],
 			"states": {}
 		},
 		{
 			"name": "board",
-			"position": [0.2, 4.2, 0],
+			"position": [-1.75, 4.25, 1],
 			"orientation": [],
 			"states": 
 			{
@@ -243,7 +255,7 @@
 		},
 		{
 			"name": "mop",
-			"position": [-4.3,4.3,1],
+			"position": [0.5,4.3,0],
 			"orientation": [],
 			"states": {}
 		},
@@ -264,37 +276,37 @@
 		},
 		{
 			"name": "tape",
-			"position": [1.1,4.1,0.7],
+			"position": [-2.5, -4.8, 1],
 			"orientation": [],
 			"states": {}
 		},
 		{
 			"name": "assembly_station",
-			"position": [-4.1, -1.5, 0.2],
+			"position": [-4.1, 2.4, 1.2],
 			"orientation": [],
 			"states": {}
 		},
 		{
 			"name": "part1",
-			"position": [-3.7, -1.5, 0.2],
+			"position": [-3.9, -1.5, 0.2],
 			"orientation": [],
 			"states": {}
 		},
 		{
 			"name": "part2",
-			"position": [-3.55, -1.5, 0.2],
+			"position": [-3.8, -1.5, 0.2],
 			"orientation": [],
 			"states": {}
 		},
 		{
 			"name": "part3",
-			"position": [-3.3, -1.5, 0.2],
+			"position": [1.5, 4.3, 1],
 			"orientation": [],
 			"states": {}
 		},
 		{
 			"name": "stool",
-			"position": [3.7, 2.5, 0.2],
+			"position": [-3.7, -1.5, 0.2],
 			"orientation": [],
 			"states": {}
 		}

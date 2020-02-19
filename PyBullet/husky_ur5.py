@@ -330,7 +330,7 @@ def executeHelper(actions, goal_file=None):
                   and(objDistance(actions[action_index][1], actions[action_index][2], id_lookup)) > 2):
                   raise Exception("Object too far away, move closer to it")
               if (actions[action_index][2] == 'ur5' and abs(p.getBasePositionAndOrientation(id_lookup[actions[action_index][1]])[0][2] - 
-                  p.getBasePositionAndOrientation(husky)[0][2]) > 1):
+                  p.getBasePositionAndOrientation(husky)[0][2]) > 1.2):
                     raise Exception("Object on different height, please use stool/ladder")
               if ("mop" in actions[action_index][1] 
                   or "sponge" in actions[action_index][1] 

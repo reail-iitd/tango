@@ -56,13 +56,13 @@
 		},
 		{
 			"name": "crate_red",
-			"position": [0.25,-4.5,0],
+			"position": [-4,-3,2.4],
 			"orientation": [],
 			"states": []	
 		},
 		{
 			"name": "crate_peach",
-			"position": [1.5,-4.5,0],
+			"position": [-2.5,-4.75,1.5],
 			"orientation": [],
 			"states": []	
 		},
@@ -120,7 +120,13 @@
 		},
 		{
 			"name": "drill",
-			"position": [-2.5,4.5,1.7],
+			"position": [1.5,4.5,0.7],
+			"orientation": [],
+			"states": []	
+		},
+		{
+			"name": "screwdriver",
+			"position": [-2.2,4.5,1.7],
 			"orientation": [],
 			"states": []	
 		},
@@ -138,7 +144,7 @@
 		},
 		{
 			"name": "trolley",
-			"position": [4,-2.5,0],
+			"position": [-2.8,3,1],
 			"orientation": [0,0,0,0.1],
 			"states": []	
 		},
@@ -150,7 +156,7 @@
 		},
 		{
 			"name": "blow_dryer",
-			"position": [1.2,4.5,0.7],
+			"position": [-2.5, -4.75, 1.2],
 			"orientation": [0,0,0,0.1],
 			"states": []	
 		},
@@ -180,7 +186,7 @@
 		},
 		{
 			"name": "coal",
-			"position": [-3.7, -3, 2],
+			"position": [-2.5, -4.7, 0.3],
 			"orientation": [],
 			"states": []	
 		},
@@ -192,7 +198,7 @@
 		},
 		{
 			"name": "wood_cutter",
-			"position": [4, 1, 0],
+			"position": [-4, 2.2, 1],
 			"orientation": [],
 			"states": []	
 		},
@@ -222,7 +228,7 @@
 		},
 		{
 			"name": "oil",
-			"position": [-3.3, 1.5, 1],
+			"position": [-2,-3,0],
 			"orientation": [],
 			"states": {}
 		},
@@ -234,7 +240,7 @@
 		},
 		{
 			"name": "board",
-			"position": [0.2, 4.2, 0],
+			"position": [-1.75, 4.25, 1],
 			"orientation": [],
 			"states": 
 			{
@@ -249,7 +255,7 @@
 		},
 		{
 			"name": "paper",
-			"position": [1.1,4.5,0.7],
+			"position": [-2.5, -4.8, 1],
 			"orientation": [],
 			"states": 
 			{
@@ -270,31 +276,31 @@
 		},
 		{
 			"name": "assembly_station",
-			"position": [-4.1, -1.5, 0.2],
+			"position": [-4.1, 2.4, 1.2],
 			"orientation": [],
 			"states": {}
 		},
 		{
 			"name": "part1",
-			"position": [-3.7, -1.5, 0.2],
+			"position": [-3.9, -1.5, 0.2],
 			"orientation": [],
 			"states": {}
 		},
 		{
 			"name": "part2",
-			"position": [-3.55, -1.5, 0.2],
+			"position": [-3.3, 1.5, 1.2],
 			"orientation": [],
 			"states": {}
 		},
 		{
 			"name": "part3",
-			"position": [-3.3, -1.5, 0.2],
+			"position": [-3.7, -1.5, 0.2],
 			"orientation": [],
 			"states": {}
 		},
 		{
 			"name": "stool",
-			"position": [3.7, 2.5, 0.2],
+			"position": [-3.7, -1.5, 0.2],
 			"orientation": [],
 			"states": {}
 		}
