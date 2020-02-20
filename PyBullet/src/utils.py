@@ -311,21 +311,17 @@ def checkInside(constraints, states, id_lookup, obj, enclosures):
     """
     Check if object is inside cupboard or fridge
     """
-    if obj in constraints.keys():
-        for enclosure in enclosures:
-            if constraints[obj][0] == enclosure:
-                positionAndOrientation = states[enclosure]["close"]
-                q=p.getQuaternionFromEuler(positionAndOrientation[1])
-                ((x1, y1, z1), (a1, b1, c1, d1)) = p.getBasePositionAndOrientation(id_lookup[enclosure])
-                ((x2, y2, z2), (a2, b2, c2, d2)) = (positionAndOrientation[0], q)
-                closed = (abs(x2-x1) <= 0.01 and 
-                        abs(y2-y1) <= 0.01 and 
-                        abs(a2-a1) <= 0.01 and 
-                        abs(b2-b2) <= 0.01 and 
-                        abs(c2-c1) <= 0.01 and 
-                        abs(d2-d2) <= 0.01)
-                if closed:
-                    return True
+    for enclosure in enclosures:
+        if isClosed(enclosure, states, id_lookup):
+            (x1, y1, z1) = p.getBasePositionAndOrientation(id_lookup[obj])[0]
+            (x2, y2, z2) = p.getBasePositionAndOrientation(id_lookup[enclosure])[0]
+            (l, w, h) = 1.0027969752543706, 0.5047863562602029, 1.5023976731489332
+            inside = abs(x2-x1) < l and abs(y2-y1) < 1.5*w and abs(z1-z2) < h
+            print(l, w, h, abs(x2-x1), abs(y2-y1), abs(z1-z2))
+            tgt = findConstraintTo(obj, constraints)
+            while not (tgt == "" or tgt == enclosure):
+                tgt = findConstraintTo(tgt, constraints)        
+            if inside or (tgt == enclosure): return True
     return False
 
 def isClosed(enclosure, states, id_lookup):
