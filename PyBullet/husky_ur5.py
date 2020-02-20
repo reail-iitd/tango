@@ -338,8 +338,8 @@ def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None):
                   raise Exception("Gripper is not free, can not hold object")
               if actions[action_index][2] == actions[action_index][1]:
                   raise Exception("Cant place object on itself")
-              if (checkInside(constraints, states, id_lookup, actions[action_index][1], enclosures) 
-                  and actions[action_index][2] == 'ur5'):
+              if (actions[action_index][2] == 'ur5'
+                  and checkInside(constraints, states, id_lookup, actions[action_index][1], enclosures)):
                   raise Exception("Object is inside an enclosure, can not grasp it.")
               if (actions[action_index][2] in enclosures
                   and isClosed(actions[action_index][2], states, id_lookup)):
