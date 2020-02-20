@@ -55,5 +55,9 @@
 		{
 			"Object to switch state": ["paper2", "stool", "floor", "blue_bottle", "bottle_gray", "dirt", "cube_green", "dumpster", "big-tray", "walls", "ledge", "big-tray", "paper", "gray cube", "cube_green","cube_red", "tray", "tray2", "bottle_blue", "bottle_gray", "bottle_red", "box", "apple", "orange", "banana", "quadcopter", "chair", "ball", "stick", "dumpster", "milk", "shelf", "glue", "tape", "cupboard", "fridge", "bigger_table", "book", "door", "cube_gray", "mop", "smaller_table", "sponge", "vacuum", "couch"],
 			"On or off": ["open", "close"]
+		},
+		"Place Ramp":
+		{
+			
 		}
 }
