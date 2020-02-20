@@ -27,9 +27,6 @@ img_arr = []; img_arr2 = []
 
 projectionMatrix = p.computeProjectionMatrixFOV(fov, aspect, nearPlane, farPlane)
 
-# Dirt clean
-dirtClean = False
-
 def initDisplay(display):
     plt.axis('off')
     plt.rcParams["figure.figsize"] = [8,6]
@@ -211,6 +208,23 @@ def restoreOnInput(world_states, x1, y1, o1, constraints):
         return x, y, o, constraints, world_states
     return x1, y1, o1, constraints, world_states
 
+def isInState(enclosure, state, position):
+    """
+    Check if enclosure is closed or not
+    """
+    positionAndOrientation = state
+    q=p.getQuaternionFromEuler(positionAndOrientation[1])
+    ((x1, y1, z1), (a1, b1, c1, d1)) = position
+    ((x2, y2, z2), (a2, b2, c2, d2)) = (positionAndOrientation[0], q)
+    closed = (abs(x2-x1) <= 0.07 and 
+            abs(y2-y1) <= 0.07 and 
+            abs(z2-z1) <= 0.07 and 
+            abs(a2-a1) <= 0.07 and 
+            abs(b2-b2) <= 0.07 and 
+            abs(c2-c1) <= 0.07 and 
+            abs(d2-d2) <= 0.07)
+    return closed
+
 def findConstraintTo(obj1,constraints):
     if obj1 in constraints.keys():
         return constraints[obj1][0]
@@ -223,7 +237,7 @@ def findConstraintWith(obj1,constraints):
             l.append(obj)
     return l
 
-def checkGoal(goal_file, constraints, states, id_lookup, light, dirtClean):
+def checkGoal(goal_file, constraints, states, id_lookup, on, clean, sticky, fixed, drilled, welded, painted):
     """
     Check if goal conditions are true for the current state
     """
@@ -233,15 +247,18 @@ def checkGoal(goal_file, constraints, states, id_lookup, light, dirtClean):
         file = json.load(handle)
     goals = file['goals']
     success = True
-    print(constraints, goals)
+    print(constraints, goals, sticky, fixed)
 
     for goal in goals:
         obj = goal['object']
-        if obj == 'light':
-            if light:
+        if obj == 'light' or obj == 'generator':
+            if not obj in on:
                 success = False
 
-        if 'paper' in obj and goal['target'] == "":
+        if 'part' in obj:
+            success = success and obj in welded and obj in painted
+
+        if 'paper' in obj and goal['state'] == "":
             tgt = findConstraintWith(obj, constraints)
             print('Paper target = ' + str(tgt))
             heavy = False
@@ -250,8 +267,8 @@ def checkGoal(goal_file, constraints, states, id_lookup, light, dirtClean):
                     heavy = True
             success = success and heavy
 
-        if obj == 'dirt':
-            success = success and dirtClean
+        if obj == 'dirt' or obj == "water" or obj == "oil":
+            success = success and obj in clean
 
         if goal['target'] != "":
             tgt = findConstraintTo(obj, constraints)
@@ -260,16 +277,18 @@ def checkGoal(goal_file, constraints, states, id_lookup, light, dirtClean):
             success = success and (tgt == goal['target'])
 
         if goal['state'] != "":
-            positionAndOrientation = states[obj][goal['state']]
-            q=p.getQuaternionFromEuler(positionAndOrientation[1])
-            ((x1, y1, z1), (a1, b1, c1, d1)) = p.getBasePositionAndOrientation(id_lookup[obj])
-            ((x2, y2, z2), (a2, b2, c2, d2)) = (positionAndOrientation[0], q)
-            done = (True and 
-                abs(x2-x1) <= 0.01 and 
-                abs(y2-y1) <= 0.01 and 
-                abs(a2-a1) <= 0.01 and 
-                abs(b2-b2) <= 0.01 and 
-                abs(c2-c1) <= 0.02)
+            finalstate = goal['state']
+            if finalstate == 'stuck' and not obj in sticky:
+                success = False
+            if finalstate == 'fixed':
+                finalstate = 'stuck'
+                success = (success and (
+                            ('nail' in findConstraintWith(obj, constraints) 
+                                and 'nail' in fixed) or
+                            ('screw' in findConstraintWith(obj, constraints) 
+                                and 'screw' in fixed)))
+            st = states[obj][finalstate]
+            done = isInState(obj, st, p.getBasePositionAndOrientation(id_lookup[obj]))
             success = success and done
 
         if goal['position'] != "":
@@ -325,28 +344,12 @@ def isClosed(enclosure, states, id_lookup):
             abs(d2-d2) <= 0.01)
     return closed
 
-def isInState(enclosure, state, position):
-    """
-    Check if enclosure is closed or not
-    """
-    positionAndOrientation = state
-    q=p.getQuaternionFromEuler(positionAndOrientation[1])
-    ((x1, y1, z1), (a1, b1, c1, d1)) = position
-    ((x2, y2, z2), (a2, b2, c2, d2)) = (positionAndOrientation[0], q)
-    closed = (abs(x2-x1) <= 0.07 and 
-            abs(y2-y1) <= 0.07 and 
-            abs(a2-a1) <= 0.07 and 
-            abs(b2-b2) <= 0.07 and 
-            abs(c2-c1) <= 0.07 and 
-            abs(d2-d2) <= 0.07)
-    return closed
-
 def objDistance(obj1, obj2, id_lookup):
     (x, y, z), _ = p.getBasePositionAndOrientation(id_lookup[obj1])
     (x2, y2, z2), _ = p.getBasePositionAndOrientation(id_lookup[obj2])
     return math.sqrt((x-x2)**2 + (y-y2)**2 + (z-z2)**2)
 
-def saveImage(lastTime, imageCount, display, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id, light):
+def saveImage(lastTime, imageCount, display, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id, on):
     current = current_milli_time()
     if (current - lastTime) < 100:
         return lastTime, imageCount
@@ -368,6 +371,9 @@ def saveImage(lastTime, imageCount, display, ax, o1, cam, dist, yaw, pitch, camT
         if wall_id > -1:
             p.changeVisualShape(wall_id, -1, rgbaColor = [1, 1, 1, 1])
     if display == "tp" or display == "both":
+        print(camTargetPos,
+                                                            dist, yaw, pitch,
+                                                            roll, upAxisIndex)
         viewMatrixTP = p.computeViewMatrixFromYawPitchRoll(camTargetPos,
                                                             dist, yaw, pitch,
                                                             roll, upAxisIndex)
@@ -385,7 +391,7 @@ def saveImage(lastTime, imageCount, display, ax, o1, cam, dist, yaw, pitch, camT
             rgb = img_arr[2]
         elif display == "tp":
             rgb = img_arr2[2]
-        if not light:
+        if not "light" in on:
             rgb = np.divide(rgb, 2)
         plt.imsave("logs/"+str(imageCount)+".jpg", arr=np.reshape(rgb, (pixelHeight, pixelWidth, 4)) * (1. / 255.))
     return current, imageCount+1
@@ -446,6 +452,45 @@ def grabbedObj(obj, constraints):
     """
     Check if object is grabbed by robot
     """
-    return (obj in constraints.keys() and constraints[obj] == 'ur5')
+    return (obj in constraints.keys() and constraints[obj][0] == 'ur5')
+
+def getGoalObjects(world_name, goal_name):
+    """
+    Return set of objects in goal
+    """
+    if "home" in world_name:
+        if goal_name == "goal1-milk-fridge":
+            return ["milk", "fridge"]
+        elif goal_name == "goal2-fruits-cupboard":
+            return ["cupboard", "apple", "banana", "orange"]
+        elif goal_name == "goal3-clean-dirt":
+            return ["dirt"]
+        elif goal_name == "goal4-stick-paper":
+            return ["paper", "wall"]
+        elif goal_name == "goal5-cubes-box":
+            return ["box", "cube_red", "cube_green", "cube_gray"]
+        elif goal_name == "goal6-bottles-dumpster":
+            return ["dumpster", "bottle_blue", "bottle_gray", "bottle_red"]
+        elif goal_name == "goal7-weight-paper":
+            return ["paper"]
+        elif goal_name == "goal8-light-off":
+            return ["light"]
+    if "factory" in world_name:
+        if goal_name == "goal1-crates-platform":
+            return ["crate_green", "crate_red", "crate_peach", "platform"]
+        elif goal_name == "goal2-paper-wall":
+            return ["paper", "wall_warehouse"]
+        elif goal_name == "goal3-board-wall":
+            return ["board", "wall_warehouse"]
+        elif goal_name == "goal4-generator-on":
+            return ["generator"]
+        elif goal_name == "goal5-assemble-parts":
+            return ["assembly_station", "part1", "part2", "part3"]
+        elif goal_name == "goal6-tools-workbench":
+            return ["workbench", "screwdriver", "welder", "drill"]
+        elif goal_name == "goal7-clean-water":
+            return ["water"]
+        elif goal_name == "goal8-clean-oil":
+            return ["oil"]
 
 

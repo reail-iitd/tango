@@ -1,0 +1,12 @@
+{
+	"goals":[
+		{
+			"object": "paper",
+			"target": "",
+			"state": "stuck",
+			"position": "",
+			"tolerance": 1.5
+		}
+	],
+	"text": "Stick paper to wall"
+}

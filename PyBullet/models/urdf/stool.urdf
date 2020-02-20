@@ -8,7 +8,7 @@
     name="box.SLDPRT">
     <inertial>
       <origin
-        xyz="1.2996E-17 1.20353843572399E-16 0.16926"
+        xyz="1.2996E-17 1.20353843572399E-16 0.4"
         rpy="0 0 0" />
       <mass
         value="1.99" />
@@ -22,7 +22,7 @@
     </inertial>
     <visual>
       <origin
-        xyz="0 0 0"
+        xyz="0 0 0.4"
         rpy="1.5707963267949 0 0" />
       <geometry>
         <mesh
@@ -36,7 +36,7 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0 0"
+        xyz="0 0 0.4"
         rpy="1.5707963267949 0 0" />
       <geometry>
         <mesh

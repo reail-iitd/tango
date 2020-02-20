@@ -32,7 +32,18 @@ dict_of_predicates = {
         "Apply object on another object": {"Object to apply": "dropdown-objects", "Object to apply on": "dropdown-objects"},
         "Stick object to destination": {"Object to stick": "dropdown-objects", "Destination object to stick on": "dropdown-objects"},
         "Clean object": {"Object to clean": "dropdown-objects"},
-        "Switch Object on/off": {"Object to switch state": "dropdown-objects", "On or off": "dropdown-states"}
+        "Switch Object on/off": {"Object to switch state": "dropdown-objects", "On or off": "dropdown-states"},
+        "Drop": {"Objects to drop": "dropdown-objects"},
+        "Place Ramp": {},
+        "Move Up the ramp": {},
+        "Move Down the ramp": {},
+        "Add fuel to object": {"Objects to add fuel to": "dropdown-objects", "Object to add": "dropdown-objects"},
+        "Cut object": {"Objects to cut": "dropdown-objects", "Cut using": "dropdown-objects"},
+        "3D Print object": {"Objects to print": "dropdown-objects"},
+        "Drive object": {"Objects to drive": "dropdown-objects", "Using tool": "dropdown-objects"},
+        "Weld object": {"Objects to weld": "dropdown-objects"},
+        "Paint object": {"Objects to paint": "dropdown-objects"},
+        "Drill object": {"Objects to drill into": "dropdown-objects"}
     }
 
 dict_predicate_to_action = {
@@ -48,7 +59,18 @@ dict_predicate_to_action = {
     "Apply object on another object": "apply",
     "Stick object to destination": "stick",
     "Clean object": "clean",
-    "Switch Object on/off": "changeState"
+    "Switch Object on/off": "changeState",
+    "Drop": 'drop',
+    "Place Ramp": 'placeRamp',
+    "Move Up the ramp": 'moveUp',
+    "Move Down the ramp": 'moveDown',
+    "Add fuel to object": 'fuel',
+    "Cut object": 'cut',
+    "3D Print object": 'print',
+    "Drive object":'drive',
+    "Weld object": 'weld',
+    "Paint object": 'paint',
+    "Drill object": 'drill'
 }
 
 # Unnecessary (can be removed)
@@ -56,7 +78,7 @@ d = json.load(open(args.world))["entities"]
 world_objects = []
 renamed_objects = {}
 constraints_dict = json.load(open("jsons/constraints.json"))
-dropdown_states = ["open", "close", "off"]
+dropdown_states = ["open", "close", "off", "on", "up", "down"]
 for obj in d:
     if (("ignore" in obj) and (obj["ignore"] == "true")):
         continue
@@ -110,11 +132,12 @@ def simulator(queue_from_webapp_to_simulator, queue_from_simulator_to_webapp, qu
                 queue_for_error.put(str(e))
                 done = False
             if (done):
+                w = 'factory' if 'factory' in args.world else 'home' if 'home' in args.world else 'outdoor'
                 # foldername = 'dataset/home/' + goal_file.split("\\")[3].split(".")[0] + '/' + args.world.split('\\')[3].split(".")[0]
-                try:
-                    foldername = 'dataset/home/' + goal_file.split("\\")[3].split(".")[0] + '/' + args.world.split('\\')[3].split(".")[0]
+                try: 
+                    foldername = 'dataset/' + w + '/' + goal_file.split("\\")[3].split(".")[0] + '/' + args.world.split('\\')[3].split(".")[0]
                 except:
-                    foldername = 'dataset/home/' + goal_file.split("/")[-1].split(".")[0] + '/' + args.world.split('/')[-1].split(".")[0]
+                    foldername = 'dataset/' + w + '/' + goal_file.split("/")[-1].split(".")[0] + '/' + args.world.split('/')[-1].split(".")[0]
                 try:   
                     a = len(listdir(foldername))
                 except Exception as e:
@@ -219,6 +242,8 @@ def execute_move():
             i += 1
         else:
             break
+    if "Ramp" in predicate or "ramp" in predicate:
+        l = []; front_end_objects = []
     d = {
         'actions': [
         {
@@ -228,7 +253,10 @@ def execute_move():
         ]
     }
     print (d)
-    move_string = predicate + " ( " + str(front_end_objects[0])
+    if len(front_end_objects) > 0:
+        move_string = predicate + " ( " + str(front_end_objects[0])
+    else:
+        move_string = predicate + " ( "
     for i in range(1,len(front_end_objects)):
         move_string += " ," + str(front_end_objects[i])
     move_string += " )"

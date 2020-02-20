@@ -3,7 +3,7 @@ from src.actions import *
 from src.datapoint import Datapoint
 
 def executeAction(inp):
-    if execute(convertActionsFromFile(inp), './jsons/home_goals/goal1-milk-fridge.json'):
+    if execute(convertActionsFromFile(inp), args.goal):
     	print("Goal Success!!!")
     else:
     	print("Goal Fail!!!")

@@ -1,6 +1,6 @@
 import json
 
-def convertActions(inp):
+def convertActions(inp, world):
     action_list = []
 
     for high_level_action in inp['actions']:
@@ -66,7 +66,7 @@ def convertActions(inp):
         
         elif high_level_action['name'] == 'moveDown':
             action_list.extend([
-                ["move", [-0.6, 0.6, 1]],
+                ["move", [-0.601, 0.603, 1]],
                 ["moveZ", [0.5, -0.5, 0]]
             ])
 
@@ -105,7 +105,7 @@ def convertActions(inp):
                 ["constrain", "ramp", "floor_warehouse"]
             ])
 
-        elif high_level_action['name'] == 'stick':
+        elif high_level_action['name'] == 'stick' and 'home' in world:
                 action_list.extend([
                 ["moveTo", args[0]],
                 ["changeWing", "up"],
@@ -113,6 +113,66 @@ def convertActions(inp):
                 ["move", [-2,3,0]],
                 ["constrain", args[0], args[1]],
                 ["changeState", args[0], "stuck"]
+            ])
+
+        elif high_level_action['name'] == 'stick' and 'factory' in world:
+                action_list.extend([
+                ["moveTo", args[1]],
+                ["checkGrabbed", args[0]],
+                ["constrain", args[0], args[1]],
+                ["changeState", args[0], "stuck"]
+            ])
+
+        elif high_level_action['name'] == 'fuel':
+                action_list.extend([
+                ["moveTo", args[0]],
+                ["checkGrabbed", args[1]],
+                ["fuel", args[0], args[1]]
+            ])
+
+        elif high_level_action['name'] == 'cut':
+                action_list.extend([
+                ["moveTo", args[0]],
+                ["checkGrabbed", args[1]],
+                ["cut", args[0], args[1]]
+            ])
+
+        elif high_level_action['name'] == 'print':
+                action_list.extend([
+                ["moveTo", "3d_printer"],
+                ["print", args[0]]
+            ])
+
+        elif high_level_action['name'] == 'drive':
+                action_list.extend([
+                ["moveTo", args[0]],
+                ["checkGrabbed", args[1]],
+                ["changeWing", "up"],
+                ["addTo", args[0], "fixed"]
+            ])
+
+        elif high_level_action['name'] == 'weld':
+                action_list.extend([
+                ["moveTo", args[0]],
+                ["checkGrabbed", "welder"],
+                ["changeWing", "up"],
+                ["addTo", args[0], "welded"]
+            ])
+
+        elif high_level_action['name'] == 'paint':
+                action_list.extend([
+                ["moveTo", args[0]],
+                ["checkGrabbed", "spraypaint"],
+                ["changeWing", "up"],
+                ["addTo", args[0], "painted"]
+            ])
+
+        elif high_level_action['name'] == 'drill':
+                action_list.extend([
+                ["moveTo", args[0]],
+                ["checkGrabbed", "drill"],
+                ["changeWing", "up"],
+                ["addTo", args[0], "drilled"]
             ])
 
         elif high_level_action['name'] == 'apply':

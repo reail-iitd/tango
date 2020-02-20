@@ -2,8 +2,8 @@
 	"goals":[
 		{
 			"object": "paper",
-			"target": "walls",
-			"state": "",
+			"target": "",
+			"state": "stuck",
 			"position": "",
 			"tolerance": 0
 		}

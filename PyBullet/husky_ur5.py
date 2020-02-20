@@ -33,10 +33,22 @@ sticky = []
 fixed = []
 # Objects on
 on = ['light']
+# Has been fueled
+fueled = []
+# Cut objects
+cut = []
 # Has cleaner
 cleaner = False
 # Has stick
 stick = False
+# Objects cleaned
+clean = []
+# Objects drilled
+drilled = []
+# Objects welded
+welded = []
+# Objects painted
+painted = []
 
 # Connect to Bullet using GUI mode
 light = p.connect(p.GUI)
@@ -59,6 +71,8 @@ if (args.logging or args.display):
   ground_list,
   fixed_orientation,
   tolerances, 
+  properties,
+  cons_cpos_lookup,
   cons_pos_lookup, 
   cons_link_lookup,
   ur5_dist,
@@ -95,7 +109,7 @@ dist = 5
 pitch = -35.0
 
 # Start video recording
-p.setRealTimeSimulation(1) 
+p.setRealTimeSimulation(0) 
 ax = 0; fig = 0; cam = []
 if args.display:
       ax, cam = initDisplay("both")
@@ -124,9 +138,17 @@ perspective = "tp"
 wall_id = -1
 if 'home' in args.world:
   wall_id = id_lookup['walls']
+if 'factory' in args.world:
+  wall_id = id_lookup['wall_warehouse']
 
 # Initialize datapoint
 datapoint = Datapoint()
+try:
+    g = args.goal.split("\\")[-1].split(".")[0]; w = args.world.split('\\')[3].split(".")[0]
+except:
+    g = args.goal.split("/")[-1].split(".")[0]; w = args.world.split('/')[3].split(".")[0]
+datapoint.world = w
+datapoint.goal = g
  
 # Print manipulation region bounding boxes
 # for obj in id_lookup.keys():
@@ -154,29 +176,30 @@ def showObject(obj):
 def undo():
   global world_states, x1, y1, o1, imageCount, constraints, on, datapoint
   datapoint.addSymbolicAction("Undo")
-  datapoint.addPoint(None, None, None, None, 'Undo', None, None, None, None, None)
+  datapoint.addPoint(None, None, None, None, 'Undo', None, None, None, None, None, None, None, None, None, None)
   x1, y1, o1, constraints, world_states = restoreOnInput(world_states, x1, y1, o1, constraints)
   _, imageCount = saveImage(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id, on)
 
 def firstImage():
   global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount, on
-  camTargetPos = [x1, y1, 0]
+  z = 1 if p.getBasePositionAndOrientation(id_lookup['husky'])[0][2] > 0.5 else 0
+  camTargetPos = [x1, y1, z]
   _, imageCount= saveImage(-250, imageCount, perspective, ax, o1, cam, dist, 50, pitch, camTargetPos, wall_id, on)
 
 keyboard = False
 
 def executeHelper(actions, goal_file=None):
-  global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount, cleaner, on, datapoint, dirtClean, stick, keyboard
+  global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount, cleaner, on, datapoint, clean, stick, keyboard, drilled, welded, painted, fueled, cut
   # List of low level actions
   datapoint.addSymbolicAction(actions['actions'])
-  actions = convertActions(actions)
+  actions = convertActions(actions, args.world)
   print(actions)
   action_index = 0
   done = False; done1 = False
   waiting = False
   startTime = time.time()
   lastTime = startTime
-  datapoint.addPoint([x1, y1, 0, o1], sticky, fixed, cleaner, 'Start', constraints, getAllPositionsAndOrientations(id_lookup), on, dirtClean, stick)
+  datapoint.addPoint([x1, y1, 0, o1], sticky, fixed, cleaner, 'Start', constraints, getAllPositionsAndOrientations(id_lookup), on, clean, stick, welded, drilled, painted, fueled, cut)
 
   # Start simulation
   if True:
@@ -184,7 +207,8 @@ def executeHelper(actions, goal_file=None):
       counter = 0
       while(True):
           counter += 1
-          camTargetPos = [x1, y1, 0]
+          z = 1 if p.getBasePositionAndOrientation(id_lookup['husky'])[0][2] > 0.5 else 0
+          camTargetPos = [x1, y1, z]
           if (args.logging or args.display) and (counter % COUNTER_MOD == 0):
             # start_image = time.time()
             lastTime, imageCount = saveImage(lastTime, imageCount, "fp", ax, o1, cam, 3, yaw, pitch, camTargetPos, wall_id, on)
@@ -207,7 +231,7 @@ def executeHelper(actions, goal_file=None):
           if action_index >= len(actions):
             yaw = 180*(math.atan2(y1,x1)%(2*math.pi))/math.pi - 90
             lastTime, imageCount = saveImage(lastTime, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id, on)
-            return checkGoal(goal_file, constraints, states, id_lookup, on, dirtClean)
+            return checkGoal(goal_file, constraints, states, id_lookup, on, clean, sticky, fixed, drilled, welded, painted)
 
           if(actions[action_index][0] == "move"):
             if "husky" in fixed:
@@ -217,7 +241,14 @@ def executeHelper(actions, goal_file=None):
 
           elif(actions[action_index][0] == "moveZ"):
             if "husky" in fixed:
-                  raise Exception("Husky can not move as it is on a stool")    
+                  raise Exception("Husky can not move as it is on a stool") 
+            if (actions[action_index][1][0] == -1.5
+                and actions[action_index][1][1] == 1.5
+                and actions[action_index][1][2] == 1):
+                if (findConstraintTo('ramp', constraints) != 'floor_warehouse'):
+                  raise Exception("Can not move up withuot ramp")
+                if grabbedObj("stool", constraints):
+                  if id_lookup["stool"] in ground_list: ground_list.remove(id_lookup["stool"])
             target = actions[action_index][1]
             x1, y1, o1, done = move(x1, y1, o1, [husky, robotID], target, keyboard, speed, up=True)
 
@@ -227,6 +258,9 @@ def executeHelper(actions, goal_file=None):
             if abs(p.getBasePositionAndOrientation(id_lookup[actions[action_index][1]])[0][2] - 
               p.getBasePositionAndOrientation(husky)[0][2]) > 1 and not stick:
                   raise Exception("Object on different height, please use stool")
+            if (p.getBasePositionAndOrientation(id_lookup[actions[action_index][1]])[0][2] - 
+              p.getBasePositionAndOrientation(husky)[0][2] < -0.5):
+                  raise Exception("Object on lower level, please move down")
             target = actions[action_index][1]
             if target == 'door' or target == 'dumpster':
               if not done1:
@@ -272,11 +306,23 @@ def executeHelper(actions, goal_file=None):
             pose = actions[action_index][1]
             gotoWing(robotID, wings[pose])
 
+          elif(actions[action_index][0] == "checkGrabbed"):
+            if not grabbedObj(actions[action_index][1],constraints):
+              raise Exception("Object '" + actions[action_index][1] + "' not grabbed by the robot")
+            done = True
+
           elif(actions[action_index][0] == "constrain"):
             if time.time()-startTime > 1:
               done = True; waiting = False
             if not waiting and not done:
               bounding_box = p.getAABB(id_lookup[actions[action_index][1]])
+              if actions[action_index][2] == 'ur5' and not "Movable" in properties[actions[action_index][1]]:
+                  raise Exception("Object '" + action[action_index][1] + "' is not grabbable")
+              if (actions[action_index][2] == 'ur5'
+                  and "Heavy" in properties[actions[action_index][1]]
+                  and len(findConstraintWith(actions[action_index][1], constraints)) > 0
+                  and "Heavy" in properties[findConstraintWith(actions[action_index][1], constraints)[0]]):
+                  raise Exception("Robot can not hold stack of heavy objects")
               if checkUR5constrained(constraints) and actions[action_index][2] == 'ur5':
                   raise Exception("Gripper is not free, can not hold object")
               if actions[action_index][2] == actions[action_index][1]:
@@ -290,9 +336,13 @@ def executeHelper(actions, goal_file=None):
               if (actions[action_index][2] == 'ur5' 
                   and(objDistance(actions[action_index][1], actions[action_index][2], id_lookup)) > 2):
                   raise Exception("Object too far away, move closer to it")
+              if (actions[action_index][2] == 'ur5' and abs(p.getBasePositionAndOrientation(id_lookup[actions[action_index][1]])[0][2] - 
+                  p.getBasePositionAndOrientation(husky)[0][2]) > 1.2):
+                    raise Exception("Object on different height, please use stool/ladder")
               if ("mop" in actions[action_index][1] 
                   or "sponge" in actions[action_index][1] 
-                  or "vacuum" in actions[action_index][1]):
+                  or "vacuum" in actions[action_index][1]
+                  or "blow_dryer" in actions[action_index][1]):
                   cleaner = True
               if ("stick" in actions[action_index][1]):
                   stick = True
@@ -302,6 +352,7 @@ def executeHelper(actions, goal_file=None):
               cid = constrain(actions[action_index][1], 
                               actions[action_index][2], 
                               cons_link_lookup, 
+                              cons_cpos_lookup,
                               cons_pos_lookup,
                               id_lookup,
                               constraints,
@@ -324,44 +375,142 @@ def executeHelper(actions, goal_file=None):
             if checkUR5constrained(constraints) and not stick:
                 raise Exception("Gripper is not free, can not change state")
             state = actions[action_index][2]
-            if state == "stuck" and not actions[action_index][1] in sticky:
-                removeConstraint(constraints, actions[action_index][1], "")
-                del constraints[actions[action_index][1]]
-                raise Exception("Object not sticky")  
+            if (actions[action_index][2] == 'stuck' 
+                and "Stickable" not in properties[actions[action_index][1]]):
+                raise Exception("Object not stickable")
+            # if state == "stuck" and not "board" in actions[action_index][1] and not actions[action_index][1] in sticky:
+            #     removeConstraint(constraints, actions[action_index][1], "")
+            #     del constraints[actions[action_index][1]]
+            #     raise Exception("Object not sticky")  
             if actions[action_index][2] == 'on' or actions[action_index][2] == 'off':
+              if (actions[action_index][2] == 'on'
+                and "Can_Fuel" in properties[actions[action_index][1]]
+                and not actions[action_index][1] in fueled):
+                raise Exception("First add fuel to object and then switch on")
               if actions[action_index][1] in on:
                 on.remove(actions[action_index][1])
               else:
                 on.append(actions[action_index][1])
               done = True
             else:
-              done = changeState(id_lookup[actions[action_index][1]], states[actions[action_index][1]][state]) if actions[action_index][1] != 'paper' else True
+              if actions[action_index][1] == "board" or 'paper' in actions[action_index][1]:
+                p.changeDynamics(id_lookup[actions[action_index][1]], -1, mass=0)
+              done = changeState(id_lookup[actions[action_index][1]], states[actions[action_index][1]][state]) 
 
           elif(actions[action_index][0] == "climbUp"):
             target = id_lookup[actions[action_index][1]]
             (x2, y2, z2), _ = p.getBasePositionAndOrientation(target)
-            targetLoc = [x2, y2, z2+0.4]
+            height = 2 if actions[action_index][1] == 'ladder' else 0.4
+            targetLoc = [x2, y2, z2 + height]
             x1, y1, o1, done = move(x1, y1, o1, [husky, robotID], targetLoc, keyboard, speed, tolerance=0.15, up=True)
           
           elif(actions[action_index][0] == "climbDown"):
             target = id_lookup[actions[action_index][1]]
             (x2, y2, z2), _ = p.getBasePositionAndOrientation(target)
-            targetLoc = [x2, y2+(2 if y2 < 0 else -2), 0]
+            on_height = p.getBasePositionAndOrientation(id_lookup["husky"])[0][2] > 0.5
+            opposite = -1 if on_height else 1
+            targetLoc = [x2, y2+(opposite * 1.7 if y2 < 0 else -1.7 * opposite), 1 if on_height else 0]
             x1, y1, o1, done = move(x1, y1, o1, [husky, robotID], targetLoc, keyboard, speed, up=True)
 
           elif(actions[action_index][0] == "clean"):
+            if actions[action_index][1] in clean:
+                raise Exception("Object already clean")
             if not cleaner:
                 raise Exception("No cleaning agent with the robot")
+            if ("Oily" in properties[actions[action_index][1]]
+              and grabbedObj('blow_dryer', constraints)):
+                raise Exception("Can not clean oily substance with blow dryer")
+            if grabbedObj('blow_dryer', constraints) and not 'blow_dryer' in on:
+                raise Exception("Please switch on blow dryer")
             p.changeVisualShape(id_lookup[actions[action_index][1]], -1, rgbaColor = [1, 1, 1, 0])
-            dirtClean = True
+            clean.append(actions[action_index][1])
             done = True
 
           elif(actions[action_index][0] == "addTo"):
             obj = actions[action_index][1]
             if actions[action_index][2] == "sticky":
+              if obj in sticky:
+                  raise Exception("Object already sticky")
+              if not "Stickable" in properties[actions[action_index][1]]:
+                raise Exception("Object is not stickable, cannot apply glue/tape agent")
               sticky.append(obj) 
             elif actions[action_index][2] == "fixed":
+              if obj in fixed:
+                  raise Exception("Object already driven")
+              if obj == "screw" and not grabbedObj("screwdriver",constraints):
+                  raise Exception("Driving a screw needs screwdriver")
+              if obj == "screw" and not findConstraintTo(obj, constraints) in drilled:
+                  raise Exception("Driving a screw needs object to be drilled first")
+              if obj == "nail" and not (grabbedObj("hammer",constraints) or grabbedObj("brick",constraints)):
+                  raise Exception("Driving a nail needs hammer or brick")
               fixed.append(obj) 
+            if actions[action_index][2] == "drilled":
+              if obj in drilled:
+                  raise Exception("Object already drilled")
+              drilled.append(obj) 
+            if actions[action_index][2] == "welded":
+              if obj in welded:
+                  raise Exception("Object already welded")
+              if findConstraintTo(obj, constraints) != "assembly_station":
+                  raise Exception("First place object on assembly station")
+              welded.append(obj)
+              horizontal_list.append(id_lookup[obj])
+            if actions[action_index][2] == "painted":
+              if obj in painted:
+                  raise Exception("Object already painted")
+              p.changeVisualShape(id_lookup[obj], -1, rgbaColor = [1, 0.4, 0.1, 1])
+              painted.append(obj)
+            done = True 
+
+          elif(actions[action_index][0] == "fuel"):
+            obj = actions[action_index][1]
+            if obj in fueled:
+                raise Exception("Object has already been fueled")
+            if not "Fuel" in properties[actions[action_index][2]]:
+                raise Exception("Objects is not a fuel")
+            if ("Cuttable" in properties[actions[action_index][2]]
+                and not actions[action_index][2] in cut):
+                raise Exception("Object needs to be cut before being used as a fuel")
+            if not "Can_Fuel" in properties[obj]:
+                raise Exception("Can not fuel object " + obj)
+            fueled.append(obj) 
+            done = True 
+
+          elif(actions[action_index][0] == "cut"):
+            obj = actions[action_index][1]
+            if obj in cut:
+                raise Exception("Object has already been cut")
+            if not "Cuttable" in properties[obj]:
+                raise Exception("Objects " + obj + " is not cuttable")
+            if not "Cutter" in properties[actions[action_index][2]]:
+                raise Exception("Object " + actions[action_index][2] + " is not a cutter")
+            cut.append(obj) 
+            done = True 
+
+          elif(actions[action_index][0] == "print"):
+            obj = actions[action_index][1]
+            if obj in id_lookup.keys():
+                raise Exception("Object already in world")
+            object_list = []
+            with open(object_file, 'r') as handle:
+                object_list = json.load(handle)['objects']
+            (oid, horizontal_cons, gnd,
+                fix, tol, prop, cpos, pos, link, d) = loadObject(obj, [-2.5, 4, 1.7], [], object_list)
+            if not "Printable" in prop:
+                raise Exception("Object can not be printed")
+            if horizontal_cons: horizontal.append(oid)
+            if gnd: ground.append(oid)
+            if fix: fixed_orientation[oid] = p.getBasePositionAndOrientation(oid)[1]
+            object_lookup[oid] = obj
+            properties[obj] = prop
+            cons_cpos_lookup[obj] = cpos
+            id_lookup[obj] = oid
+            states[obj] = []
+            cons_pos_lookup[obj] = pos
+            cons_link_lookup[obj] = link
+            ur5_dist[obj] = d
+            tolerances[obj] = tol
+            print("Printed new object", obj, oid)
             done = True 
           
           elif(actions[action_index][0] == "removeFrom"):
@@ -379,8 +528,8 @@ def executeHelper(actions, goal_file=None):
 
           if done:
             startTime = time.time()
-            if not actions[action_index][0] == "saveBulletState":
-              datapoint.addPoint([x1, y1, 0, o1], sticky, fixed, cleaner, actions[action_index], constraints, getAllPositionsAndOrientations(id_lookup), on, dirtClean, stick)
+            if not actions[action_index][0] == "saveBulletState" and not "check" in actions[action_index][0]:
+              datapoint.addPoint([x1, y1, 0, o1], sticky, fixed, cleaner, actions[action_index], constraints, getAllPositionsAndOrientations(id_lookup), on, clean, stick, welded, drilled, painted, fueled, cut)
             action_index += 1
             if action_index < len(actions):
               print("Executing action: ", actions[action_index])
@@ -396,7 +545,7 @@ def execute(actions, goal_file=None):
     return executeHelper(actions, goal_file)
   except Exception as e:
     datapoint.addSymbolicAction("Error = " + str(e))
-    datapoint.addPoint(None, None, None, None, 'Error = ' + str(e), None, None, None, None, None)
+    datapoint.addPoint(None, None, None, None, 'Error = ' + str(e), None, None, None, None, None, None, None, None, None, None)
     raise e
 
 def saveDatapoint(filename):

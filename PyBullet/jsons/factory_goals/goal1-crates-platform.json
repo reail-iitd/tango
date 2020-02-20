@@ -1,0 +1,26 @@
+{
+	"goals":[
+		{
+			"object": "crate_green",
+			"target": "platform",
+			"state": "",
+			"position": "",
+			"tolerance": 1.5
+		},
+		{
+			"object": "crate_peach",
+			"target": "platform",
+			"state": "",
+			"position": "",
+			"tolerance": 1.5
+		},
+		{
+			"object": "crate_red",
+			"target": "platform",
+			"state": "",
+			"position": "",
+			"tolerance": 1.5
+		}
+	],
+	"text": "Keep all crates on the platform"
+}

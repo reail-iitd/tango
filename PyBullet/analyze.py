@@ -36,7 +36,9 @@ def totalTime(dp):
 		if action == 'moveTo' or action == 'moveToXY' or action == 'moveZ':
 			x1 = dp.position[i][0]; y1 = dp.position[i][1]; o1 = dp.position[i][3]
 			x2 = dp.metrics[i-1][dp.actions[i][1]][0][0]; y2 = dp.metrics[i-1][dp.actions[i][1]][0][1]
-			dt = 100000 * abs(math.atan2(y2-y1,x2-x1) % (2*math.pi) - (o1%(2*math.pi)))
+		    robot, dest = o1%(2*math.pi), math.atan2((y2-y1),(x2-x1))%(2*math.pi)
+		    left = (robot - dest)%(2*math.pi); right = (dest - robot)%(2*math.pi)
+			dt = 100000 * abs(min(left, right))
 			dt += 2000 * abs(max(0.2, distance.euclidean((x1, y1, 0), (x2, y2, 0))) - 0.2)
 			# print('rotate = ', str(100000 * abs(math.atan2(y2-y1,x2-x1) % (2*math.pi) - (o1%(2*math.pi)))))
 			# print('move = ', str(2000 * abs(distance.euclidean((x1, y1, 0), (x2, y2, 0)))))
@@ -58,7 +60,7 @@ def printDatapoint(filename):
 	f = open(filename + '.datapoint', 'rb')
 	datapoint = pickle.load(f)
 	# print(datapoint.toString(subSymbolic=False, metrics=False))
-	print (datapoint.toString(subSymbolic=False))
+	print (datapoint.toString(subSymbolic=True))
 	totalTime(datapoint)
 	f.close()
 
@@ -80,7 +82,7 @@ def printAllDatapoints():
 	for goal in GOAL_LIST:
 		print('Goal = ' + goal)
 		for world in range(10):
-			directory = './dataset4/home/' + goal.split('.')[0] + '/world_home' + str(world)
+			directory = './dataset/home/' + goal.split('.')[0] + '/world_home' + str(world)
 			try:
 				points = listdir(directory)
 			except Exception as e:
@@ -97,12 +99,10 @@ def changeAllDatapoints():
 				f = open(file, 'rb')
 				datapoint = pickle.load(f)
 				f.close()
-				if not hasattr(datapoint, 'on'):
+				if True:
 					f = open(file, 'wb')
-					datapoint.on = []
-					for i in range(len(datapoint.lighton)):
-						a = ['light'] if datapoint.lighton[i] else []
-						datapoint.on.append(a)
+					datapoint.world = 'world_home' + str(world)
+					datapoint.goal = goal.split('.')[0]
 					pickle.dump(datapoint, f)
 					f.flush()
 					f.close()
@@ -136,8 +136,9 @@ def combineDatasets(idx=1):
 
 
 # keepNewDatapoints(4)
-# printAllDatapoints()
+printAllDatapoints()
 # printNumDatapoints()
-changeAllDatapoints()
+# changeAllDatapoints()
 # combineDatasets(4)
+# printDatapoint("test")
 

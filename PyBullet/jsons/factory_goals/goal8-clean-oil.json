@@ -1,0 +1,12 @@
+{
+	"goals":[
+		{
+			"object": "oil",
+			"target": "",
+			"state": "",
+			"position": "",
+			"tolerance": 1.5
+		}
+	],
+	"text": "Clean oil"
+}

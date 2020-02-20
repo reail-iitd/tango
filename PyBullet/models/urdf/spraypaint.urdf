@@ -18,7 +18,7 @@
         <mesh filename="models/meshes/spraypaint/spraycan.obj" scale="0.1 0.1 0.1"/>
       </geometry>
       <material name="hi">
-        <color rgba="0.1 0.4 1 1"/>
+        <color rgba="1 0.4 0.1 1"/>
       </material>
     </visual>
     <collision>

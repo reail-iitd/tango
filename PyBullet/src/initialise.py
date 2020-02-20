@@ -32,6 +32,8 @@ def loadObject(name, position, orientation, obj_list):
             ("on_ground" in obj['constraints']),
             ("fixed_orientation" in obj['constraints']),
             obj["tolerance"], 
+            obj["properties"], 
+            obj["constraint_cpos"], 
             obj["constraint_pos"], 
             obj["constraint_link"],
             obj["ur5_dist"])
@@ -49,6 +51,8 @@ def loadWorld(objects, object_file):
     ground = []
     object_lookup = {}
     id_lookup = {}
+    properties_lookup = {}
+    cons_cpos_lookup = {}
     cons_pos_lookup = {}
     cons_link_lookup = {}
     fixed_orientation = {}
@@ -63,6 +67,8 @@ def loadWorld(objects, object_file):
             gnd,
             fix,
             tol, 
+            prop,
+            cpos,
             pos, 
             link, 
             dist) = loadObject(obj['name'], obj['position'], obj['orientation'], object_list)
@@ -73,6 +79,8 @@ def loadWorld(objects, object_file):
         if fix:
             fixed_orientation[object_id] = p.getBasePositionAndOrientation(object_id)[1]
         object_lookup[object_id] = obj['name']
+        properties_lookup[obj['name']] = prop
+        cons_cpos_lookup[obj['name']] = cpos
         id_lookup[obj['name']] = object_id
         states[obj['name']] = obj['states']
         cons_pos_lookup[obj['name']] = pos
@@ -80,7 +88,7 @@ def loadWorld(objects, object_file):
         ur5_dist[obj['name']] = dist
         tolerances[obj['name']] = tol
         print(obj['name'], object_id)
-    return object_lookup, id_lookup, horizontal, ground, fixed_orientation, tolerances, cons_pos_lookup, cons_link_lookup, ur5_dist, states
+    return object_lookup, id_lookup, horizontal, ground, fixed_orientation, tolerances, properties_lookup, cons_cpos_lookup, cons_pos_lookup, cons_link_lookup, ur5_dist, states
 
 def initWingPos(wing_file):
     """
@@ -110,11 +118,13 @@ def initHuskyUR5(world_file, object_file):
         ground_list,
         fixed_orientation,
         tolerances, 
+        properties,
+        cons_cpos_lookup,
         cons_pos_lookup, 
         cons_link_lookup,
         ur5_dist,
         states) = loadWorld(world['entities'], object_file)
     base = id_lookup['husky']
     arm = id_lookup['ur5']
-    return base, arm, object_lookup, id_lookup, horizontal_list, ground_list, fixed_orientation, tolerances, cons_pos_lookup, cons_link_lookup, ur5_dist, states
+    return base, arm, object_lookup, id_lookup, horizontal_list, ground_list, fixed_orientation, tolerances, properties, cons_cpos_lookup, cons_pos_lookup, cons_link_lookup, ur5_dist, states
  

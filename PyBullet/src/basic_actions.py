@@ -28,10 +28,12 @@ def move(x1, y1, o1, object_list, target_coordinates, keyboard, speed, tolerance
     delz = 0
     (x1, y1, z1) = p.getBasePositionAndOrientation(object_list[0])[0]
     x2 = target_coordinates[0]; y2 = target_coordinates[1]; z2 = target_coordinates[2]
-    diff = math.atan2((y2-y1),(x2-x1))%(2*math.pi) - (o1%(2*math.pi))
-    if abs(diff) > 0.05:
-        o1 = o1 + 0.004*speed if diff > 0 else o1 - 0.004*speed
-    elif abs(distance.euclidean((x1, y1, z1), (x2, y2, z2))) > tolerance + 0.1: 
+    robot, dest = o1%(2*math.pi), math.atan2((y2-y1),(x2-x1))%(2*math.pi)
+    left = (robot - dest)%(2*math.pi); right = (dest - robot)%(2*math.pi)
+    dist = abs(distance.euclidean((x1, y1, z1), (x2, y2, z2)))
+    if dist > 0.3 and left > 0.05 and right > 0.05:
+        o1 = o1 + 0.004*speed if left > right else o1 - 0.004*speed 
+    elif dist > tolerance + 0.1: 
         x1 += math.cos(o1)*0.008*speed
         y1 += math.sin(o1)*0.008*speed
         delz = 0.008*speed*sign(z2-z1) if up else 0
@@ -75,7 +77,7 @@ def moveTo(x1, y1, o1, object_list, target, tolerance, keyboard, speed, offset):
     return move(x1, y1, o1, object_list, target_coordinates, keyboard, speed, tolerance)
 
 
-def constrain(obj1, obj2, link, pos, id_lookup, constraints, ur5_dist):
+def constrain(obj1, obj2, link, cpos, pos, id_lookup, constraints, ur5_dist):
     """
     Constrain two objects
     :params: 
@@ -99,12 +101,12 @@ def constrain(obj1, obj2, link, pos, id_lookup, constraints, ur5_dist):
     if obj2 == "ur5":
         cid = p.createConstraint(id_lookup[obj2], link[obj2], id_lookup[obj1], link[obj1], p.JOINT_POINT2POINT, [0, 0, 0], 
                                 parentFramePosition=ur5_dist[obj1],
-                                childFramePosition=pos[obj1][0],
+                                childFramePosition=cpos[obj1][0],
                                 childFrameOrientation=[0,0,0,0])
     else:
         cid = p.createConstraint(id_lookup[obj2], link[obj2], id_lookup[obj1], link[obj1], p.JOINT_POINT2POINT, [0, 0, 0], 
                                 parentFramePosition=pos[obj2][count],
-                                childFramePosition=pos[obj1][0],
+                                childFramePosition=cpos[obj1][0],
                                 childFrameOrientation=[0,0,0,0])
     return cid
 
@@ -134,9 +136,10 @@ def changeState(obj, positionAndOrientation):
     done = True
     x1 = x1 + 0.01*sign(x2-x1); done = done and abs(x2-x1) <= 0.01
     y1 = y1 + 0.01*sign(y2-y1); done = done and abs(y2-y1) <= 0.01
+    z1 = z1 + 0.01*sign(z2-z1); done = done and abs(z2-z1) <= 0.01
     a1 = a1 + 0.01*sign(a2-a1); done = done and abs(a2-a1) <= 0.01
-    b1 = b1 + 0.01*sign(b2-b2); done = done and abs(b2-b2) <= 0.01
+    b1 = b1 + 0.01*sign(b2-b1); done = done and abs(b2-b1) <= 0.01
     c1 = c1 + 0.01*sign(c2-c1); done = done and abs(c2-c1) <= 0.01
-    d1 = d1 + 0.01*sign(d2-d2); done = done and abs(d2-d2) <= 0.01
+    d1 = d1 + 0.01*sign(d2-d1); done = done and abs(d2-d1) <= 0.01
     p.resetBasePositionAndOrientation(obj, (x1, y1, z1), (a1, b1, c1, d1))
     return done

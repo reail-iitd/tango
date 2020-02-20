@@ -58,6 +58,8 @@ speed = args.speed
   ground_list,
   fixed_orientation,
   tolerances, 
+  properties,
+  cons_cpos_lookup,
   cons_pos_lookup, 
   cons_link_lookup,
   ur5_dist,
