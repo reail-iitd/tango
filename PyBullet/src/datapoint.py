@@ -126,6 +126,7 @@ class Datapoint:
 			node['states'] = states
 			node['position'] = metrics[obj]
 			node['size'] = objects[objID]['size']
+			node['vector'] = objects[objID]['vector']
 			nodes.append(node)
 		edges = []
 		for i in range(len(sceneobjects)):
