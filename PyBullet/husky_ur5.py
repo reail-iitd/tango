@@ -50,105 +50,110 @@ welded = []
 # Objects painted
 painted = []
 
-# Connect to Bullet using GUI mode
-light = p.connect(p.GUI)
+def start():
+  # Initialize husky and ur5 model
+  global husky,robotID, object_lookup, id_lookup, horizontal_list, ground_list,fixed_orientation,tolerances, properties,cons_cpos_lookup,cons_pos_lookup, cons_link_lookup,ur5_dist,states,wings,gotoWing,constraints,constraint,x1, y1, o1
+  global imageCount,yaw,ims,dist,pitch,ax,fig,cam,camX, camY, world_states,id1, perspective, wall_id, datapoint
+  global light, args, speed
 
-# Add input arguments
-args = initParser()
-speed = args.speed
+  # Connect to Bullet using GUI mode
+  light = p.connect(p.GUI)
 
-if (args.logging or args.display):
-  p.configureDebugVisualizer(p.COV_ENABLE_GUI, 0)
-  p.configureDebugVisualizer(p.COV_ENABLE_RENDERING, 0)
-  p.configureDebugVisualizer(p.COV_ENABLE_TINY_RENDERER, 0)
+  # Add input arguments
+  args = initParser()
+  speed = args.speed
 
-# Initialize husky and ur5 model
-( husky,
-  robotID, 
-  object_lookup, 
-  id_lookup, 
-  horizontal_list, 
-  ground_list,
-  fixed_orientation,
-  tolerances, 
-  properties,
-  cons_cpos_lookup,
-  cons_pos_lookup, 
-  cons_link_lookup,
-  ur5_dist,
-  states) = initHuskyUR5(args.world, object_file)
-print ("The world file is", args.world)
+  if (args.logging or args.display):
+    p.configureDebugVisualizer(p.COV_ENABLE_GUI, 0)
+    p.configureDebugVisualizer(p.COV_ENABLE_RENDERING, 0)
+    p.configureDebugVisualizer(p.COV_ENABLE_TINY_RENDERER, 0)
 
-# Initialize dictionary of wing positions
-wings = initWingPos(wings_file)
+  ( husky,
+    robotID, 
+    object_lookup, 
+    id_lookup, 
+    horizontal_list, 
+    ground_list,
+    fixed_orientation,
+    tolerances, 
+    properties,
+    cons_cpos_lookup,
+    cons_pos_lookup, 
+    cons_link_lookup,
+    ur5_dist,
+    states) = initHuskyUR5(args.world, object_file)
+  print ("The world file is", args.world)
 
-# Fix ur5 to husky
-cid = p.createConstraint(husky, -1, robotID, -1, p.JOINT_FIXED, [0, 0, 0], [0, 0, ], [0., 0., -.2],
-                         [0, 0, 0, 1])
+  # Initialize dictionary of wing positions
+  wings = initWingPos(wings_file)
 
-# Set small gravity
-p.setGravity(0,0,-10)
+  # Fix ur5 to husky
+  cid = p.createConstraint(husky, -1, robotID, -1, p.JOINT_FIXED, [0, 0, 0], [0, 0, ], [0., 0., -.2],
+                           [0, 0, 0, 1])
 
-# Initialize gripper joints and forces
-controlJoints, joints = initGripper(robotID)
-gotoWing = getUR5Controller(robotID)
-gotoWing(robotID, wings["home"])
+  # Set small gravity
+  p.setGravity(0,0,-10)
 
-# Position of the robot
-x1, y1, o1 = 0, 0, 0
-constraint = 0
+  # Initialize gripper joints and forces
+  controlJoints, joints = initGripper(robotID)
+  gotoWing = getUR5Controller(robotID)
+  gotoWing(robotID, wings["home"])
 
-# List of constraints with target object and constraint id
-constraints = dict()
+  # Position of the robot
+  x1, y1, o1 = 0, 0, 0
+  constraint = 0
 
-# Init camera
-imageCount = 0
-yaw = 50
-ims = []
-dist = 5
-pitch = -35.0
+  # List of constraints with target object and constraint id
+  constraints = dict()
 
-# Start video recording
-p.setRealTimeSimulation(0) 
-ax = 0; fig = 0; cam = []
-if args.display:
-      ax, cam = initDisplay("both")
-elif args.logging:
-      fig = initLogging()
-camX, camY = 0, 0
+  # Init camera
+  imageCount = 0
+  yaw = 50
+  ims = []
+  dist = 5
+  pitch = -35.0
 
-# Mention names of objects
-mentionNames(id_lookup)
+  # Start video recording
+  p.setRealTimeSimulation(0) 
+  ax = 0; fig = 0; cam = []
+  if args.display:
+        ax, cam = initDisplay("both")
+  elif args.logging:
+        fig = initLogging()
+  camX, camY = 0, 0
 
-# Save state
-world_states = []
-id1 = p.saveState()
-world_states.append([id1, x1, y1, o1, constraints])
-print(id_lookup)
-print(fixed_orientation)
+  # Mention names of objects
+  mentionNames(id_lookup)
 
-# Check Logging
-if args.logging or args.display:
-    deleteAll("logs")
+  # Save state
+  world_states = []
+  id1 = p.saveState()
+  world_states.append([id1, x1, y1, o1, constraints])
+  print(id_lookup)
+  print(fixed_orientation)
 
-# Default perspective
-perspective = "tp"
+  # Check Logging
+  if args.logging or args.display:
+      deleteAll("logs")
 
-# Wall to make trasparent when camera outside
-wall_id = -1
-if 'home' in args.world:
-  wall_id = id_lookup['walls']
-if 'factory' in args.world:
-  wall_id = id_lookup['wall_warehouse']
+  # Default perspective
+  perspective = "tp"
 
-# Initialize datapoint
-datapoint = Datapoint()
-try:
-    g = args.goal.split("\\")[-1].split(".")[0]; w = args.world.split('\\')[3].split(".")[0]
-except:
-    g = args.goal.split("/")[-1].split(".")[0]; w = args.world.split('/')[3].split(".")[0]
-datapoint.world = w
-datapoint.goal = g
+  # Wall to make trasparent when camera outside
+  wall_id = -1
+  if 'home' in args.world:
+    wall_id = id_lookup['walls']
+  if 'factory' in args.world:
+    wall_id = id_lookup['wall_warehouse']
+
+  # Initialize datapoint
+  datapoint = Datapoint()
+  try:
+      g = args.goal.split("\\")[-1].split(".")[0]; w = args.world.split('\\')[-1].split(".")[0]
+  except:
+      g = args.goal.split("/")[-1].split(".")[0]; w = args.world.split('/')[-1].split(".")[0]
+  datapoint.world = w
+  datapoint.goal = g
  
 # Print manipulation region bounding boxes
 # for obj in id_lookup.keys():
@@ -188,7 +193,7 @@ def firstImage():
 
 keyboard = False
 
-def executeHelper(actions, goal_file=None):
+def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None):
   global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount, cleaner, on, datapoint, clean, stick, keyboard, drilled, welded, painted, fueled, cut
   # List of low level actions
   datapoint.addSymbolicAction(actions['actions'])
@@ -206,6 +211,12 @@ def executeHelper(actions, goal_file=None):
       # start_here = time.time()
       counter = 0
       while(True):
+          if queue_for_execute_to_stop is not None:
+            try:
+              stop = queue_for_execute_to_stop.get(block = False)
+              return False
+            except:
+              pass
           counter += 1
           z = 1 if p.getBasePositionAndOrientation(id_lookup['husky'])[0][2] > 0.5 else 0
           camTargetPos = [x1, y1, z]
@@ -539,10 +550,10 @@ def executeHelper(actions, goal_file=None):
           # print ("Fraction", image_save_time/total_time_taken)
           # start_here = time.time()
 
-def execute(actions, goal_file=None):
+def execute(actions, goal_file=None, queue_for_execute_to_stop = None):
   global datapoint
   try:
-    return executeHelper(actions, goal_file)
+    return executeHelper(actions, goal_file, queue_for_execute_to_stop)
   except Exception as e:
     datapoint.addSymbolicAction("Error = " + str(e))
     datapoint.addPoint(None, None, None, None, 'Error = ' + str(e), None, None, None, None, None, None, None, None, None, None)

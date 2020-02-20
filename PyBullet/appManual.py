@@ -9,12 +9,15 @@ import multiprocessing as mp
 import time
 from src.parser import *
 from os import listdir
+import time
 
 args = initParser()
 
 queue_from_webapp_to_simulator = mp.Queue()
 queue_from_simulator_to_webapp = mp.Queue()
 queue_for_error = mp.Queue()
+queue_for_execute_to_stop = mp.Queue()
+queue_for_execute_is_ongoing = mp.Queue()
 workerId = None
 app = Flask(__name__)
 moves_to_show = []
@@ -95,10 +98,11 @@ def convertActionsFromFile(action_file):
         inp = json.load(handle)
     return(inp)
 
-def simulator(queue_from_webapp_to_simulator, queue_from_simulator_to_webapp, queue_for_error):
+def simulator(queue_from_webapp_to_simulator, queue_from_simulator_to_webapp, queue_for_error, queue_for_execute_to_stop, queue_for_execute_is_ongoing):
     import husky_ur5
     import src.actions
     import sys
+    husky_ur5.start()
     queue_from_simulator_to_webapp.put(True)
     print ("Waiting")
     husky_ur5.firstImage()
@@ -121,11 +125,17 @@ def simulator(queue_from_webapp_to_simulator, queue_from_simulator_to_webapp, qu
             del sys.modules["src.actions"]
             import husky_ur5
             import src.actions
+            husky_ur5.start()
             husky_ur5.firstImage()
             queue_from_simulator_to_webapp.put(True)
         else:
             try:
-                done = husky_ur5.execute(inp, goal_file)
+                queue_for_execute_is_ongoing.put(True)
+                done = husky_ur5.execute(inp, goal_file, queue_for_execute_to_stop)
+                try:
+                    queue_for_execute_is_ongoing.get(block=False)
+                except:
+                    pass
                 print("Done: ", done)
             except Exception as e:
                 print (str(e))
@@ -224,6 +234,16 @@ def get_simulator_state():
     return Response(gen(Camera()),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
+@app.route('/restart_process')
+def restart_process():
+    try:
+        queue_for_execute_is_ongoing.get(block = False)
+        queue_for_execute_to_stop.put(True)
+        time.sleep(1)
+        return "restarted_process_successfully"
+    except:
+        return "did_not_need_to_restart"
+
 @app.route("/execute_move", methods = ["POST"])
 def execute_move():
     print (request.form)
@@ -314,7 +334,7 @@ def is_error():
 
 if __name__ == '__main__':
     inp = "jsons/input_home.json"
-    p = mp.Process(target=simulator, args=(queue_from_webapp_to_simulator,queue_from_simulator_to_webapp,queue_for_error))
+    p = mp.Process(target=simulator, args=(queue_from_webapp_to_simulator,queue_from_simulator_to_webapp,queue_for_error, queue_for_execute_to_stop, queue_for_execute_is_ongoing))
     p.start()
     should_webapp_start = queue_from_simulator_to_webapp.get()
     app.run(host='0.0.0.0', threaded=True)
