@@ -6,7 +6,7 @@
 		},
 	"Pick source and place on destination": 
 		{
-			"Object to pick": ["floor", "dumpster", "ledge", "stool", "fridge", "cupboard", "walls", "door", "big-tray", "bigger_table", "smaller_table", "couch", "chair"], 
+			"Object to pick": ["floor", "dumpster", "ledge", "fridge", "cupboard", "walls", "door", "big-tray", "bigger_table", "smaller_table", "couch", "chair"], 
 			"Object to place on": ["paper2", "light", "floor", "walls", "milk", "tape", "ledge", "door", "cube_red", "greem_cube", "cube_gray"]
 		},
     "Move robot to object": 
@@ -25,7 +25,7 @@
 	"Drop Object on destination": 
 		{
 
-			"Object to drop": ["paper2", "light", "floor", "dumpster", "ledge", "stool", "fridge", "cupboard", "walls", "door", "big-tray", "bigger_table", "smaller_table", "couch"], 
+			"Object to drop": ["paper2", "light", "floor", "dumpster", "ledge", "fridge", "cupboard", "walls", "door", "big-tray", "bigger_table", "smaller_table", "couch"], 
 			"Object to drop on": ["paper2", "light", "floor", "walls", "milk", "tape", "ledge", "door", "cube_red", "cube_green", "cubr_gray"]
 		},
 	"Climb up an object":

@@ -931,7 +931,7 @@
 			"tolerance": 1,
 			"constraint_link": -1,
 			"constraint_cpos": [],
-			"constraint_pos": [[0, 0, 0], [0, 0, 0.75], [0, 0, 1.5]],
+			"constraint_pos": [[0, 0, 0], [0, 0, 0.6], [0, 0, 1.2]],
 			"ur5_dist": [1,0,0],
 			"properties": ["Surface"],
 			"size": [0.7508302954435391, 1.2161932615041762, 0.02599608552298438]
