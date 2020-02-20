@@ -87,6 +87,11 @@
 		  			<button type="button" class="btn btn-danger" id="undo_move">Undo Move</button>
 		  		</div>
 		  	</div>
+		  	<div class="row" style="padding-left: 30em">
+	  			<div>
+		  			<button type="button" class="btn btn-danger" id="restart_process">Restart Process</button>
+		  		</div>
+		  	</div>
 		  	<div id = "move_list_div" style="background-color: yellow;">
 			  	<h3> Move list </h3>
 		  		<ol id = "move_list">
@@ -239,6 +244,17 @@
 		      }
 		    });
 		});
+		$("#restart_process").click(function(){
+			$.ajax({
+		      url: "/restart_process",
+		      type: "get",
+		      success: function(response) {
+		      	window.location = "/";
+		      },
+		      error: function(xhr) {
+		      }
+		    });
+		});
 		{% for object in world_objects%}
 			$("#{{object}}").click(function(){
 				$("#execute_move").disabled = true;
@@ -264,7 +280,6 @@
 		    		alert(data);
 		    		if (data == "You have completed this tutorial."){
 		    			// $('#next-tut').prop('disabled', false);
-		    			alert("Hi");
 		    		}
 		    	}
 		    }
@@ -303,16 +318,27 @@
 {% else %}
 	<body>
 		<h1>Please enter your MTurk Worker ID to continue</h1>
-		<form>
 		  <div class="form-group col-sm-6">
 		    <label for="workerId">Worker ID on Mturk</label>
 		    <input class="form-control" id="workerId" aria-describedby="workerId" placeholder="WorkerId">
 		    <br>
-		    <button type="submit" class="btn btn-primary" id="submitID">Submit</button>
+		    <button type="submit" class="btn btn-primary" id="submitIDandTut">Submit and Start Tutorial</button>
+		    <button type="submit" class="btn btn-primary" id="submitIDandWork">Submit and Start Working</button>
 		  </div>
-		</form>
 		<script type="text/javascript">
-			$("#submitID").click(function(){
+			$("#submitIDandWork").click(function(){
+				$.ajax({
+			      url: "/workerId",
+			      type: "post",
+			      data: {"workerId": $("#workerId").val()},
+			      success: function(response) {
+			      	window.location = "/";
+			      },
+			      error: function(xhr) {
+			      }
+			    });
+			});
+			$("#submitIDandTut").click(function(){
 				$.ajax({
 			      url: "/workerId",
 			      type: "post",

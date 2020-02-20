@@ -6,8 +6,8 @@ def initParser():
     """
     parser = argparse.ArgumentParser('This will simulate a world describe in a json file.')
     parser.add_argument('--world', 
-                            type=str, 
-                            required=True,
+                            type=str,
+                            default = "jsons/home_worlds/world_home0.json",
                             help='The json file to visualize')
     parser.add_argument('--input',
                             type=str,
@@ -22,7 +22,7 @@ def initParser():
     parser.add_argument('--display',
                             type=str,
                             required=False,
-                            default=None,
+                            default="both",
                             help='Display states on matplotlib animation')
     parser.add_argument('--speed',
                             type=float,
@@ -32,7 +32,7 @@ def initParser():
     parser.add_argument('--goal',
                             type=str,
                             required=False,
-                            default='./jsons/home_goals/goal0-tut1.json',
+                            default='jsons/home_goals/goal0-tut1.json',
                             help='Path og goal file')
     return parser.parse_args()
  
