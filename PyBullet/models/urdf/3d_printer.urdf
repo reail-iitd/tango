@@ -24,7 +24,7 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="models/meshes/3d_printer/3d_printer.obj" scale="0.005 0.005 0.005"/>
+        <mesh filename="models/meshes/3d_printer/3d_printer.obj" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>

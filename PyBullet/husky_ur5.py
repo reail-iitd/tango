@@ -270,7 +270,7 @@ def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None):
               p.getBasePositionAndOrientation(husky)[0][2]) > 1 and not stick:
                   raise Exception("Object on different height, please use stool")
             if (p.getBasePositionAndOrientation(id_lookup[actions[action_index][1]])[0][2] - 
-              p.getBasePositionAndOrientation(husky)[0][2] < -0.5):
+              p.getBasePositionAndOrientation(husky)[0][2] < -0.7):
                   raise Exception("Object on lower level, please move down")
             target = actions[action_index][1]
             if target == 'door' or target == 'dumpster':
@@ -309,7 +309,7 @@ def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None):
               x1, y1, o1, done = moveTo(x1, y1, o1, [husky, robotID], id_lookup[target], 
                                       tolerances[target], 
                                       keyboard,
-                                      speed, 1 if actions[action_index][1] == 'cupboard' else 0)
+                                      speed, 0.9 if actions[action_index][1] == 'cupboard' else 0)
 
           elif(actions[action_index][0] == "changeWing"):
             if time.time()-startTime > 1.8:
@@ -416,12 +416,16 @@ def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None):
             x1, y1, o1, done = move(x1, y1, o1, [husky, robotID], targetLoc, keyboard, speed, tolerance=0.15, up=True)
           
           elif(actions[action_index][0] == "climbDown"):
-            target = id_lookup[actions[action_index][1]]
-            (x2, y2, z2), _ = p.getBasePositionAndOrientation(target)
-            on_height = p.getBasePositionAndOrientation(id_lookup["husky"])[0][2] > 0.5
-            opposite = -1 if on_height else 1
-            targetLoc = [x2, y2+(opposite * 1.7 if y2 < 0 else -1.7 * opposite), 1 if on_height else 0]
-            x1, y1, o1, done = move(x1, y1, o1, [husky, robotID], targetLoc, keyboard, speed, up=True)
+            if not waiting and not done:
+              target = id_lookup[actions[action_index][1]]
+              (x2, y2, z2), _ = p.getBasePositionAndOrientation(target)
+              on_height = p.getBasePositionAndOrientation(id_lookup["husky"])[0][2] > 0.5 and p.getBasePositionAndOrientation(id_lookup["husky"])[0][2] < 1.1
+              opposite = -1 if on_height else 1
+              targetLoc = [x2, y2+(opposite * 1.7 if y2 < 0 else -1.7 * opposite), 1 if on_height else 0]
+              waiting = True
+            else:
+              x1, y1, o1, done = move(x1, y1, o1, [husky, robotID], targetLoc, keyboard, speed, up=True)
+              if done: waiting = False
 
           elif(actions[action_index][0] == "clean"):
             if actions[action_index][1] in clean:

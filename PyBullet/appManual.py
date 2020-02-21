@@ -36,7 +36,7 @@ dict_of_predicates = {
         "Stick object to destination": {"Object to stick": "dropdown-objects", "Destination object to stick on": "dropdown-objects"},
         "Clean object": {"Object to clean": "dropdown-objects"},
         "Switch Object on/off": {"Object to switch state": "dropdown-objects", "On or off": "dropdown-states"},
-        "Drop": {"Objects to drop": "dropdown-objects"},
+        "Drop": {"Object to drop": "dropdown-objects"},
         "Place Ramp": {},
         "Move Up the ramp": {},
         "Move Down the ramp": {},

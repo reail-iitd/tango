@@ -261,7 +261,7 @@
 		},
 		{
 			"name": "paper",
-			"position": [-2.5, -4.8, 1],
+			"position": [-2.5, -4.7, 0.3],
 			"orientation": [],
 			"states": 
 			{
