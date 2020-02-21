@@ -251,7 +251,11 @@ def checkGoal(goal_file, constraints, states, id_lookup, on, clean, sticky, fixe
 
     for goal in goals:
         obj = goal['object']
-        if obj == 'light' or obj == 'generator':
+        if obj == 'light':
+            if obj in on:
+                success = False
+
+        if obj == 'generator':
             if not obj in on:
                 success = False
 
@@ -312,12 +316,12 @@ def checkInside(constraints, states, id_lookup, obj, enclosures):
     Check if object is inside cupboard or fridge
     """
     for enclosure in enclosures:
+        if not enclosure in id_lookup.keys(): continue
         if isClosed(enclosure, states, id_lookup):
             (x1, y1, z1) = p.getBasePositionAndOrientation(id_lookup[obj])[0]
             (x2, y2, z2) = p.getBasePositionAndOrientation(id_lookup[enclosure])[0]
             (l, w, h) = 1.0027969752543706, 0.5047863562602029, 1.5023976731489332
             inside = abs(x2-x1) < l and abs(y2-y1) < 1.5*w and abs(z1-z2) < h
-            print(l, w, h, abs(x2-x1), abs(y2-y1), abs(z1-z2))
             tgt = findConstraintTo(obj, constraints)
             while not (tgt == "" or tgt == enclosure):
                 tgt = findConstraintTo(tgt, constraints)        

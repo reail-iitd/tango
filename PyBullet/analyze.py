@@ -35,13 +35,14 @@ def totalTime(dp):
 		dt = 0
 		if action == 'moveTo' or action == 'moveToXY' or action == 'moveZ':
 			x1 = dp.position[i][0]; y1 = dp.position[i][1]; o1 = dp.position[i][3]
-			x2 = dp.metrics[i-1][dp.actions[i][1]][0][0]; y2 = dp.metrics[i-1][dp.actions[i][1]][0][1]
-		    robot, dest = o1%(2*math.pi), math.atan2((y2-y1),(x2-x1))%(2*math.pi)
-		    left = (robot - dest)%(2*math.pi); right = (dest - robot)%(2*math.pi)
-			dt = 100000 * abs(min(left, right))
-			dt += 2000 * abs(max(0.2, distance.euclidean((x1, y1, 0), (x2, y2, 0))) - 0.2)
-			# print('rotate = ', str(100000 * abs(math.atan2(y2-y1,x2-x1) % (2*math.pi) - (o1%(2*math.pi)))))
-			# print('move = ', str(2000 * abs(distance.euclidean((x1, y1, 0), (x2, y2, 0)))))
+			if 'list' in str(type(dp.actions[i][1])):
+				x2 = dp.actions[i][1][0]; y2 = dp.actions[i][1][1]
+			else:
+				x2 = dp.metrics[i-1][dp.actions[i][1]][0][0]; y2 = dp.metrics[i-1][dp.actions[i][1]][0][1]
+			robot, dest = o1%(2*math.pi), math.atan2((y2-y1),(x2-x1))%(2*math.pi)
+			left = (robot - dest)%(2*math.pi); right = (dest - robot)%(2*math.pi)
+			dt = 100000 * abs(min(left, right)) # time for rotate
+			dt += 2000 * abs(max(0.2, distance.euclidean((x1, y1, 0), (x2, y2, 0))) - 0.2) # time for move
 		elif action == 'move':
 			x1 = dp.position[i][0]; y1 = dp.position[i][1]; o1 = dp.position[i][3]
 			x2 = -2; y2 = 3
@@ -59,9 +60,8 @@ def printDatapoint(filename):
 	print(filename)
 	f = open(filename + '.datapoint', 'rb')
 	datapoint = pickle.load(f)
-	# print(datapoint.toString(subSymbolic=False, metrics=False))
 	print (datapoint.toString(subSymbolic=True))
-	totalTime(datapoint)
+	print(totalTime(datapoint))
 	f.close()
 
 def keepNewDatapoints(idx=1):
@@ -136,9 +136,9 @@ def combineDatasets(idx=1):
 
 
 # keepNewDatapoints(4)
-printAllDatapoints()
+# printAllDatapoints()
 # printNumDatapoints()
 # changeAllDatapoints()
 # combineDatasets(4)
-# printDatapoint("test")
+printDatapoint("dataset/factory/goal1-crates-platform/world_factory2/1")
 
