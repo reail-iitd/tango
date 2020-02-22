@@ -90,6 +90,12 @@ for obj in d:
         renamed_objects[obj["rename"]] = obj["name"]
     else:
         world_objects.append(obj["name"])
+if '3d_printer' in world_objects:
+    with open('jsons/objects.json') as file:
+        o = json.load(file)["objects"]
+    for obj in o:
+        if 'Printable' in obj['properties'] and not obj['name'] in world_objects:
+            world_objects.append(obj['name'])
 world_objects.sort()
 
 def convertActionsFromFile(action_file):
@@ -116,7 +122,11 @@ def simulator(queue_from_webapp_to_simulator, queue_from_simulator_to_webapp, qu
             if (len(moves_to_show) > 0):
                 moves_to_show.pop(-1)
         elif "showObject" in inp:
-            husky_ur5.showObject(inp["showObject"])
+            try:
+                husky_ur5.showObject(inp["showObject"])
+            except Exception as e:
+                print(e)
+                queue_for_error.put(str(e))
         elif "restart" in inp:
             goal_file = inp["restart"]
             print ("hello")

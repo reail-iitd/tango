@@ -321,7 +321,7 @@ def checkInside(constraints, states, id_lookup, obj, enclosures):
             (x1, y1, z1) = p.getBasePositionAndOrientation(id_lookup[obj])[0]
             (x2, y2, z2) = p.getBasePositionAndOrientation(id_lookup[enclosure])[0]
             (l, w, h) = 1.0027969752543706, 0.5047863562602029, 1.5023976731489332
-            inside = abs(x2-x1) < l and abs(y2-y1) < 1.5*w and abs(z1-z2) < 0.6*h
+            inside = abs(x2-x1) < 0.5*l and abs(y2-y1) < 1.5*w and abs(z1-z2) < 0.6*h
             tgt = findConstraintTo(obj, constraints)
             while not (tgt == "" or tgt == enclosure):
                 tgt = findConstraintTo(tgt, constraints)        

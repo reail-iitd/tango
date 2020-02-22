@@ -43,7 +43,7 @@
 		},
 	"Stick object to destination":
 		{
-			"Object to stick": ["paper2", "light", "floor", "door", "dumpster", "big-tray", "walls", "ledge", "couch", "big-tray", "tray", "tray2", "blue bottle", "gray bottle", "red bottle", "box", "apple", "orange", "banana", "quadcopter", "chair", "ball", "stick", "dumpster", "milk", "shelf", "3d_printer", "assembly_station", "blow_dryer", "brick", "board", "coal", "crate_green", "crate_peach", "crate_red", "drill", "floor_warehouse", "gasoline", "generator", "hammer", "husky", "lift", "long_shelf", "oil", "part1", "part2", "part3", "water", "platform", "ramp", "ramp_tape", "screw", "spraypaint", "table", "toolbox", "trolley", "ur5", "welder", "wood_cutter", "wood", "worktable", "cupboard", "wall_warehouse", "ladder", "stool", "mop", "glue", "tape"],
+			"Object to stick": ["paper2", "light", "floor", "door", "dumpster", "big-tray", "walls", "ledge", "couch", "big-tray", "tray", "tray2", "blue bottle", "gray bottle", "red bottle", "box", "apple", "orange", "banana", "quadcopter", "chair", "ball", "stick", "dumpster", "milk", "shelf", "3d_printer", "assembly_station", "blow_dryer", "brick", "coal", "crate_green", "crate_peach", "crate_red", "drill", "floor_warehouse", "gasoline", "generator", "hammer", "husky", "lift", "long_shelf", "oil", "part1", "part2", "part3", "water", "platform", "ramp", "ramp_tape", "screw", "spraypaint", "table", "toolbox", "trolley", "ur5", "welder", "wood_cutter", "wood", "worktable", "cupboard", "wall_warehouse", "ladder", "stool", "mop", "glue", "tape"],
 			"Destination object": ["paper2", "light", "floor", "dumpster", "big-tray", "ledge", "couch", "big-tray", "paper", "gray cube", "green cube","red cube", "tray", "tray2", "blue bottle", "gray bottle", "red bottle", "box", "apple", "orange", "banana", "quadcopter", "chair", "ball", "stick", "dumpster", "milk", "shelf", "glue", "tape", "3d_printer", "assembly_station", "blow_dryer", "brick", "board", "coal", "crate_green", "crate_peach", "crate_red", "drill", "floor_warehouse", "gasoline", "generator", "hammer", "husky", "lift", "long_shelf", "oil", "part1", "part2", "part3", "water", "platform", "ramp", "ramp_tape", "screw", "spraypaint", "table", "toolbox", "trolley", "ur5", "welder", "wood_cutter", "wood", "worktable", "cupboard", "ladder", "stool", "mop", "paper"]
 		},
 	"Clean object":
@@ -68,5 +68,36 @@
 	"Drop":
 		{
 			"Object to drop":[]
-		}
+		},
+    "Add fuel to object": 
+    	{
+    		"Objects to add fuel to": [], 
+    		"Object to add": []
+    	},
+    "Cut object": 
+    	{
+    		"Objects to cut": [], 
+    		"Cut using": []
+    	},
+    "3D Print object": 
+    	{
+    		"Objects to print": []
+    	},
+    "Drive object": 
+    	{
+    		"Objects to drive": [], 
+    		"Using tool": []
+    	},
+    "Weld object": 
+    	{
+    		"Objects to weld": []
+    	},
+    "Paint object": 
+    	{
+    		"Objects to paint": []
+    	},
+    "Drill object": 
+    	{
+    		"Objects to drill into": []
+    	}
 }
