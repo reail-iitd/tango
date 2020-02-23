@@ -123,7 +123,7 @@ class Datapoint:
 			string = string + ")\n"
 		return string
 
-	def getGraph(self, index=0):
+	def getGraph(self, index=0, distance=False):
 		world = 'home' if 'home' in self.world else 'factory' if 'factory' in self.world else 'outdoor'
 		metrics = self.metrics[index]
 		sceneobjects = list(metrics.keys())
@@ -166,6 +166,7 @@ class Datapoint:
 			node['states'] = states
 			node['position'] = metrics[obj]
 			node['size'] = objects[objID]['size']
+			node['vector'] = objects[objID]['vector']
 			nodes.append(node)
 		edges = []
 		for i in range(len(sceneobjects)):
@@ -183,7 +184,8 @@ class Datapoint:
 					edges.append({'from': obj1ID, 'to': obj2ID, 'relation': 'On'}) 
 				if obj2 == 'walls' and 'Stickable' in objects[obj1ID]['properties'] and isInState(obj1, allStates[world][obj1]['stuck'], metrics[obj1]):
 					edges.append({'from': obj1ID, 'to': obj2ID, 'relation': 'Stuck'}) 
-				edges.append({'from': obj1ID, 'to': obj2ID, 'distance': getDirectedDist(obj1, obj2, metrics)})
+				if distance:
+					edges.append({'from': obj1ID, 'to': obj2ID, 'distance': getDirectedDist(obj1, obj2, metrics)})
 		return {'graph_'+str(index): {'nodes': nodes, 'edges': edges}}
 
 	def getTools(self):
@@ -194,4 +196,6 @@ class Datapoint:
 			for obj in action[1:]:
 				if (not obj in goal_objects) and (not obj in usedTools) and obj in tools:
 					usedTools.append(obj)
+		if (len(usedTools) == 0):
+			usedTools.append("no-tool")
 		return usedTools
