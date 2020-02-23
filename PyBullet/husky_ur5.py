@@ -50,7 +50,7 @@ welded = []
 # Objects painted
 painted = []
 
-def start():
+def start(input_args):
   # Initialize husky and ur5 model
   global husky,robotID, object_lookup, id_lookup, horizontal_list, ground_list,fixed_orientation,tolerances, properties,cons_cpos_lookup,cons_pos_lookup, cons_link_lookup,ur5_dist,states,wings,gotoWing,constraints,constraint,x1, y1, o1
   global imageCount,yaw,ims,dist,pitch,ax,fig,cam,camX, camY, world_states,id1, perspective, wall_id, datapoint
@@ -60,7 +60,7 @@ def start():
   light = p.connect(p.GUI)
 
   # Add input arguments
-  args = initParser()
+  args = input_args
   speed = args.speed
 
   if (args.logging or args.display):

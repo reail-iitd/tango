@@ -33,6 +33,9 @@ def initParser():
                             type=str,
                             required=False,
                             default='jsons/home_goals/goal0-tut1.json',
-                            help='Path og goal file')
+                            help='Path of goal file')
+    parser.add_argument('--randomize',
+                            action = "store_true",
+                            help = "Turning this on randomizes the goal file and the scene file")
     return parser.parse_args()
  

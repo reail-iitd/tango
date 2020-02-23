@@ -68,16 +68,16 @@
 				</div>
 			</div>
 			<div class="col-sm-2">
-				<img src="/static/up.png" style="width:50px;height:50px;" alt="Zoom in" onclick="zoomIn()">
+				<img src="{{base_url}}/static/up.png" style="width:50px;height:50px;" alt="Zoom in" onclick="zoomIn()">
 			</div>
 			<div class="col-sm-2">
-				<img src="/static/down.png" style="width:50px;height:50px;" alt="Zoom Out" onclick="zoomOut()">
+				<img src="{{base_url}}/static/down.png" style="width:50px;height:50px;" alt="Zoom Out" onclick="zoomOut()">
 			</div>
 		  	<div class="col-sm-2">
-		  		<img src="/static/left.png" style="width:50px;height:50px;" alt="Rotate camera left" onclick="rotateLeft()">
+		  		<img src="{{base_url}}/static/left.png" style="width:50px;height:50px;" alt="Rotate camera left" onclick="rotateLeft()">
 			</div>
 		  	<div class="col-sm-2">
-		  		<img src="/static/right.png" style="width:50px;height:50px;" alt="Rotate camera right" onclick="rotateRight()">
+		  		<img src="{{base_url}}/static/right.png" style="width:50px;height:50px;" alt="Rotate camera right" onclick="rotateRight()">
 		  	</div>
 		  </div>
 		  <div class="row">
@@ -100,7 +100,7 @@
 	  } );
 		function zoomIn(){
 			$.ajax({
-		      url: "/zoomIn",
+		      url: "{{base_url}}/zoomIn",
 		      type: "post",
 		      data: {direction: "up"},
 		      success: function(response) {
@@ -111,7 +111,7 @@
 		}
 		function toggle(){
 			$.ajax({
-		      url: "/toggle",
+		      url: "{{base_url}}/toggle",
 		      type: "post",
 		      data: {direction: "toggle"},
 		      success: function(response) {
@@ -122,7 +122,7 @@
 		}
 		function zoomOut(){
 			$.ajax({
-		      url: "/zoomOut",
+		      url: "{{base_url}}/zoomOut",
 		      type: "post",
 		      data: {direction: "down"},
 		      success: function(response) {
@@ -133,7 +133,7 @@
 		}
 		function rotateLeft(){
 			$.ajax({
-		      url: "/rotateCameraRight",
+		      url: "{{base_url}}/rotateCameraRight",
 		      type: "post",
 		      data: {direction: "left"},
 		      success: function(response) {
@@ -144,7 +144,7 @@
 		}
 		function rotateRight(){
 			$.ajax({
-		      url: "/rotateCameraLeft",
+		      url: "{{base_url}}/rotateCameraLeft",
 		      type: "post",
 		      data: {direction: "right"},
 		      success: function(response) {
@@ -157,7 +157,7 @@
 		    var text = $(this).val();
 
 		    $.ajax({
-		      url: "/arguments",
+		      url: "{{base_url}}/arguments",
 		      type: "get",
 		      data: {predicate: text},
 		      success: function(response) {
@@ -183,7 +183,7 @@
 				i += 1;
 			}
 			$.ajax({
-		      url: "/execute_move",
+		      url: "{{base_url}}/execute_move",
 		      type: "post",
 		      data: data_for_arguments,
 		      success: function(response) {
@@ -195,7 +195,7 @@
 		});
 		$("#undo_move").click(function(){
 			$.ajax({
-		      url: "/undo_move",
+		      url: "{{base_url}}/undo_move",
 		      type: "get",
 		      success: function(response) {
 		      	$("#move_list li:last").remove();
@@ -205,12 +205,12 @@
 		    });
 		});
 		$("#next-tut").click(function(){
-			window.location = "/";
+			window.location = "{{base_url}}/";
 		});
 		{% for object in world_objects%}
 			$("#{{object}}").click(function(){
 				$.ajax({
-			      url: "/showObject",
+			      url: "{{base_url}}/showObject",
 			      type: "post",
 			      data: {"object": "{{object}}" },
 			      success: function(response) {
