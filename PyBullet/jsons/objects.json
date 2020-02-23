@@ -1048,7 +1048,7 @@
 			"tolerance": 1.5,
 			"constraint_link": -1,
 			"constraint_cpos": [],
-			"constraint_pos": [[0, 0, 0.2], [0, 0, 0.4], [0, 0, 0.6]],
+			"constraint_pos": [[0.4, 0, 0.2], [0, 0, 0.4], [-0.4, 0, 0.2]],
 			"ur5_dist": [1,0,0],
 			"properties": [],
 			"size": [0.38992445455089, 0.1915, 0.5795999982357025]

@@ -220,7 +220,7 @@ def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None):
             except:
               pass
           counter += 1
-          z = 1 if p.getBasePositionAndOrientation(id_lookup['husky'])[0][2] > 0.5 else 0
+          z = 1 if p.getBasePositionAndOrientation(husky)[0][2] > 0.5 else 0
           camTargetPos = [x1, y1, z]
           if (args.logging or args.display) and (counter % COUNTER_MOD == 0):
             # start_image = time.time()
@@ -421,7 +421,7 @@ def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None):
             if not waiting and not done:
               target = id_lookup[actions[action_index][1]]
               (x2, y2, z2), _ = p.getBasePositionAndOrientation(target)
-              on_height = p.getBasePositionAndOrientation(id_lookup["husky"])[0][2] > 0.5 and p.getBasePositionAndOrientation(id_lookup["husky"])[0][2] < 1.1
+              on_height = p.getBasePositionAndOrientation(husky)[0][2] > 0.5 and p.getBasePositionAndOrientation(husky)[0][2] < 1.1
               opposite = -1 if on_height else 1
               targetLoc = [x2, y2+(opposite * 1.7 if y2 < 0 else -1.7 * opposite), 1 if on_height else 0]
               waiting = True
