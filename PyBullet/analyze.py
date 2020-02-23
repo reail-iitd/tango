@@ -6,15 +6,17 @@ from scipy.spatial import distance
 from statistics import mean 
 from shutil import copyfile
 
-GOAL_LIST = ["goal1-milk-fridge.json", "goal2-fruits-cupboard.json", "goal3-clean-dirt.json", "goal4-stick-paper.json", "goal5-cubes-box.json", "goal6-bottles-dumpster.json", "goal7-weight-paper.json", "goal8-light-off.json"]
+GOAL_LISTS = \
+{'home': ["goal1-milk-fridge.json", "goal2-fruits-cupboard.json", "goal3-clean-dirt.json", "goal4-stick-paper.json", "goal5-cubes-box.json", "goal6-bottles-dumpster.json", "goal7-weight-paper.json", "goal8-light-off.json"],
+'factory': ["goal1-crates-platform.json", "goal2-paper-wall.json", "goal3-board-wall.json", "goal4-generator-on.json", "goal5-assemble-parts.json", "goal6-tools-workbench.json", "goal7-clean-water.json", "goal8-clean-oil.json"]}
 
-def printNumDatapoints():
+def printNumDatapoints(w='factory'):
 	totalpoints = 0
-	for goal in GOAL_LIST:
+	for goal in GOAL_LISTS[w]:
 		print('Goal = ' + goal)
 		goalpoints = 0
 		for world in range(10):
-			directory = './dataset/home/' + goal.split('.')[0] + '/world_home' + str(world)
+			directory = './dataset/factory/' + goal.split('.')[0] + '/world_' + w + str(world) + '/'
 			try:
 				numpoints = len(listdir(directory))
 			except Exception as e:
@@ -137,8 +139,8 @@ def combineDatasets(idx=1):
 
 # keepNewDatapoints(4)
 # printAllDatapoints()
-# printNumDatapoints()
+printNumDatapoints()
 # changeAllDatapoints()
 # combineDatasets(4)
-printDatapoint("dataset/factory/goal1-crates-platform/world_factory2/1")
+# printDatapoint("dataset/factory/goal2-paper-wall/world_factory3/0")
 
