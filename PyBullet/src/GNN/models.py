@@ -1,5 +1,5 @@
-from CONSTANTS import *
-from helper import LayerNormGRUCell, fc_block
+from src.GNN.CONSTANTS import *
+from src.GNN.helper import LayerNormGRUCell, fc_block
 
 import torch
 import torch.nn as nn

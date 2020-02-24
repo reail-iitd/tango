@@ -3,8 +3,8 @@ from importlib import import_module
 import os
 import json
 from flask import Flask, render_template, Response, request
-from camera import Camera
-from base_camera import BaseCamera
+from src.camera import Camera
+from src.base_camera import BaseCamera
 import multiprocessing as mp
 import time
 from src.parser import *

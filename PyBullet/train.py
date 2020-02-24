@@ -1,6 +1,6 @@
-from CONSTANTS import *
-from models import GraphEncoder_Decoder
-from dataset_utils import Dataset
+from src.GNN.CONSTANTS import *
+from src.GNN.models import GraphEncoder_Decoder
+from src.GNN.dataset_utils import Dataset
 import random
 import numpy as np
 
