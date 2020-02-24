@@ -1,5 +1,5 @@
 import json
-from CONSTANTS import *
+from src.GNN.CONSTANTS import *
 import numpy as np
 import os
 import pickle

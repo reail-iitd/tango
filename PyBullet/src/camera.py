@@ -1,5 +1,5 @@
 import time
-from base_camera import BaseCamera
+from src.base_camera import BaseCamera
 import os
 
 class Camera(BaseCamera):

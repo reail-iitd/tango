@@ -136,6 +136,12 @@ def combineDatasets(idx=1):
 			for i in range(numpoints):
 				copyfile(directory + '/' + str(i) + '.datapoint', directoryOld + '/' + str(i + oldpoints) + '.datapoint')
 
+def printGraph(filename):
+	print(filename)
+	f = open(filename + '.datapoint', 'rb')
+	datapoint = pickle.load(f)
+	print (json.dumps(datapoint.getGraph(), indent=2))
+	f.close()
 
 # keepNewDatapoints(4)
 # printAllDatapoints()
