@@ -145,6 +145,8 @@ def simulator(queue_from_webapp_to_simulator, queue_from_simulator_to_webapp, qu
                 args.world = random.choice(WORLD_LIST)
             elif (not args.randomize and goal_file == None):
                 goal_file = args.goal
+            else:
+                args.world = random.choice(WORLD_LIST)
             husky_ur5.destroy()
             del sys.modules["husky_ur5"]
             del sys.modules["src.actions"]
@@ -187,11 +189,17 @@ def simulator(queue_from_webapp_to_simulator, queue_from_simulator_to_webapp, qu
 
 @app.route('/', methods = ["GET"])
 def index():
-    queue_from_webapp_to_simulator.put({"restart": None})
+    if args.randomize:
+	goal = random.choice(GOAL_LIST)
+    	queue_from_webapp_to_simulator.put({"restart": goal})
+    else:
+	queue_from_webapp_to_simulator.put({"restart": None})
     should_webapp_start = queue_from_simulator_to_webapp.get()
     if (request.method == "GET"):
-        return render_template('index.html', list_of_predicates = dict_of_predicates.keys(), workerId = workerId, world_objects = world_objects, base_url = base_url)
-
+	if args.randomize:
+            return render_template('index.html', list_of_predicates = dict_of_predicates.keys(), workerId = workerId, world_objects = world_objects, base_url = base_url, goal_text = json.load(open(goal, "r"))["text"])
+        else:
+            return render_template('index.html', list_of_predicates = dict_of_predicates.keys(), workerId = workerId, world_objects = world_objects, base_url = base_url)
 @app.route('/tutorial/1', methods = ["GET"])
 def show_tutorial1():
     return render_template('tutorial1.html')
