@@ -51,11 +51,24 @@ if __name__ == '__main__':
 		criterion = nn.CrossEntropyLoss()
 		optimizer = torch.optim.Adam(model.parameters() , lr = 0.005)
 
-		test_size = int(0.1 * len(data.graphs))
-		random.shuffle(data.graphs)
-		test_set = data.graphs[:test_size]
-		train_set = data.graphs[test_size:]
-		print ("The size of the test set is", test_size)
+		#Random test set generator
+		# test_size = int(0.1 * len(data.graphs))
+		# random.shuffle(data.graphs)
+		# test_set = data.graphs[:test_size]
+		# train_set = data.graphs[test_size:]
+
+		test_set = []
+		train_set = []
+		for i in data.graphs:
+			for j in range(1,9):
+				if (i[6],i[7]) == (j,j-1):
+					test_set.append(i)
+					break
+			else:
+				train_set.append(i)
+		print ("Size before split was", len(data.graphs))
+		print ("The size of the training set is", len(train_set))
+		print ("The size of the test set is", len(test_set))
 
 		for num_epochs in range(NUM_EPOCHS+1):
 			random.shuffle(train_set)
@@ -94,7 +107,7 @@ if __name__ == '__main__':
 				torch.save(model, MODEL_SAVE_PATH + "/" + str(num_epochs) + ".pt")
 				# torch.save(decoder, DECODER_SAVE_PATH + "/" + str(num_epochs) + ".pt")
 	else:
-		model = torch.load(MODEL_SAVE_PATH + "/best_model_split_680_23_2_2020_18_30.pt")
+		model = torch.load(MODEL_SAVE_PATH + "/400.pt")
 		# decoder = torch.load(DECODER_SAVE_PATH + "/400.pt")
 	print (accuracy_score(data, data.graphs, model, True))
 

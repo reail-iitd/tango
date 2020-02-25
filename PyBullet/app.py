@@ -190,13 +190,13 @@ def simulator(queue_from_webapp_to_simulator, queue_from_simulator_to_webapp, qu
 @app.route('/', methods = ["GET"])
 def index():
     if args.randomize:
-	goal = random.choice(GOAL_LIST)
-    	queue_from_webapp_to_simulator.put({"restart": goal})
+        goal = random.choice(GOAL_LIST)
+        queue_from_webapp_to_simulator.put({"restart": goal})
     else:
-	queue_from_webapp_to_simulator.put({"restart": None})
+        queue_from_webapp_to_simulator.put({"restart": None})
     should_webapp_start = queue_from_simulator_to_webapp.get()
     if (request.method == "GET"):
-	if args.randomize:
+        if args.randomize:
             return render_template('index.html', list_of_predicates = dict_of_predicates.keys(), workerId = workerId, world_objects = world_objects, base_url = base_url, goal_text = json.load(open(goal, "r"))["text"])
         else:
             return render_template('index.html', list_of_predicates = dict_of_predicates.keys(), workerId = workerId, world_objects = world_objects, base_url = base_url)

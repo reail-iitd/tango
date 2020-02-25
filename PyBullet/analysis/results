@@ -86,6 +86,9 @@ number of 3 = 5
 (8, 9) ['stool', 'tray2', 'stick']
 
 best model
+accuracy on training 83
+
+best model
 Accuracy on training set is  88.19776714513556
 Accuracy on test set is  88.40579710144928
 
