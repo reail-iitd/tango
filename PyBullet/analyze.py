@@ -1,10 +1,11 @@
-from src.datapoint import Datapoint
+from src.datapoint import *
 import pickle
 from os import listdir, remove, rename
 import math
 from scipy.spatial import distance
 from statistics import mean 
 from shutil import copyfile
+import json
 
 GOAL_LISTS = \
 {'home': ["goal1-milk-fridge.json", "goal2-fruits-cupboard.json", "goal3-clean-dirt.json", "goal4-stick-paper.json", "goal5-cubes-box.json", "goal6-bottles-dumpster.json", "goal7-weight-paper.json", "goal8-light-off.json"],
@@ -140,13 +141,13 @@ def printGraph(filename):
 	print(filename)
 	f = open(filename + '.datapoint', 'rb')
 	datapoint = pickle.load(f)
-	print (json.dumps(datapoint.getGraph(), indent=2))
+	print (json.dumps(datapoint.getAugmentedGraph(), indent=2))
 	f.close()
 
 # keepNewDatapoints(4)
 # printAllDatapoints()
-printNumDatapoints()
+# printNumDatapoints()
 # changeAllDatapoints()
 # combineDatasets(4)
-# printDatapoint("dataset/factory/goal2-paper-wall/world_factory3/0")
+printGraph("dataset/home/goal1-milk-fridge/world_home3/0")
 

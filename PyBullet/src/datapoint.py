@@ -1,6 +1,7 @@
 from copy import deepcopy
 from src.utils import *
 import json
+from random import randint
 
 tools = ['stool', 'tray', 'tray2', 'lift', 'ramp', 'big-tray', 'book', 'box', 'chair',\
 		'stick', 'glue', 'tape', 'mop', 'sponge', 'vacuum', 'drill', 'screwdriver',\
@@ -123,10 +124,10 @@ class Datapoint:
 			string = string + ")\n"
 		return string
 
-	def getGraph(self, index=0, distance=False):
+	def getGraph(self, index=0, distance=False, sceneobjects=[]):
 		world = 'home' if 'home' in self.world else 'factory' if 'factory' in self.world else 'outdoor'
 		metrics = self.metrics[index]
-		sceneobjects = list(metrics.keys())
+		sceneobjects = list(metrics.keys()) if len(sceneobjects) == 0 else sceneobjects
 		globalidlookup = globalIDLookup(sceneobjects, objects)
 		nodes = []
 		for obj in sceneobjects:
@@ -187,6 +188,21 @@ class Datapoint:
 				if distance:
 					edges.append({'from': obj1ID, 'to': obj2ID, 'distance': getDirectedDist(obj1, obj2, metrics)})
 		return {'graph_'+str(index): {'nodes': nodes, 'edges': edges}}
+
+	def getAugmentedGraph(self, index=0, distance=False, remove=5):
+		allObjects = list(self.metrics[index].keys())
+		actionObjects = []
+		for action in self.actions:
+			if str(action[0]) == 'E' or str(action[0]) == 'U': continue
+			for i in range(1, len(action)):
+				if action[i] in allObjects and not action[i] in actionObjects and 'str' in str(type(action[i])):
+					actionObjects.append(action[i])
+		actionObjects.append('husky')
+		for j in range(randint(1, remove)):
+			obj = allObjects[randint(0, len(allObjects)-1)]
+			if obj in allObjects and not obj in actionObjects:
+				allObjects.remove(obj)
+		return self.getGraph(index, distance, sceneobjects=allObjects)
 
 	def getTools(self):
 		goal_objects = getGoalObjects(self.world, self.goal)
