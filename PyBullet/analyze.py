@@ -149,5 +149,5 @@ def printGraph(filename):
 # printNumDatapoints()
 # changeAllDatapoints()
 # combineDatasets(4)
-printGraph("dataset/home/goal1-milk-fridge/world_home3/0")
+printGraph("dataset/factory/goal1-crates-platform/world_factory3/0")
 
