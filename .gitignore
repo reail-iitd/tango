@@ -255,3 +255,4 @@ TSWLatexianTemp*
 # generated if using elsarticle.cls
 *.spl
 .vscode/settings.json
+*.pkl

@@ -1,5 +1,5 @@
 from src.GNN.CONSTANTS import *
-from src.GNN.models import DGL_GCN
+from src.GNN.models import DGL_GCN, DGL_AE
 from src.GNN.dataset_utils import *
 import random
 import numpy as np
@@ -7,6 +7,8 @@ from os import path
 
 import torch
 import torch.nn as nn
+
+training = "ae" # can be "gcn", "ae"
 
 def accuracy_score(dset, graphs, model, verbose = False):
 	total_correct = 0
@@ -23,12 +25,20 @@ def accuracy_score(dset, graphs, model, verbose = False):
 	return ((total_correct/len(graphs))*100)
 
 if __name__ == '__main__':
-	data = DGLDataset("dataset/home/", augmentation=5)
+	filename = 'dataset/home_'+str(AUGMENTATION)+'.pkl'
+	if path.exists(filename):
+		data = pickle.load(open(filename,'rb'))
+	else:
+		data = DGLDataset("dataset/home/", augmentation=AUGMENTATION)
+		pickle.dump(data, open(filename, "wb"))
 	train = True
 	if train:
-		model = DGL_GCN(data.features, data.num_objects, 50, len(TOOLS), 3, etypes, nn.functional.relu, 0.5)
-		criterion = nn.CrossEntropyLoss()
-		optimizer = torch.optim.Adam(model.parameters() , lr = 0.005)
+		if training == 'gcn':
+			model = DGL_GCN(data.features, data.num_objects, 50, len(TOOLS), 3, etypes, nn.functional.relu, 0.5)
+		elif training == 'ae':
+			model = DGL_AE(data.features, 50, 3, etypes, nn.functional.relu)
+		criterion = nn.MSELoss()
+		optimizer = torch.optim.Adam(model.parameters() , lr = 0.001)
 
 		#Random test set generator
 		# test_size = int(0.1 * len(data.graphs))
@@ -58,26 +68,28 @@ if __name__ == '__main__':
 			for iter_num, graph in enumerate(train_set):
 				goal_num, world_num, tools, g = graph
 				y_pred = model(g)
-				y_true = np.zeros(NUMTOOLS)
-				for tool in tools:
-					y_true[TOOLS.index(tool)] = 1
-				y_true = torch.FloatTensor(y_true.reshape(1,-1))
-				loss = torch.sum((y_pred - y_true)** 2)
+				if training == 'ae':
+					y_true = g.ndata['feat']
+				elif training == 'gcn':
+					y_true = np.zeros(NUMTOOLS)
+					for tool in tools:
+						y_true[TOOLS.index(tool)] = 1
+					y_true = torch.FloatTensor(y_true.reshape(1,-1))
+				loss = criterion(y_pred, y_true)
 				# print (loss, loss.shape)
-				loss.backward()
+				# loss.backward()
 				total_loss += loss
 			
-			# total_loss.backward()
+			total_loss.backward()
 			optimizer.step()
 			print (total_loss.item()/len(train_set))
 
 			if (num_epochs % 10 == 0):
-				print ("Accuracy on training set is ",accuracy_score(data, train_set, model))
-				print ("Accuracy on test set is ",accuracy_score(data, test_set, model))
+				if training == 'gcn':
+					print ("Accuracy on training set is ",accuracy_score(data, train_set, model))
+					print ("Accuracy on test set is ",accuracy_score(data, test_set, model))
 				torch.save(model, MODEL_SAVE_PATH + "/" + str(num_epochs) + ".pt")
-				# torch.save(decoder, DECODER_SAVE_PATH + "/" + str(num_epochs) + ".pt")
 	else:
 		model = torch.load(MODEL_SAVE_PATH + "/400.pt")
-		# decoder = torch.load(DECODER_SAVE_PATH + "/400.pt")
 	print (accuracy_score(data, data.graphs, model, True))
 

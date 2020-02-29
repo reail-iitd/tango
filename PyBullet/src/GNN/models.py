@@ -198,3 +198,36 @@ class DGL_GCN(nn.Module):
         h = nn.functional.relu(self.fc1(h))
         h = self.final(self.fc2(h))
         return h
+
+class DGL_AE(nn.Module):
+    def __init__(self,
+                 in_feats,
+                 n_hidden,
+                 n_layers,
+                 etypes,
+                 activation):
+        super(DGL_AE, self).__init__()
+        self.encoder = nn.ModuleList()
+        self.encoder.append(HeteroRGCNLayer(in_feats, n_hidden, etypes, activation=activation))
+        for i in range(n_layers - 1):
+            self.encoder.append(HeteroRGCNLayer(n_hidden, n_hidden, etypes, activation=activation))
+        self.decoder = nn.ModuleList()
+        for i in range(n_layers - 1):
+            self.decoder.append(HeteroRGCNLayer(n_hidden, n_hidden, etypes, activation=nn.functional.tanhshrink))
+        self.decoder.append(HeteroRGCNLayer(n_hidden, in_feats, etypes, activation=nn.functional.tanhshrink))
+
+    def encode(self, g, h):
+        for i, layer in enumerate(self.encoder):
+            h = layer(g, h)
+        return h
+
+    def decode(self, g, h):
+        for i, layer in enumerate(self.decoder):
+            h = layer(g, h)
+        return h
+
+    def forward(self, g):
+        h = g.ndata['feat']
+        h = self.encode(g, h)
+        h = self.decode(g, h)
+        return h
