@@ -4,6 +4,7 @@ from src.GNN.helper import LayerNormGRUCell, fc_block
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import dgl.function as fn
 
 class GraphEncoder(nn.Module):
     def __init__(self, args, goal_bit = False):
@@ -221,3 +222,88 @@ class AttrProxy(object):
 
     def __getitem__(self, i):
         return getattr(self.module, self.prefix + str(i))
+
+
+class HeteroRGCNLayer(nn.Module):
+    # Source = https://docs.dgl.ai/en/0.4.x/tutorials/hetero/1_basics.html
+    def __init__(self, in_size, out_size, etypes, activation):
+        super(HeteroRGCNLayer, self).__init__()
+        self.weight = nn.ModuleDict({name : nn.Linear(in_size, out_size) for name in etypes})
+        self.activation = activation
+
+    def forward(self, G, features):
+        funcs = {}
+        for etype in G.etypes:
+            Wh = self.weight[etype](features)
+            G.nodes['object'].data['Wh_%s' % etype] = Wh
+            funcs[etype] = (fn.copy_u('Wh_%s' % etype, 'm'), fn.mean('m', 'h'))
+        G.multi_update_all(funcs, 'sum')
+        return self.activation(G.nodes['object'].data['h'])
+
+class DGL_GCN(nn.Module):
+    def __init__(self,
+                 in_feats,
+                 n_objects,
+                 n_hidden,
+                 n_classes,
+                 n_layers,
+                 etypes,
+                 activation,
+                 dropout):
+        super(DGL_GCN, self).__init__()
+        self.name = "HeteroRGCN_" + str(n_hidden) + "_" + str(n_layers)
+        self.layers = nn.ModuleList()
+        # input layer
+        self.layers.append(HeteroRGCNLayer(in_feats, n_hidden, etypes, activation=activation))
+        # hidden layers
+        for i in range(n_layers - 1):
+            self.layers.append(HeteroRGCNLayer(n_hidden, n_hidden, etypes, activation=activation))
+        # output layer
+        self.layers.append(HeteroRGCNLayer(n_hidden, n_hidden, etypes, activation=activation))
+        self.fc1 = nn.Linear(n_hidden * n_objects, n_hidden)
+        self.fc2 = nn.Linear(n_hidden, n_classes)
+        self.final = nn.Sigmoid()
+        self.dropout = nn.Dropout(p=dropout)
+
+    def forward(self, g):
+        h = g.ndata['feat']
+        for i, layer in enumerate(self.layers):
+            h = layer(g, h)
+        h = h.flatten()
+        h = nn.functional.relu(self.fc1(h))
+        h = self.final(self.fc2(h))
+        return h
+
+class DGL_AE(nn.Module):
+    def __init__(self,
+                 in_feats,
+                 n_hidden,
+                 n_layers,
+                 etypes,
+                 activation):
+        super(DGL_AE, self).__init__()
+        self.name = "GCN-AE_" + str(n_hidden) + "_" + str(n_layers)
+        self.encoder = nn.ModuleList()
+        self.encoder.append(HeteroRGCNLayer(in_feats, n_hidden, etypes, activation=activation))
+        for i in range(n_layers - 1):
+            self.encoder.append(HeteroRGCNLayer(n_hidden, n_hidden, etypes, activation=activation))
+        self.decoder = nn.ModuleList()
+        for i in range(n_layers - 1):
+            self.decoder.append(HeteroRGCNLayer(n_hidden, n_hidden, etypes, activation=nn.functional.tanhshrink))
+        self.decoder.append(HeteroRGCNLayer(n_hidden, in_feats, etypes, activation=nn.functional.tanhshrink))
+
+    def encode(self, g, h):
+        for i, layer in enumerate(self.encoder):
+            h = layer(g, h)
+        return h
+
+    def decode(self, g, h):
+        for i, layer in enumerate(self.decoder):
+            h = layer(g, h)
+        return h
+
+    def forward(self, g):
+        h = g.ndata['feat']
+        h = self.encode(g, h)
+        h = self.decode(g, h)
+        return h

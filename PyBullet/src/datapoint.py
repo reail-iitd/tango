@@ -2,12 +2,16 @@ from copy import deepcopy
 from src.utils import *
 import json
 from tqdm import tqdm
+from random import randint
 
 tools = ['stool', 'tray', 'tray2', 'lift', 'ramp', 'big-tray', 'book', 'box', 'chair',\
 		'stick', 'glue', 'tape', 'mop', 'sponge', 'vacuum', 'drill', 'screwdriver',\
-		'hammer', 'ladder', 'trolley', 'brick', 'blow_dryer']
+		'hammer', 'ladder', 'trolley', 'brick', 'blow_dryer', 'spraypaint', 'welder',\
+		'toolbox', 'wood_cutter', '3d_printer']
 
-skip = ['ur5', 'cupboard_back', 'fridge_back', 'ramp_tape']
+printable = ['screw', 'nail', 'screwdriver', 'hammer']
+
+skip = ['ur5', 'cupboard_back', 'fridge_back', 'ramp_tape', 'lift_base']
 
 objects = None
 with open('jsons/objects.json', 'r') as handle:
@@ -124,10 +128,13 @@ class Datapoint:
 			string = string + ")\n"
 		return string
 
-	def getGraph(self, index=0, distance=False):
+	def getGraph(self, index=0, distance=False, sceneobjects=[]):
 		world = 'home' if 'home' in self.world else 'factory' if 'factory' in self.world else 'outdoor'
 		metrics = self.metrics[index]
-		sceneobjects = list(metrics.keys())
+		sceneobjects = list(metrics.keys()) if len(sceneobjects) == 0 else sceneobjects
+		if 'factory' in self.world:
+			for ob in printable:
+				if not ob in sceneobjects: sceneobjects.append(ob)
 		globalidlookup = globalIDLookup(sceneobjects, objects)
 		nodes = []
 		for obj in sceneobjects:
@@ -164,18 +171,21 @@ class Datapoint:
 				states.append('Cut') if obj in self.cut[index] else states.append('Not_Cut')
 			if 'Can_Paint' in node['properties']:
 				states.append('Painted') if obj in self.cut[index] else states.append('Not_Painted')
+			if 'Printable' in node['properties']:
+				states.append('To_Print') if obj in metrics.keys() else states.append('Printed')
 			node['states'] = states
-			node['position'] = metrics[obj]
+			try: node['position'] = metrics[obj]
+			except: node['position'] = metrics['3d_printer']
 			node['size'] = objects[objID]['size']
 			node['vector'] = objects[objID]['vector']
 			nodes.append(node)
 		edges = []
 		for i in range(len(sceneobjects)):
 			obj1 = sceneobjects[i]
-			if obj1 in skip: continue
+			if obj1 in skip or not obj1 in metrics.keys(): continue
 			for j in range(len(sceneobjects)):
 				obj2 = sceneobjects[j]
-				if obj2 in skip or i == j: continue
+				if obj2 in skip or i == j or not obj2 in metrics.keys(): continue
 				obj1ID = globalidlookup[obj1]; obj2ID = globalidlookup[obj2]
 				if checkNear(obj1, obj2, metrics):
 					edges.append({'from': obj1ID, 'to': obj2ID, 'relation': 'Close'}) 
@@ -188,6 +198,21 @@ class Datapoint:
 				if distance:
 					edges.append({'from': obj1ID, 'to': obj2ID, 'distance': getDirectedDist(obj1, obj2, metrics)})
 		return {'graph_'+str(index): {'nodes': nodes, 'edges': edges}}
+
+	def getAugmentedGraph(self, index=0, distance=False, remove=5):
+		allObjects = list(self.metrics[index].keys())
+		actionObjects = []
+		for action in self.actions:
+			if str(action[0]) == 'E' or str(action[0]) == 'U': continue
+			for i in range(1, len(action)):
+				if action[i] in allObjects and not action[i] in actionObjects and 'str' in str(type(action[i])):
+					actionObjects.append(action[i])
+		actionObjects.append('husky')
+		for j in range(randint(1, remove)):
+			obj = allObjects[randint(0, len(allObjects)-1)]
+			if obj in allObjects and not obj in actionObjects:
+				allObjects.remove(obj)
+		return self.getGraph(index, distance, sceneobjects=allObjects)
 
 	def getTools(self, returnNoTool=False):
 		goal_objects = getGoalObjects(self.world, self.goal)

@@ -4,6 +4,7 @@ GUI/vizForDSE/*
 *__pycache*
 venv/
 PyBullet/logs/*
+PyBullet/trained_models/*
 
 flask-video-streaming/
 vscode.code-workspace
@@ -254,3 +255,4 @@ TSWLatexianTemp*
 # generated if using elsarticle.cls
 *.spl
 .vscode/settings.json
+*.pkl
