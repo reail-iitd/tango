@@ -88,7 +88,7 @@ if __name__ == '__main__':
 				if training == 'gcn':
 					print ("Accuracy on training set is ",accuracy_score(data, train_set, model))
 					print ("Accuracy on test set is ",accuracy_score(data, test_set, model))
-				torch.save(model, MODEL_SAVE_PATH + "/" + str(num_epochs) + ".pt")
+				torch.save(model, MODEL_SAVE_PATH + "/" + model.name + "_" + str(num_epochs) + ".pt")
 	else:
 		model = torch.load(MODEL_SAVE_PATH + "/400.pt")
 	print (accuracy_score(data, data.graphs, model, True))

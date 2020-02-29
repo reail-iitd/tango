@@ -177,6 +177,7 @@ class DGL_GCN(nn.Module):
                  activation,
                  dropout):
         super(DGL_GCN, self).__init__()
+        self.name = "HeteroRGCN_" + str(n_hidden) + "_" + str(n_layers)
         self.layers = nn.ModuleList()
         # input layer
         self.layers.append(HeteroRGCNLayer(in_feats, n_hidden, etypes, activation=activation))
@@ -207,6 +208,7 @@ class DGL_AE(nn.Module):
                  etypes,
                  activation):
         super(DGL_AE, self).__init__()
+        self.name = "GCN-AE_" + str(n_hidden) + "_" + str(n_layers)
         self.encoder = nn.ModuleList()
         self.encoder.append(HeteroRGCNLayer(in_feats, n_hidden, etypes, activation=activation))
         for i in range(n_layers - 1):
