@@ -1,6 +1,7 @@
 from copy import deepcopy
 from src.utils import *
 import json
+from tqdm import tqdm
 
 tools = ['stool', 'tray', 'tray2', 'lift', 'ramp', 'big-tray', 'book', 'box', 'chair',\
 		'stick', 'glue', 'tape', 'mop', 'sponge', 'vacuum', 'drill', 'screwdriver',\
@@ -188,7 +189,7 @@ class Datapoint:
 					edges.append({'from': obj1ID, 'to': obj2ID, 'distance': getDirectedDist(obj1, obj2, metrics)})
 		return {'graph_'+str(index): {'nodes': nodes, 'edges': edges}}
 
-	def getTools(self):
+	def getTools(self, returnNoTool=False):
 		goal_objects = getGoalObjects(self.world, self.goal)
 		usedTools = []
 		for action in self.actions:
@@ -196,6 +197,7 @@ class Datapoint:
 			for obj in action[1:]:
 				if (not obj in goal_objects) and (not obj in usedTools) and obj in tools:
 					usedTools.append(obj)
-		if (len(usedTools) == 0):
-			usedTools.append("no-tool")
+		if returnNoTool:	
+			if (len(usedTools) == 0):
+				usedTools.append("no-tool")
 		return usedTools

@@ -5,7 +5,7 @@ import os
 import pickle
 from src.datapoint import Datapoint
 
-def get_graph_data(pathToDatapoint):
+def get_graph_data(pathToDatapoint, args):
 
 	datapoint = pickle.load(open(pathToDatapoint, "rb"))
 	
@@ -17,9 +17,13 @@ def get_graph_data(pathToDatapoint):
 	graph_data = datapoint.getGraph()["graph_0"] #Initial Graph
 
 	#List of the names of the nodes
-	node_names = [i["name"] for i in graph_data["nodes"]] + ["global"]
-	#The id may not be the same as the position in the list
-	node_ids = [i["id"] for i in graph_data["nodes"]] + [-1] #-1 is the id of the global node
+	if args.global_node:
+		node_names = [i["name"] for i in graph_data["nodes"]] + ["global"]
+		node_ids = [i["id"] for i in graph_data["nodes"]] + [-1] #-1 is the id of the global node
+	else:
+		node_names = [i["name"] for i in graph_data["nodes"]]
+		#The id may not be the same as the position in the list
+		node_ids = [i["id"] for i in graph_data["nodes"]]
 
 	n_nodes = len(node_names)
 
@@ -42,24 +46,30 @@ def get_graph_data(pathToDatapoint):
 		tgt_idx = node_ids.index(tgt_id)
 
 		adjacency_matrix[edge_type_idx, src_idx, tgt_idx] = True
-	for i in range(N_EDGES):
-		for j in range(n_nodes):
-			adjacency_matrix[i,n_nodes-1,j] = True
-			adjacency_matrix[i,j,n_nodes-1] = True
+	if args.global_node:
+		for i in range(N_EDGES):
+			for j in range(n_nodes):
+				adjacency_matrix[i,n_nodes-1,j] = True
+				adjacency_matrix[i,j,n_nodes-1] = True
 
 	node_vectors = [i["vector"] for i in graph_data["nodes"]]
-	node_vectors.append([0]*PRETRAINED_VECTOR_SIZE)
+	if args.global_node:
+		node_vectors.append([0]*PRETRAINED_VECTOR_SIZE)
 	node_vectors = np.array(node_vectors)
 
 	node_size_and_pos = [list(i["size"]) + list(i["position"][0]) + list(i["position"][1]) for i in graph_data["nodes"]]
-	node_size_and_pos.append([0]*10)
+	if args.global_node:
+		node_size_and_pos.append([0]*10)
 	node_size_and_pos = np.array(node_size_and_pos)
-
-	return (adjacency_matrix, node_states, node_ids, node_names, n_nodes, datapoint.getTools(), goal_num, world_num, node_vectors, node_size_and_pos)
+	tools = datapoint.getTools()
+	if (len(tools) == 0):
+		return None
+	return (adjacency_matrix, node_states, node_ids, node_names, n_nodes, tools, goal_num, world_num, node_vectors, node_size_and_pos)
 
 class Dataset():
 
-	def __init__(self, program_dir):
+	def __init__(self, program_dir, args):
+		self.args = args
 		graphs = []
 		self.goal_scene_to_tools = {}
 		all_files = os.walk(program_dir)
@@ -69,7 +79,10 @@ class Dataset():
 				for file in files:
 					file_path = path + "/" + file
 					# print (file_path)
-					graphs.append(get_graph_data(file_path))
+					graph_ret = get_graph_data(file_path, self.args)
+					if (graph_ret is None):
+						continue
+					graphs.append(graph_ret)
 					tools = graphs[-1][5]
 					goal_num = graphs[-1][6]
 					world_num = graphs[-1][7]
@@ -83,6 +96,8 @@ class Dataset():
 		# print (len(self.tools),self.tools)
 		self.graphs = graphs
 		# for i in self.goal_scene_to_tools:
-		# 	print (i,self.goal_scene_to_tools[i])
+		# 	if "no-tool" in self.goal_scene_to_tools[i]:
+		# 		if (len(self.goal_scene_to_tools[i]) == 1):
+		# 			print (i,self.goal_scene_to_tools[i])
 
 

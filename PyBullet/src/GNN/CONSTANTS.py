@@ -23,9 +23,9 @@ GRAPH_HIDDEN = 64
 NUM_EPOCHS = 2000
 LOGIT_HIDDEN = 32
 NUM_GOALS = 8
-TOOLS = ['stool', 'tray', 'tray2', 'lift', 'ramp', 'big-tray', 'book', 'box', 'chair',\
-		'stick', 'glue', 'tape', 'mop', 'sponge', 'vacuum', 'no-tool']
 # TOOLS = ['stool', 'tray', 'tray2', 'lift', 'ramp', 'big-tray', 'book', 'box', 'chair',\
-# 		'stick', 'glue', 'tape', 'mop', 'sponge', 'vacuum']
+# 		'stick', 'glue', 'tape', 'mop', 'sponge', 'vacuum', 'no-tool']
+TOOLS = ['stool', 'tray', 'tray2', 'lift', 'ramp', 'big-tray', 'book', 'box', 'chair',\
+		'stick', 'glue', 'tape', 'mop', 'sponge', 'vacuum']
 NUMTOOLS = len(TOOLS)
 MODEL_SAVE_PATH = "trained_models/"
