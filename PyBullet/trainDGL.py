@@ -3,6 +3,7 @@ from src.GNN.models import DGL_GCN
 from src.GNN.dataset_utils import *
 import random
 import numpy as np
+from os import path
 
 import torch
 import torch.nn as nn
@@ -22,10 +23,10 @@ def accuracy_score(dset, graphs, model, verbose = False):
 	return ((total_correct/len(graphs))*100)
 
 if __name__ == '__main__':
-	data = DGLDataset("dataset/home/")
+	data = DGLDataset("dataset/home/", augmentation=5)
 	train = True
 	if train:
-		model = DGL_GCN(data.features, data.num_objects, 500, len(TOOLS), 3, etypes, nn.functional.relu, 0.5)
+		model = DGL_GCN(data.features, data.num_objects, 50, len(TOOLS), 3, etypes, nn.functional.relu, 0.5)
 		criterion = nn.CrossEntropyLoss()
 		optimizer = torch.optim.Adam(model.parameters() , lr = 0.005)
 

@@ -102,7 +102,7 @@ def getDGLGraph(pathToDatapoint, selfLoops):
 	goal_num = int(datapoint.goal[4])
 	world_num = int(datapoint.world[-1])
 	# Initial Graph
-	graph_data = datapoint.getGraph()["graph_0"] 
+	graph_data = datapoint.getAugmentedGraph()["graph_0"] 
 	# Make edge sets
 	close, inside, on, stuck = [], [], [], []
 	for edge in graph_data["edges"]:
@@ -138,7 +138,7 @@ def getDGLGraph(pathToDatapoint, selfLoops):
 
 
 class DGLDataset():
-	def __init__(self, program_dir):
+	def __init__(self, program_dir, augmentation=50):
 		self.num_objects = 0
 		selfLoops, globalEdges = [], []
 		with open('jsons/objects.json', 'r') as handle:
@@ -152,7 +152,8 @@ class DGLDataset():
 			if (len(files) > 0):
 				for file in files:
 					file_path = path + "/" + file
-					graphs.append(getDGLGraph(file_path, selfLoops))
+					for i in range(augmentation):
+						graphs.append(getDGLGraph(file_path, selfLoops))
 					tools = graphs[-1][2]
 					goal_num = graphs[-1][0]
 					world_num = graphs[-1][1]
