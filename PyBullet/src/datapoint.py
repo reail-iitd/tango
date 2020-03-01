@@ -1,6 +1,7 @@
 from copy import deepcopy
 from src.utils import *
 import json
+from tqdm import tqdm
 from random import randint
 
 tools = ['stool', 'tray', 'tray2', 'lift', 'ramp', 'big-tray', 'book', 'box', 'chair',\
@@ -213,7 +214,7 @@ class Datapoint:
 				allObjects.remove(obj)
 		return self.getGraph(index, distance, sceneobjects=allObjects)
 
-	def getTools(self):
+	def getTools(self, returnNoTool=False):
 		goal_objects = getGoalObjects(self.world, self.goal)
 		usedTools = []
 		for action in self.actions:
@@ -221,6 +222,7 @@ class Datapoint:
 			for obj in action[1:]:
 				if (not obj in goal_objects) and (not obj in usedTools) and obj in tools:
 					usedTools.append(obj)
-		if (len(usedTools) == 0):
-			usedTools.append("no-tool")
+		if returnNoTool:	
+			if (len(usedTools) == 0):
+				usedTools.append("no-tool")
 		return usedTools

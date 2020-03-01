@@ -1,54 +1,30 @@
 from src.GNN.CONSTANTS import *
-from src.GNN.models import GraphEncoder_Decoder, GraphAttentionEncoder_Decoder
+from src.GNN.models import GraphEncoder_Decoder
 from src.GNN.dataset_utils import Dataset
 import random
 import numpy as np
+import argparse
 
 import torch
 import torch.nn as nn
-import argparse
-
-goal_jsons = ["jsons/home_goals/goal1-milk-fridge.json", "jsons/home_goals/goal2-fruits-cupboard.json",\
-            "jsons/home_goals/goal3-clean-dirt.json", "jsons/home_goals/goal4-stick-paper.json",\
-            "jsons/home_goals/goal5-cubes-box.json", "jsons/home_goals/goal6-bottles-dumpster.json",\
-            "jsons/home_goals/goal7-weight-paper.json", "jsons/home_goals/goal8-light-off.json"]
-goal_jsons = [json.load(open(i, "r")) for i in goal_jsons]
-object2vec = {}
-for i in json.load(open("jsons/objects.json", "r"))["objects"]:
-	if "vector" in i:
-		object2vec[i["name"]] = np.array(i["vector"])
 
 def parse_args():
 	parser = argparse.ArgumentParser()
 
-	parser.add_argument("--global_node", action="store_true", help="Should a global node for context aggregation be added")
+	parser.add_argument("--global_node", action="store_true", help="Should a global node for context aggregation be added", default=True)
 
 	args = parser.parse_args()
 	return args
 
 def accuracy_score(dset, graphs, model, verbose = False):
 	total_correct = 0
-
+	final_print = []
 	for graph in graphs:
 		adjacency_matrix, node_states, node_ids, node_names, n_nodes, tools, goal_num, world_num, node_vectors, node_size_and_pos = graph
-		# goal_vec = np.zeros(NUM_GOALS)
-		# goal_vec[goal_num - 1] = 1
+		goal_vec = np.zeros(NUM_GOALS)
+		goal_vec[goal_num - 1] = 1
 
-		# y_pred = model(adjacency_matrix, node_states, node_ids, node_vectors, node_size_and_pos, goal_vec)
-		goal_complete_vec = np.array(goal_jsons[goal_num - 1]["goal-vector"])
-		goal_objects = goal_jsons[goal_num - 1]["goal-objects"]
-		goal_object_vec = np.zeros(300)
-		for i in goal_objects:
-			goal_object_vec += object2vec[i]
-		goal_object_vec /= len(goal_objects)
-		
-		#Goal bit
-		goal_bits = np.zeros((n_nodes, 1))
-		for i in goal_objects:
-			ind = node_names.index(i)
-			goal_bits[ind] = 1
-
-		y_pred = model(adjacency_matrix, node_states, node_ids, node_vectors, node_size_and_pos, goal_object_vec, goal_complete_vec, goal_bits)
+		y_pred = model(adjacency_matrix, node_states, node_ids, node_vectors, node_size_and_pos, goal_vec)
 
 		tools_possible = dset.goal_scene_to_tools[(goal_num,world_num)]
 		y_pred = list(y_pred.reshape(-1))
@@ -56,6 +32,7 @@ def accuracy_score(dset, graphs, model, verbose = False):
 
 		if tool_predicted in tools_possible:
 			total_correct += 1
+			final_print.append((goal_num, world_num, tool_predicted, tools_possible))
 		else:
 			if verbose:
 				print (goal_num, world_num, tool_predicted, tools_possible)
@@ -72,16 +49,18 @@ def accuracy_score(dset, graphs, model, verbose = False):
 		# 	if (y_true[y_pred[i][1]] == 1):
 		# 		total_correct += 1
 		# 		break
-
+	print ("---------------")
+	for i in final_print:
+		print (i)
 	return ((total_correct/len(graphs))*100)
 
 
 if __name__ == '__main__':
 	args = parse_args()
 	data = Dataset("dataset/home/", args)
-	train = True
+	train = False
 	if train:
-		model = GraphAttentionEncoder_Decoder(args)
+		model = GraphEncoder_Decoder(args)
 		criterion = nn.CrossEntropyLoss()
 		optimizer = torch.optim.Adam(model.parameters() , lr = 0.005)
 
@@ -113,26 +92,11 @@ if __name__ == '__main__':
 			for iter_num,graph in enumerate(train_set):
 				# print ("Iter num is " + str(iter_num))
 				adjacency_matrix, node_states, node_ids, node_names, n_nodes, tools, goal_num, world_num, node_vectors, node_size_and_pos = graph
-				# goal_vec = np.zeros(NUM_GOALS)
-				# goal_vec[goal_num - 1] = 1
+				goal_vec = np.zeros(NUM_GOALS)
+				goal_vec[goal_num - 1] = 1
 
-				# y_pred = model(adjacency_matrix, node_states, node_ids, node_vectors, node_size_and_pos, goal_vec)
-				# print (goal_jsons[goal_num - 1])
-				goal_complete_vec = np.array(goal_jsons[goal_num - 1]["goal-vector"])
-				goal_objects = goal_jsons[goal_num - 1]["goal-objects"]
-				goal_object_vec = np.zeros(300)
-				for i in goal_objects:
-					goal_object_vec += object2vec[i]
-				goal_object_vec /= len(goal_objects)
-				
-				#Goal bit
-				goal_bits = np.zeros((n_nodes, 1))
-				for i in goal_objects:
-					ind = node_names.index(i)
-					goal_bits[ind] = 1
+				y_pred = model(adjacency_matrix, node_states, node_ids, node_vectors, node_size_and_pos, goal_vec)
 
-				y_pred = model(adjacency_matrix, node_states, node_ids, node_vectors, node_size_and_pos, goal_object_vec, goal_complete_vec, goal_bits)
-				
 				y_true = np.zeros(NUMTOOLS)
 				for tool in tools:
 					y_true[TOOLS.index(tool)] = 1
@@ -156,7 +120,6 @@ if __name__ == '__main__':
 				torch.save(model, MODEL_SAVE_PATH + "/" + str(num_epochs) + ".pt")
 				# torch.save(decoder, DECODER_SAVE_PATH + "/" + str(num_epochs) + ".pt")
 	else:
-		model = torch.load(MODEL_SAVE_PATH + "/400.pt")
+		model = torch.load(MODEL_SAVE_PATH + "/best_model_baseline_270_29_2_2020_20_28.pt")
 		# decoder = torch.load(DECODER_SAVE_PATH + "/400.pt")
 	print (accuracy_score(data, data.graphs, model, True))
-
