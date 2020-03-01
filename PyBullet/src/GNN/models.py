@@ -224,6 +224,9 @@ class AttrProxy(object):
         return getattr(self.module, self.prefix + str(i))
 
 
+############################ DGL ############################
+
+
 class HeteroRGCNLayer(nn.Module):
     # Source = https://docs.dgl.ai/en/0.4.x/tutorials/hetero/1_basics.html
     def __init__(self, in_size, out_size, etypes, activation):
@@ -260,18 +263,58 @@ class DGL_GCN(nn.Module):
             self.layers.append(HeteroRGCNLayer(n_hidden, n_hidden, etypes, activation=activation))
         # output layer
         self.layers.append(HeteroRGCNLayer(n_hidden, n_hidden, etypes, activation=activation))
-        self.fc1 = nn.Linear(n_hidden * n_objects, n_hidden)
-        self.fc2 = nn.Linear(n_hidden, n_classes)
+        self.fc1 = nn.Linear(n_hidden * n_objects + 2 * PRETRAINED_VECTOR_SIZE, n_hidden)
+        self.fc2 = nn.Linear(n_hidden, n_hidden)
+        self.fc3 = nn.Linear(n_hidden, n_classes)
         self.final = nn.Sigmoid()
         self.dropout = nn.Dropout(p=dropout)
 
-    def forward(self, g):
+    def forward(self, g, goalVec, goalObjectsVec):
         h = g.ndata['feat']
         for i, layer in enumerate(self.layers):
             h = layer(g, h)
-        h = h.flatten()
+        scene_embedding = h.flatten()
+        h = torch.cat((scene_embedding, torch.Tensor(goalVec), torch.Tensor(goalObjectsVec)))
         h = nn.functional.relu(self.fc1(h))
-        h = self.final(self.fc2(h))
+        h = nn.functional.relu(self.fc2(h))
+        h = self.final(self.fc3(h))
+        return h
+
+class DGL_GCN_Global(nn.Module):
+    def __init__(self,
+                 in_feats,
+                 n_objects,
+                 n_hidden,
+                 n_classes,
+                 n_layers,
+                 etypes,
+                 activation,
+                 dropout):
+        super(DGL_GCN_Global, self).__init__()
+        self.name = "HeteroRGCN_Global_" + str(n_hidden) + "_" + str(n_layers)
+        self.layers = nn.ModuleList()
+        # input layer
+        self.layers.append(HeteroRGCNLayer(in_feats, n_hidden, etypes, activation=activation))
+        # hidden layers
+        for i in range(n_layers - 1):
+            self.layers.append(HeteroRGCNLayer(n_hidden, n_hidden, etypes, activation=activation))
+        # output layer
+        self.layers.append(HeteroRGCNLayer(n_hidden, n_hidden, etypes, activation=activation))
+        self.fc1 = nn.Linear(n_hidden + 2 * PRETRAINED_VECTOR_SIZE, n_hidden)
+        self.fc2 = nn.Linear(n_hidden, n_hidden)
+        self.fc3 = nn.Linear(n_hidden, n_classes)
+        self.final = nn.Sigmoid()
+        self.dropout = nn.Dropout(p=dropout)
+
+    def forward(self, g, goalVec, goalObjectsVec):
+        h = g.ndata['feat']
+        for i, layer in enumerate(self.layers):
+            h = layer(g, h)
+        scene_embedding = h[-1].flatten()
+        h = torch.cat((scene_embedding, torch.Tensor(goalVec), torch.Tensor(goalObjectsVec)))
+        h = nn.functional.relu(self.fc1(h))
+        h = nn.functional.relu(self.fc2(h))
+        h = self.final(self.fc3(h))
         return h
 
 class DGL_AE(nn.Module):
@@ -280,9 +323,10 @@ class DGL_AE(nn.Module):
                  n_hidden,
                  n_layers,
                  etypes,
-                 activation):
+                 activation,
+                 globalnode):
         super(DGL_AE, self).__init__()
-        self.name = "GCN-AE_" + str(n_hidden) + "_" + str(n_layers)
+        self.name = "GCN-AE_" + "Global_" if globalnode else '' + str(n_hidden) + "_" + str(n_layers)
         self.encoder = nn.ModuleList()
         self.encoder.append(HeteroRGCNLayer(in_feats, n_hidden, etypes, activation=activation))
         for i in range(n_layers - 1):
@@ -292,7 +336,8 @@ class DGL_AE(nn.Module):
             self.decoder.append(HeteroRGCNLayer(n_hidden, n_hidden, etypes, activation=nn.functional.tanhshrink))
         self.decoder.append(HeteroRGCNLayer(n_hidden, in_feats, etypes, activation=nn.functional.tanhshrink))
 
-    def encode(self, g, h):
+    def encode(self, g):
+        h = g.ndata['feat']
         for i, layer in enumerate(self.encoder):
             h = layer(g, h)
         return h
@@ -302,8 +347,56 @@ class DGL_AE(nn.Module):
             h = layer(g, h)
         return h
 
+    def freeze(self):
+        for param in self.parameters():
+            param.requires_grad = False
+
     def forward(self, g):
-        h = g.ndata['feat']
-        h = self.encode(g, h)
+        h = self.encode(g)
         h = self.decode(g, h)
+        return h
+
+class DGL_Decoder_Global(nn.Module):
+    def __init__(self,
+                 n_hidden,
+                 n_classes,
+                 n_layers):
+        super(DGL_Decoder_Global, self).__init__()
+        self.name = "GCN-Decoder_Global_" + str(n_hidden) + "_" + str(n_layers)
+        self.input = nn.Linear(n_hidden + 2 * PRETRAINED_VECTOR_SIZE, n_hidden)
+        self.hidden = []
+        for i in range(n_layers):
+            self.hidden.append(nn.Linear(n_hidden, n_hidden))
+        self.output = nn.Linear(n_hidden, n_classes)
+        self.final = nn.Sigmoid()
+
+    def forward(self, scene_embedding, goalVec, goalObjectsVec):
+        h = torch.cat((scene_embedding, torch.Tensor(goalVec), torch.Tensor(goalObjectsVec)))
+        h = nn.functional.relu(self.input(h))
+        for layer in self.hidden:
+            h = nn.functional.relu(layer(h))
+        h = self.final(self.output(h))
+        return h
+
+class DGL_Decoder(nn.Module):
+    def __init__(self,
+                 n_objects,
+                 n_hidden,
+                 n_classes,
+                 n_layers):
+        super(DGL_Decoder, self).__init__()
+        self.name = "GCN-Decoder_" + str(n_hidden) + "_" + str(n_layers)
+        self.input = nn.Linear(n_objects * n_hidden + 2 * PRETRAINED_VECTOR_SIZE, n_hidden)
+        self.hidden = []
+        for i in range(n_layers):
+            self.hidden.append(nn.Linear(n_hidden, n_hidden))
+        self.output = nn.Linear(n_hidden, n_classes)
+        self.final = nn.Sigmoid()
+
+    def forward(self, scene_embedding, goalVec, goalObjectsVec):
+        h = torch.cat((scene_embedding, torch.Tensor(goalVec), torch.Tensor(goalObjectsVec)))
+        h = nn.functional.relu(self.input(h))
+        for layer in self.hidden:
+            h = nn.functional.relu(layer(h))
+        h = self.final(self.output(h))
         return h

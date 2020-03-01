@@ -1,5 +1,5 @@
 from src.GNN.CONSTANTS import *
-from src.GNN.models import DGL_GCN, DGL_AE
+from src.GNN.models import DGL_GCN, DGL_AE, DGL_GCN_Global, DGL_Decoder, DGL_Decoder_Global
 from src.GNN.dataset_utils import *
 import random
 import numpy as np
@@ -9,13 +9,27 @@ from tqdm import tqdm
 import torch
 import torch.nn as nn
 
-training = "ae" # can be "gcn", "ae"
+training = "combined" # can be "gcn", "ae", "combined"
+split = "world" # can be "random", "world"
+train = True # can be True or False
+globalnode = True # can be True or False
 
-def accuracy_score(dset, graphs, model, verbose = False):
+def load_dataset(filename):
+	if path.exists(filename):
+		return pickle.load(open(filename,'rb'))
+	data = DGLDataset("dataset/home/", augmentation=AUGMENTATION, globalNode = globalnode)
+	pickle.dump(data, open(filename, "wb"))
+	return data
+
+def accuracy_score(dset, graphs, model, modelEnc, verbose = False):
 	total_correct = 0
 	for graph in graphs:
 		goal_num, world_num, tools, g = graph		
-		y_pred = model(g)
+		if training == 'gcn':
+			y_pred = model(g, goal2vec[goal_num], goalObjects2vec[goal_num])
+		elif training == 'combined':
+			encoding = modelEnc.encode(g)[-1] if globalnode else modelEnc.encode(g)
+			y_pred = model(encoding.flatten(), goal2vec[goal_num], goalObjects2vec[goal_num])
 		tools_possible = dset.goal_scene_to_tools[(goal_num,world_num)]
 		y_pred = list(y_pred.reshape(-1))
 		tool_predicted = TOOLS[y_pred.index(max(y_pred))]
@@ -25,54 +39,69 @@ def accuracy_score(dset, graphs, model, verbose = False):
 			print (goal_num, world_num, tool_predicted, tools_possible)
 	return ((total_correct/len(graphs))*100)
 
-def loss_score(graphs, model):
+def loss_score(graphs, model, modelEnc=None):
 	criterion = nn.MSELoss()
 	total_loss = 0.0
 	for iter_num, graph in enumerate(graphs):
 		goal_num, world_num, tools, g = graph
-		y_pred = model(g)
-		if training == 'ae':
+		if 'ae' in training:
+			y_pred = model(g)
 			y_true = g.ndata['feat']
-		elif training == 'gcn':
-			y_true = np.zeros(NUMTOOLS)
-			for tool in tools:
-				y_true[TOOLS.index(tool)] = 1
-			y_true = torch.FloatTensor(y_true.reshape(1,-1))
+		elif 'gcn' in training:
+			y_pred = model(g, goal2vec[goal_num], goalObjects2vec[goal_num])
+			y_true = torch.zeros(NUMTOOLS)
+			for tool in tools: y_true[TOOLS.index(tool)] = 1
+		elif 'combined' in training:
+			encoding = modelEnc.encode(g)[-1] if globalnode else modelEnc.encode(g)
+			y_pred = model(encoding.flatten(), goal2vec[goal_num], goalObjects2vec[goal_num])
+			y_true = torch.zeros(NUMTOOLS)
+			for tool in tools: y_true[TOOLS.index(tool)] = 1
 		loss = criterion(y_pred, y_true)
 		total_loss += loss
-	return total_loss.item()/len(graphs)
+	return total_loss
+
+def random_split(data):
+	test_size = int(0.1 * len(data.graphs))
+	random.shuffle(data.graphs)
+	test_set = data.graphs[:test_size]
+	train_set = data.graphs[test_size:]
+	return train_set, test_set
+
+def world_split(data):
+	test_set = []
+	train_set = []
+	for i in data.graphs:
+		for j in range(1,9):
+			if (i[0],i[1]) == (j,j-1):
+				test_set.append(i)
+				break
+		else:
+			train_set.append(i)
+	return train_set, test_set
 
 if __name__ == '__main__':
-	filename = 'dataset/home_'+str(AUGMENTATION)+'.pkl'
-	if path.exists(filename):
-		data = pickle.load(open(filename,'rb'))
-	else:
-		data = DGLDataset("dataset/home/", augmentation=AUGMENTATION)
-		pickle.dump(data, open(filename, "wb"))
-	train = True
+	filename = 'dataset/home_'+ ("global_" if globalnode else '') + str(AUGMENTATION)+'.pkl'
+	data = load_dataset(filename)
+	modelEnc = None
 	if train:
-		if training == 'gcn':
-			model = DGL_GCN(data.features, data.num_objects, 50, len(TOOLS), 3, etypes, nn.functional.relu, 0.5)
+		if training == 'gcn' and not globalnode:
+			model = DGL_GCN(data.features, data.num_objects, GRAPH_HIDDEN, NUMTOOLS, 3, etypes, nn.functional.relu, 0.5)
+		elif training == 'gcn' and globalnode:
+			model = DGL_GCN_Global(data.features, data.num_objects, GRAPH_HIDDEN, NUMTOOLS, 3, etypes, nn.functional.relu, 0.5)
 		elif training == 'ae':
-			model = DGL_AE(data.features, 100, 3, etypes, nn.functional.relu)
-		criterion = nn.MSELoss()
+			model = DGL_AE(data.features, GRAPH_HIDDEN, 3, etypes, nn.functional.relu, globalnode)
+		elif training == 'combined' and globalnode:
+			modelEnc = torch.load("trained_models/GCN-AE_Global_10.pt")
+			# modelEnc.freeze()
+			model = DGL_Decoder_Global(GRAPH_HIDDEN, NUMTOOLS, 3)
+		elif training == 'combined' and not globalnode:
+			modelEnc = torch.load("trained_models/GCN-AE_10.pt")
+			# modelEnc.freeze()
+			model = DGL_Decoder(GRAPH_HIDDEN, NUMTOOLS, 3)
+
 		optimizer = torch.optim.Adam(model.parameters() , lr = 0.001)
+		train_set, test_set = world_split(data) if split == 'world' else random_split(data) 
 
-		#Random test set generator
-		# test_size = int(0.1 * len(data.graphs))
-		# random.shuffle(data.graphs)
-		# test_set = data.graphs[:test_size]
-		# train_set = data.graphs[test_size:]
-
-		test_set = []
-		train_set = []
-		for i in data.graphs:
-			for j in range(1,9):
-				if (i[0],i[1]) == (j,j-1):
-					test_set.append(i)
-					break
-			else:
-				train_set.append(i)
 		print ("Size before split was", len(data.graphs))
 		print ("The size of the training set is", len(train_set))
 		print ("The size of the test set is", len(test_set))
@@ -81,33 +110,19 @@ if __name__ == '__main__':
 			random.shuffle(train_set)
 			print ("EPOCH " + str(num_epochs))
 
-			total_loss = 0.0
 			optimizer.zero_grad()
-			for iter_num, graph in tqdm(enumerate(train_set)):
-				goal_num, world_num, tools, g = graph
-				y_pred = model(g)
-				if training == 'ae':
-					y_true = g.ndata['feat']
-				elif training == 'gcn':
-					y_true = torch.zeros(NUMTOOLS, dtype=torch.float)
-					for tool in tools:
-						y_true[TOOLS.index(tool)] = 1
-					y_true = y_true.reshape(1,-1)
-				loss = criterion(y_pred, y_true)
-				# print (loss, loss.shape)
-				# loss.backward()
-				total_loss += loss
-			
+			total_loss = loss_score(train_set, model, modelEnc)
 			total_loss.backward()
 			optimizer.step()
+
 			print (total_loss.item()/len(train_set))
 
 			if (num_epochs % 10 == 0):
-				if training == 'gcn':
-					print ("Accuracy on training set is ",accuracy_score(data, train_set, model))
-					print ("Accuracy on test set is ",accuracy_score(data, test_set, model))
+				if training == 'gcn' or training == 'combined':
+					print ("Accuracy on training set is ",accuracy_score(data, train_set, model, modelEnc))
+					print ("Accuracy on test set is ",accuracy_score(data, test_set, model, modelEnc))
 				elif training == 'ae':
-					print ("Loss on test set is ", loss_score(test_set, model))
+					print ("Loss on test set is ", loss_score(test_set, model, modelEnc).item()/len(test_set))
 				torch.save(model, MODEL_SAVE_PATH + "/" + model.name + "_" + str(num_epochs) + ".pt")
 	else:
 		model = torch.load(MODEL_SAVE_PATH + "/400.pt")

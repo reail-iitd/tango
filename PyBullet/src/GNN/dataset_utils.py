@@ -7,11 +7,6 @@ from src.datapoint import Datapoint
 import dgl
 import torch
 
-goalObjects = {"1": ["milk", "fridge"], "2": ["apple", "orange", "banana", "cupboard"],\
-			   "3": ["dirt"], "4": ["paper", "walls"],\
-			   "5": ["cube_gray", "cube_green", "cube_red", "box"],\
-			   "6": ["bottle_red", "bottle_blue", "bottle_gray", "dumpster"],\
-			   "7": ["paper"], "8": ["light"]}
 etypes = ["Close", "Inside", "On", "Stuck", "Self-Loop"]
 
 def get_graph_data(pathToDatapoint, args):
@@ -112,8 +107,10 @@ class Dataset():
 
 ############################ DGL ############################
 
-def getDGLGraph(pathToDatapoint, selfLoops):
+def getDGLGraph(pathToDatapoint, selfLoops, globalNode):
 	datapoint = pickle.load(open(pathToDatapoint, "rb"))
+	tools = datapoint.getTools()
+	if len(tools) == 0: return None
 	goal_num = int(datapoint.goal[4])
 	world_num = int(datapoint.world[-1])
 	# Initial Graph
@@ -125,13 +122,16 @@ def getDGLGraph(pathToDatapoint, selfLoops):
 		elif edge["relation"] == "Inside": inside.append((edge["from"], edge["to"]))
 		elif edge["relation"] == "On": on.append((edge["from"], edge["to"]))
 		elif edge["relation"] == "Stuck": stuck.append((edge["from"], edge["to"]))
-	g = dgl.heterograph({
+	edgeDict = {
 		('object', 'Close', 'object'): close,
 		('object', 'Inside', 'object'): inside,
 		('object', 'On', 'object'): on,
 		('object', 'Stuck', 'object'): stuck,
-		('object', 'Self-Loop', 'object'): selfLoops,
-		})
+		('object', 'Self-Loop', 'object'): selfLoops
+		}
+	if globalNode:
+		edgeDict[('object', 'Global', 'object')]: [list(range(len(selfLoops))), len(selfLoops)]
+	g = dgl.heterograph(edgeDict)
 	# Add node features
 	n_nodes = g.number_of_nodes()
 	node_states = torch.zeros([n_nodes, N_STATES], dtype=torch.float) # State vector
@@ -146,14 +146,16 @@ def getDGLGraph(pathToDatapoint, selfLoops):
 			node_states[node_id, idx] = 1
 			node_vectors[node_id] = torch.FloatTensor(node["vector"])
 			node_size_and_pos[node_id] = torch.FloatTensor(list(node["size"]) + list(node["position"][0]) + list(node["position"][1]))
-			node_in_goal[node_id] = 1 if node["name"] in goalObjects[str(goal_num)] else 0
+			node_in_goal[node_id] = 1 if node["name"] in goalObjects[goal_num] else 0
 
 	g.ndata['feat'] = torch.cat((node_vectors, node_states, node_size_and_pos), 1)
 	return (goal_num, world_num, datapoint.getTools(), g)
 
 
 class DGLDataset():
-	def __init__(self, program_dir, augmentation=50):
+	def __init__(self, program_dir, augmentation=50, globalNode=False):
+		global etypes
+		if globalNode: etypes.append('Global')
 		self.num_objects = 0
 		selfLoops, globalEdges = [], []
 		with open('jsons/objects.json', 'r') as handle:
@@ -168,7 +170,8 @@ class DGLDataset():
 				for file in files:
 					file_path = path + "/" + file
 					for i in range(augmentation):
-						graphs.append(getDGLGraph(file_path, selfLoops))
+						graph = getDGLGraph(file_path, selfLoops, globalNode)
+						if graph: graphs.append(graph) 
 					tools = graphs[-1][2]
 					goal_num = graphs[-1][0]
 					world_num = graphs[-1][1]

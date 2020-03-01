@@ -222,7 +222,5 @@ class Datapoint:
 			for obj in action[1:]:
 				if (not obj in goal_objects) and (not obj in usedTools) and obj in tools:
 					usedTools.append(obj)
-		if returnNoTool:	
-			if (len(usedTools) == 0):
-				usedTools.append("no-tool")
+		if returnNoTool and len(usedTools) == 0: usedTools.append("no-tool")
 		return usedTools
