@@ -29,4 +29,4 @@ TOOLS = ['stool', 'tray', 'tray2', 'lift', 'ramp', 'big-tray', 'book', 'box', 'c
 		'stick', 'glue', 'tape', 'mop', 'sponge', 'vacuum']
 NUMTOOLS = len(TOOLS)
 MODEL_SAVE_PATH = "trained_models/"
-AUGMENTATION = 10
+AUGMENTATION = 1
