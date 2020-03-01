@@ -4,6 +4,7 @@ from src.GNN.dataset_utils import *
 import random
 import numpy as np
 from os import path
+from tqdm import tqdm
 
 import torch
 import torch.nn as nn
@@ -24,6 +25,23 @@ def accuracy_score(dset, graphs, model, verbose = False):
 			print (goal_num, world_num, tool_predicted, tools_possible)
 	return ((total_correct/len(graphs))*100)
 
+def loss_score(graphs, model):
+	criterion = nn.MSELoss()
+	total_loss = 0.0
+	for iter_num, graph in enumerate(graphs):
+		goal_num, world_num, tools, g = graph
+		y_pred = model(g)
+		if training == 'ae':
+			y_true = g.ndata['feat']
+		elif training == 'gcn':
+			y_true = np.zeros(NUMTOOLS)
+			for tool in tools:
+				y_true[TOOLS.index(tool)] = 1
+			y_true = torch.FloatTensor(y_true.reshape(1,-1))
+		loss = criterion(y_pred, y_true)
+		total_loss += loss
+	return total_loss.item()/len(graphs)
+
 if __name__ == '__main__':
 	filename = 'dataset/home_'+str(AUGMENTATION)+'.pkl'
 	if path.exists(filename):
@@ -36,7 +54,7 @@ if __name__ == '__main__':
 		if training == 'gcn':
 			model = DGL_GCN(data.features, data.num_objects, 50, len(TOOLS), 3, etypes, nn.functional.relu, 0.5)
 		elif training == 'ae':
-			model = DGL_AE(data.features, 50, 3, etypes, nn.functional.relu)
+			model = DGL_AE(data.features, 100, 3, etypes, nn.functional.relu)
 		criterion = nn.MSELoss()
 		optimizer = torch.optim.Adam(model.parameters() , lr = 0.001)
 
@@ -65,16 +83,16 @@ if __name__ == '__main__':
 
 			total_loss = 0.0
 			optimizer.zero_grad()
-			for iter_num, graph in enumerate(train_set):
+			for iter_num, graph in tqdm(enumerate(train_set)):
 				goal_num, world_num, tools, g = graph
 				y_pred = model(g)
 				if training == 'ae':
 					y_true = g.ndata['feat']
 				elif training == 'gcn':
-					y_true = np.zeros(NUMTOOLS)
+					y_true = torch.zeros(NUMTOOLS, dtype=torch.float)
 					for tool in tools:
 						y_true[TOOLS.index(tool)] = 1
-					y_true = torch.FloatTensor(y_true.reshape(1,-1))
+					y_true = y_true.reshape(1,-1)
 				loss = criterion(y_pred, y_true)
 				# print (loss, loss.shape)
 				# loss.backward()
@@ -88,6 +106,8 @@ if __name__ == '__main__':
 				if training == 'gcn':
 					print ("Accuracy on training set is ",accuracy_score(data, train_set, model))
 					print ("Accuracy on test set is ",accuracy_score(data, test_set, model))
+				elif training == 'ae':
+					print ("Loss on test set is ", loss_score(test_set, model))
 				torch.save(model, MODEL_SAVE_PATH + "/" + model.name + "_" + str(num_epochs) + ".pt")
 	else:
 		model = torch.load(MODEL_SAVE_PATH + "/400.pt")
