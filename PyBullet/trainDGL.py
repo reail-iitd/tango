@@ -1,5 +1,5 @@
 from src.GNN.CONSTANTS import *
-from src.GNN.models import DGL_GCN, DGL_AE, DGL_GCN_Global, DGL_Decoder, DGL_Decoder_Global
+from src.GNN.models import DGL_GCN, DGL_AE, DGL_GCN_Global, DGL_Decoder, DGL_Decoder_Global, DGL_AGCN
 from src.GNN.dataset_utils import *
 import random
 import numpy as np
@@ -9,7 +9,7 @@ from tqdm import tqdm
 import torch
 import torch.nn as nn
 
-training = "combined" # can be "gcn", "ae", "combined"
+training = "agcn" # can be "gcn", "ae", "combined", "agcn"
 split = "world" # can be "random", "world"
 train = True # can be True or False
 globalnode = True # can be True or False
@@ -25,7 +25,7 @@ def accuracy_score(dset, graphs, model, modelEnc, verbose = False):
 	total_correct = 0
 	for graph in graphs:
 		goal_num, world_num, tools, g = graph		
-		if training == 'gcn':
+		if 'gcn' in training:
 			y_pred = model(g, goal2vec[goal_num], goalObjects2vec[goal_num])
 		elif training == 'combined':
 			encoding = modelEnc.encode(g)[-1] if globalnode else modelEnc.encode(g)
@@ -56,6 +56,7 @@ def loss_score(graphs, model, modelEnc=None):
 			y_pred = model(encoding.flatten(), goal2vec[goal_num], goalObjects2vec[goal_num])
 			y_true = torch.zeros(NUMTOOLS)
 			for tool in tools: y_true[TOOLS.index(tool)] = 1
+			print(y_true.shape, y_pred.shape)
 		loss = criterion(y_pred, y_true)
 		total_loss += loss
 	return total_loss
@@ -98,6 +99,8 @@ if __name__ == '__main__':
 			modelEnc = torch.load("trained_models/GCN-AE_10.pt")
 			# modelEnc.freeze()
 			model = DGL_Decoder(GRAPH_HIDDEN, NUMTOOLS, 3)
+		elif training == 'agcn':
+			model = DGL_AGCN(data.features, data.num_objects, GRAPH_HIDDEN, NUMTOOLS, 3, etypes, nn.functional.relu, 0.5)
 
 		optimizer = torch.optim.Adam(model.parameters() , lr = 0.001)
 		train_set, test_set = world_split(data) if split == 'world' else random_split(data) 
@@ -118,7 +121,7 @@ if __name__ == '__main__':
 			print (total_loss.item()/len(train_set))
 
 			if (num_epochs % 10 == 0):
-				if training == 'gcn' or training == 'combined':
+				if training == 'gcn' or training == 'combined' or training == 'agcn':
 					print ("Accuracy on training set is ",accuracy_score(data, train_set, model, modelEnc))
 					print ("Accuracy on test set is ",accuracy_score(data, test_set, model, modelEnc))
 				elif training == 'ae':
