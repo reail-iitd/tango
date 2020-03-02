@@ -11,7 +11,7 @@ tools = ['stool', 'tray', 'tray2', 'lift', 'ramp', 'big-tray', 'book', 'box', 'c
 
 printable = ['screw', 'nail', 'screwdriver', 'hammer']
 
-skip = ['ur5', 'cupboard_back', 'fridge_back', 'ramp_tape', 'lift_base']
+skip = ['ur5', 'cupboard_back', 'fridge_back', 'ramp_tape', 'lift_base', 'ledge']
 
 objects = None
 with open('jsons/objects.json', 'r') as handle:

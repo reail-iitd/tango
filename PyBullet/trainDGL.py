@@ -39,8 +39,7 @@ def accuracy_score(dset, graphs, model, modelEnc, verbose = False):
 			print (goal_num, world_num, tool_predicted, tools_possible)
 	return ((total_correct/len(graphs))*100)
 
-def loss_score(graphs, model, modelEnc=None):
-	criterion = nn.MSELoss()
+def backprop(optimizer, graphs, model, modelEnc=None):
 	total_loss = 0.0
 	for iter_num, graph in enumerate(graphs):
 		goal_num, world_num, tools, g = graph
@@ -57,9 +56,36 @@ def loss_score(graphs, model, modelEnc=None):
 			y_true = torch.zeros(NUMTOOLS)
 			for tool in tools: y_true[TOOLS.index(tool)] = 1
 			print(y_true.shape, y_pred.shape)
-		loss = criterion(y_pred, y_true)
+		loss = torch.sum((y_pred - y_true)** 2)
 		total_loss += loss
-	return total_loss
+		optimizer.zero_grad()
+		loss.backward()
+		optimizer.step()
+	print (total_loss.item()/len(train_set))
+
+def backpropGD(optimizer, graphs, model, modelEnc=None):
+	total_loss = 0.0
+	for iter_num, graph in enumerate(graphs):
+		goal_num, world_num, tools, g = graph
+		if 'ae' in training:
+			y_pred = model(g)
+			y_true = g.ndata['feat']
+		elif 'gcn' in training:
+			y_pred = model(g, goal2vec[goal_num], goalObjects2vec[goal_num])
+			y_true = torch.zeros(NUMTOOLS)
+			for tool in tools: y_true[TOOLS.index(tool)] = 1
+		elif 'combined' in training:
+			encoding = modelEnc.encode(g)[-1] if globalnode else modelEnc.encode(g)
+			y_pred = model(encoding.flatten(), goal2vec[goal_num], goalObjects2vec[goal_num])
+			y_true = torch.zeros(NUMTOOLS)
+			for tool in tools: y_true[TOOLS.index(tool)] = 1
+			print(y_true.shape, y_pred.shape)
+		loss = torch.sum((y_pred - y_true)** 2)
+		total_loss += loss
+	optimizer.zero_grad()
+	total_loss.backward()
+	optimizer.step()
+	print (total_loss.item()/len(train_set))
 
 def random_split(data):
 	test_size = int(0.1 * len(data.graphs))
@@ -100,9 +126,10 @@ if __name__ == '__main__':
 			# modelEnc.freeze()
 			model = DGL_Decoder(GRAPH_HIDDEN, NUMTOOLS, 3)
 		elif training == 'agcn':
-			model = DGL_AGCN(data.features, data.num_objects, GRAPH_HIDDEN, NUMTOOLS, 3, etypes, nn.functional.relu, 0.5)
-
-		optimizer = torch.optim.Adam(model.parameters() , lr = 0.001)
+			model = torch.load(MODEL_SAVE_PATH + '/' + 'HeteroRGCN_Attention_640_3_Trained.pt')
+			# model = DGL_AGCN(data.features, data.num_objects, 10 * GRAPH_HIDDEN, NUMTOOLS, 3, etypes, nn.functional.tanh, 0.5)
+		
+		optimizer = torch.optim.Adam(model.parameters() , lr = 0.00001)
 		train_set, test_set = world_split(data) if split == 'world' else random_split(data) 
 
 		print ("Size before split was", len(data.graphs))
@@ -113,17 +140,12 @@ if __name__ == '__main__':
 			random.shuffle(train_set)
 			print ("EPOCH " + str(num_epochs))
 
-			optimizer.zero_grad()
-			total_loss = loss_score(train_set, model, modelEnc)
-			total_loss.backward()
-			optimizer.step()
-
-			print (total_loss.item()/len(train_set))
+			backprop(optimizer, train_set, model, modelEnc)
 
 			if (num_epochs % 10 == 0):
 				if training == 'gcn' or training == 'combined' or training == 'agcn':
 					print ("Accuracy on training set is ",accuracy_score(data, train_set, model, modelEnc))
-					print ("Accuracy on test set is ",accuracy_score(data, test_set, model, modelEnc))
+					print ("Accuracy on test set is ",accuracy_score(data, test_set, model, modelEnc, True))
 				elif training == 'ae':
 					print ("Loss on test set is ", loss_score(test_set, model, modelEnc).item()/len(test_set))
 				torch.save(model, MODEL_SAVE_PATH + "/" + model.name + "_" + str(num_epochs) + ".pt")

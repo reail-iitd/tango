@@ -300,8 +300,16 @@ class DGL_AGCN(nn.Module):
             self.layers.append(HeteroRGCNLayer(n_hidden, n_hidden, etypes, activation=activation))
         # output layer
         self.layers.append(HeteroRGCNLayer(n_hidden, n_hidden, etypes, activation=activation))
-        self.attention = nn.Linear(n_hidden + PRETRAINED_VECTOR_SIZE, 1)
-        self.fc1 = nn.Linear(n_hidden + PRETRAINED_VECTOR_SIZE, n_hidden)
+        self.attention = nn.Linear(n_hidden + n_hidden, 1)
+        self.embed = nn.Sequential()
+        self.embed.add_module(
+            'fc',
+            fc_block(
+                PRETRAINED_VECTOR_SIZE,
+                n_hidden,
+                False,
+                nn.Tanh))
+        self.fc1 = nn.Linear(n_hidden + n_hidden, n_hidden)
         self.fc2 = nn.Linear(n_hidden, n_hidden)
         self.fc3 = nn.Linear(n_hidden, n_classes)
         self.final = nn.Sigmoid()
@@ -311,16 +319,15 @@ class DGL_AGCN(nn.Module):
         h = g.ndata['feat']
         for i, layer in enumerate(self.layers):
             h = layer(g, h)
-
-        # import ipdb
-        # ipdb.set_trace()
-        attn_embedding = torch.cat([h, torch.Tensor(goalObjectsVec).repeat(h.size(0)).view(h.size(0), -1)], 1)
+        goalObjectsVec = self.embed(torch.Tensor(goalObjectsVec))
+        attn_embedding = torch.cat([h, goalObjectsVec.repeat(h.size(0)).view(h.size(0), -1)], 1)
         attn_weights = F.softmax(self.attention(attn_embedding), dim=0)
+        # print(attn_weights)
         scene_embedding = torch.mm(attn_weights.t(), h)
-        # goal_encoding = goalVec.view(1,-1)
-        final_to_decode = torch.cat([scene_embedding, torch.Tensor(goalVec.reshape(1, -1))], 1)
-        h = F.relu(self.fc1(final_to_decode))
-        h = F.relu(self.fc2(h))
+        goal_embed = self.embed(torch.Tensor(goalVec.reshape(1, -1)))
+        final_to_decode = torch.cat([scene_embedding, goal_embed], 1)
+        h = F.tanh(self.fc1(final_to_decode))
+        h = F.tanh(self.fc2(h))
         h = self.final(self.fc3(h))
         return h.flatten()
 
