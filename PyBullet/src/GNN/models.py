@@ -5,6 +5,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import dgl.function as fn
+from torch.nn import init
+# from dgl.nn.pytorch import GatedGraphConv
 
 class GraphEncoder(nn.Module):
     def __init__(self, args, goal_bit = False):
@@ -243,6 +245,26 @@ class HeteroRGCNLayer(nn.Module):
         G.multi_update_all(funcs, 'sum')
         return self.activation(G.nodes['object'].data['h'])
 
+class GatedHeteroRGCNLayer(nn.Module):
+    # Source = https://docs.dgl.ai/_modules/dgl/nn/pytorch/conv/gatedgraphconv.html#GatedGraphConv
+    def __init__(self, in_size, out_size, etypes, activation):
+        super(GatedHeteroRGCNLayer, self).__init__()
+        self.weight = nn.ModuleDict({name : nn.Linear(in_size, out_size) for name in etypes})
+        self.reduce = nn.Linear(in_size, out_size)
+        self.activation = activation
+        self.gru = LayerNormGRUCell(out_size, out_size, bias=True)
+
+    def forward(self, G, features):
+        funcs = {}; feat = self.activation(self.reduce(features))
+        for _ in range(N_TIMESEPS):
+            for etype in G.etypes:
+                Wh = self.weight[etype](features)
+                G.nodes['object'].data['Wh_%s' % etype] = Wh
+                funcs[etype] = (fn.copy_u('Wh_%s' % etype, 'm'), fn.mean('m', 'h'))
+            G.multi_update_all(funcs, 'sum')
+            feat = self.gru(G.nodes['object'].data['h'], feat)
+        return self.activation(feat)
+
 class DGL_GCN(nn.Module):
     def __init__(self,
                  in_feats,
@@ -257,12 +279,12 @@ class DGL_GCN(nn.Module):
         self.name = "HeteroRGCN_" + str(n_hidden) + "_" + str(n_layers)
         self.layers = nn.ModuleList()
         # input layer
-        self.layers.append(HeteroRGCNLayer(in_feats, n_hidden, etypes, activation=activation))
+        self.layers.append(GatedHeteroRGCNLayer(in_feats, n_hidden, etypes, activation=activation))
         # hidden layers
         for i in range(n_layers - 1):
-            self.layers.append(HeteroRGCNLayer(n_hidden, n_hidden, etypes, activation=activation))
+            self.layers.append(GatedHeteroRGCNLayer(n_hidden, n_hidden, etypes, activation=activation))
         # output layer
-        self.layers.append(HeteroRGCNLayer(n_hidden, n_hidden, etypes, activation=activation))
+        self.layers.append(GatedHeteroRGCNLayer(n_hidden, n_hidden, etypes, activation=activation))
         self.fc1 = nn.Linear(n_hidden * n_objects + 2 * PRETRAINED_VECTOR_SIZE, n_hidden)
         self.fc2 = nn.Linear(n_hidden, n_hidden)
         self.fc3 = nn.Linear(n_hidden, n_classes)
@@ -291,15 +313,15 @@ class DGL_AGCN(nn.Module):
                  activation,
                  dropout):
         super(DGL_AGCN, self).__init__()
-        self.name = "HeteroRGCN_Attention_" + str(n_hidden) + "_" + str(n_layers)
+        self.name = "GatedHeteroRGCN_Attention_" + str(n_hidden) + "_" + str(n_layers)
         self.layers = nn.ModuleList()
         # input layer
-        self.layers.append(HeteroRGCNLayer(in_feats, n_hidden, etypes, activation=activation))
+        self.layers.append(GatedHeteroRGCNLayer(in_feats, n_hidden, etypes, activation=activation))
         # hidden layers
         for i in range(n_layers - 1):
-            self.layers.append(HeteroRGCNLayer(n_hidden, n_hidden, etypes, activation=activation))
+            self.layers.append(GatedHeteroRGCNLayer(n_hidden, n_hidden, etypes, activation=activation))
         # output layer
-        self.layers.append(HeteroRGCNLayer(n_hidden, n_hidden, etypes, activation=activation))
+        self.layers.append(GatedHeteroRGCNLayer(n_hidden, n_hidden, etypes, activation=activation))
         self.attention = nn.Linear(n_hidden + n_hidden, 1)
         self.embed = nn.Sequential()
         self.embed.add_module(
@@ -345,12 +367,12 @@ class DGL_GCN_Global(nn.Module):
         self.name = "HeteroRGCN_Global_" + str(n_hidden) + "_" + str(n_layers)
         self.layers = nn.ModuleList()
         # input layer
-        self.layers.append(HeteroRGCNLayer(in_feats, n_hidden, etypes, activation=activation))
+        self.layers.append(GatedHeteroRGCNLayer(in_feats, n_hidden, etypes, activation=activation))
         # hidden layers
         for i in range(n_layers - 1):
-            self.layers.append(HeteroRGCNLayer(n_hidden, n_hidden, etypes, activation=activation))
+            self.layers.append(GatedHeteroRGCNLayer(n_hidden, n_hidden, etypes, activation=activation))
         # output layer
-        self.layers.append(HeteroRGCNLayer(n_hidden, n_hidden, etypes, activation=activation))
+        self.layers.append(GatedHeteroRGCNLayer(n_hidden, n_hidden, etypes, activation=activation))
         self.fc1 = nn.Linear(n_hidden + 2 * PRETRAINED_VECTOR_SIZE, n_hidden)
         self.fc2 = nn.Linear(n_hidden, n_hidden)
         self.fc3 = nn.Linear(n_hidden, n_classes)
@@ -379,9 +401,9 @@ class DGL_AE(nn.Module):
         super(DGL_AE, self).__init__()
         self.name = "GCN-AE_" + "Global_" if globalnode else '' + str(n_hidden) + "_" + str(n_layers)
         self.encoder = nn.ModuleList()
-        self.encoder.append(HeteroRGCNLayer(in_feats, n_hidden, etypes, activation=activation))
+        self.encoder.append(GatedHeteroRGCNLayer(in_feats, n_hidden, etypes, activation=activation))
         for i in range(n_layers - 1):
-            self.encoder.append(HeteroRGCNLayer(n_hidden, n_hidden, etypes, activation=activation))
+            self.encoder.append(GatedHeteroRGCNLayer(n_hidden, n_hidden, etypes, activation=activation))
         self.decoder = nn.ModuleList()
         for i in range(n_layers - 1):
             self.decoder.append(HeteroRGCNLayer(n_hidden, n_hidden, etypes, activation=nn.functional.tanhshrink))

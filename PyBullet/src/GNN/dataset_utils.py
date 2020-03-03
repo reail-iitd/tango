@@ -107,14 +107,14 @@ class Dataset():
 
 ############################ DGL ############################
 
-def getDGLGraph(pathToDatapoint, selfLoops, globalNode):
+def getDGLGraph(pathToDatapoint, globalNode):
 	datapoint = pickle.load(open(pathToDatapoint, "rb"))
 	tools = datapoint.getTools()
 	if len(tools) == 0: return None
 	goal_num = int(datapoint.goal[4])
 	world_num = int(datapoint.world[-1])
 	# Initial Graph
-	graph_data = datapoint.getAugmentedGraph()["graph_0"] 
+	graph_data = datapoint.getGraph()["graph_0"] 
 	# Make edge sets
 	close, inside, on, stuck = [], [], [], []
 	for edge in graph_data["edges"]:
@@ -126,8 +126,7 @@ def getDGLGraph(pathToDatapoint, selfLoops, globalNode):
 		('object', 'Close', 'object'): close,
 		('object', 'Inside', 'object'): inside,
 		('object', 'On', 'object'): on,
-		('object', 'Stuck', 'object'): stuck,
-		('object', 'Self-Loop', 'object'): selfLoops
+		('object', 'Stuck', 'object'): stuck
 		}
 	if globalNode:
 		edgeDict[('object', 'Global', 'object')]: [list(range(len(selfLoops))), len(selfLoops)]
@@ -157,11 +156,6 @@ class DGLDataset():
 		global etypes
 		if globalNode: etypes.append('Global')
 		self.num_objects = 0
-		selfLoops, globalEdges = [], []
-		with open('jsons/objects.json', 'r') as handle:
-			objects = json.load(handle)['objects']
-			self.num_objects = len(objects)
-			selfLoops = [(i,i) for i in range(len(objects))]
 		graphs = []
 		self.goal_scene_to_tools = {}
 		all_files = os.walk(program_dir)
@@ -170,7 +164,7 @@ class DGLDataset():
 				for file in files:
 					file_path = path + "/" + file
 					for i in range(augmentation):
-						graph = getDGLGraph(file_path, selfLoops, globalNode)
+						graph = getDGLGraph(file_path, globalNode)
 						if graph: graphs.append(graph) 
 					tools = graphs[-1][2]
 					goal_num = graphs[-1][0]

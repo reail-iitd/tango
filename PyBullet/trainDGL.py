@@ -118,18 +118,16 @@ if __name__ == '__main__':
 		elif training == 'ae':
 			model = DGL_AE(data.features, GRAPH_HIDDEN, 3, etypes, nn.functional.relu, globalnode)
 		elif training == 'combined' and globalnode:
-			modelEnc = torch.load("trained_models/GCN-AE_Global_10.pt")
-			# modelEnc.freeze()
+			modelEnc = torch.load("trained_models/GCN-AE_Global_10.pt")#; modelEnc.freeze()
 			model = DGL_Decoder_Global(GRAPH_HIDDEN, NUMTOOLS, 3)
 		elif training == 'combined' and not globalnode:
-			modelEnc = torch.load("trained_models/GCN-AE_10.pt")
-			# modelEnc.freeze()
+			modelEnc = torch.load("trained_models/GCN-AE_10.pt") #; modelEnc.freeze()
 			model = DGL_Decoder(GRAPH_HIDDEN, NUMTOOLS, 3)
 		elif training == 'agcn':
-			model = torch.load(MODEL_SAVE_PATH + '/' + 'HeteroRGCN_Attention_640_3_Trained.pt')
-			# model = DGL_AGCN(data.features, data.num_objects, 10 * GRAPH_HIDDEN, NUMTOOLS, 3, etypes, nn.functional.tanh, 0.5)
+			# model = torch.load("trained_models/GatedHeteroRGCN_Attention_640_3_Trained.pt")
+			model = DGL_AGCN(data.features, data.num_objects, 10 * GRAPH_HIDDEN, NUMTOOLS, 3, etypes, nn.functional.tanh, 0.5)
 		
-		optimizer = torch.optim.Adam(model.parameters() , lr = 0.00001)
+		optimizer = torch.optim.Adam(model.parameters() , lr = 0.0001)
 		train_set, test_set = world_split(data) if split == 'world' else random_split(data) 
 
 		print ("Size before split was", len(data.graphs))
@@ -143,7 +141,7 @@ if __name__ == '__main__':
 			backprop(optimizer, train_set, model, modelEnc)
 
 			if (num_epochs % 10 == 0):
-				if training == 'gcn' or training == 'combined' or training == 'agcn':
+				if training == 'gcn' or training == 'combined' or 'gcn' in training:
 					print ("Accuracy on training set is ",accuracy_score(data, train_set, model, modelEnc))
 					print ("Accuracy on test set is ",accuracy_score(data, test_set, model, modelEnc, True))
 				elif training == 'ae':
