@@ -249,7 +249,7 @@ class GatedHeteroRGCNLayer(nn.Module):
     # Source = https://docs.dgl.ai/_modules/dgl/nn/pytorch/conv/gatedgraphconv.html#GatedGraphConv
     def __init__(self, in_size, out_size, etypes, activation):
         super(GatedHeteroRGCNLayer, self).__init__()
-        self.weight = nn.ModuleDict({name : nn.Linear(in_size, out_size) for name in etypes})
+        self.weight = nn.ModuleDict({name : nn.Linear(out_size, out_size) for name in etypes})
         self.reduce = nn.Linear(in_size, out_size)
         self.activation = activation
         self.gru = LayerNormGRUCell(out_size, out_size, bias=True)
@@ -258,7 +258,7 @@ class GatedHeteroRGCNLayer(nn.Module):
         funcs = {}; feat = self.activation(self.reduce(features))
         for _ in range(N_TIMESEPS):
             for etype in G.etypes:
-                Wh = self.weight[etype](features)
+                Wh = self.weight[etype](feat)
                 G.nodes['object'].data['Wh_%s' % etype] = Wh
                 funcs[etype] = (fn.copy_u('Wh_%s' % etype, 'm'), fn.mean('m', 'h'))
             G.multi_update_all(funcs, 'sum')
