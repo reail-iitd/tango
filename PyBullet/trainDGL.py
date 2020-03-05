@@ -1,5 +1,5 @@
 from src.GNN.CONSTANTS import *
-from src.GNN.models import DGL_GCN, DGL_AE, DGL_GCN_Global, DGL_Decoder, DGL_Decoder_Global, DGL_AGCN
+from src.GNN.models import DGL_GCN, DGL_AE, DGL_GCN_Global, DGL_Decoder, DGL_Decoder_Global, DGL_AGCN, DGL_AGCN_Likelihood
 from src.GNN.dataset_utils import *
 import random
 import numpy as np
@@ -9,7 +9,7 @@ from tqdm import tqdm
 import torch
 import torch.nn as nn
 
-training = "agcn" # can be "gcn", "ae", "combined", "agcn"
+training = "agcn_likelihood" # can be "gcn", "ae", "combined", "agcn"
 split = "world" # can be "random", "world"
 train = True # can be True or False
 globalnode = True # can be True or False
@@ -125,7 +125,9 @@ if __name__ == '__main__':
 			model = DGL_Decoder(GRAPH_HIDDEN, NUMTOOLS, 3)
 		elif training == 'agcn':
 			# model = torch.load("trained_models/GatedHeteroRGCN_Attention_640_3_Trained.pt")
-			model = DGL_AGCN(data.features, data.num_objects, 10 * GRAPH_HIDDEN, NUMTOOLS, 3, etypes, nn.functional.tanh, 0.5)
+			model = DGL_AGCN(data.features, data.num_objects, GRAPH_HIDDEN, NUMTOOLS, 1, etypes, torch.tanh, 0.5)
+		elif training == 'agcn_likelihood':
+			model = DGL_AGCN_Likelihood(data.features, data.num_objects, GRAPH_HIDDEN, 1, etypes, torch.tanh, 0.5)
 		
 		optimizer = torch.optim.Adam(model.parameters() , lr = 0.0001)
 		train_set, test_set = world_split(data) if split == 'world' else random_split(data) 
@@ -150,4 +152,3 @@ if __name__ == '__main__':
 	else:
 		model = torch.load(MODEL_SAVE_PATH + "/400.pt")
 	print (accuracy_score(data, data.graphs, model, True))
-
