@@ -37,7 +37,7 @@ object2vec = {}
 for i in json.load(open("jsons/objects.json", "r"))["objects"]:
 	if "vector" in i:
 		object2vec[i["name"]] = np.array(i["vector"])
-
+tool_vec = [object2vec[i] for i in TOOLS]
 # Goal objects and vectors
 goal_jsons = ["jsons/home_goals/goal1-milk-fridge.json", "jsons/home_goals/goal2-fruits-cupboard.json",\
             "jsons/home_goals/goal3-clean-dirt.json", "jsons/home_goals/goal4-stick-paper.json",\

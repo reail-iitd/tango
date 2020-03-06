@@ -145,9 +145,11 @@ if __name__ == '__main__':
 		elif training == "agcn-tool":
 			model = torch.load("trained_models/GatedHeteroRGCN_Attention_Tool_640_3_Trained.pt")
 			# model = DGL_AGCN_Tool(data.features, data.num_objects, 10 * GRAPH_HIDDEN, NUMTOOLS, 3, etypes, nn.functional.tanh, 0.5)
-
-		optimizer = torch.optim.Adam(model.parameters() , lr = 0.001)
-		train_set, test_set = world_split(data) if split == 'world' else random_split(data) if split == 'random' else tool_split(data)
+		elif training == 'agcn_likelihood':
+			model = DGL_AGCN_Likelihood(data.features, data.num_objects, GRAPH_HIDDEN, 1, etypes, torch.tanh, 0.5)
+		
+		optimizer = torch.optim.Adam(model.parameters() , lr = 0.0001)
+		train_set, test_set = world_split(data) if split == 'world' else random_split(data) 
 
 		print ("Size before split was", len(data.graphs))
 		print ("The size of the training set is", len(train_set))
@@ -169,4 +171,3 @@ if __name__ == '__main__':
 	else:
 		model = torch.load(MODEL_SAVE_PATH + "/400.pt")
 	print (accuracy_score(data, data.graphs, model, True))
-
