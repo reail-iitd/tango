@@ -353,6 +353,54 @@ class DGL_AGCN(nn.Module):
         h = self.final(self.fc3(h))
         return h.flatten()
 
+class DGL_AGCN_Tool(nn.Module):
+    def __init__(self,
+                 in_feats,
+                 n_objects,
+                 n_hidden,
+                 n_classes,
+                 n_layers,
+                 etypes,
+                 activation,
+                 dropout):
+        super(DGL_AGCN_Tool, self).__init__()
+        self.n_classes = n_classes
+        self.name = "GatedHeteroRGCN_Attention_Tool_" + str(n_hidden) + "_" + str(n_layers)
+        self.layers = nn.ModuleList()
+        self.layers.append(GatedHeteroRGCNLayer(in_feats, n_hidden, etypes, activation=activation))
+        for i in range(n_layers - 1):
+            self.layers.append(GatedHeteroRGCNLayer(n_hidden, n_hidden, etypes, activation=activation))
+        self.layers.append(GatedHeteroRGCNLayer(n_hidden, n_hidden, etypes, activation=activation))
+        self.attention = nn.Linear(n_hidden + n_hidden, 1)
+        self.embed = nn.Linear(PRETRAINED_VECTOR_SIZE, n_hidden)
+        self.fc1 = nn.Linear(n_hidden + n_hidden, n_hidden)
+        self.fc2 = nn.Linear(n_hidden, n_hidden)
+        self.fc3 = nn.Linear(n_hidden, n_classes-1)
+        self.p1  = nn.Linear(n_hidden, n_hidden)
+        self.p2  = nn.Linear(n_hidden, 1)
+        self.final = torch.sigmoid
+        self.dropout = nn.Dropout(p=dropout)
+
+    def forward(self, g, goalVec, goalObjectsVec):
+        h = g.ndata['feat']
+        for i, layer in enumerate(self.layers):
+            h = layer(g, h)
+        goalObjectsVec = self.embed(torch.Tensor(goalObjectsVec))
+        attn_embedding = torch.cat([h, goalObjectsVec.repeat(h.size(0)).view(h.size(0), -1)], 1)
+        attn_weights = F.softmax(self.attention(attn_embedding), dim=0)
+        # print(attn_weights)
+        scene_embedding = torch.mm(attn_weights.t(), h)
+        goal_embed = F.tanh(self.embed(torch.Tensor(goalVec.reshape(1, -1))))
+        final_to_decode = torch.cat([scene_embedding, goal_embed], 1)
+        h = F.relu(self.fc1(final_to_decode))
+        tools = F.relu(self.fc2(h))
+        tools = self.fc3(h).flatten()
+        tools = self.final(tools)
+        probNoTool = F.relu(self.p1(h))
+        probNoTool = F.sigmoid(self.p2(probNoTool)).flatten()
+        output = torch.cat((tools, probNoTool), dim=0)
+        return output
+
 class DGL_GCN_Global(nn.Module):
     def __init__(self,
                  in_feats,

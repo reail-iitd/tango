@@ -1,5 +1,5 @@
 from src.GNN.CONSTANTS import *
-from src.GNN.models import DGL_GCN, DGL_AE, DGL_GCN_Global, DGL_Decoder, DGL_Decoder_Global, DGL_AGCN
+from src.GNN.models import *
 from src.GNN.dataset_utils import *
 import random
 import numpy as np
@@ -9,12 +9,15 @@ from tqdm import tqdm
 import torch
 import torch.nn as nn
 
-training = "agcn" # can be "gcn", "ae", "combined", "agcn"
-split = "world" # can be "random", "world"
+training = "agcn-tool" # can be "gcn", "ae", "combined", "agcn", "agcn-tool"
+split = "world" # can be "random", "world", "tool"
 train = True # can be True or False
 globalnode = True # can be True or False
+ignoreNoTool = False # can be True or False
 
 def load_dataset(filename):
+	global TOOLS, NUMTOOLS
+	if not ignoreNoTool: TOOLS.append("no-tool"); NUMTOOLS += 1
 	if path.exists(filename):
 		return pickle.load(open(filename,'rb'))
 	data = DGLDataset("dataset/home/", augmentation=AUGMENTATION, globalNode = globalnode)
@@ -24,7 +27,7 @@ def load_dataset(filename):
 def accuracy_score(dset, graphs, model, modelEnc, verbose = False):
 	total_correct = 0
 	for graph in graphs:
-		goal_num, world_num, tools, g = graph		
+		goal_num, world_num, tools, g = graph
 		if 'gcn' in training:
 			y_pred = model(g, goal2vec[goal_num], goalObjects2vec[goal_num])
 		elif training == 'combined':
@@ -55,7 +58,6 @@ def backprop(optimizer, graphs, model, modelEnc=None):
 			y_pred = model(encoding.flatten(), goal2vec[goal_num], goalObjects2vec[goal_num])
 			y_true = torch.zeros(NUMTOOLS)
 			for tool in tools: y_true[TOOLS.index(tool)] = 1
-			print(y_true.shape, y_pred.shape)
 		loss = torch.sum((y_pred - y_true)** 2)
 		total_loss += loss
 		optimizer.zero_grad()
@@ -79,7 +81,6 @@ def backpropGD(optimizer, graphs, model, modelEnc=None):
 			y_pred = model(encoding.flatten(), goal2vec[goal_num], goalObjects2vec[goal_num])
 			y_true = torch.zeros(NUMTOOLS)
 			for tool in tools: y_true[TOOLS.index(tool)] = 1
-			print(y_true.shape, y_pred.shape)
 		loss = torch.sum((y_pred - y_true)** 2)
 		total_loss += loss
 	optimizer.zero_grad()
@@ -106,8 +107,23 @@ def world_split(data):
 			train_set.append(i)
 	return train_set, test_set
 
+def tool_split(data):
+	train_set, test_set = world_split(data)
+	tool_set, notool_set = [], []
+	for graph in train_set:
+		if len(graph[2])==0: notool_set.append(graph)
+		else: tool_set.append(graph)
+	new_set = []
+	for i in range(len(tool_set)-len(notool_set)):
+		new_set.append(random.choice(notool_set))
+	train_set = tool_set + notool_set + new_set
+	return train_set, test_set
+
 if __name__ == '__main__':
-	filename = 'dataset/home_'+ ("global_" if globalnode else '') + str(AUGMENTATION)+'.pkl'
+	filename = ('dataset/home_'+ 
+				("global_" if globalnode else '') + 
+				("NoTool_" if not ignoreNoTool else '') + 
+				str(AUGMENTATION)+'.pkl')
 	data = load_dataset(filename)
 	modelEnc = None
 	if train:
@@ -126,9 +142,12 @@ if __name__ == '__main__':
 		elif training == 'agcn':
 			# model = torch.load("trained_models/GatedHeteroRGCN_Attention_640_3_Trained.pt")
 			model = DGL_AGCN(data.features, data.num_objects, 10 * GRAPH_HIDDEN, NUMTOOLS, 3, etypes, nn.functional.tanh, 0.5)
-		
-		optimizer = torch.optim.Adam(model.parameters() , lr = 0.0001)
-		train_set, test_set = world_split(data) if split == 'world' else random_split(data) 
+		elif training == "agcn-tool":
+			model = torch.load("trained_models/GatedHeteroRGCN_Attention_Tool_640_3_Trained.pt")
+			# model = DGL_AGCN_Tool(data.features, data.num_objects, 10 * GRAPH_HIDDEN, NUMTOOLS, 3, etypes, nn.functional.tanh, 0.5)
+
+		optimizer = torch.optim.Adam(model.parameters() , lr = 0.001)
+		train_set, test_set = world_split(data) if split == 'world' else random_split(data) if split == 'random' else tool_split(data)
 
 		print ("Size before split was", len(data.graphs))
 		print ("The size of the training set is", len(train_set))
@@ -141,7 +160,7 @@ if __name__ == '__main__':
 			backprop(optimizer, train_set, model, modelEnc)
 
 			if (num_epochs % 10 == 0):
-				if training == 'gcn' or training == 'combined' or 'gcn' in training:
+				if training != "ae":
 					print ("Accuracy on training set is ",accuracy_score(data, train_set, model, modelEnc))
 					print ("Accuracy on test set is ",accuracy_score(data, test_set, model, modelEnc, True))
 				elif training == 'ae':

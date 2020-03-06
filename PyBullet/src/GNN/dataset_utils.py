@@ -107,10 +107,10 @@ class Dataset():
 
 ############################ DGL ############################
 
-def getDGLGraph(pathToDatapoint, globalNode):
+def getDGLGraph(pathToDatapoint, globalNode, ignoreNoTool):
 	datapoint = pickle.load(open(pathToDatapoint, "rb"))
-	tools = datapoint.getTools()
-	if len(tools) == 0: return None
+	tools = datapoint.getTools(not ignoreNoTool)
+	if ignoreNoTool and len(tools) == 0: return None
 	goal_num = int(datapoint.goal[4])
 	world_num = int(datapoint.world[-1])
 	# Initial Graph
@@ -148,11 +148,11 @@ def getDGLGraph(pathToDatapoint, globalNode):
 			node_in_goal[node_id] = 1 if node["name"] in goalObjects[goal_num] else 0
 
 	g.ndata['feat'] = torch.cat((node_vectors, node_states, node_size_and_pos), 1)
-	return (goal_num, world_num, datapoint.getTools(), g)
+	return (goal_num, world_num, tools, g)
 
 
 class DGLDataset():
-	def __init__(self, program_dir, augmentation=50, globalNode=False):
+	def __init__(self, program_dir, augmentation=50, globalNode=False, ignoreNoTool=False):
 		global etypes
 		if globalNode: etypes.append('Global')
 		self.num_objects = 0
@@ -164,7 +164,7 @@ class DGLDataset():
 				for file in files:
 					file_path = path + "/" + file
 					for i in range(augmentation):
-						graph = getDGLGraph(file_path, globalNode)
+						graph = getDGLGraph(file_path, globalNode, ignoreNoTool)
 						if graph: graphs.append(graph) 
 					tools = graphs[-1][2]
 					goal_num = graphs[-1][0]
