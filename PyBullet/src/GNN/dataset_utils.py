@@ -6,6 +6,7 @@ import pickle
 from src.datapoint import Datapoint
 import dgl
 import torch
+from tqdm import tqdm
 
 etypes = ["Close", "Inside", "On", "Stuck", "Self-Loop"]
 
@@ -107,7 +108,13 @@ class Dataset():
 
 ############################ DGL ############################
 
-def convertToDGLGraph(graph_data, globalNode, goal_num):
+def getGlobalID(dp):
+	maxID = 0
+	for i in dp.metrics[0].keys():
+		maxID = max(maxID, object2idx[i])
+	return maxID + 1
+
+def convertToDGLGraph(graph_data, globalNode, goal_num, globalID):
 	# Make edge sets
 	close, inside, on, stuck = [], [], [], []
 	for edge in graph_data["edges"]:
@@ -122,7 +129,9 @@ def convertToDGLGraph(graph_data, globalNode, goal_num):
 		('object', 'Stuck', 'object'): stuck
 		}
 	if globalNode:
-		edgeDict[('object', 'Global', 'object')]: [list(range(len(selfLoops))), len(selfLoops)]
+		globalList = []
+		for i in range(globalID): globalList.append((i, globalID))
+		edgeDict[('object', 'Global', 'object')] = globalList
 	g = dgl.heterograph(edgeDict)
 	# Add node features
 	n_nodes = g.number_of_nodes()
@@ -151,7 +160,7 @@ def getDGLGraph(pathToDatapoint, globalNode, ignoreNoTool):
 	world_num = int(datapoint.world[-1])
 	# Initial Graph
 	graph_data = datapoint.getGraph()["graph_0"] 
-	g = convertToDGLGraph(graph_data, globalNode, goal_num)
+	g = convertToDGLGraph(graph_data, globalNode, goal_num, getGlobalID(datapoint) if globalNode else -1)
 	return (goal_num, world_num, tools, g)
 
 def getDGLSequence(pathToDatapoint, globalNode, ignoreNoTool):
@@ -164,19 +173,18 @@ def getDGLSequence(pathToDatapoint, globalNode, ignoreNoTool):
 	for action in datapoint.symbolicActions:
 		if not (str(action[0]) == 'E' or str(action[0]) == 'U'): actionSeq.append(action[0])
 	for i in range(len(datapoint.metrics)):
-		if datapoint.actions[i] == 'Start': graphSeq.append(convertToDGLGraph(datapoint.getGraph(i)["graph_"+str(i)], globalNode, goal_num))
-	return (goal_num, world_num, tools, actionSeq, graphSeq)
+		if datapoint.actions[i] == 'Start': graphSeq.append(convertToDGLGraph(datapoint.getGraph(i)["graph_"+str(i)], globalNode, goal_num, getGlobalID(datapoint) if globalNode else -1))
+	return (goal_num, world_num, tools, (actionSeq, graphSeq))
 
 
 class DGLDataset():
 	def __init__(self, program_dir, augmentation=50, globalNode=False, ignoreNoTool=False, sequence=False):
 		global etypes
 		if globalNode: etypes.append('Global')
-		self.num_objects = 0
 		graphs = []
 		self.goal_scene_to_tools = {}
 		all_files = os.walk(program_dir)
-		for path, dirs, files in all_files:
+		for path, dirs, files in tqdm(all_files):
 			if (len(files) > 0):
 				for file in files:
 					file_path = path + "/" + file
@@ -192,6 +200,7 @@ class DGLDataset():
 						if tool not in self.goal_scene_to_tools[(goal_num,world_num)]:
 							self.goal_scene_to_tools[(goal_num,world_num)].append(tool)
 		self.graphs = graphs
-		self.features = self.graphs[0][3].ndata['feat'].shape[1] if not sequence else self.graphs[0][4][0].ndata['feat'].shape[1]
-
+		self.features = self.graphs[0][3].ndata['feat'].shape[1] if not sequence else self.graphs[0][3][1][0].ndata['feat'].shape[1]
+		self.num_objects = self.graphs[0][3].number_of_nodes() if not sequence else self.graphs[0][3][1][0].number_of_nodes()
+		if globalNode: self.num_objects -= 1
 

@@ -181,5 +181,5 @@ def checkActionTypes():
 # combineDatasets(4)
 # printGraph("dataset/factory/goal1-crates-platform/world_factory3/0")
 # checkActionTypes()
-printDatapoint("dataset/home/goal1-milk-fridge/world_home0/0")
+printGraph("dataset/home/goal1-milk-fridge/world_home0/0")
 

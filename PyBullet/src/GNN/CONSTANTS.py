@@ -33,10 +33,12 @@ MODEL_SAVE_PATH = "trained_models/"
 AUGMENTATION = 1
 
 # Object to vectors
-object2vec = {}
-for i in json.load(open("jsons/objects.json", "r"))["objects"]:
-	if "vector" in i:
-		object2vec[i["name"]] = np.array(i["vector"])
+object2vec = {}; object2idx = {}; idx2object = {}
+for i, obj in enumerate(json.load(open("jsons/objects.json", "r"))["objects"]):
+	if "vector" in obj:
+		object2vec[obj["name"]] = np.array(obj["vector"])
+	object2idx[obj["name"]] = i
+	idx2object[i] = obj["name"]
 tool_vec = [object2vec[i] for i in TOOLS]
 # Goal objects and vectors
 goal_jsons = ["jsons/home_goals/goal1-milk-fridge.json", "jsons/home_goals/goal2-fruits-cupboard.json",\

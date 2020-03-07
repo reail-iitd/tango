@@ -9,18 +9,19 @@ from tqdm import tqdm
 import torch
 import torch.nn as nn
 
-training = "agcn-tool" # can be "gcn", "ae", "combined", "agcn", "agcn-tool"
+training = "sequence" # can be "gcn", "ae", "combined", "agcn", "agcn-tool", "agcn-likelihood", "sequence"
 split = "world" # can be "random", "world", "tool"
 train = True # can be True or False
-globalnode = True # can be True or False
+globalnode = False # can be True or False
 ignoreNoTool = False # can be True or False
+sequence = True # can be True or False
 
 def load_dataset(filename):
 	global TOOLS, NUMTOOLS
 	if not ignoreNoTool: TOOLS.append("no-tool"); NUMTOOLS += 1
 	if path.exists(filename):
 		return pickle.load(open(filename,'rb'))
-	data = DGLDataset("dataset/home/", augmentation=AUGMENTATION, globalNode = globalnode)
+	data = DGLDataset("dataset/home/", augmentation=AUGMENTATION, globalNode=globalnode, ignoreNoTool=ignoreNoTool, sequence=sequence)
 	pickle.dump(data, open(filename, "wb"))
 	return data
 
@@ -42,23 +43,31 @@ def accuracy_score(dset, graphs, model, modelEnc, verbose = False):
 			print (goal_num, world_num, tool_predicted, tools_possible)
 	return ((total_correct/len(graphs))*100)
 
-def backprop(optimizer, graphs, model, modelEnc=None):
+def backprop(optimizer, graphs, model, num_objects, modelEnc=None):
 	total_loss = 0.0
 	for iter_num, graph in enumerate(graphs):
 		goal_num, world_num, tools, g = graph
 		if 'ae' in training:
 			y_pred = model(g)
 			y_true = g.ndata['feat']
+			loss = torch.sum((y_pred - y_true)** 2)
 		elif 'gcn' in training:
 			y_pred = model(g, goal2vec[goal_num], goalObjects2vec[goal_num])
 			y_true = torch.zeros(NUMTOOLS)
 			for tool in tools: y_true[TOOLS.index(tool)] = 1
+			loss = torch.sum((y_pred - y_true)** 2)
 		elif 'combined' in training:
 			encoding = modelEnc.encode(g)[-1] if globalnode else modelEnc.encode(g)
 			y_pred = model(encoding.flatten(), goal2vec[goal_num], goalObjects2vec[goal_num])
 			y_true = torch.zeros(NUMTOOLS)
 			for tool in tools: y_true[TOOLS.index(tool)] = 1
-		loss = torch.sum((y_pred - y_true)** 2)
+			loss = torch.sum((y_pred - y_true)** 2)
+		elif 'sequence' in training:
+			actionSeq, graphSeq = g; loss = 0
+			for i in range(len(graphSeq)):
+				y_pred = model(graphSeq[i], goal2vec[goal_num], goalObjects2vec[goal_num])
+				y_true = action2vec(actionSeq[i], num_objects, 4)
+				loss += torch.sum((y_pred - y_true)** 2)
 		total_loss += loss
 		optimizer.zero_grad()
 		loss.backward()
@@ -123,6 +132,7 @@ if __name__ == '__main__':
 	filename = ('dataset/home_'+ 
 				("global_" if globalnode else '') + 
 				("NoTool_" if not ignoreNoTool else '') + 
+				("seq_" if sequence else '') + 
 				str(AUGMENTATION)+'.pkl')
 	data = load_dataset(filename)
 	modelEnc = None
@@ -145,10 +155,12 @@ if __name__ == '__main__':
 		elif training == "agcn-tool":
 			# model = torch.load("trained_models/GatedHeteroRGCN_Attention_Tool_768_3_Trained.pt")
 			model = DGL_AGCN_Tool(data.features, data.num_objects, 12 * GRAPH_HIDDEN, NUMTOOLS, 3, etypes, torch.tanh, 0.5)
-		elif training == 'agcn_likelihood':
+		elif training == 'agcn-likelihood':
 			model = torch.load("trained_models/GatedHeteroRGCN_Attention_Likelihood128_1_Trained.pt")
 			# model = DGL_AGCN_Likelihood(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 1, etypes, torch.tanh, 0.5)
-		
+		elif training == 'sequence':
+			model = DGL_AGCN_Action(data.features, data.num_objects + 1, 2 * GRAPH_HIDDEN, 4+1, 3, etypes, torch.tanh, 0.5)
+
 		optimizer = torch.optim.Adam(model.parameters() , lr = 0.000001)
 		train_set, test_set = world_split(data) if split == 'world' else random_split(data)  if split == 'random' else tool_split(data) 
 
@@ -160,7 +172,7 @@ if __name__ == '__main__':
 			random.shuffle(train_set)
 			print ("EPOCH " + str(num_epochs))
 
-			backprop(optimizer, train_set, model, modelEnc)
+			backprop(optimizer, train_set, model, data.num_objects, modelEnc)
 
 			if (num_epochs % 10 == 0):
 				if training != "ae":

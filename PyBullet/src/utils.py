@@ -509,6 +509,8 @@ property2Objects["all"] = allObjects
 surfaceAndContainers = property2Objects['Surface'] + property2Objects['Container']
 hasState = property2Objects['Can_Open'] + property2Objects['Switchable']
 
+possibleStates = ['on', 'off', 'open', 'close']
+
 def getPossiblePredicates(action):
     assert action in possibleActions
     if action == 'moveTo':
@@ -520,7 +522,7 @@ def getPossiblePredicates(action):
     elif action == 'climbUp' or action == 'climbDown':
         return [['stool']]
     elif action == 'changeState':
-        return [hasState, ['on', 'off', 'open', 'close']]
+        return [hasState, possibleStates]
     elif action == 'dropTo' or action == 'pickNplaceAonB':
         return [property2Objects['Movable'], surfaceAndContainers+["apple", "dirt"]]
     elif action == 'clean':
