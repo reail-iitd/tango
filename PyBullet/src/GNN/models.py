@@ -238,7 +238,7 @@ class DGL_AGCN_Action(nn.Module):
                  activation,
                  dropout):
         super(DGL_AGCN_Action, self).__init__()
-        self.name = "GatedHeteroRGCN_Attention_Tool_" + str(n_hidden) + "_" + str(n_layers)
+        self.name = "GatedHeteroRGCN_Attention_Action_" + str(n_hidden) + "_" + str(n_layers)
         self.layers = nn.ModuleList()
         self.layers.append(GatedHeteroRGCNLayer(in_feats, n_hidden, etypes, activation=activation))
         for i in range(n_layers - 1):
