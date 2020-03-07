@@ -143,27 +143,28 @@ class DGL_AGCN_Tool(nn.Module):
         self.p2  = nn.Linear(n_hidden, n_hidden)
         self.p3  = nn.Linear(n_hidden, 1)
         self.final = torch.sigmoid
+        self.activation = nn.PReLU()
         self.dropout = nn.Dropout(p=dropout)
 
     def forward(self, g, goalVec, goalObjectsVec):
         h = g.ndata['feat']
         for i, layer in enumerate(self.layers):
             h = layer(g, h)
-        goalObjectsVec = self.embed(torch.Tensor(goalObjectsVec))
+        goalObjectsVec = self.activation(self.embed(torch.Tensor(goalObjectsVec)))
         attn_embedding = torch.cat([h, goalObjectsVec.repeat(h.size(0)).view(h.size(0), -1)], 1)
-        attn_weights = F.softmax(self.attention(attn_embedding), dim=0)
+        attn_weights = F.softmax(self.activation(self.attention(attn_embedding)), dim=0)
         # print(attn_weights)
         scene_embedding = torch.mm(attn_weights.t(), h)
-        goal_embed = torch.tanh(self.embed(torch.Tensor(goalVec.reshape(1, -1))))
+        goal_embed = self.activation(self.embed(torch.Tensor(goalVec.reshape(1, -1))))
         final_to_decode = torch.cat([scene_embedding, goal_embed], 1)
-        h = torch.tanh(self.fc1(final_to_decode))
-        tools = torch.tanh(self.fc2(h))
-        tools = self.fc3(h).flatten()
-        tools = self.final(tools)
-        probNoTool = torch.tanh(self.p1(h))
-        probNoTool = torch.tanh(self.p2(h))
-        probNoTool = torch.sigmoid(self.p3(probNoTool)).flatten()
-        output = torch.cat((tools, probNoTool), dim=0)
+        h = self.activation(self.fc1(final_to_decode))
+        tools = self.activation(self.fc2(h))
+        tools = self.activation(self.fc3(h)).flatten()
+        tools = F.softmax(tools, dim=0)
+        probNoTool = self.activation(self.p1(h))
+        probNoTool = self.activation(self.p2(h))
+        probNoTool = torch.sigmoid(self.activation(self.p3(probNoTool))).flatten()
+        output = torch.cat(((1-probNoTool)*tools, probNoTool), dim=0)
         return output
 
 

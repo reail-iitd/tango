@@ -9,12 +9,12 @@ from tqdm import tqdm
 import torch
 import torch.nn as nn
 
-training = "sequence" # can be "gcn", "ae", "combined", "agcn", "agcn-tool", "agcn-likelihood", "sequence"
+training = "agcn-tool" # can be "gcn", "ae", "combined", "agcn", "agcn-tool", "agcn-likelihood", "sequence"
 split = "world" # can be "random", "world", "tool"
 train = True # can be True or False
 globalnode = False # can be True or False
 ignoreNoTool = False # can be True or False
-sequence = True # can be True or False
+sequence = training == "sequence" # can be True or False
 
 def load_dataset(filename):
 	global TOOLS, NUMTOOLS
@@ -183,7 +183,7 @@ if __name__ == '__main__':
 			backprop(optimizer, train_set, model, data.num_objects, modelEnc)
 
 			if (num_epochs % 10 == 0):
-				if training != "ae":
+				if training != "ae" and training != "sequence":
 					print ("Accuracy on training set is ",accuracy_score(data, train_set, model, modelEnc))
 					print ("Accuracy on test set is ",accuracy_score(data, test_set, model, modelEnc, True))
 				elif training == 'ae':
