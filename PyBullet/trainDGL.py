@@ -10,7 +10,7 @@ import torch
 import torch.nn as nn
 
 training = "agcn-tool" # can be "gcn", "ae", "combined", "agcn", "agcn-tool"
-split = "tool" # can be "random", "world", "tool"
+split = "world" # can be "random", "world", "tool"
 train = True # can be True or False
 globalnode = True # can be True or False
 ignoreNoTool = False # can be True or False
@@ -143,12 +143,13 @@ if __name__ == '__main__':
 			# model = torch.load("trained_models/GatedHeteroRGCN_Attention_640_3_Trained.pt")
 			model = DGL_AGCN(data.features, data.num_objects, 10 * GRAPH_HIDDEN, NUMTOOLS, 3, etypes, nn.functional.tanh, 0.5)
 		elif training == "agcn-tool":
-			# model = torch.load("trained_models/GatedHeteroRGCN_Attention_Tool_640_3_Trained.pt")
-			model = DGL_AGCN_Tool(data.features, data.num_objects, 20 * GRAPH_HIDDEN, NUMTOOLS, 3, etypes, nn.functional.tanh, 0.5)
+			# model = torch.load("trained_models/GatedHeteroRGCN_Attention_Tool_768_3_Trained.pt")
+			model = DGL_AGCN_Tool(data.features, data.num_objects, 12 * GRAPH_HIDDEN, NUMTOOLS, 3, etypes, torch.tanh, 0.5)
 		elif training == 'agcn_likelihood':
-			model = DGL_AGCN_Likelihood(data.features, data.num_objects, GRAPH_HIDDEN, 1, etypes, torch.tanh, 0.5)
+			model = torch.load("trained_models/GatedHeteroRGCN_Attention_Likelihood128_1_Trained.pt")
+			# model = DGL_AGCN_Likelihood(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 1, etypes, torch.tanh, 0.5)
 		
-		optimizer = torch.optim.Adam(model.parameters() , lr = 0.001)
+		optimizer = torch.optim.Adam(model.parameters() , lr = 0.000001)
 		train_set, test_set = world_split(data) if split == 'world' else random_split(data)  if split == 'random' else tool_split(data) 
 
 		print ("Size before split was", len(data.graphs))
@@ -159,7 +160,7 @@ if __name__ == '__main__':
 			random.shuffle(train_set)
 			print ("EPOCH " + str(num_epochs))
 
-			backpropGD(optimizer, train_set, model, modelEnc)
+			backprop(optimizer, train_set, model, modelEnc)
 
 			if (num_epochs % 10 == 0):
 				if training != "ae":

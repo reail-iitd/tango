@@ -493,4 +493,43 @@ def getGoalObjects(world_name, goal_name):
         elif goal_name == "goal8-clean-oil":
             return ["oil"]
 
+# Action checking
+
+possibleActions = ['pushTo', 'climbUp', 'pick', 'climbDown', 'changeState', \
+    'dropTo', 'pickNplaceAonB', 'moveTo', 'clean', 'apply', 'stick']
+property2Objects = {}; allObjects = []
+for i in json.load(open("jsons/objects.json", "r"))["objects"]:
+    allObjects.append(i["name"])
+    for prop in i["properties"]:
+        if not prop in property2Objects.keys():
+            property2Objects[prop] = []
+        property2Objects[prop].append(i["name"])
+
+property2Objects["all"] = allObjects
+
+def getPossiblePredicates(action):
+    assert action in possibleActions
+    surfaceAndContainers = property2Objects['Surface'] + property2Objects['Container']
+    hasState = property2Objects['Can_Open'] + property2Objects['Switchable']
+    if action == 'moveTo':
+        return [property2Objects['all']]
+    elif action == 'pick':
+        return [property2Objects['Movable']]
+    elif action == 'pushTo':
+        return [property2Objects['Movable'], property2Objects['all']]
+    elif action == 'climbUp' or action == 'climbDown':
+        return [['stool']]
+    elif action == 'changeState':
+        return (hasState, ['on', 'off', 'open', 'close'])
+    elif action == 'dropTo' or action == 'pickNplaceAonB':
+        return [property2Objects['Movable'], surfaceAndContainers+["apple", "dirt"]]
+    elif action == 'clean':
+        return [property2Objects['Is_Dirty']]
+    elif action == 'apply':
+        return [property2Objects['Can_Apply'], property2Objects["Stickable"]]
+    elif action == 'stick':
+        return [property2Objects['Stickable'], property2Objects["Surface"]]
+
+
+
 

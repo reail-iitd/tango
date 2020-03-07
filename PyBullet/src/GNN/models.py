@@ -115,7 +115,8 @@ class DGL_AGCN_Tool(nn.Module):
         self.fc2 = nn.Linear(n_hidden, n_hidden)
         self.fc3 = nn.Linear(n_hidden, n_classes-1)
         self.p1  = nn.Linear(n_hidden, n_hidden)
-        self.p2  = nn.Linear(n_hidden, 1)
+        self.p2  = nn.Linear(n_hidden, n_hidden)
+        self.p3  = nn.Linear(n_hidden, 1)
         self.final = torch.sigmoid
         self.dropout = nn.Dropout(p=dropout)
 
@@ -128,14 +129,15 @@ class DGL_AGCN_Tool(nn.Module):
         attn_weights = F.softmax(self.attention(attn_embedding), dim=0)
         # print(attn_weights)
         scene_embedding = torch.mm(attn_weights.t(), h)
-        goal_embed = F.tanh(self.embed(torch.Tensor(goalVec.reshape(1, -1))))
+        goal_embed = torch.tanh(self.embed(torch.Tensor(goalVec.reshape(1, -1))))
         final_to_decode = torch.cat([scene_embedding, goal_embed], 1)
-        h = F.relu(self.fc1(final_to_decode))
-        tools = F.relu(self.fc2(h))
+        h = torch.tanh(self.fc1(final_to_decode))
+        tools = torch.tanh(self.fc2(h))
         tools = self.fc3(h).flatten()
         tools = self.final(tools)
-        probNoTool = F.relu(self.p1(h))
-        probNoTool = F.sigmoid(self.p2(probNoTool)).flatten()
+        probNoTool = torch.tanh(self.p1(h))
+        probNoTool = torch.tanh(self.p2(h))
+        probNoTool = torch.sigmoid(self.p3(probNoTool)).flatten()
         output = torch.cat((tools, probNoTool), dim=0)
         return output
 
@@ -167,9 +169,12 @@ class DGL_AGCN_Likelihood(nn.Module):
                 PRETRAINED_VECTOR_SIZE,
                 n_hidden,
                 False,
-                nn.Tanh))
+                nn.tanh))
         self.fc1 = nn.Linear(n_hidden + n_hidden + n_hidden, n_hidden)
-        self.fc2 = nn.Linear(n_hidden, 1)
+        self.fc2 = nn.Linear(n_hidden, n_hidden)
+        self.fc3 = nn.Linear(n_hidden, n_hidden)
+        self.fc4 = nn.Linear(n_hidden, n_hidden)
+        self.fc5 = nn.Linear(n_hidden, 1)
         self.final = nn.Sigmoid()
         self.dropout = nn.Dropout(p=dropout)
 
@@ -189,6 +194,9 @@ class DGL_AGCN_Likelihood(nn.Module):
         for i in range(NUMTOOLS):
             final_to_decode = torch.cat([scene_and_goal, tool_embedding[i].view(1, -1)], 1)
             h = torch.tanh(self.fc1(final_to_decode))
-            h = self.final(self.fc2(h))
+            h = torch.tanh(self.fc2(h))
+            h = torch.tanh(self.fc3(h))
+            h = torch.tanh(self.fc4(h))
+            h = self.final(self.fc5(h))
             l.append(h.flatten())
         return torch.stack(l)

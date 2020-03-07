@@ -144,10 +144,41 @@ def printGraph(filename):
 	print (json.dumps(datapoint.getAugmentedGraph(), indent=2))
 	f.close()
 
+def allActionTypes():
+	actionTypes = []
+	for goal in GOAL_LISTS['home']:
+		for world in range(10):
+			directory = './dataset/home/' + goal.split('.')[0] + '/world_home' + str(world) + '/'
+			for point in range(len(listdir(directory))):
+				file = directory + str(point) + '.datapoint'
+				datapoint = pickle.load(open(file, 'rb'))
+				for subAction in datapoint.symbolicActions:
+					if len(subAction) == 1 and not [subAction[0]['name'], len(subAction[0]['args'])] in actionTypes:
+						actionTypes.append([subAction[0]['name'], len(subAction[0]['args'])])
+	print(actionTypes)
+
+def checkActionTypes():
+	actionTypes = []
+	for goal in GOAL_LISTS['home']:
+		for world in range(10):
+			directory = './dataset/home/' + goal.split('.')[0] + '/world_home' + str(world) + '/'
+			for point in range(len(listdir(directory))):
+				file = directory + str(point) + '.datapoint'
+				datapoint = pickle.load(open(file, 'rb'))
+				for action in datapoint.symbolicActions:
+					if len(action) == 1:
+						possible = getPossiblePredicates(action[0]['name'])
+						for i in range(len(action[0]['args'])):
+							if not action[0]['args'][i] in possible[i]:
+								print(file)
+								print(action[0]['name'], i, action[0]['args'][i])
+
+
 # keepNewDatapoints(4)
 # printAllDatapoints()
 # printNumDatapoints()
 # changeAllDatapoints()
 # combineDatasets(4)
-printGraph("dataset/factory/goal1-crates-platform/world_factory3/0")
+# printGraph("dataset/factory/goal1-crates-platform/world_factory3/0")
+checkActionTypes()
 
