@@ -107,14 +107,7 @@ class Dataset():
 
 ############################ DGL ############################
 
-def getDGLGraph(pathToDatapoint, globalNode, ignoreNoTool):
-	datapoint = pickle.load(open(pathToDatapoint, "rb"))
-	tools = datapoint.getTools(not ignoreNoTool)
-	if ignoreNoTool and len(tools) == 0: return None
-	goal_num = int(datapoint.goal[4])
-	world_num = int(datapoint.world[-1])
-	# Initial Graph
-	graph_data = datapoint.getGraph()["graph_0"] 
+def convertToDGLGraph(graph_data, globalNode, goal_num):
 	# Make edge sets
 	close, inside, on, stuck = [], [], [], []
 	for edge in graph_data["edges"]:
@@ -148,7 +141,31 @@ def getDGLGraph(pathToDatapoint, globalNode, ignoreNoTool):
 			node_in_goal[node_id] = 1 if node["name"] in goalObjects[goal_num] else 0
 
 	g.ndata['feat'] = torch.cat((node_vectors, node_states, node_size_and_pos), 1)
+	return g
+
+def getDGLGraph(pathToDatapoint, globalNode, ignoreNoTool):
+	datapoint = pickle.load(open(pathToDatapoint, "rb"))
+	tools = datapoint.getTools(not ignoreNoTool)
+	if ignoreNoTool and len(tools) == 0: return None
+	goal_num = int(datapoint.goal[4])
+	world_num = int(datapoint.world[-1])
+	# Initial Graph
+	graph_data = datapoint.getGraph()["graph_0"] 
+	g = convertToDGLGraph(graph_data, globalNode, goal_num)
 	return (goal_num, world_num, tools, g)
+
+def getDGLSequence(pathToDatapoint, globalNode, ignoreNoTool):
+	datapoint = pickle.load(open(pathToDatapoint, "rb"))
+	tools = datapoint.getTools(not ignoreNoTool)
+	if ignoreNoTool and len(tools) == 0: return None
+	goal_num = int(datapoint.goal[4])
+	world_num = int(datapoint.world[-1])
+	actionSeq = []; graphSeq = []
+	for action in datapoint.symbolicActions:
+		if not (str(action[0]) == 'E' or str(action[0]) == 'U'): actionSeq.append(action[0])
+	for i in range(len(datapoint.metrics)):
+		if datapoint.actions[i] == 'Start': graphSeq.append(convertToDGLGraph(datapoint.getGraph(i)["graph_"+str(i)], globalNode, goal_num))
+	return (goal_num, world_num, tools, actionSeq, graphSeq)
 
 
 class DGLDataset():
@@ -176,5 +193,31 @@ class DGLDataset():
 							self.goal_scene_to_tools[(goal_num,world_num)].append(tool)
 		self.graphs = graphs
 		self.features = self.graphs[0][3].ndata['feat'].shape[1]
+
+class DGLSeqDataset():
+	def __init__(self, program_dir, augmentation=50, globalNode=False, ignoreNoTool=False):
+		global etypes
+		if globalNode: etypes.append('Global')
+		self.num_objects = 0
+		graphs = []
+		self.goal_scene_to_tools = {}
+		all_files = os.walk(program_dir)
+		for path, dirs, files in all_files:
+			if (len(files) > 0):
+				for file in files:
+					file_path = path + "/" + file
+					for i in range(augmentation):
+						graph = getDGLSequence(file_path, globalNode, ignoreNoTool)
+						if graph: graphs.append(graph) 
+					tools = graphs[-1][2]
+					goal_num = graphs[-1][0]
+					world_num = graphs[-1][1]
+					if (goal_num,world_num) not in self.goal_scene_to_tools:
+						self.goal_scene_to_tools[(goal_num,world_num)] = []
+					for tool in tools:
+						if tool not in self.goal_scene_to_tools[(goal_num,world_num)]:
+							self.goal_scene_to_tools[(goal_num,world_num)].append(tool)
+		self.graphs = graphs
+		self.features = self.graphs[0][4][0].ndata['feat'].shape[1]
 
 
