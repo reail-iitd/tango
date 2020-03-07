@@ -74,23 +74,31 @@ def backprop(optimizer, graphs, model, num_objects, modelEnc=None):
 		optimizer.step()
 	print (total_loss.item()/len(train_set))
 
-def backpropGD(optimizer, graphs, model, modelEnc=None):
+def backpropGD(optimizer, graphs, model, num_objects, modelEnc=None):
 	total_loss = 0.0
 	for iter_num, graph in enumerate(graphs):
 		goal_num, world_num, tools, g = graph
 		if 'ae' in training:
 			y_pred = model(g)
 			y_true = g.ndata['feat']
+			loss = torch.sum((y_pred - y_true)** 2)
 		elif 'gcn' in training:
 			y_pred = model(g, goal2vec[goal_num], goalObjects2vec[goal_num])
 			y_true = torch.zeros(NUMTOOLS)
 			for tool in tools: y_true[TOOLS.index(tool)] = 1
+			loss = torch.sum((y_pred - y_true)** 2)
 		elif 'combined' in training:
 			encoding = modelEnc.encode(g)[-1] if globalnode else modelEnc.encode(g)
 			y_pred = model(encoding.flatten(), goal2vec[goal_num], goalObjects2vec[goal_num])
 			y_true = torch.zeros(NUMTOOLS)
 			for tool in tools: y_true[TOOLS.index(tool)] = 1
-		loss = torch.sum((y_pred - y_true)** 2)
+			loss = torch.sum((y_pred - y_true)** 2)
+		elif 'sequence' in training:
+			actionSeq, graphSeq = g; loss = 0
+			for i in range(len(graphSeq)):
+				y_pred = model(graphSeq[i], goal2vec[goal_num], goalObjects2vec[goal_num])
+				y_true = action2vec(actionSeq[i], num_objects, 4)
+				loss += torch.sum((y_pred - y_true)** 2)
 		total_loss += loss
 	optimizer.zero_grad()
 	total_loss.backward()
