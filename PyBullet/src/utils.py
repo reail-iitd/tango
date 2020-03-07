@@ -520,7 +520,7 @@ def getPossiblePredicates(action):
     elif action == 'climbUp' or action == 'climbDown':
         return [['stool']]
     elif action == 'changeState':
-        return (hasState, ['on', 'off', 'open', 'close'])
+        return [hasState, ['on', 'off', 'open', 'close']]
     elif action == 'dropTo' or action == 'pickNplaceAonB':
         return [property2Objects['Movable'], surfaceAndContainers+["apple", "dirt"]]
     elif action == 'clean':
