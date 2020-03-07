@@ -169,7 +169,7 @@ def getDGLSequence(pathToDatapoint, globalNode, ignoreNoTool):
 
 
 class DGLDataset():
-	def __init__(self, program_dir, augmentation=50, globalNode=False, ignoreNoTool=False):
+	def __init__(self, program_dir, augmentation=50, globalNode=False, ignoreNoTool=False, sequence=False):
 		global etypes
 		if globalNode: etypes.append('Global')
 		self.num_objects = 0
@@ -181,7 +181,7 @@ class DGLDataset():
 				for file in files:
 					file_path = path + "/" + file
 					for i in range(augmentation):
-						graph = getDGLGraph(file_path, globalNode, ignoreNoTool)
+						graph = getDGLGraph(file_path, globalNode, ignoreNoTool) if not sequence else getDGLSequence(file_path, globalNode, ignoreNoTool)
 						if graph: graphs.append(graph) 
 					tools = graphs[-1][2]
 					goal_num = graphs[-1][0]
@@ -192,32 +192,6 @@ class DGLDataset():
 						if tool not in self.goal_scene_to_tools[(goal_num,world_num)]:
 							self.goal_scene_to_tools[(goal_num,world_num)].append(tool)
 		self.graphs = graphs
-		self.features = self.graphs[0][3].ndata['feat'].shape[1]
-
-class DGLSeqDataset():
-	def __init__(self, program_dir, augmentation=50, globalNode=False, ignoreNoTool=False):
-		global etypes
-		if globalNode: etypes.append('Global')
-		self.num_objects = 0
-		graphs = []
-		self.goal_scene_to_tools = {}
-		all_files = os.walk(program_dir)
-		for path, dirs, files in all_files:
-			if (len(files) > 0):
-				for file in files:
-					file_path = path + "/" + file
-					for i in range(augmentation):
-						graph = getDGLSequence(file_path, globalNode, ignoreNoTool)
-						if graph: graphs.append(graph) 
-					tools = graphs[-1][2]
-					goal_num = graphs[-1][0]
-					world_num = graphs[-1][1]
-					if (goal_num,world_num) not in self.goal_scene_to_tools:
-						self.goal_scene_to_tools[(goal_num,world_num)] = []
-					for tool in tools:
-						if tool not in self.goal_scene_to_tools[(goal_num,world_num)]:
-							self.goal_scene_to_tools[(goal_num,world_num)].append(tool)
-		self.graphs = graphs
-		self.features = self.graphs[0][4][0].ndata['feat'].shape[1]
+		self.features = self.graphs[0][3].ndata['feat'].shape[1] if not sequence else self.graphs[0][4][0].ndata['feat'].shape[1]
 
 
