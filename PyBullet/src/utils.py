@@ -506,11 +506,11 @@ for i in json.load(open("jsons/objects.json", "r"))["objects"]:
         property2Objects[prop].append(i["name"])
 
 property2Objects["all"] = allObjects
+surfaceAndContainers = property2Objects['Surface'] + property2Objects['Container']
+hasState = property2Objects['Can_Open'] + property2Objects['Switchable']
 
 def getPossiblePredicates(action):
     assert action in possibleActions
-    surfaceAndContainers = property2Objects['Surface'] + property2Objects['Container']
-    hasState = property2Objects['Can_Open'] + property2Objects['Switchable']
     if action == 'moveTo':
         return [property2Objects['all']]
     elif action == 'pick':
