@@ -161,8 +161,8 @@ if __name__ == '__main__':
 			# model = torch.load("trained_models/GatedHeteroRGCN_Attention_640_3_Trained.pt")
 			model = DGL_AGCN(data.features, data.num_objects, 10 * GRAPH_HIDDEN, NUMTOOLS, 3, etypes, nn.functional.tanh, 0.5)
 		elif training == "agcn-tool":
-			# model = torch.load("trained_models/GatedHeteroRGCN_Attention_Tool_768_3_Trained.pt")
-			model = DGL_AGCN_Tool(data.features, data.num_objects, 12 * GRAPH_HIDDEN, NUMTOOLS, 3, etypes, torch.tanh, 0.5)
+			model = torch.load("trained_models/GatedHeteroRGCN_Attention_Tool_768_3_Trained.pt")
+			# model = DGL_AGCN_Tool(data.features, data.num_objects, 12 * GRAPH_HIDDEN, NUMTOOLS, 3, etypes, torch.tanh, 0.5)
 		elif training == 'agcn-likelihood':
 			model = torch.load("trained_models/GatedHeteroRGCN_Attention_Likelihood128_1_Trained.pt")
 			# model = DGL_AGCN_Likelihood(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 1, etypes, torch.tanh, 0.5)
