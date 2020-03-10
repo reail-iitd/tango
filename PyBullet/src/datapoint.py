@@ -17,6 +17,10 @@ objects = None
 with open('jsons/objects.json', 'r') as handle:
     objects = json.load(handle)['objects']
 
+embeddings = None
+with open('jsons/embeddings/conceptnet.vectors') as handle:
+	embeddings = json.load(handle)
+
 allStates = None
 with open('jsons/states.json', 'r') as handle:
     allStates = json.load(handle)
@@ -177,7 +181,7 @@ class Datapoint:
 			try: node['position'] = metrics[obj]
 			except: node['position'] = metrics['3d_printer']
 			node['size'] = objects[objID]['size']
-			node['vector'] = objects[objID]['vector']
+			node['vector'] = embeddings[obj]
 			nodes.append(node)
 		edges = []
 		for i in range(len(sceneobjects)):

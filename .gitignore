@@ -256,3 +256,5 @@ TSWLatexianTemp*
 *.spl
 .vscode/settings.json
 *.pkl
+PyBullet/jsons/embeddings/conceptnet.txt
+PyBullet/jsons/embeddings/fasttext.txt
