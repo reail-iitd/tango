@@ -1,5 +1,6 @@
 import json
 import numpy as np
+from src.datapoint import embeddings
 
 STATES = ["Outside", "Inside", "On", "Off", "Close", "Open", "Up", "Down", "Sticky", "Non_Sticky", "Dirty", "Clean", "Grabbed", "Free", "Welded", "Not_Welded", "Drilled", "Not_Drilled", "Driven", "Not_Driven", "Fueled", "Not_Fueled", "Cut", "Not_Cut", "Painted", "Not_Painted"]
 N_STATES = len(STATES)
@@ -35,8 +36,7 @@ AUGMENTATION = 1
 # Object to vectors
 object2vec = {}; object2idx = {}; idx2object = {}
 for i, obj in enumerate(json.load(open("jsons/objects.json", "r"))["objects"]):
-	if "vector" in obj:
-		object2vec[obj["name"]] = np.array(obj["vector"])
+	object2vec[obj["name"]] = embeddings[obj["name"]]
 	object2idx[obj["name"]] = i
 	idx2object[i] = obj["name"]
 tool_vec = [object2vec[i] for i in TOOLS]
