@@ -177,6 +177,7 @@ class Datapoint:
 				states.append('Painted') if obj in self.cut[index] else states.append('Not_Painted')
 			if 'Printable' in node['properties']:
 				states.append('To_Print') if obj in metrics.keys() else states.append('Printed')
+			states.append('Different_Height') if abs(metrics[obj][0][2]-metrics["husky"][0][2]) > 1 else states.append("Same_Height")
 			node['states'] = states
 			try: node['position'] = metrics[obj]
 			except: node['position'] = metrics['3d_printer']

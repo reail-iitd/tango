@@ -145,9 +145,9 @@ def convertToDGLGraph(graph_data, globalNode, goal_num, globalID):
 		for state in states:
 			idx = state2indx[state]
 			node_states[node_id, idx] = 1
-			node_vectors[node_id] = torch.FloatTensor(node["vector"])
-			node_size_and_pos[node_id] = torch.FloatTensor(list(node["size"]) + list(node["position"][0]) + list(node["position"][1]))
-			node_in_goal[node_id] = 1 if node["name"] in goalObjects[goal_num] else 0
+		node_vectors[node_id] = torch.FloatTensor(node["vector"])
+		node_size_and_pos[node_id] = torch.FloatTensor(list(node["size"]) + list(node["position"][0]) + list(node["position"][1]))
+		node_in_goal[node_id] = 1 if node["name"] in goalObjects[goal_num] else 0
 
 	g.ndata['feat'] = torch.cat((node_vectors, node_states, node_size_and_pos), 1)
 	return g

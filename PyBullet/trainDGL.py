@@ -183,7 +183,7 @@ if __name__ == '__main__':
 
 			backprop(optimizer, train_set, model, data.num_objects, modelEnc)
 
-			if (num_epochs % 10 == 0):
+			if (num_epochs % 1 == 0):
 				if training != "ae" and training != "sequence":
 					print ("Accuracy on training set is ",accuracy_score(data, train_set, model, modelEnc))
 					print ("Accuracy on test set is ",accuracy_score(data, test_set, model, modelEnc, True))
