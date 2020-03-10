@@ -213,7 +213,7 @@ class DGL_Simple_Tool(nn.Module):
         h = self.activation(self.fc1(final_to_decode.view(1, -1)))
         tools = self.activation(self.fc2(h))
         tools = self.activation(self.fc3(h)).flatten()
-        tools = F.softmax(tools, dim=0)
+        tools = torch.sigmoid(tools)
         probNoTool = self.activation(self.p1(h))
         probNoTool = self.activation(self.p2(h))
         probNoTool = torch.sigmoid(self.activation(self.p3(probNoTool))).flatten()
