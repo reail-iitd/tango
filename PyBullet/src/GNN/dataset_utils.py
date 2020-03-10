@@ -8,7 +8,7 @@ import dgl
 import torch
 from tqdm import tqdm
 
-etypes = ["Close", "Inside", "On", "Stuck", "Self-Loop"]
+etypes = ["Close", "Inside", "On", "Stuck"]
 
 def get_graph_data(pathToDatapoint, args):
 
