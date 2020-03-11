@@ -118,7 +118,7 @@ def world_split(data):
 	train_set = []
 	for i in data.graphs:
 		for j in range(1,9):
-			if (i[0],i[1]) == (j,j-1):
+			if (i[0],i[1]) == (j,j):
 				test_set.append(i)
 				break
 		else:
@@ -181,7 +181,7 @@ if __name__ == '__main__':
 			random.shuffle(train_set)
 			print ("EPOCH " + str(num_epochs))
 
-			backprop(optimizer, train_set, model, data.num_objects, modelEnc)
+			backpropGD(optimizer, train_set, model, data.num_objects, modelEnc)
 
 			if (num_epochs % 1 == 0):
 				if training != "ae" and training != "sequence":
@@ -189,7 +189,9 @@ if __name__ == '__main__':
 					print ("Accuracy on test set is ",accuracy_score(data, test_set, model, modelEnc, True))
 				elif training == 'ae':
 					print ("Loss on test set is ", loss_score(test_set, model, modelEnc).item()/len(test_set))
-				torch.save(model, MODEL_SAVE_PATH + "/" + model.name + "_" + str(num_epochs) + ".pt")
+				if num_epochs % 10 == 0:
+					torch.save(model, MODEL_SAVE_PATH + "/" + model.name + "_" + str(num_epochs) + ".pt")
 	else:
-		model = torch.load(MODEL_SAVE_PATH + "/400.pt")
-	print (accuracy_score(data, data.graphs, model, True))
+		model = torch.load(MODEL_SAVE_PATH + "/Simple_Attention_Tool_256_5_Trained.pt")
+	print ("Accuracy on complete set is ",accuracy_score(data, data.graphs, model, modelEnc))
+
