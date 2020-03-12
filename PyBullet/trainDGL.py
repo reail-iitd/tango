@@ -45,7 +45,7 @@ def accuracy_score(dset, graphs, model, modelEnc, verbose = False):
 	return ((total_correct/len(graphs))*100)
 
 def printPredictions(model):
-	data = DGLDataset("dataset/home/goal3-clean-dirt/world_home2/", 
+	data = DGLDataset("dataset/home/goal6-bottles-dumpster/world_home6/", 
 			augmentation=AUGMENTATION, 
 			globalNode=globalnode, 
 			ignoreNoTool=ignoreNoTool, 
@@ -59,7 +59,10 @@ def printPredictions(model):
 			y_pred = model(encoding.flatten(), goal2vec[goal_num], goalObjects2vec[goal_num])
 		tools_possible = data.goal_scene_to_tools[(goal_num,world_num)]
 		y_pred = list(y_pred.reshape(-1))
+		# y_pred[TOOLS.index("box")] = 0
 		tool_predicted = TOOLS[y_pred.index(max(y_pred))]
+		# if tool_predicted == "box":
+		# 	print(goal_num, world_num, tools_possible)
 		print(tool_predicted, "\t\t", tools_possible)
 
 def backprop(optimizer, graphs, model, num_objects, modelEnc=None):
@@ -188,7 +191,7 @@ if __name__ == '__main__':
 		elif training == 'sequence':
 			model = DGL_AGCN_Action(data.features, data.num_objects + 1, 2 * GRAPH_HIDDEN, 4+1, 3, etypes, torch.tanh, 0.5)
 
-		optimizer = torch.optim.Adam(model.parameters() , lr = 0.00001)
+		optimizer = torch.optim.Adam(model.parameters() , lr = 0.0001)
 		train_set, test_set = world_split(data) if split == 'world' else random_split(data)  if split == 'random' else tool_split(data) 
 
 		print ("Size before split was", len(data.graphs))
@@ -210,7 +213,7 @@ if __name__ == '__main__':
 				if num_epochs % 1 == 0:
 					torch.save(model, MODEL_SAVE_PATH + "/" + model.name + "_" + str(num_epochs) + ".pt")
 	else:
-		model = torch.load(MODEL_SAVE_PATH + "/Simple_Attention_Tool_256_5_Trained.pt")
-	print ("Accuracy on complete set is ",accuracy_score(data, data.graphs, model, modelEnc))
+		model = torch.load(MODEL_SAVE_PATH + "/Simple_Attention_Likelihood_256_5_Trained.pt")
+	# print ("Accuracy on complete set is ",accuracy_score(data, data.graphs, model, modelEnc))
 	printPredictions(model)
 
