@@ -9,7 +9,7 @@ from tqdm import tqdm
 import torch
 import torch.nn as nn
 
-training = "agcn-tool" # can be "gcn", "ae", "combined", "agcn", "agcn-tool", "agcn-likelihood", "sequence"
+training = "agcn-likelihood" # can be "gcn", "ae", "combined", "agcn", "agcn-tool", "agcn-likelihood", "sequence"
 split = "world" # can be "random", "world", "tool"
 train = True # can be True or False
 globalnode = False # can be True or False
@@ -43,6 +43,24 @@ def accuracy_score(dset, graphs, model, modelEnc, verbose = False):
 		elif verbose:
 			print (goal_num, world_num, tool_predicted, tools_possible)
 	return ((total_correct/len(graphs))*100)
+
+def printPredictions(model):
+	data = DGLDataset("dataset/home/goal3-clean-dirt/world_home2/", 
+			augmentation=AUGMENTATION, 
+			globalNode=globalnode, 
+			ignoreNoTool=ignoreNoTool, 
+			sequence=sequence)
+	for graph in data.graphs:
+		goal_num, world_num, tools, g = graph
+		if 'gcn' in training:
+			y_pred = model(g, goal2vec[goal_num], goalObjects2vec[goal_num])
+		elif training == 'combined':
+			encoding = modelEnc.encode(g)[-1] if globalnode else modelEnc.encode(g)
+			y_pred = model(encoding.flatten(), goal2vec[goal_num], goalObjects2vec[goal_num])
+		tools_possible = data.goal_scene_to_tools[(goal_num,world_num)]
+		y_pred = list(y_pred.reshape(-1))
+		tool_predicted = TOOLS[y_pred.index(max(y_pred))]
+		print(tool_predicted, "\t\t", tools_possible)
 
 def backprop(optimizer, graphs, model, num_objects, modelEnc=None):
 	total_loss = 0.0
@@ -165,12 +183,12 @@ if __name__ == '__main__':
 			# model = torch.load("trained_models/Simple_Attention_Tool_768_3_Trained.pt")
 			model = DGL_Simple_Tool(data.features, data.num_objects, 4 * GRAPH_HIDDEN, NUMTOOLS, 5, etypes, torch.tanh, 0.5)
 		elif training == 'agcn-likelihood':
-			model = torch.load("trained_models/GatedHeteroRGCN_Attention_Likelihood128_1_Trained.pt")
-			# model = DGL_AGCN_Likelihood(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 1, etypes, torch.tanh, 0.5)
+			# model = torch.load("trained_models/Simple_Attention_Likelihood_256_5_Trained.pt")
+			model = DGL_Simple_Likelihood(data.features, data.num_objects, 4 * GRAPH_HIDDEN, NUMTOOLS, 5, etypes, torch.tanh, 0.5)
 		elif training == 'sequence':
 			model = DGL_AGCN_Action(data.features, data.num_objects + 1, 2 * GRAPH_HIDDEN, 4+1, 3, etypes, torch.tanh, 0.5)
 
-		optimizer = torch.optim.Adam(model.parameters() , lr = 0.0001)
+		optimizer = torch.optim.Adam(model.parameters() , lr = 0.00001)
 		train_set, test_set = world_split(data) if split == 'world' else random_split(data)  if split == 'random' else tool_split(data) 
 
 		print ("Size before split was", len(data.graphs))
@@ -181,7 +199,7 @@ if __name__ == '__main__':
 			random.shuffle(train_set)
 			print ("EPOCH " + str(num_epochs))
 
-			backpropGD(optimizer, train_set, model, data.num_objects, modelEnc)
+			backprop(optimizer, train_set, model, data.num_objects, modelEnc)
 
 			if (num_epochs % 1 == 0):
 				if training != "ae" and training != "sequence":
@@ -189,9 +207,10 @@ if __name__ == '__main__':
 					print ("Accuracy on test set is ",accuracy_score(data, test_set, model, modelEnc, True))
 				elif training == 'ae':
 					print ("Loss on test set is ", loss_score(test_set, model, modelEnc).item()/len(test_set))
-				if num_epochs % 10 == 0:
+				if num_epochs % 1 == 0:
 					torch.save(model, MODEL_SAVE_PATH + "/" + model.name + "_" + str(num_epochs) + ".pt")
 	else:
 		model = torch.load(MODEL_SAVE_PATH + "/Simple_Attention_Tool_256_5_Trained.pt")
 	print ("Accuracy on complete set is ",accuracy_score(data, data.graphs, model, modelEnc))
+	printPredictions(model)
 

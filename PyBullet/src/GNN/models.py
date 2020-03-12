@@ -220,6 +220,69 @@ class DGL_Simple_Tool(nn.Module):
         output = torch.cat(((1-probNoTool)*tools, probNoTool), dim=0)
         return output
 
+class DGL_Simple_Likelihood(nn.Module):
+    def __init__(self,
+                 in_feats,
+                 n_objects,
+                 n_hidden,
+                 n_classes,
+                 n_layers,
+                 etypes,
+                 activation,
+                 dropout):
+        super(DGL_Simple_Likelihood, self).__init__()
+        self.n_classes = n_classes
+        self.etypes = etypes
+        self.name = "Simple_Attention_Likelihood_" + str(n_hidden) + "_" + str(n_layers)
+        self.layers = nn.ModuleList()
+        self.layers.append(nn.Linear(in_feats + 51*4, n_hidden))
+        for i in range(n_layers - 1):
+            self.layers.append(nn.Linear(n_hidden, n_hidden))
+        self.attention = nn.Linear(n_hidden + n_hidden, 1)
+        self.embed = nn.Linear(PRETRAINED_VECTOR_SIZE, n_hidden)
+        self.fc1 = nn.Linear(n_objects * (n_hidden + n_hidden) + n_hidden, n_hidden)
+        self.fc2 = nn.Linear(n_hidden, n_hidden)
+        self.fc3 = nn.Linear(n_hidden, n_hidden)
+        self.fc4 = nn.Linear(n_hidden, n_hidden)
+        self.fc5 = nn.Linear(n_hidden, 1)
+        self.p1  = nn.Linear(n_objects * (n_hidden + n_hidden), n_hidden)
+        self.p2  = nn.Linear(n_hidden, n_hidden)
+        self.p3  = nn.Linear(n_hidden, 1)
+        self.final = nn.Sigmoid()
+        self.activation = nn.PReLU()
+        self.dropout = nn.Dropout(p=dropout)
+
+    def forward(self, g, goalVec, goalObjectsVec):
+        h = g.ndata['feat']
+        edgeMatrices = [g.adjacency_matrix(etype=t) for t in self.etypes]
+        edges = torch.cat(edgeMatrices, 1).to_dense()
+        h = torch.cat((h, edges), 1)
+        for i, layer in enumerate(self.layers):
+            h = self.activation(layer(h))
+        goalObjectsVec = self.activation(self.embed(torch.Tensor(goalObjectsVec)))
+        attn_embedding = torch.cat([h, goalObjectsVec.repeat(h.size(0)).view(h.size(0), -1)], 1)
+        attn_weights = F.softmax(self.activation(self.attention(attn_embedding)), dim=0)
+        # print(attn_weights)
+        scene_embedding = torch.mul(attn_weights.expand(h.size(0), h.size(1)), h)
+        goal_embed = self.activation(self.embed(torch.Tensor(goalVec)))
+        scene_and_goal = torch.cat([scene_embedding, goal_embed.repeat(h.size(0)).view(h.size(0), -1)], 1).view(1, -1)
+        l = []
+        tool_embedding = self.embed(torch.Tensor(tool_vec))
+        for i in range(NUMTOOLS):
+            final_to_decode = torch.cat([scene_and_goal, tool_embedding[i].view(1, -1)], 1)
+            h = self.activation(self.fc1(final_to_decode))
+            h = self.activation(self.fc2(h))
+            h = self.activation(self.fc3(h))
+            h = self.activation(self.fc4(h))
+            h = self.final(self.fc5(h))
+            l.append(h.flatten())
+        tools = torch.stack(l)
+        probNoTool = self.activation(self.p1(scene_and_goal))
+        probNoTool = self.activation(self.p2(probNoTool))
+        probNoTool = torch.sigmoid(self.activation(self.p3(probNoTool))).flatten()
+        output = torch.cat(((1-probNoTool)*tools.flatten(), probNoTool), dim=0)
+        return output
+
 class DGL_AGCN_Likelihood(nn.Module):
     def __init__(self,
                  in_feats,
