@@ -45,7 +45,7 @@ def accuracy_score(dset, graphs, model, modelEnc, verbose = False):
 	return ((total_correct/len(graphs))*100)
 
 def printPredictions(model):
-	data = DGLDataset("dataset/home/goal6-bottles-dumpster/world_home6/", 
+	data = DGLDataset("dataset/home/", 
 			augmentation=AUGMENTATION, 
 			globalNode=globalnode, 
 			ignoreNoTool=ignoreNoTool, 
@@ -61,9 +61,9 @@ def printPredictions(model):
 		y_pred = list(y_pred.reshape(-1))
 		# y_pred[TOOLS.index("box")] = 0
 		tool_predicted = TOOLS[y_pred.index(max(y_pred))]
-		# if tool_predicted == "box":
-		# 	print(goal_num, world_num, tools_possible)
-		print(tool_predicted, "\t\t", tools_possible)
+		if tool_predicted == "tray" or "tray" in tools_possible:
+			print(goal_num, world_num, tool_predicted, tools_possible)
+		# print(tool_predicted, "\t\t", tools_possible)
 
 def backprop(optimizer, graphs, model, num_objects, modelEnc=None):
 	total_loss = 0.0
@@ -186,8 +186,9 @@ if __name__ == '__main__':
 			# model = torch.load("trained_models/Simple_Attention_Tool_768_3_Trained.pt")
 			model = DGL_Simple_Tool(data.features, data.num_objects, 4 * GRAPH_HIDDEN, NUMTOOLS, 5, etypes, torch.tanh, 0.5)
 		elif training == 'agcn-likelihood':
-			# model = torch.load("trained_models/Simple_Attention_Likelihood_256_5_Trained.pt")
-			model = DGL_Simple_Likelihood(data.features, data.num_objects, 4 * GRAPH_HIDDEN, NUMTOOLS, 5, etypes, torch.tanh, 0.5)
+			# model = torch.load("trained_models/GGCN_Metric_Attn_L_256_5_5.pt")
+			model = GGCN_Metric_Attn_L(data.features, data.num_objects, 4 * GRAPH_HIDDEN, NUMTOOLS, 5, etypes, torch.tanh, 0.5)
+			# model = DGL_Simple_Likelihood(data.features, data.num_objects, 4 * GRAPH_HIDDEN, NUMTOOLS, 5, etypes, torch.tanh, 0.5)
 		elif training == 'sequence':
 			model = DGL_AGCN_Action(data.features, data.num_objects + 1, 2 * GRAPH_HIDDEN, 4+1, 3, etypes, torch.tanh, 0.5)
 
@@ -213,7 +214,7 @@ if __name__ == '__main__':
 				if num_epochs % 1 == 0:
 					torch.save(model, MODEL_SAVE_PATH + "/" + model.name + "_" + str(num_epochs) + ".pt")
 	else:
-		model = torch.load(MODEL_SAVE_PATH + "/Simple_Attention_Likelihood_256_5_Trained.pt")
+		model = torch.load(MODEL_SAVE_PATH + "/Simple_Attention_Likelihood_256_5_7.pt")
 	# print ("Accuracy on complete set is ",accuracy_score(data, data.graphs, model, modelEnc))
 	printPredictions(model)
 
