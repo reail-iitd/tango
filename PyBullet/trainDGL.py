@@ -29,7 +29,7 @@ def load_dataset(filename):
 
 def gen_data(testnum):
 	if testnum == 1: return DGLDataset("dataset/home/goal2-fruits-cupboard/", augmentation=AUGMENTATION, globalNode=globalnode, ignoreNoTool=True, sequence=sequence)
-	if testnum == 2: return DGLDataset("dataset/home/goal1-milk-fridge/", augmentation=AUGMENTATION, globalNode=globalnode, ignoreNoTool=True, sequence=sequence)
+	if testnum == 2: return DGLDataset("dataset/home/", augmentation=AUGMENTATION, globalNode=globalnode, ignoreNoTool=ignoreNoTool, sequence=sequence)
 
 def gen_score(model, filename):
 	with open(filename, 'r') as handle:
@@ -43,8 +43,8 @@ def gen_score(model, filename):
 
 def gen_train(testnum):
 	data = gen_data(testnum)
-	# model = GGCN(data.features, data.num_objects, 4 * GRAPH_HIDDEN, NUMTOOLS, 5, etypes, torch.tanh, 0.5)
-	model = DGL_Simple_Likelihood(data.features, data.num_objects, 4 * GRAPH_HIDDEN, NUMTOOLS, 5, etypes, torch.tanh, 0.5)
+	model = GGCN(data.features, data.num_objects, 4 * GRAPH_HIDDEN, NUMTOOLS, 5, etypes, torch.tanh, 0.5)
+	# model = DGL_Simple_Likelihood(data.features, data.num_objects, 4 * GRAPH_HIDDEN, NUMTOOLS, 5, etypes, torch.tanh, 0.5)
 	optimizer = torch.optim.Adam(model.parameters() , lr = 0.0001)
 	train_set = data.graphs
 	for num_epochs in range(NUM_EPOCHS+1):
@@ -56,6 +56,9 @@ def gen_train(testnum):
 			print ("Generalization score ", gen_score(model, "dataset/test/home/test"+str(testnum)+"/0.graph"))
 			torch.save(model, MODEL_SAVE_PATH + "/test" + str(testnum) + "/" + model.name + "_" + str(num_epochs) + ".pt")
 
+def gen_test(testnum):
+	model = torch.load("trained_models/GGCN_Metric_Attn_256_5_Trained.pt")
+	print ("Generalization score ", gen_score(model, "dataset/test/home/test"+str(testnum)+"/0.graph"))
 
 def accuracy_score(dset, graphs, model, modelEnc, verbose = False):
 	total_correct = 0
@@ -248,5 +251,5 @@ if __name__ == '__main__':
 		# print ("Accuracy on complete set is ",accuracy_score(data, data.graphs, model, modelEnc))
 		printPredictions(model)
 	else:
-		gen_train(2)
+		gen_test(2)
 
