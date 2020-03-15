@@ -1,8 +1,32 @@
 {
 	"actions":[
 		{
+			"name": "moveTo",
+			"args": ["stick"]
+		},	
+		{
+			"name": "pick",
+			"args": ["stick"]
+		},
+		{
+			"name": "dropTo",
+			"args": ["milk", "table"]
+		},
+		{
+			"name": "dropTo",
+			"args": ["stick", "table"]
+		},
+		{
 			"name": "changeState",
-			"args": ["light", "off"]
+			"args": ["fridge", "open"]
+		},
+		{
+			"name": "pickNplaceAonB",
+			"args": ["milk", "fridge"]
+		},
+		{
+			"name": "changeState",
+			"args": ["fridge", "close"]
 		}
 	]
 }

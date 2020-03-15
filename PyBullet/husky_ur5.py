@@ -63,7 +63,7 @@ def start(input_args):
   args = input_args
   speed = args.speed
 
-  if (args.logging or args.display):
+  if (args.logging or args.display=="both"):
     p.configureDebugVisualizer(p.COV_ENABLE_GUI, 0)
     p.configureDebugVisualizer(p.COV_ENABLE_RENDERING, 0)
     p.configureDebugVisualizer(p.COV_ENABLE_TINY_RENDERER, 0)
@@ -222,7 +222,7 @@ def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None):
           counter += 1
           z = 1 if p.getBasePositionAndOrientation(husky)[0][2] > 0.5 else 0
           camTargetPos = [x1, y1, z]
-          if (args.logging or args.display) and (counter % COUNTER_MOD == 0):
+          if (args.logging or args.display=="both") and (counter % COUNTER_MOD == 0):
             # start_image = time.time()
             lastTime, imageCount = saveImage(lastTime, imageCount, "fp", ax, o1, cam, 3, yaw, pitch, camTargetPos, wall_id, on)
             # image_save_time = time.time() - start_image

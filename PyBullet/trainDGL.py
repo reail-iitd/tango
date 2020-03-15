@@ -97,7 +97,7 @@ def printPredictions(model, data=None):
 		# y_pred[TOOLS.index("box")] = 0
 		tool_predicted = TOOLS[y_pred.index(max(y_pred))]
 		if tool_predicted == "tray" or tool_predicted == "tray2":
-			print(goal_num, world_num, tool_predicted, tools_possible, t)
+			print(goal_num, world_num, tool_predicted, tools_possible)
 		# print(tool_predicted, "\t\t", tools_possible)
 
 def backprop(optimizer, graphs, model, num_objects, modelEnc=None):
@@ -251,5 +251,7 @@ if __name__ == '__main__':
 		# print ("Accuracy on complete set is ",accuracy_score(data, data.graphs, model, modelEnc))
 		printPredictions(model)
 	else:
+		model = torch.load(MODEL_SAVE_PATH + "/Simple_Attention_Likelihood_256_5_Trained.pt")
+		printPredictions(model, data)
 		gen_test(2)
 
