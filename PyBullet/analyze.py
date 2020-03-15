@@ -140,9 +140,9 @@ def combineDatasets(idx=1):
 def printGraph(filename):
 	print(filename)
 	f = open(filename + '.datapoint', 'rb')
-	datapoint = pickle.load(f)
-	print (json.dumps(datapoint.getAugmentedGraph(), indent=2))
-	f.close()
+	datapoint = pickle.load(f); f.close()
+	f = open("dataset/test/home/test1/0.graph", "w+")
+	f.write(json.dumps(datapoint.getGraph(), indent=2))
 
 def allActionTypes():
 	actionTypes = []
@@ -181,5 +181,5 @@ def checkActionTypes():
 # combineDatasets(4)
 # printGraph("dataset/factory/goal1-crates-platform/world_factory3/0")
 # checkActionTypes()
-printGraph("dataset/home/goal1-milk-fridge/world_home0/0")
+printGraph("dataset/home/goal2-fruits-cupboard/world_home0/0")
 
