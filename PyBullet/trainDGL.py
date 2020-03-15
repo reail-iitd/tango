@@ -15,7 +15,7 @@ train = True # can be True or False
 globalnode = False # can be True or False
 ignoreNoTool = False # can be True or False
 sequence = training == "sequence" # can be True or False
-generalization = False
+generalization = True
 
 def load_dataset(filename):
 	global TOOLS, NUMTOOLS, globalnode
@@ -29,6 +29,7 @@ def load_dataset(filename):
 
 def gen_data(testnum):
 	if testnum == 1: return DGLDataset("dataset/home/goal2-fruits-cupboard/", augmentation=AUGMENTATION, globalNode=globalnode, ignoreNoTool=True, sequence=sequence)
+	if testnum == 2: return DGLDataset("dataset/home/goal1-milk-fridge/", augmentation=AUGMENTATION, globalNode=globalnode, ignoreNoTool=True, sequence=sequence)
 
 def gen_score(model, filename):
 	with open(filename, 'r') as handle:
@@ -42,6 +43,7 @@ def gen_score(model, filename):
 
 def gen_train(testnum):
 	data = gen_data(testnum)
+	# model = GGCN(data.features, data.num_objects, 4 * GRAPH_HIDDEN, NUMTOOLS, 5, etypes, torch.tanh, 0.5)
 	model = DGL_Simple_Likelihood(data.features, data.num_objects, 4 * GRAPH_HIDDEN, NUMTOOLS, 5, etypes, torch.tanh, 0.5)
 	optimizer = torch.optim.Adam(model.parameters() , lr = 0.0001)
 	train_set = data.graphs
@@ -246,5 +248,5 @@ if __name__ == '__main__':
 		# print ("Accuracy on complete set is ",accuracy_score(data, data.graphs, model, modelEnc))
 		printPredictions(model)
 	else:
-		gen_train(1)
+		gen_train(2)
 
