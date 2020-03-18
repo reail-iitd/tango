@@ -110,35 +110,6 @@ class Dataset():
 
 ############################ DGL ############################
 
-def totalTime(dp):
-	time = 0
-	for i in range(len(dp.actions)):
-		action = dp.actions[i][0]
-		if action == 'S':
-			continue
-		dt = 0
-		if action == 'moveTo' or action == 'moveToXY' or action == 'moveZ':
-			x1 = dp.position[i][0]; y1 = dp.position[i][1]; o1 = dp.position[i][3]
-			if 'list' in str(type(dp.actions[i][1])):
-				x2 = dp.actions[i][1][0]; y2 = dp.actions[i][1][1]
-			else:
-				x2 = dp.metrics[i-1][dp.actions[i][1]][0][0]; y2 = dp.metrics[i-1][dp.actions[i][1]][0][1]
-			robot, dest = o1%(2*math.pi), math.atan2((y2-y1),(x2-x1))%(2*math.pi)
-			left = (robot - dest)%(2*math.pi); right = (dest - robot)%(2*math.pi)
-			dt = 100000 * abs(min(left, right)) # time for rotate
-			dt += 2000 * abs(max(0.2, distance.euclidean((x1, y1, 0), (x2, y2, 0))) - 0.2) # time for move
-		elif action == 'move':
-			x1 = dp.position[i][0]; y1 = dp.position[i][1]; o1 = dp.position[i][3]
-			x2 = -2; y2 = 3
-			dt = 100000 * abs(math.atan2(y2-y1,x2-x1) % (2*math.pi) - (o1%(2*math.pi)))
-			dt += 2000 * abs(max(0.2, distance.euclidean((x1, y1, 0), (x2, y2, 0))) - 0.2)
-		elif action == 'constrain' or action == 'removeConstraint' or action == 'changeWing':
-			dt = 1000
-		elif action == 'climbUp' or action == 'climbDown' or action == 'changeState':
-			dt = 1200
-		time += dt
-	return time
-
 def getGlobalID(dp):
 	maxID = 0
 	for i in dp.metrics[0].keys():
@@ -183,21 +154,21 @@ def convertToDGLGraph(graph_data, globalNode, goal_num, globalID):
 	g.ndata['feat'] = torch.cat((node_vectors, node_states, node_size_and_pos), 1)
 	return g
 
-def getDGLGraph(pathToDatapoint, globalNode, ignoreNoTool):
+def getDGLGraph(pathToDatapoint, globalNode, ignoreNoTool, e):
 	datapoint = pickle.load(open(pathToDatapoint, "rb"))
-	time = totalTime(datapoint)
+	time = datapoint.totalTime()
 	tools = datapoint.getTools(not ignoreNoTool)
 	if ignoreNoTool and len(tools) == 0: return None
 	goal_num = int(datapoint.goal[4])
 	world_num = int(datapoint.world[-1])
 	# Initial Graph
-	graph_data = datapoint.getGraph()["graph_0"] 
+	graph_data = datapoint.getGraph(embeddings = e)["graph_0"] 
 	g = convertToDGLGraph(graph_data, globalNode, goal_num, getGlobalID(datapoint) if globalNode else -1)
 	return (goal_num, world_num, tools, g, time)
 
-def getDGLSequence(pathToDatapoint, globalNode, ignoreNoTool):
+def getDGLSequence(pathToDatapoint, globalNode, ignoreNoTool, e):
 	datapoint = pickle.load(open(pathToDatapoint, "rb"))
-	time = totalTime(datapoint)
+	time = datapoint.totalTime()
 	tools = datapoint.getTools(not ignoreNoTool)
 	if ignoreNoTool and len(tools) == 0: return None
 	goal_num = int(datapoint.goal[4])
@@ -206,33 +177,35 @@ def getDGLSequence(pathToDatapoint, globalNode, ignoreNoTool):
 	for action in datapoint.symbolicActions:
 		if not (str(action[0]) == 'E' or str(action[0]) == 'U'): actionSeq.append(action[0])
 	for i in range(len(datapoint.metrics)):
-		if datapoint.actions[i] == 'Start': graphSeq.append(convertToDGLGraph(datapoint.getGraph(i)["graph_"+str(i)], globalNode, goal_num, getGlobalID(datapoint) if globalNode else -1))
+		if datapoint.actions[i] == 'Start': graphSeq.append(convertToDGLGraph(datapoint.getGraph(i, embeddings=e)["graph_"+str(i)], globalNode, goal_num, getGlobalID(datapoint) if globalNode else -1))
 	return (goal_num, world_num, tools, (actionSeq, graphSeq), time)
 
 
 class DGLDataset():
-	def __init__(self, program_dir, augmentation=50, globalNode=False, ignoreNoTool=False, sequence=False):
+	def __init__(self, program_dir, augmentation=50, globalNode=False, ignoreNoTool=False, sequence=False, embedding="conceptnet"):
 		global etypes
 		if globalNode: etypes.append('Global')
 		graphs = []
-		self.goal_scene_to_tools = {}
+		with open('jsons/embeddings/'+embedding+'.vectors') as handle: e = json.load(handle)
+		self.goal_scene_to_tools = {}; self.max_time = {}
 		all_files = os.walk(program_dir)
 		for path, dirs, files in tqdm(all_files):
 			if (len(files) > 0):
 				for file in files:
 					file_path = path + "/" + file
 					for i in range(augmentation):
-						graph = getDGLGraph(file_path, globalNode, ignoreNoTool) if not sequence else getDGLSequence(file_path, globalNode, ignoreNoTool)
+						graph = getDGLGraph(file_path, globalNode, ignoreNoTool, e) if not sequence else getDGLSequence(file_path, globalNode, ignoreNoTool, e)
 						if graph: 
 							graphs.append(graph)
 							tools = graphs[-1][2]
 							goal_num = graphs[-1][0]
 							world_num = graphs[-1][1]
 							if (goal_num,world_num) not in self.goal_scene_to_tools:
-								self.goal_scene_to_tools[(goal_num,world_num)] = []
+								self.goal_scene_to_tools[(goal_num,world_num)] = []; self.max_time[(goal_num,world_num)] = 0
 							for tool in tools:
 								if tool not in self.goal_scene_to_tools[(goal_num,world_num)]:
 									self.goal_scene_to_tools[(goal_num,world_num)].append(tool)
+							self.max_time[(goal_num,world_num)] = max(self.max_time[(goal_num,world_num)], graphs[-1][4])
 		self.graphs = graphs
 		self.features = self.graphs[0][3].ndata['feat'].shape[1] if not sequence else self.graphs[0][3][1][0].ndata['feat'].shape[1]
 		self.num_objects = self.graphs[0][3].number_of_nodes() if not sequence else self.graphs[0][3][1][0].number_of_nodes()
@@ -250,5 +223,5 @@ class TestDataset():
 						with open(file_path, 'r') as handle:
 						    graph = json.load(handle)
 						g = convertToDGLGraph(graph["graph_0"], False, graph["goal_num"], -1)	
-						graphs.append((graph["goal_num"], graph["tools"], convertToDGLGraph(graph["graph_0"], False, graph["goal_num"], -1)))					
+						graphs.append((graph["goal_num"], int(path[-1]), graph["tools"], convertToDGLGraph(graph["graph_0"], False, graph["goal_num"], -1), graph["tool_embeddings"]))					
 		self.graphs = graphs

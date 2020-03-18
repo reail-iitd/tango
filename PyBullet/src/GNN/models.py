@@ -131,7 +131,7 @@ class DGL_Simple_Likelihood(nn.Module):
         super(DGL_Simple_Likelihood, self).__init__()
         self.n_classes = n_classes
         self.etypes = etypes
-        self.name = "Simple_Attention_Likelihood_" + str(n_hidden) + "_" + str(n_layers)
+        self.name = "GGCN_Metric_Attn_L_NT_" + str(n_hidden) + "_" + str(n_layers)
         self.layers = nn.ModuleList()
         self.layers.append(nn.Linear(in_feats + 51*4, n_hidden))
         for i in range(n_layers - 1):
@@ -147,7 +147,7 @@ class DGL_Simple_Likelihood(nn.Module):
         self.final = nn.Sigmoid()
         self.activation = nn.PReLU()
 
-    def forward(self, g, goalVec, goalObjectsVec):
+    def forward(self, g, goalVec, goalObjectsVec, tool_vec):
         h = g.ndata['feat']
         edgeMatrices = [g.adjacency_matrix(etype=t) for t in self.etypes]
         edges = torch.cat(edgeMatrices, 1).to_dense()
@@ -199,7 +199,7 @@ class GGCN(nn.Module):
         self.final = nn.Sigmoid()
         self.activation = nn.PReLU()
 
-    def forward(self, g, goalVec, goalObjectsVec):
+    def forward(self, g, goalVec, goalObjectsVec, tool_vec):
         h = g.ndata['feat']
         for i, layer in enumerate(self.layers):
             h = layer(g, h)
@@ -235,7 +235,7 @@ class GGCN_Metric(nn.Module):
         self.final = nn.Sigmoid()
         self.activation = nn.PReLU()
 
-    def forward(self, g, goalVec, goalObjectsVec):
+    def forward(self, g, goalVec, goalObjectsVec, tool_vec):
         h = g.ndata['feat']
         edgeMatrices = [g.adjacency_matrix(etype=t) for t in self.etypes]
         edges = torch.cat(edgeMatrices, 1).to_dense()
@@ -275,7 +275,7 @@ class GGCN_Metric_Attn(nn.Module):
         self.final = nn.Sigmoid()
         self.activation = nn.PReLU()
 
-    def forward(self, g, goalVec, goalObjectsVec):
+    def forward(self, g, goalVec, goalObjectsVec, tool_vec):
         h = g.ndata['feat']
         edgeMatrices = [g.adjacency_matrix(etype=t) for t in self.etypes]
         edges = torch.cat(edgeMatrices, 1).to_dense()
@@ -319,7 +319,7 @@ class GGCN_Metric_Attn_L(nn.Module):
         self.final = nn.Sigmoid()
         self.activation = nn.PReLU()
 
-    def forward(self, g, goalVec, goalObjectsVec):
+    def forward(self, g, goalVec, goalObjectsVec, tool_vec):
         h = g.ndata['feat']
         edgeMatrices = [g.adjacency_matrix(etype=t) for t in self.etypes]
         edges = torch.cat(edgeMatrices, 1).to_dense()

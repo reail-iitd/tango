@@ -6,6 +6,8 @@ from scipy.spatial import distance
 from statistics import mean 
 from shutil import copyfile
 import json
+from extract_vectors import load_all_vectors
+# from src.generalization import *
 
 GOAL_LISTS = \
 {'home': ["goal1-milk-fridge.json", "goal2-fruits-cupboard.json", "goal3-clean-dirt.json", "goal4-stick-paper.json", "goal5-cubes-box.json", "goal6-bottles-dumpster.json", "goal7-weight-paper.json", "goal8-light-off.json"],
@@ -28,43 +30,12 @@ def printNumDatapoints(w='factory'):
 		print('\nTotal goal ' + goal + ' points = ' + str(goalpoints))
 	print('Gross total points = ' + str(totalpoints))
 
-
-def totalTime(dp):
-	time = 0
-	for i in range(len(dp.actions)):
-		action = dp.actions[i][0]
-		if action == 'S':
-			continue
-		dt = 0
-		if action == 'moveTo' or action == 'moveToXY' or action == 'moveZ':
-			x1 = dp.position[i][0]; y1 = dp.position[i][1]; o1 = dp.position[i][3]
-			if 'list' in str(type(dp.actions[i][1])):
-				x2 = dp.actions[i][1][0]; y2 = dp.actions[i][1][1]
-			else:
-				x2 = dp.metrics[i-1][dp.actions[i][1]][0][0]; y2 = dp.metrics[i-1][dp.actions[i][1]][0][1]
-			robot, dest = o1%(2*math.pi), math.atan2((y2-y1),(x2-x1))%(2*math.pi)
-			left = (robot - dest)%(2*math.pi); right = (dest - robot)%(2*math.pi)
-			dt = 100000 * abs(min(left, right)) # time for rotate
-			dt += 2000 * abs(max(0.2, distance.euclidean((x1, y1, 0), (x2, y2, 0))) - 0.2) # time for move
-		elif action == 'move':
-			x1 = dp.position[i][0]; y1 = dp.position[i][1]; o1 = dp.position[i][3]
-			x2 = -2; y2 = 3
-			dt = 100000 * abs(math.atan2(y2-y1,x2-x1) % (2*math.pi) - (o1%(2*math.pi)))
-			dt += 2000 * abs(max(0.2, distance.euclidean((x1, y1, 0), (x2, y2, 0))) - 0.2)
-		elif action == 'constrain' or action == 'removeConstraint' or action == 'changeWing':
-			dt = 1000
-		elif action == 'climbUp' or action == 'climbDown' or action == 'changeState':
-			dt = 1200
-		# print("Action = ", action, ", Time = ", dt)
-		time += dt
-	return time
-
 def printDatapoint(filename):
 	print(filename)
 	f = open(filename + '.datapoint', 'rb')
 	datapoint = pickle.load(f)
-	print (datapoint.toString(subSymbolic=True))
-	print(totalTime(datapoint))
+	print (datapoint.toString(subSymbolic=False))
+	print(datapoint.getTools(returnNoTool=True), datapoint.totalTime()/10000)
 	f.close()
 
 def keepNewDatapoints(idx=1):
@@ -173,6 +144,22 @@ def checkActionTypes():
 								print(file)
 								print(action[0]['name'], i, action[0]['args'][i])
 
+def testData():
+	# for i in range(1,9):
+	# 	formTestData(i)
+	formTestData(1)
+
+def printAllTimes():
+	for goal in ["goal2-fruits-cupboard.json"]:
+		print('Goal = ' + goal)
+		for world in range(10):
+			directory = './dataset/home/' + goal.split('.')[0] + '/world_home' + str(world)
+			try:
+				points = listdir(directory)
+			except Exception as e:
+				continue
+			for point in points:
+				printDatapoint(directory + '/' + point.split('.')[0])
 
 # keepNewDatapoints(4)
 # printAllDatapoints()
@@ -181,5 +168,6 @@ def checkActionTypes():
 # combineDatasets(4)
 # printGraph("dataset/factory/goal1-crates-platform/world_factory3/0")
 # checkActionTypes()
-printGraph("dataset/home/goal1-milk-fridge/world_home4/0")
-
+# printGraph("dataset/home/goal1-milk-fridge/world_home4/0")
+# testData()
+printAllTimes()

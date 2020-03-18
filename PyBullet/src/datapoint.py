@@ -17,10 +17,6 @@ objects = None
 with open('jsons/objects.json', 'r') as handle:
     objects = json.load(handle)['objects']
 
-embeddings = None
-with open('jsons/embeddings/conceptnet.vectors') as handle:
-	embeddings = json.load(handle)
-
 allStates = None
 with open('jsons/states.json', 'r') as handle:
     allStates = json.load(handle)
@@ -132,7 +128,7 @@ class Datapoint:
 			string = string + ")\n"
 		return string
 
-	def getGraph(self, index=0, distance=False, sceneobjects=[]):
+	def getGraph(self, index=0, distance=False, sceneobjects=[], embeddings={}):
 		world = 'home' if 'home' in self.world else 'factory' if 'factory' in self.world else 'outdoor'
 		metrics = self.metrics[index]
 		sceneobjects = list(metrics.keys()) if len(sceneobjects) == 0 else sceneobjects
@@ -229,3 +225,32 @@ class Datapoint:
 					usedTools.append(obj)
 		if returnNoTool and len(usedTools) == 0: usedTools.append("no-tool")
 		return usedTools
+
+	def totalTime(self):
+		time = 0
+		for i in range(len(self.actions)):
+			action = self.actions[i][0]
+			if action == 'S':
+				continue
+			dt = 0
+			if action == 'moveTo' or action == 'moveToXY' or action == 'moveZ':
+				x1 = self.position[i][0]; y1 = self.position[i][1]; o1 = self.position[i][3]
+				if 'list' in str(type(self.actions[i][1])):
+					x2 = self.actions[i][1][0]; y2 = self.actions[i][1][1]
+				else:
+					x2 = self.metrics[i-1][self.actions[i][1]][0][0]; y2 = self.metrics[i-1][self.actions[i][1]][0][1]
+				robot, dest = o1%(2*math.pi), math.atan2((y2-y1),(x2-x1))%(2*math.pi)
+				left = (robot - dest)%(2*math.pi); right = (dest - robot)%(2*math.pi)
+				dt = 100000 * abs(min(left, right)) # time for rotate
+				dt += 2000 * abs(max(1.2, distance.euclidean((x1, y1, 0), (x2, y2, 0))) - 1.2) # time for move
+			elif action == 'move':
+				x1 = self.position[i][0]; y1 = self.position[i][1]; o1 = self.position[i][3]
+				x2 = -2; y2 = 3
+				dt = 100000 * abs(math.atan2(y2-y1,x2-x1) % (2*math.pi) - (o1%(2*math.pi)))
+				dt += 2000 * abs(max(0.2, distance.euclidean((x1, y1, 0), (x2, y2, 0))) - 0.2)
+			elif action == 'constrain' or action == 'removeConstraint' or action == 'changeWing':
+				dt = 100
+			elif action == 'climbUp' or action == 'climbDown' or action == 'changeState':
+				dt = 120
+			time += dt
+		return time

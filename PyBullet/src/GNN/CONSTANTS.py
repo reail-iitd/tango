@@ -1,6 +1,5 @@
 import json
 import numpy as np
-from src.datapoint import embeddings
 import torch
 
 STATES = ["Outside", "Inside", "On", "Off", "Close", "Open", "Up", "Down", "Sticky", "Non_Sticky", "Dirty", "Clean", "Grabbed", "Free", "Welded", "Not_Welded", "Drilled", "Not_Drilled", "Driven", "Not_Driven", "Fueled", "Not_Fueled", "Cut", "Not_Cut", "Painted", "Not_Painted", "Different_Height", "Same_Height"]
@@ -34,25 +33,38 @@ NUMTOOLS = len(TOOLS)
 MODEL_SAVE_PATH = "trained_models/"
 AUGMENTATION = 1
 
-# Object to vectors
-object2vec = {}; object2idx = {}; idx2object = {}
-for i, obj in enumerate(json.load(open("jsons/objects.json", "r"))["objects"]):
-	object2vec[obj["name"]] = embeddings[obj["name"]]
-	object2idx[obj["name"]] = i
-	idx2object[i] = obj["name"]
-tool_vec = torch.Tensor([object2vec[i] for i in TOOLS])
-# Goal objects and vectors
+
 goal_jsons = ["jsons/home_goals/goal1-milk-fridge.json", "jsons/home_goals/goal2-fruits-cupboard.json",\
             "jsons/home_goals/goal3-clean-dirt.json", "jsons/home_goals/goal4-stick-paper.json",\
             "jsons/home_goals/goal5-cubes-box.json", "jsons/home_goals/goal6-bottles-dumpster.json",\
             "jsons/home_goals/goal7-weight-paper.json", "jsons/home_goals/goal8-light-off.json"]
-goal2vec, goalObjects2vec, goalObjects = {}, {}, {}
+goalObjects = {}
 for i in range(len(goal_jsons)):
 	goal_json = json.load(open(goal_jsons[i], "r"))
-	goal2vec[i+1] = torch.Tensor(np.array(goal_json["goal-vector"]))
-	goal_object_vec = np.zeros(300)
-	for j in goal_json["goal-objects"]:
-		goal_object_vec += object2vec[j]
-	goal_object_vec /= len(goal_json["goal-objects"])
 	goalObjects[i+1] = goal_json["goal-objects"]
-	goalObjects2vec[i+1] = torch.Tensor(goal_object_vec)
+
+def compute_constants(embedding):
+	# Global Constants
+	embeddings = None
+	with open('jsons/embeddings/' + embedding + '.vectors') as handle:
+		embeddings = json.load(handle)
+
+	# Object to vectors
+	object2vec = {}; object2idx = {}; idx2object = {}
+	for i, obj in enumerate(json.load(open("jsons/objects.json", "r"))["objects"]):
+		object2vec[obj["name"]] = embeddings[obj["name"]]
+		object2idx[obj["name"]] = i
+		idx2object[i] = obj["name"]
+	tool_vec = torch.Tensor([object2vec[i] for i in TOOLS])
+
+	# Goal objects and vectors
+	goal2vec, goalObjects2vec = {}, {}
+	for i in range(len(goal_jsons)):
+		goal_json = json.load(open(goal_jsons[i], "r"))
+		goal2vec[i+1] = torch.Tensor(np.array(goal_json["goal-vector"]))
+		goal_object_vec = np.zeros(300)
+		for j in goal_json["goal-objects"]:
+			goal_object_vec += object2vec[j]
+		goal_object_vec /= len(goal_json["goal-objects"])
+		goalObjects2vec[i+1] = torch.Tensor(goal_object_vec)
+	return embeddings, object2vec, object2idx, idx2object, tool_vec, goal2vec, goalObjects2vec
