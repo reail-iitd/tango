@@ -51,8 +51,8 @@ def gen_score(model, testData):
 		if test_num == 8 and "_L" in model.name: y_pred[TOOLS.index("box")] = 0
 		tool_predicted = TOOLS[y_pred.index(max(y_pred))]
 		if tool_predicted in tools: total_correct += 1
-		# else:
-		# 	print(test_num, goal_num, tool_predicted, tools)
+		else:
+			print(test_num, goal_num, tool_predicted, tools)
 	return total_correct * 100.0 / len(testData.graphs)
 
 def gen_train(testnum):
@@ -123,7 +123,7 @@ def backprop(data, optimizer, graphs, model, num_objects, modelEnc=None):
 			y_pred = model(g, goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
 			y_true = torch.zeros(NUMTOOLS)
 			for tool in tools: y_true[TOOLS.index(tool)] = 1
-			loss = torch.sum((y_pred - y_true)** 2)  * (1 - t/data.max_time[(goal_num, world_num)])
+			loss = torch.sum((y_pred - y_true)** 2) * (1 if t == data.min_time[(goal_num, world_num)] else 0.001) # * (1 - t/data.max_time[(goal_num, world_num)])
 		elif 'combined' in training:
 			encoding = modelEnc.encode(g)[-1] if globalnode else modelEnc.encode(g)
 			y_pred = model(encoding.flatten(), goal2vec[goal_num], goalObjects2vec[goal_num])
@@ -282,14 +282,14 @@ if __name__ == '__main__':
 		# printPredictions(model)
 	else:
 		testConcept = TestDataset("dataset/test/home/conceptnet/")
-		testFast = TestDataset("dataset/test/home/fasttext/")
-		embeddings, object2vec, object2idx, idx2object, tool_vec, goal2vec, goalObjects2vec = compute_constants("fasttext")
-		for i in ["GGCN_256_5_Trained", "GGCN_Metric_256_5_Trained", "GGCN_Metric_Attn_256_5_Trained",\
-					"GGCN_Metric_Attn_L_256_5_Trained", "GGCN_Mettric_Attn_L_NT_256_5_Trained"]:
-			model = torch.load(MODEL_SAVE_PATH + "/" + i + ".pt")
-			print(i, gen_score(model, testFast))
-		embeddings, object2vec, object2idx, idx2object, tool_vec, goal2vec, goalObjects2vec = compute_constants("conceptnet")
-		for i in ["GGCN_Mettric_Attn_L_NT_C_256_5_Trained"]:
+		# testFast = TestDataset("dataset/test/home/fasttext/")
+		# embeddings, object2vec, object2idx, idx2object, tool_vec, goal2vec, goalObjects2vec = compute_constants("fasttext")
+		# for i in ["GGCN_256_5_Trained", "GGCN_Metric_256_5_Trained", "GGCN_Metric_Attn_256_5_Trained",\
+		# 			"GGCN_Metric_Attn_L_256_5_Trained", "GGCN_Metric_Attn_L_NT_256_5_Trained"]:
+		# 	model = torch.load(MODEL_SAVE_PATH + "/" + i + ".pt")
+		# 	print(i, gen_score(model, testFast))
+		# embeddings, object2vec, object2idx, idx2object, tool_vec, goal2vec, goalObjects2vec = compute_constants("conceptnet")
+		for i in ["GGCN_Metric_Attn_L_NT_256_5_40"]:
 			model = torch.load(MODEL_SAVE_PATH + "/" + i + ".pt")
 			print(i, gen_score(model, testConcept))
 

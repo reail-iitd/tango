@@ -1,6 +1,7 @@
 import json
 import numpy as np
 import torch
+from copy import deepcopy
 
 STATES = ["Outside", "Inside", "On", "Off", "Close", "Open", "Up", "Down", "Sticky", "Non_Sticky", "Dirty", "Clean", "Grabbed", "Free", "Welded", "Not_Welded", "Drilled", "Not_Drilled", "Driven", "Not_Driven", "Fueled", "Not_Fueled", "Cut", "Not_Cut", "Painted", "Not_Painted", "Different_Height", "Same_Height"]
 N_STATES = len(STATES)
@@ -55,7 +56,9 @@ def compute_constants(embedding):
 		object2vec[obj["name"]] = embeddings[obj["name"]]
 		object2idx[obj["name"]] = i
 		idx2object[i] = obj["name"]
-	tool_vec = torch.Tensor([object2vec[i] for i in TOOLS])
+	TOOLS2 = deepcopy(TOOLS)
+	if "no-tool" in TOOLS2: TOOLS2.remove("no-tool")
+	tool_vec = torch.Tensor([object2vec[i] for i in TOOLS2])
 
 	# Goal objects and vectors
 	goal2vec, goalObjects2vec = {}, {}

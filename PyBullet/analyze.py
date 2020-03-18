@@ -152,7 +152,7 @@ def testData():
 def printAllTimes():
 	for goal in ["goal2-fruits-cupboard.json"]:
 		print('Goal = ' + goal)
-		for world in range(10):
+		for world in range(1):
 			directory = './dataset/home/' + goal.split('.')[0] + '/world_home' + str(world)
 			try:
 				points = listdir(directory)

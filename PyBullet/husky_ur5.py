@@ -149,7 +149,7 @@ def start(input_args):
   # Initialize datapoint
   datapoint = Datapoint()
   try:
-      g = args.goal.split("\\")[-1].split(".")[0]; w = args.world.split('\\')[-1].split(".")[0]
+      g = args.goal.split("/")[-1].split(".")[0]; w = args.world.split('/')[-1].split(".")[0]
   except:
       g = args.goal.split("/")[-1].split(".")[0]; w = args.world.split('/')[-1].split(".")[0]
   datapoint.world = w

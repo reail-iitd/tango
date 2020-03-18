@@ -9,6 +9,7 @@ import torch
 from tqdm import tqdm
 import math
 from scipy.spatial import distance
+from sys import maxsize
 
 etypes = ["Close", "Inside", "On", "Stuck"]
 
@@ -187,7 +188,7 @@ class DGLDataset():
 		if globalNode: etypes.append('Global')
 		graphs = []
 		with open('jsons/embeddings/'+embedding+'.vectors') as handle: e = json.load(handle)
-		self.goal_scene_to_tools = {}; self.max_time = {}
+		self.goal_scene_to_tools = {}; self.min_time = {}
 		all_files = os.walk(program_dir)
 		for path, dirs, files in tqdm(all_files):
 			if (len(files) > 0):
@@ -201,11 +202,12 @@ class DGLDataset():
 							goal_num = graphs[-1][0]
 							world_num = graphs[-1][1]
 							if (goal_num,world_num) not in self.goal_scene_to_tools:
-								self.goal_scene_to_tools[(goal_num,world_num)] = []; self.max_time[(goal_num,world_num)] = 0
+								self.goal_scene_to_tools[(goal_num,world_num)] = []
+								self.min_time[(goal_num,world_num)] = maxsize
 							for tool in tools:
 								if tool not in self.goal_scene_to_tools[(goal_num,world_num)]:
 									self.goal_scene_to_tools[(goal_num,world_num)].append(tool)
-							self.max_time[(goal_num,world_num)] = max(self.max_time[(goal_num,world_num)], graphs[-1][4])
+							self.min_time[(goal_num,world_num)] = min(self.min_time[(goal_num,world_num)], graphs[-1][4])
 		self.graphs = graphs
 		self.features = self.graphs[0][3].ndata['feat'].shape[1] if not sequence else self.graphs[0][3][1][0].ndata['feat'].shape[1]
 		self.num_objects = self.graphs[0][3].number_of_nodes() if not sequence else self.graphs[0][3][1][0].number_of_nodes()
