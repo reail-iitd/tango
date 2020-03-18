@@ -11,7 +11,7 @@ import torch.nn as nn
 
 training = "agcn-likelihood" # can be "gcn", "ae", "combined", "agcn", "agcn-tool", "agcn-likelihood", "sequence"
 split = "world" # can be "random", "world", "tool"
-train = True # can be True or False
+train = False # can be True or False
 globalnode = False # can be True or False
 ignoreNoTool = False # can be True or False
 sequence = training == "sequence" # can be True or False
@@ -32,14 +32,16 @@ def gen_data(testnum):
 	if testnum == 2: return DGLDataset("dataset/home/", augmentation=AUGMENTATION, globalNode=globalnode, ignoreNoTool=ignoreNoTool, sequence=sequence)
 
 def gen_score(model, filename):
-	with open(filename, 'r') as handle:
-	    graph = json.load(handle)
-	g = convertToDGLGraph(graph["graph_0"], False, graph["goal_num"], -1)
-	y_pred = model(g, goal2vec[graph["goal_num"]], goalObjects2vec[graph["goal_num"]])
-	y_pred = list(y_pred.reshape(-1))
-	tool_predicted = TOOLS[y_pred.index(max(y_pred))]
-	print(tool_predicted)
-	return tool_predicted in graph["tools"]
+	testData = TestDataset(filename)
+	total_correct = 0
+	for graph in testData.graphs:
+		goal_num, tools, g = graph
+		y_pred = model(g, goal2vec[goal_num], goalObjects2vec[goal_num])
+		y_pred = list(y_pred.reshape(-1))
+		tool_predicted = TOOLS[y_pred.index(max(y_pred))]
+		if tool_predicted in tools: total_correct += 1
+		# print(tool_predicted, tools)
+	return total_correct * 100.0 / len(testData.graphs)
 
 def gen_train(testnum):
 	data = gen_data(testnum)
@@ -55,10 +57,6 @@ def gen_train(testnum):
 			print ("Accuracy on training set is ",accuracy_score(data, train_set, model, None))
 			print ("Generalization score ", gen_score(model, "dataset/test/home/test"+str(testnum)+"/0.graph"))
 			torch.save(model, MODEL_SAVE_PATH + "/test" + str(testnum) + "/" + model.name + "_" + str(num_epochs) + ".pt")
-
-def gen_test(testnum):
-	model = torch.load("trained_models/GGCN_Metric_Attn_256_5_Trained.pt")
-	print ("Generalization score ", gen_score(model, "dataset/test/home/test"+str(testnum)+"/0.graph"))
 
 def accuracy_score(dset, graphs, model, modelEnc, verbose = False):
 	total_correct = 0
@@ -251,7 +249,10 @@ if __name__ == '__main__':
 		# print ("Accuracy on complete set is ",accuracy_score(data, data.graphs, model, modelEnc))
 		printPredictions(model)
 	else:
-		model = torch.load(MODEL_SAVE_PATH + "/Simple_Attention_Likelihood_256_5_Trained.pt")
-		printPredictions(model, data)
-		gen_test(2)
+		for i in ["GGCN_256_5_Trained", "GGCN_Metric_256_5_Trained", "GGCN_Metric_Attn_256_5_Trained",\
+					"GGCN_Metric_Attn_L_256_5_Trained", "GGCN_Mettric_Attn_L_NT_256_5_Trained",\
+					"Simple_Attention_Likelihood_256_5_Trained"]:
+			model = torch.load(MODEL_SAVE_PATH + "/" + i + ".pt")
+			# printPredictions(model, data)
+			print(i, gen_score(model, "dataset/test/"))
 

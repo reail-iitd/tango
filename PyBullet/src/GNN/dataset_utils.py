@@ -238,3 +238,17 @@ class DGLDataset():
 		self.num_objects = self.graphs[0][3].number_of_nodes() if not sequence else self.graphs[0][3][1][0].number_of_nodes()
 		if globalNode: self.num_objects -= 1
 
+class TestDataset():
+	def __init__(self, program_dir, augmentation=1):
+		graphs = []
+		all_files = os.walk(program_dir)
+		for path, dirs, files in tqdm(all_files):
+			if (len(files) > 0):
+				for file in files:
+					file_path = path + "/" + file
+					for i in range(augmentation):
+						with open(file_path, 'r') as handle:
+						    graph = json.load(handle)
+						g = convertToDGLGraph(graph["graph_0"], False, graph["goal_num"], -1)	
+						graphs.append((graph["goal_num"], graph["tools"], convertToDGLGraph(graph["graph_0"], False, graph["goal_num"], -1)))					
+		self.graphs = graphs
