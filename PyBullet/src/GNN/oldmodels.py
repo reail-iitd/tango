@@ -603,3 +603,57 @@ class DGL_AGCN_Action(nn.Module):
         pred3 = self.activation(self.r2(pred3))
         pred3 = F.softmax(self.activation(self.r3(pred3)), dim=1)
         return torch.cat((action, pred1, pred2, pred3), 1).flatten()
+
+class DGL_Simple_Tool(nn.Module):
+    def __init__(self,
+                 in_feats,
+                 n_objects,
+                 n_hidden,
+                 n_classes,
+                 n_layers,
+                 etypes,
+                 activation,
+                 dropout):
+        super(DGL_Simple_Tool, self).__init__()
+        self.n_classes = n_classes
+        self.etypes = etypes
+        self.name = "Simple_Attention_Tool_" + str(n_hidden) + "_" + str(n_layers)
+        self.layers = nn.ModuleList()
+        self.layers.append(nn.Linear(in_feats + 51*4, n_hidden))
+        for i in range(n_layers - 1):
+            self.layers.append(nn.Linear(n_hidden, n_hidden))
+        self.attention = nn.Linear(n_hidden + n_hidden, 1)
+        self.embed = nn.Linear(PRETRAINED_VECTOR_SIZE, n_hidden)
+        self.fc1 = nn.Linear(n_objects * (n_hidden + n_hidden), n_hidden)
+        self.fc2 = nn.Linear(n_hidden, n_hidden)
+        self.fc3 = nn.Linear(n_hidden, n_classes-1)
+        self.p1  = nn.Linear(n_hidden, n_hidden)
+        self.p2  = nn.Linear(n_hidden, n_hidden)
+        self.p3  = nn.Linear(n_hidden, 1)
+        self.final = torch.sigmoid
+        self.activation = nn.PReLU()
+        self.dropout = nn.Dropout(p=dropout)
+
+    def forward(self, g, goalVec, goalObjectsVec):
+        h = g.ndata['feat']
+        edgeMatrices = [g.adjacency_matrix(etype=t) for t in self.etypes]
+        edges = torch.cat(edgeMatrices, 1).to_dense()
+        h = torch.cat((h, edges), 1)
+        for i, layer in enumerate(self.layers):
+            h = self.activation(layer(h))
+        goalObjectsVec = self.activation(self.embed(torch.Tensor(goalObjectsVec)))
+        attn_embedding = torch.cat([h, goalObjectsVec.repeat(h.size(0)).view(h.size(0), -1)], 1)
+        attn_weights = F.softmax(self.activation(self.attention(attn_embedding)), dim=0)
+        # print(attn_weights)
+        scene_embedding = torch.mul(attn_weights.expand(h.size(0), h.size(1)), h)
+        goal_embed = self.activation(self.embed(torch.Tensor(goalVec)))
+        final_to_decode = torch.cat([scene_embedding, goal_embed.repeat(h.size(0)).view(h.size(0), -1)], 1)
+        h = self.activation(self.fc1(final_to_decode.view(1, -1)))
+        tools = self.activation(self.fc2(h))
+        tools = self.activation(self.fc3(h)).flatten()
+        tools = torch.sigmoid(tools)
+        probNoTool = self.activation(self.p1(h))
+        probNoTool = self.activation(self.p2(h))
+        probNoTool = torch.sigmoid(self.activation(self.p3(probNoTool))).flatten()
+        output = torch.cat(((1-probNoTool)*tools, probNoTool), dim=0)
+        return output

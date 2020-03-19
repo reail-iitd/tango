@@ -7,7 +7,7 @@ from statistics import mean
 from shutil import copyfile
 import json
 from extract_vectors import load_all_vectors
-# from src.generalization import *
+from src.generalization import *
 
 GOAL_LISTS = \
 {'home': ["goal1-milk-fridge.json", "goal2-fruits-cupboard.json", "goal3-clean-dirt.json", "goal4-stick-paper.json", "goal5-cubes-box.json", "goal6-bottles-dumpster.json", "goal7-weight-paper.json", "goal8-light-off.json"],
@@ -147,7 +147,7 @@ def checkActionTypes():
 def testData():
 	# for i in range(1,9):
 	# 	formTestData(i)
-	formTestData(1)
+	formTestData(9)
 
 def printAllTimes():
 	for goal in ["goal2-fruits-cupboard.json"]:
@@ -169,5 +169,5 @@ def printAllTimes():
 # printGraph("dataset/factory/goal1-crates-platform/world_factory3/0")
 # checkActionTypes()
 # printGraph("dataset/home/goal1-milk-fridge/world_home4/0")
-# testData()
-printAllTimes()
+testData()
+# printAllTimes()

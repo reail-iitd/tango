@@ -3,7 +3,8 @@ import pickle
 import json
 from extract_vectors import load_all_vectors
 from copy import deepcopy
-from src.GNN.CONSTANTS import TOOLS
+from src.GNN.CONSTANTS import TOOLS2
+from os import listdir
 
 directory = {1: "dataset/home/goal2-fruits-cupboard/world_home0/",
 			 2: "dataset/home/goal1-milk-fridge/world_home1/",
@@ -12,9 +13,10 @@ directory = {1: "dataset/home/goal2-fruits-cupboard/world_home0/",
 			 5: "dataset/home/goal4-stick-paper/",
 			 6: "dataset/home/goal2-fruits-cupboard/",
 			 7: "dataset/home/goal8-light-off/",
-			 8: "dataset/home/goal6-bottles-dumpster/"}
+			 8: "dataset/home/goal6-bottles-dumpster/",
+			 9: "dataset/home/goal1-milk-fridge/world_home0/"}
 
-goal_num = {1:2 ,2:1 ,3:3 ,4:6 ,5:4 ,6:2 ,7:8, 8:6}
+goal_num = {1:2 ,2:1 ,3:3 ,4:6 ,5:4 ,6:2 ,7:8, 8:6, 9:1}
 
 tools = {1: ["tray2", "stick"],
 		 2: ["no-tool"],
@@ -23,15 +25,24 @@ tools = {1: ["tray2", "stick"],
 		 5: ["stool", "tape", "stick"],
 		 6: ["stool", "stick", "book", "box", "no-tool"],
 		 7: ["stick", "no-tool"],
-		 8: ["stick", "stool", "no-tool", "tray", "tray2", "chair"]}
+		 8: ["stick", "stool", "no-tool", "tray", "tray2", "chair"],
+		 9: ["stool", "tray", "stick"]}
 
 conceptnet = load_all_vectors("jsons/embeddings/conceptnet.txt") # {} #
 fasttext = load_all_vectors("jsons/embeddings/fasttext.txt") # {} #
 with open('jsons/embeddings/conceptnet.vectors') as handle: ce = json.load(handle)
 with open('jsons/embeddings/fasttext.vectors') as handle: fe = json.load(handle)
 
+def writeFiles(number, path, d):
+	i = len(listdir(path))
+	for j in range(number):
+		f = open(path + str(i) + ".graph", "w+") 
+		f.write(json.dumps(d, indent=2))
+		f.close()
+		i += 1
+
 def formTestData(testnum):
-	all_files = os.walk(directory[testnum]); i = 0
+	all_files = os.walk(directory[testnum])
 	for path, dirs, files in all_files:
 		if (len(files) > 0):
 			for file in files:
@@ -40,7 +51,6 @@ def formTestData(testnum):
 					datapoint = pickle.load(f)
 				for e in [(conceptnet, "conceptnet", ce), (fasttext, "fasttext", fe)]:	
 					d = {"goal_num": goal_num[testnum], "tools": tools[testnum]} 
-					f = open("dataset/test/home/" + e[1] + "/test"+ str(testnum) + "/" + str(i) + ".graph", "w+") 
 					enew = deepcopy(e[2])
 					if testnum == 3: enew["mop"] = [0] * 300
 					elif testnum == 4: enew["box"] = e[0]["crate"] 
@@ -48,9 +58,9 @@ def formTestData(testnum):
 					elif testnum == 6: enew["apple"] = e[0]["guava"] 
 					elif testnum == 7: enew["stool"] = e[0]["headphone"] 
 					elif testnum == 8: enew["box"] = [0] * 300
+					elif testnum == 9: enew["stool"] = e[0]["seat"] 
 					g = datapoint.getGraph(embeddings = enew)
 					d["graph_0"] = g["graph_0"]
-					d["tool_embeddings"] = [enew[i] for i in TOOLS]
-					f.write(json.dumps(d, indent=2)); f.close()
-				i += 1
+					d["tool_embeddings"] = [enew[i] for i in TOOLS2]
+					writeFiles(5 if testnum <= 2 or testnum == 9 else 1, "dataset/test/home/" + e[1] + "/test"+ str(testnum) + "/", d)
 

@@ -29,11 +29,12 @@ NUM_GOALS = 8
 # TOOLS = ['stool', 'tray', 'tray2', 'big-tray', 'book', 'box', 'chair',\
 # 		'stick', 'glue', 'tape', 'mop', 'sponge', 'vacuum', 'no-tool']
 TOOLS = ['stool', 'tray', 'tray2', 'big-tray', 'book', 'box', 'chair',\
+		'stick', 'glue', 'tape', 'mop', 'sponge', 'vacuum', 'no-tool']
+TOOLS2 = ['stool', 'tray', 'tray2', 'big-tray', 'book', 'box', 'chair',\
 		'stick', 'glue', 'tape', 'mop', 'sponge', 'vacuum']
 NUMTOOLS = len(TOOLS)
 MODEL_SAVE_PATH = "trained_models/"
 AUGMENTATION = 1
-
 
 goal_jsons = ["jsons/home_goals/goal1-milk-fridge.json", "jsons/home_goals/goal2-fruits-cupboard.json",\
             "jsons/home_goals/goal3-clean-dirt.json", "jsons/home_goals/goal4-stick-paper.json",\
@@ -44,6 +45,10 @@ for i in range(len(goal_jsons)):
 	goal_json = json.load(open(goal_jsons[i], "r"))
 	goalObjects[i+1] = goal_json["goal-objects"]
 
+object2idx = {};
+for i, obj in enumerate(json.load(open("jsons/objects.json", "r"))["objects"]):
+	object2idx[obj["name"]] = i
+
 def compute_constants(embedding):
 	# Global Constants
 	embeddings = None
@@ -51,13 +56,10 @@ def compute_constants(embedding):
 		embeddings = json.load(handle)
 
 	# Object to vectors
-	object2vec = {}; object2idx = {}; idx2object = {}
+	object2vec = {}; idx2object = {}
 	for i, obj in enumerate(json.load(open("jsons/objects.json", "r"))["objects"]):
 		object2vec[obj["name"]] = embeddings[obj["name"]]
-		object2idx[obj["name"]] = i
 		idx2object[i] = obj["name"]
-	TOOLS2 = deepcopy(TOOLS)
-	if "no-tool" in TOOLS2: TOOLS2.remove("no-tool")
 	tool_vec = torch.Tensor([object2vec[i] for i in TOOLS2])
 
 	# Goal objects and vectors
