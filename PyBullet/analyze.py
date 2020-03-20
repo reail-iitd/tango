@@ -19,7 +19,7 @@ def printNumDatapoints(w='factory'):
 		print('Goal = ' + goal)
 		goalpoints = 0
 		for world in range(10):
-			directory = './dataset/factory/' + goal.split('.')[0] + '/world_' + w + str(world) + '/'
+			directory = './dataset/' + w + '/' + goal.split('.')[0] + '/world_' + w + str(world) + '/'
 			try:
 				numpoints = len(listdir(directory))
 			except Exception as e:
@@ -163,11 +163,11 @@ def printAllTimes():
 
 # keepNewDatapoints(4)
 # printAllDatapoints()
-# printNumDatapoints()
+# printNumDatapoints(w='home')
 # changeAllDatapoints()
 # combineDatasets(4)
 # printGraph("dataset/factory/goal1-crates-platform/world_factory3/0")
 # checkActionTypes()
 # printGraph("dataset/home/goal1-milk-fridge/world_home4/0")
-testData()
-# printAllTimes()
+# testData()
+printAllTimes()
