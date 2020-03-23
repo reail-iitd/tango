@@ -2,8 +2,13 @@ import json
 import numpy as np
 import torch
 from copy import deepcopy
+from sys import argv
+
+domain = argv[1] if len(argv) > 1 else 'home'
 
 STATES = ["Outside", "Inside", "On", "Off", "Close", "Open", "Up", "Down", "Sticky", "Non_Sticky", "Dirty", "Clean", "Grabbed", "Free", "Welded", "Not_Welded", "Drilled", "Not_Drilled", "Driven", "Not_Driven", "Fueled", "Not_Fueled", "Cut", "Not_Cut", "Painted", "Not_Painted", "Different_Height", "Same_Height"]
+if domain == 'factory': STATES += ['To_Print', "Printed"]
+
 N_STATES = len(STATES)
 state2indx = {}
 for i,state in enumerate(STATES):
@@ -26,12 +31,13 @@ GRAPH_HIDDEN = 64
 NUM_EPOCHS = 2000
 LOGIT_HIDDEN = 32
 NUM_GOALS = 8
-# TOOLS = ['stool', 'tray', 'tray2', 'big-tray', 'book', 'box', 'chair',\
-# 		'stick', 'glue', 'tape', 'mop', 'sponge', 'vacuum', 'no-tool']
-TOOLS = ['stool', 'tray', 'tray2', 'big-tray', 'book', 'box', 'chair',\
-		'stick', 'glue', 'tape', 'mop', 'sponge', 'vacuum', 'no-tool']
+
 TOOLS2 = ['stool', 'tray', 'tray2', 'big-tray', 'book', 'box', 'chair',\
-		'stick', 'glue', 'tape', 'mop', 'sponge', 'vacuum']
+		'stick', 'glue', 'tape', 'mop', 'sponge', 'vacuum'] if domain == 'home' else ['lift', \
+		'stool', 'trolley', 'stick', 'ladder', 'glue', 'tape', 'drill', '3d_printer', \
+		'screwdriver', 'brick', 'hammer', 'blow_dryer', 'box', 'wood_cutter', 'welder', \
+		'spraypaint', 'toolbox', 'mop']
+TOOLS = TOOLS2 + ['no-tool']
 NUMTOOLS = len(TOOLS)
 MODEL_SAVE_PATH = "trained_models/"
 AUGMENTATION = 1
@@ -39,7 +45,11 @@ AUGMENTATION = 1
 goal_jsons = ["jsons/home_goals/goal1-milk-fridge.json", "jsons/home_goals/goal2-fruits-cupboard.json",\
             "jsons/home_goals/goal3-clean-dirt.json", "jsons/home_goals/goal4-stick-paper.json",\
             "jsons/home_goals/goal5-cubes-box.json", "jsons/home_goals/goal6-bottles-dumpster.json",\
-            "jsons/home_goals/goal7-weight-paper.json", "jsons/home_goals/goal8-light-off.json"]
+            "jsons/home_goals/goal7-weight-paper.json", "jsons/home_goals/goal8-light-off.json"] if domain == 'home' else [\
+            "jsons/factory_goals/goal1-crates-platform.json", "jsons/factory_goals/goal2-paper-wall.json",\
+            "jsons/factory_goals/goal3-board-wall.json", "jsons/factory_goals/goal4-generator-on.json", \
+            "jsons/factory_goals/goal5-assemble-parts.json", "jsons/factory_goals/goal6-tools-workbench.json", \
+            "jsons/factory_goals/goal7-clean-water.json", "jsons/factory_goals/goal8-clean-oil.json"]
 goalObjects = {}
 for i in range(len(goal_jsons)):
 	goal_json = json.load(open(goal_jsons[i], "r"))
@@ -67,6 +77,8 @@ def compute_constants(embedding):
 	for i in range(len(goal_jsons)):
 		goal_json = json.load(open(goal_jsons[i], "r"))
 		goal2vec[i+1] = torch.Tensor(np.array(goal_json["goal-vector"]))
+		if embedding == 'conceptnet' and "goal-vector-conceptnet" in goal_json:
+			goal2vec[i+1] = torch.Tensor(np.array(goal_json["goal-vector-conceptnet"]))
 		goal_object_vec = np.zeros(300)
 		for j in goal_json["goal-objects"]:
 			goal_object_vec += object2vec[j]

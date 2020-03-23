@@ -7,7 +7,7 @@ from statistics import mean
 from shutil import copyfile
 import json
 from extract_vectors import load_all_vectors
-from src.generalization import *
+# from src.generalization import *
 
 GOAL_LISTS = \
 {'home': ["goal1-milk-fridge.json", "goal2-fruits-cupboard.json", "goal3-clean-dirt.json", "goal4-stick-paper.json", "goal5-cubes-box.json", "goal6-bottles-dumpster.json", "goal7-weight-paper.json", "goal8-light-off.json"],
@@ -128,6 +128,19 @@ def allActionTypes():
 						actionTypes.append([subAction[0]['name'], len(subAction[0]['args'])])
 	print(actionTypes)
 
+def allTools():
+	tools = []
+	for goal in GOAL_LISTS['factory']:
+		for world in range(10):
+			directory = './dataset/factory/' + goal.split('.')[0] + '/world_factory' + str(world) + '/'
+			for point in range(len(listdir(directory))):
+				file = directory + str(point) + '.datapoint'
+				datapoint = pickle.load(open(file, 'rb'))
+				for tool in datapoint.getTools():
+					if tool not in tools:
+						tools.append(tool)
+	print(tools)
+
 def checkActionTypes():
 	actionTypes = []
 	for goal in GOAL_LISTS['home']:
@@ -170,4 +183,5 @@ def printAllTimes():
 # checkActionTypes()
 # printGraph("dataset/home/goal1-milk-fridge/world_home4/0")
 # testData()
-printAllTimes()
+# printAllTimes()
+allTools()

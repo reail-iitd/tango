@@ -81,7 +81,7 @@ class DGL_Simple_Likelihood(nn.Module):
         self.etypes = etypes
         self.name = "GGCN_Metric_Attn_L_NT_" + ('C_' if 'c' in embedding else '') + ('W_' if weighted else '') + str(n_hidden) + "_" + str(n_layers)
         self.layers = nn.ModuleList()
-        self.layers.append(nn.Linear(in_feats + 51*4, n_hidden))
+        self.layers.append(nn.Linear(in_feats + n_objects*4, n_hidden))
         for i in range(n_layers - 1):
             self.layers.append(nn.Linear(n_hidden, n_hidden))
         self.attention = nn.Linear(n_hidden + n_hidden, n_hidden)
@@ -175,7 +175,7 @@ class GGCN_Metric(nn.Module):
         self.etypes = etypes
         self.name = "GGCN_Metric_" + str(n_hidden) + "_" + str(n_layers)
         self.layers = nn.ModuleList()
-        self.layers.append(nn.Linear(in_feats + 51*4, n_hidden))
+        self.layers.append(nn.Linear(in_feats + n_objects*4, n_hidden))
         for i in range(n_layers - 1):
             self.layers.append(nn.Linear(n_hidden, n_hidden))
         self.embed = nn.Linear(PRETRAINED_VECTOR_SIZE, n_hidden)
@@ -214,7 +214,7 @@ class GGCN_Metric_Attn(nn.Module):
         self.etypes = etypes
         self.name = "GGCN_Metric_Attn_" + str(n_hidden) + "_" + str(n_layers)
         self.layers = nn.ModuleList()
-        self.layers.append(nn.Linear(in_feats + 51*4, n_hidden))
+        self.layers.append(nn.Linear(in_feats + n_objects*4, n_hidden))
         for i in range(n_layers - 1):
             self.layers.append(nn.Linear(n_hidden, n_hidden))
         self.attention = nn.Linear(n_hidden + n_hidden, 1)
@@ -257,7 +257,7 @@ class GGCN_Metric_Attn_L(nn.Module):
         self.etypes = etypes
         self.name = "GGCN_Metric_Attn_L_" + str(n_hidden) + "_" + str(n_layers)
         self.layers = nn.ModuleList()
-        self.layers.append(nn.Linear(in_feats + 51*4, n_hidden))
+        self.layers.append(nn.Linear(in_feats + n_objects*4, n_hidden))
         for i in range(n_layers - 1):
             self.layers.append(nn.Linear(n_hidden, n_hidden))
         self.attention = nn.Linear(n_hidden + n_hidden, 1)

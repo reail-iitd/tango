@@ -35,6 +35,13 @@ def load_vectors(fname, objs):
     		print(i)
     return data
 
+def form_goal_vec(data, text):
+    goal_vec = np.zeros(300)
+    for j in text.split():
+        goal_vec += data[j]
+    goal_vec /= len(text.split())
+    return goal_vec
+
 def form_file(filename):
 	data = load_vectors(filename, get_objects())
 	with open('jsons/embeddings/'+filename.split('.')[0]+'.vectors', "w") as fp:

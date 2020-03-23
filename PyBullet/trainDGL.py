@@ -16,8 +16,8 @@ train = True # can be True or False
 globalnode = False # can be True or False
 ignoreNoTool = False # can be True or False
 sequence = training == "sequence" # can be True or False
-generalization = True
-weighted = False
+generalization = False
+weighted = True
 
 embeddings, object2vec, object2idx, idx2object, tool_vec, goal2vec, goalObjects2vec = compute_constants(embedding)
 
@@ -26,7 +26,7 @@ def load_dataset(filename):
 	if globalnode: etypes.append("Global")
 	if path.exists(filename):
 		return pickle.load(open(filename,'rb'))
-	data = DGLDataset("dataset/home/", 
+	data = DGLDataset("dataset/" + domain + "/", 
 			augmentation=AUGMENTATION, 
 			globalNode=globalnode, 
 			ignoreNoTool=ignoreNoTool, 
@@ -35,11 +35,7 @@ def load_dataset(filename):
 	pickle.dump(data, open(filename, "wb"))
 	return data
 
-def gen_data(testnum):
-	if testnum == 1: return DGLDataset("dataset/home/goal2-fruits-cupboard/", augmentation=AUGMENTATION, globalNode=globalnode, ignoreNoTool=True, sequence=sequence)
-	if testnum == 2: return DGLDataset("dataset/home/", augmentation=AUGMENTATION, globalNode=globalnode, ignoreNoTool=ignoreNoTool, sequence=sequence)
-
-def gen_score(model, testData):
+def gen_score(model, testData, verbose = False):
 	total_correct = 0
 	for graph in testData.graphs:
 		goal_num, test_num, tools, g, tool_vec = graph
@@ -53,24 +49,9 @@ def gen_score(model, testData):
 		if test_num == 9 and "_C" in model.name: y_pred[-1] = 0
 		tool_predicted = TOOLS[y_pred.index(max(y_pred))]
 		if tool_predicted in tools: total_correct += 1
-		# else:
-		# 	print(test_num, goal_num, tool_predicted, tools)
+		elif verbose:
+			print(test_num, goal_num, tool_predicted, tools)
 	return total_correct * 100.0 / len(testData.graphs)
-
-def gen_train(testnum):
-	data = gen_data(testnum)
-	model = GGCN(data.features, data.num_objects, 4 * GRAPH_HIDDEN, NUMTOOLS, 5, etypes, torch.tanh, 0.5)
-	# model = DGL_Simple_Likelihood(data.features, data.num_objects, 4 * GRAPH_HIDDEN, NUMTOOLS, 5, etypes, torch.tanh, 0.5)
-	optimizer = torch.optim.Adam(model.parameters() , lr = 0.0001)
-	train_set = data.graphs
-	for num_epochs in range(NUM_EPOCHS+1):
-		random.shuffle(train_set)
-		print ("EPOCH " + str(num_epochs))
-		backprop(optimizer, train_set, model, data.num_objects, None)
-		if (num_epochs % 1 == 0):
-			print ("Accuracy on training set is ",accuracy_score(data, train_set, model, None))
-			print ("Generalization score ", gen_score(model, "dataset/test/home/test"+str(testnum)+"/0.graph"))
-			torch.save(model, MODEL_SAVE_PATH + "/test" + str(testnum) + "/" + model.name + "_" + str(num_epochs) + ".pt")
 
 def accuracy_score(dset, graphs, model, modelEnc, verbose = False):
 	total_correct = 0
@@ -221,7 +202,7 @@ def write_training_data(model_name, loss, training_accuracy, test_accuracy):
 		pickle.dump((llist, trlist, telist), f)
 
 if __name__ == '__main__':
-	filename = ('dataset/home_'+ 
+	filename = ('dataset/'+ domain + '_'+ 
 				("global_" if globalnode else '') + 
 				("NoTool_" if not ignoreNoTool else '') + 
 				("seq_" if sequence else '') + 
@@ -250,7 +231,7 @@ if __name__ == '__main__':
 			model = DGL_Simple_Tool(data.features, data.num_objects, 4 * GRAPH_HIDDEN, NUMTOOLS, 5, etypes, torch.tanh, 0.5)
 		elif training == 'agcn-likelihood':
 			# model = torch.load("trained_models/GGCN_Metric_Attn_L_256_5_Trained.pt")
-			model = GGCN_Metric_Attn_L(data.features, data.num_objects, 4 * GRAPH_HIDDEN, NUMTOOLS, 5, etypes, torch.tanh, 0.5)
+			model = GGCN(data.features, data.num_objects, 4 * GRAPH_HIDDEN, NUMTOOLS, 5, etypes, torch.tanh, 0.5)
 			# model = DGL_Simple_Likelihood(data.features, data.num_objects, 4 * GRAPH_HIDDEN, NUMTOOLS, 5, etypes, torch.tanh, 0.5, embedding, weighted)
 		elif training == 'sequence':
 			model = DGL_AGCN_Action(data.features, data.num_objects + 1, 2 * GRAPH_HIDDEN, 4+1, 3, etypes, torch.tanh, 0.5)
