@@ -10,14 +10,14 @@ import torch
 import torch.nn as nn
 
 training = "agcn-likelihood" # can be "gcn", "ae", "combined", "agcn", "agcn-tool", "agcn-likelihood", "sequence"
-embedding = "fasttext" # can be conceptnet or fasttext
+embedding = "conceptnet" # can be conceptnet or fasttext
 split = "world" # can be "random", "world", "tool"
 train = True # can be True or False
 globalnode = False # can be True or False
 ignoreNoTool = False # can be True or False
 sequence = training == "sequence" # can be True or False
-generalization = False
-weighted = True
+generalization = True
+weighted = False
 
 embeddings, object2vec, object2idx, idx2object, tool_vec, goal2vec, goalObjects2vec = compute_constants(embedding)
 
@@ -37,20 +37,30 @@ def load_dataset(filename):
 
 def gen_score(model, testData, verbose = False):
 	total_correct = 0
+	testcases = (9 if domain == 'home' else 8)
+	correct_list = [0] * testcases; total_list = [0] * testcases
 	for graph in testData.graphs:
 		goal_num, test_num, tools, g, tool_vec = graph
 		tool_vec = torch.Tensor(tool_vec)
 		y_pred = model(g, goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
 		y_pred = list(y_pred.reshape(-1))
-		if test_num == 1 and "_C" in model.name: y_pred[-1] = 0
-		if test_num == 3 and "_L" in model.name: y_pred[TOOLS.index("mop")] = 0
-		if test_num == 5 and "_L" in model.name: y_pred[TOOLS.index("glue")] = 0
-		if test_num == 8 and "_L" in model.name: y_pred[TOOLS.index("box")] = 0
-		if test_num == 9 and "_C" in model.name: y_pred[-1] = 0
+		if domain == 'home':
+			if test_num == 1 and "_C" in model.name: y_pred[-1] = 0
+			if test_num == 3 and "_L" in model.name: y_pred[TOOLS.index("mop")] = 0
+			if test_num == 5 and "_L" in model.name: y_pred[TOOLS.index("glue")] = 0
+			if test_num == 8 and "_L" in model.name: y_pred[TOOLS.index("box")] = 0
+			if test_num == 9 and "_C" in model.name: y_pred[-1] = 0
+		else:
+			if test_num == 1 and "_L" in model.name: y_pred[TOOLS.index("blow_dryer")] = 0
+			if test_num == 2 and "_L" in model.name: y_pred[TOOLS.index("brick")] = 0
+			if test_num == 5 and "_L" in model.name: y_pred[TOOLS.index("glue")] = 0
 		tool_predicted = TOOLS[y_pred.index(max(y_pred))]
-		if tool_predicted in tools: total_correct += 1
+		if tool_predicted in tools: total_correct += 1; correct_list[test_num-1] += 1
 		elif verbose:
 			print(test_num, goal_num, tool_predicted, tools)
+		total_list[test_num-1] += 1
+	for i in range(testcases): correct_list[i] = correct_list[i] * 100 / total_list[i]
+	print(correct_list)
 	return total_correct * 100.0 / len(testData.graphs)
 
 def accuracy_score(dset, graphs, model, modelEnc, verbose = False):
@@ -73,7 +83,7 @@ def accuracy_score(dset, graphs, model, modelEnc, verbose = False):
 
 def printPredictions(model, data=None):
 	if not data:
-		data = DGLDataset("dataset/home/", 
+		data = DGLDataset("dataset/" + domain + "/", 
 			augmentation=AUGMENTATION, 
 			globalNode=globalnode, 
 			ignoreNoTool=ignoreNoTool, 
@@ -259,21 +269,21 @@ if __name__ == '__main__':
 					torch.save(model, MODEL_SAVE_PATH + "/" + model.name + "_" + str(num_epochs) + ".pt")
 			write_training_data(model.name, loss, t1, t2)
 	elif not train and not generalization:
-		model = torch.load(MODEL_SAVE_PATH + "/GGCN_Metric_256_5_Trained.pt")
-		print ("Accuracy on complete set is ",accuracy_score(data, data.graphs, model, modelEnc))
-		train_set, test_set = world_split(data) if split == 'world' else random_split(data)  if split == 'random' else tool_split(data) 
-		t1, t2 = accuracy_score(data, train_set, model, modelEnc), accuracy_score(data, test_set, model, modelEnc)
-		print ("Accuracy on training set is ", t1)
-		print ("Accuracy on test set is ", t2)
-		# printPredictions(model)
+		model = torch.load(MODEL_SAVE_PATH + "/GGCN_Metric_Attn_L_NT_C_W_256_5_Trained.pt")
+		# print ("Accuracy on complete set is ",accuracy_score(data, data.graphs, model, modelEnc))
+		# train_set, test_set = world_split(data) if split == 'world' else random_split(data)  if split == 'random' else tool_split(data) 
+		# t1, t2 = accuracy_score(data, train_set, model, modelEnc), accuracy_score(data, test_set, model, modelEnc)
+		# print ("Accuracy on training set is ", t1)
+		# print ("Accuracy on test set is ", t2)
+		printPredictions(model)
 	else:
-		testConcept = TestDataset("dataset/test/home/conceptnet/")
-		testFast = TestDataset("dataset/test/home/fasttext/")
-		embeddings, object2vec, object2idx, idx2object, tool_vec, goal2vec, goalObjects2vec = compute_constants("fasttext")
-		for i in ["GGCN_256_5_0", "GGCN_Metric_256_5_Trained", "GGCN_Metric_Attn_256_5_Trained",\
-					"GGCN_Metric_Attn_L_256_5_Trained", "GGCN_Metric_Attn_L_NT_256_5_Trained"]:
-			model = torch.load(MODEL_SAVE_PATH + "/" + i + ".pt")
-			print(i, gen_score(model, testFast))
+		testConcept = TestDataset("dataset/test/" + domain + "/conceptnet/")
+		# testFast = TestDataset("dataset/test/" + domain + "/fasttext/")
+		# embeddings, object2vec, object2idx, idx2object, tool_vec, goal2vec, goalObjects2vec = compute_constants("fasttext")
+		# for i in ["GGCN_256_5_0", "GGCN_Metric_256_5_Trained", "GGCN_Metric_Attn_256_5_Trained",\
+		# 			"GGCN_Metric_Attn_L_256_5_Trained", "GGCN_Metric_Attn_L_NT_256_5_Trained"]:
+		# 	model = torch.load(MODEL_SAVE_PATH + "/" + i + ".pt")
+		# 	print(i, gen_score(model, testFast))
 		embeddings, object2vec, object2idx, idx2object, tool_vec, goal2vec, goalObjects2vec = compute_constants("conceptnet")
 		for i in ["GGCN_Metric_Attn_L_NT_C_256_5_Trained", "GGCN_Metric_Attn_L_NT_C_W_256_5_Trained"]:
 			model = torch.load(MODEL_SAVE_PATH + "/" + i + ".pt")

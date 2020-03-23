@@ -7,7 +7,7 @@ from statistics import mean
 from shutil import copyfile
 import json
 from extract_vectors import load_all_vectors
-# from src.generalization import *
+from src.generalization import *
 
 GOAL_LISTS = \
 {'home': ["goal1-milk-fridge.json", "goal2-fruits-cupboard.json", "goal3-clean-dirt.json", "goal4-stick-paper.json", "goal5-cubes-box.json", "goal6-bottles-dumpster.json", "goal7-weight-paper.json", "goal8-light-off.json"],
@@ -53,10 +53,10 @@ def keepNewDatapoints(idx=1):
 				else: rename(directory + '/' + str(i) + '.datapoint', directory + '/' + str(i - oldpoints) + '.datapoint')
 
 def printAllDatapoints():
-	for goal in GOAL_LIST:
+	for goal in GOAL_LIST['factory']:
 		print('Goal = ' + goal)
 		for world in range(10):
-			directory = './dataset/home/' + goal.split('.')[0] + '/world_home' + str(world)
+			directory = './dataset/factory/' + goal.split('.')[0] + '/world_factory' + str(world)
 			try:
 				points = listdir(directory)
 			except Exception as e:
@@ -158,9 +158,9 @@ def checkActionTypes():
 								print(action[0]['name'], i, action[0]['args'][i])
 
 def testData():
-	# for i in range(1,9):
-	# 	formTestData(i)
-	formTestData(9)
+	# for i in range(1,9):	formTestData(i)
+	formTestDataFactory(4)
+	# for i in range(1,9): formTestDataFactory(i)
 
 def printAllTimes():
 	for goal in ["goal2-fruits-cupboard.json"]:
@@ -182,6 +182,6 @@ def printAllTimes():
 # printGraph("dataset/factory/goal1-crates-platform/world_factory3/0")
 # checkActionTypes()
 # printGraph("dataset/home/goal1-milk-fridge/world_home4/0")
-# testData()
+testData()
 # printAllTimes()
-allTools()
+# allTools()
