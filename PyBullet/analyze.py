@@ -208,7 +208,7 @@ def getInterestTools(domain, numTools):
 	return interestTools
 
 def mapToolsGoals():
-	numTools = 5; domain = 'factory'
+	numTools = 5; domain = 'home'
 	interestTools = getInterestTools(domain, numTools)
 	usemap = np.zeros((len(GOAL_LISTS[domain]), numTools))
 	for goal in GOAL_LISTS[domain]:
@@ -228,11 +228,12 @@ def mapToolsGoals():
 	print(usemap)
 	f, ax = plt.subplots(figsize=(4, 3))
 	ax = sns.heatmap(usemap, cmap="Reds", yticklabels=[a.split('.')[0] for a in GOAL_LISTS[domain]], xticklabels=interestTools, linewidths=1)
+	ax.set_xticklabels(ax.get_xticklabels(), rotation=90)
 	plt.tight_layout()
 	f.savefig('figures/'+domain+'_goal_tools.pdf')
 
 def mapToolsWorlds():
-	numTools = 5; domain = 'factory'
+	numTools = 5; domain = 'home'
 	interestTools = getInterestTools(domain, numTools)
 	usemap = np.zeros((10, numTools))
 	for goal in GOAL_LISTS[domain]:
@@ -252,6 +253,7 @@ def mapToolsWorlds():
 	print(usemap)
 	f, ax = plt.subplots(figsize=(4, 3))
 	ax = sns.heatmap(usemap, cmap="Reds", yticklabels=['world_'+domain+str(a) for a in range(10)], xticklabels=interestTools, linewidths=1)
+	ax.set_xticklabels(ax.get_xticklabels(), rotation=90)
 	plt.tight_layout()
 	f.savefig('figures/'+domain+'_world_tools.pdf')
 
@@ -312,6 +314,6 @@ def mapObjects():
 # testData()
 # printAllTimes()
 # allTools()
-mapToolsGoals()
-# mapToolsWorlds()
+# mapToolsGoals()
+mapToolsWorlds()
 # mapObjects()
