@@ -7,7 +7,10 @@ from statistics import mean
 from shutil import copyfile
 import json
 from extract_vectors import load_all_vectors
-from src.generalization import *
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+# from src.generalization import *
 
 GOAL_LISTS = \
 {'home': ["goal1-milk-fridge.json", "goal2-fruits-cupboard.json", "goal3-clean-dirt.json", "goal4-stick-paper.json", "goal5-cubes-box.json", "goal6-bottles-dumpster.json", "goal7-weight-paper.json", "goal8-light-off.json"],
@@ -174,6 +177,130 @@ def printAllTimes():
 			for point in points:
 				printDatapoint(directory + '/' + point.split('.')[0])
 
+def getInterestTools(domain, numTools):
+	toolusage = {}
+	TOOLS2 = ['stool', 'tray', 'tray2', 'big-tray', 'book', 'box', 'chair',\
+			'stick', 'glue', 'tape', 'mop', 'sponge', 'vacuum'] if domain == 'home' else ['lift', \
+			'stool', 'trolley', 'stick', 'ladder', 'glue', 'tape', 'drill', '3d_printer', \
+			'screwdriver', 'brick', 'hammer', 'blow_dryer', 'box', 'wood_cutter', 'welder', \
+			'spraypaint', 'toolbox', 'mop']
+	for tool in TOOLS2:
+		toolusage[tool] = 0
+	for goal in GOAL_LISTS[domain]:
+		print('Goal = ' + goal)
+		for world in range(10):
+			directory = './dataset/'+domain+'/' + goal.split('.')[0] + '/world_'+domain + str(world)
+			try: points = listdir(directory)
+			except Exception as e: continue
+			for point in points:
+				filename = directory + '/' + point.split('.')[0]
+				f = open(filename + '.datapoint', 'rb')
+				datapoint = pickle.load(f)
+				ts = datapoint.getTools(returnNoTool=False)
+				for t in ts: toolusage[t] += 1
+				f.close()
+	sortedtools = sorted(toolusage.items(), key=lambda kv: kv[1], reverse=True)
+	print(sortedtools)
+	interestTools = [a[0] for a in sortedtools][:numTools]
+	if domain == 'factory': 
+		interestTools.remove('spraypaint');
+		interestTools += ['glue']
+	return interestTools
+
+def mapToolsGoals():
+	numTools = 5; domain = 'factory'
+	interestTools = getInterestTools(domain, numTools)
+	usemap = np.zeros((len(GOAL_LISTS[domain]), numTools))
+	for goal in GOAL_LISTS[domain]:
+		for world in range(10):
+			directory = './dataset/'+domain+'/' + goal.split('.')[0] + '/world_'+domain + str(world)
+			try: points = listdir(directory)
+			except Exception as e: continue
+			for point in points:
+				filename = directory + '/' + point.split('.')[0]
+				f = open(filename + '.datapoint', 'rb')
+				datapoint = pickle.load(f)
+				ts = datapoint.getTools(returnNoTool=False)
+				for t in ts:
+					if t in interestTools: usemap[GOAL_LISTS[domain].index(goal)][interestTools.index(t)] += 1
+				f.close()
+	print(interestTools)
+	print(usemap)
+	f, ax = plt.subplots(figsize=(4, 3))
+	ax = sns.heatmap(usemap, cmap="Reds", yticklabels=[a.split('.')[0] for a in GOAL_LISTS[domain]], xticklabels=interestTools, linewidths=1)
+	plt.tight_layout()
+	f.savefig('figures/'+domain+'_goal_tools.pdf')
+
+def mapToolsWorlds():
+	numTools = 5; domain = 'factory'
+	interestTools = getInterestTools(domain, numTools)
+	usemap = np.zeros((10, numTools))
+	for goal in GOAL_LISTS[domain]:
+		for world in range(10):
+			directory = './dataset/'+domain+'/' + goal.split('.')[0] + '/world_'+domain + str(world)
+			try: points = listdir(directory)
+			except Exception as e: continue
+			for point in points:
+				filename = directory + '/' + point.split('.')[0]
+				f = open(filename + '.datapoint', 'rb')
+				datapoint = pickle.load(f)
+				ts = datapoint.getTools(returnNoTool=False)
+				for t in ts:
+					if t in interestTools: usemap[world][interestTools.index(t)] += 1
+				f.close()
+	print(interestTools)
+	print(usemap)
+	f, ax = plt.subplots(figsize=(4, 3))
+	ax = sns.heatmap(usemap, cmap="Reds", yticklabels=['world_'+domain+str(a) for a in range(10)], xticklabels=interestTools, linewidths=1)
+	plt.tight_layout()
+	f.savefig('figures/'+domain+'_world_tools.pdf')
+
+def getInteractedObjects(filename):
+	f = open(filename + '.datapoint', 'rb')
+	datapoint = pickle.load(f); f.close()
+	os = []
+	for action in datapoint.symbolicActions:
+		if not (str(action[0]) == 'E' or str(action[0]) == 'U'):
+			try: 
+				for i in [1,2]: 
+					if action[0]['args'][i] not in os: os.append(action[0]['args'][i])
+			except: pass
+	return os
+
+def mapObjects():
+	numObj = 5; domain = 'factory'
+	objInteracted = {}
+	for obj in json.load(open("jsons/objects.json", "r"))["objects"]:
+		objInteracted[obj["name"]] = 0
+	for goal in GOAL_LISTS[domain]:
+		print('Goal = ' + goal)
+		for world in range(10):
+			directory = './dataset/'+domain+'/' + goal.split('.')[0] + '/world_'+domain + str(world)
+			points = listdir(directory)
+			for point in points:
+				filename = directory + '/' + point.split('.')[0]
+				for o in getInteractedObjects(filename): 
+					try: objInteracted[o] += 1
+					except: pass
+	sortedObj = sorted(objInteracted.items(), key=lambda kv: kv[1], reverse=True)
+	print(sortedObj)
+	interestObj = [a[0] for a in sortedObj][:numObj]
+	usemap = np.zeros((len(GOAL_LISTS[domain]), numObj))
+	for goal in GOAL_LISTS[domain]:
+		for world in range(10):
+			directory = './dataset/'+domain+'/' + goal.split('.')[0] + '/world_'+domain + str(world)
+			points = listdir(directory)
+			for point in points:
+				filename = directory + '/' + point.split('.')[0]
+				for o in getInteractedObjects(filename): 
+					if o in interestObj: usemap[GOAL_LISTS[domain].index(goal)][interestObj.index(o)] += 1
+	print(interestObj)
+	print(usemap)
+	f, ax = plt.subplots(figsize=(4, 3))
+	ax = sns.heatmap(usemap, cmap="Reds", yticklabels=[a.split('.')[0] for a in GOAL_LISTS[domain]], xticklabels=interestObj, linewidths=1)
+	plt.tight_layout()
+	f.savefig('figures/'+domain+'_objects.pdf')
+
 # keepNewDatapoints(4)
 # printAllDatapoints()
 # printNumDatapoints(w='home')
@@ -182,6 +309,9 @@ def printAllTimes():
 # printGraph("dataset/factory/goal1-crates-platform/world_factory3/0")
 # checkActionTypes()
 # printGraph("dataset/home/goal1-milk-fridge/world_home4/0")
-testData()
+# testData()
 # printAllTimes()
 # allTools()
+mapToolsGoals()
+# mapToolsWorlds()
+# mapObjects()
