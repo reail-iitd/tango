@@ -201,14 +201,13 @@ def getInterestTools(domain, numTools):
 				f.close()
 	sortedtools = sorted(toolusage.items(), key=lambda kv: kv[1], reverse=True)
 	print(sortedtools)
-	interestTools = [a[0] for a in sortedtools][:numTools]
+	interestTools = [a[0] for a in sortedtools][:numTools + (2 if 'f' in domain else 0)]
 	if domain == 'factory': 
-		interestTools.remove('spraypaint');
-		interestTools += ['glue']
+		interestTools.remove('spraypaint'); interestTools.remove('3d_printer');
 	return interestTools
 
 def mapToolsGoals():
-	numTools = 5; domain = 'home'
+	numTools = 10; domain = 'factory'
 	interestTools = getInterestTools(domain, numTools)
 	usemap = np.zeros((len(GOAL_LISTS[domain]), numTools))
 	for goal in GOAL_LISTS[domain]:
@@ -227,13 +226,14 @@ def mapToolsGoals():
 	print(interestTools)
 	print(usemap)
 	f, ax = plt.subplots(figsize=(4, 3))
-	ax = sns.heatmap(usemap, cmap="Reds", yticklabels=[a.split('.')[0] for a in GOAL_LISTS[domain]], xticklabels=interestTools, linewidths=1)
-	ax.set_xticklabels(ax.get_xticklabels(), rotation=90)
+	ax = sns.heatmap(usemap, cmap="Reds", yticklabels=list(range(1,9)), xticklabels=interestTools, linewidths=1)
+	ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
+	ax.set_ylabel(domain.capitalize() + ' Goal ID')
 	plt.tight_layout()
 	f.savefig('figures/'+domain+'_goal_tools.pdf')
 
 def mapToolsWorlds():
-	numTools = 5; domain = 'home'
+	numTools = 10; domain = 'factory'
 	interestTools = getInterestTools(domain, numTools)
 	usemap = np.zeros((10, numTools))
 	for goal in GOAL_LISTS[domain]:
@@ -252,8 +252,9 @@ def mapToolsWorlds():
 	print(interestTools)
 	print(usemap)
 	f, ax = plt.subplots(figsize=(4, 3))
-	ax = sns.heatmap(usemap, cmap="Reds", yticklabels=['world_'+domain+str(a) for a in range(10)], xticklabels=interestTools, linewidths=1)
-	ax.set_xticklabels(ax.get_xticklabels(), rotation=90)
+	ax = sns.heatmap(usemap, cmap="Reds", yticklabels=list(range(10)), xticklabels=interestTools, linewidths=1)
+	ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
+	ax.set_ylabel(domain.capitalize() + ' Scene ID')
 	plt.tight_layout()
 	f.savefig('figures/'+domain+'_world_tools.pdf')
 
@@ -314,6 +315,6 @@ def mapObjects():
 # testData()
 # printAllTimes()
 # allTools()
-# mapToolsGoals()
-mapToolsWorlds()
+mapToolsGoals()
+# mapToolsWorlds()
 # mapObjects()
