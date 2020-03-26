@@ -3,6 +3,7 @@ GUI/vizForDSE/*
 
 *__pycache*
 venv/
+logs/*
 trained_models/*
 jsons/embeddings/*.txt
 
