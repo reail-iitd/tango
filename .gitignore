@@ -3,11 +3,8 @@ GUI/vizForDSE/*
 
 *__pycache*
 venv/
-PyBullet/logs/*
-PyBullet/trained_models/*
-
-flask-video-streaming/
-vscode.code-workspace
+trained_models/*
+jsons/embeddings/*.txt
 
 ## Mac Files
 *.DS_Store
