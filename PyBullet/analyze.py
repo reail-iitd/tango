@@ -9,6 +9,7 @@ import json
 from extract_vectors import load_all_vectors
 import numpy as np
 import matplotlib.pyplot as plt
+from statistics import pstdev
 import seaborn as sns
 # from src.generalization import *
 
@@ -98,6 +99,40 @@ def getTiming(goal='goal1-milk-fridge.json'):
 		# print('World ' + str(world) + ' min = ' + str(min(times)) + ' avg = ' + str(mean(times)) + ' max = ' + str(max(times)))
 		# print('World ' + str(world) + ' min = ' + str(min(actions)) + ' avg = ' + str(mean(actions)) + ' max = ' + str(max(actions)))
 		print('World ' + str(world) + ' min = ' + str(min(subactions)) + ' avg = ' + str(mean(subactions)) + ' max = ' + str(max(subactions)))
+
+def getInteractedObjs(datapoint):
+	objs =  json.load(open("jsons/objects.json", "r"))["objects"]
+	objs = [i['name'] for i in objs]
+	os = []
+	for action in datapoint.symbolicActions:
+		if not (str(action[0]) == 'E' or str(action[0]) == 'U'):
+			try: 
+				for i in [1,2]: 
+					if action[0]['args'][i] not in os and action[0]['args'][i] in objs: os.append(action[0]['args'][i])
+			except: pass
+	return os
+
+def getAllData():
+	domain = 'factory'
+	for goal in GOAL_LISTS[domain]:
+		print(goal)
+		times = []; actions = []; subactions = []; objs = []; tools = []
+		for world in range(10):
+			directory = './dataset/' + domain + '/' + goal.split('.')[0] + '/world_' + domain + str(world) + '/'
+			for point in range(len(listdir(directory))):
+				file = directory + str(point) + '.datapoint'
+				f = open(file, 'rb')
+				datapoint = pickle.load(f)
+				times.append(datapoint.totalTime()/1000)
+				actions.append(len(datapoint.symbolicActions))
+				subactions.append(len(datapoint.actions))
+				objs.append(len(getInteractedObjs(datapoint)))
+				tools.append(len(datapoint.getTools()))
+		print('Time       = ' + "{:.2f}".format(mean(times)) + ' +- ' + "{:.2f}".format(pstdev(times)/1000))
+		print('Actions    = ' + "{:.2f}".format(mean(actions)) + ' +- ' + "{:.2f}".format(pstdev(actions)))
+		print('SubActions = ' + "{:.2f}".format(mean(subactions)) + ' +- ' + "{:.2f}".format(pstdev(subactions)))
+		print('Objects    = ' + "{:.2f}".format(mean(objs)) + ' +- ' + "{:.2f}".format(pstdev(objs)))
+		print('Tools      = ' + "{:.2f}".format(mean(tools)) + ' +- ' + "{:.2f}".format(pstdev(tools)))
 
 def combineDatasets(idx=1):
 	for goal in GOAL_LIST:
@@ -201,13 +236,15 @@ def getInterestTools(domain, numTools):
 				f.close()
 	sortedtools = sorted(toolusage.items(), key=lambda kv: kv[1], reverse=True)
 	print(sortedtools)
-	interestTools = [a[0] for a in sortedtools][:numTools + (2 if 'f' in domain else 0)]
+	interestTools = [a[0] for a in sortedtools][:numTools + (2)]
 	if domain == 'factory': 
 		interestTools.remove('spraypaint'); interestTools.remove('3d_printer');
+	else:
+		interestTools.remove('tray2'); interestTools.remove('sponge')
 	return interestTools
 
 def mapToolsGoals():
-	numTools = 10; domain = 'factory'
+	numTools = 10; domain = 'home'
 	interestTools = getInterestTools(domain, numTools)
 	usemap = np.zeros((len(GOAL_LISTS[domain]), numTools))
 	for goal in GOAL_LISTS[domain]:
@@ -233,7 +270,7 @@ def mapToolsGoals():
 	f.savefig('figures/'+domain+'_goal_tools.pdf')
 
 def mapToolsWorlds():
-	numTools = 10; domain = 'factory'
+	numTools = 10; domain = 'home'
 	interestTools = getInterestTools(domain, numTools)
 	usemap = np.zeros((10, numTools))
 	for goal in GOAL_LISTS[domain]:
@@ -315,6 +352,7 @@ def mapObjects():
 # testData()
 # printAllTimes()
 # allTools()
-mapToolsGoals()
+# mapToolsGoals()
 # mapToolsWorlds()
 # mapObjects()
+getAllData()

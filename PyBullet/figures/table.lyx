@@ -197,7 +197,20 @@ Generalization
 \begin_inset Text
 
 \begin_layout Plain Layout
-G
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ GGCN
 \end_layout
 
 \end_inset
@@ -309,7 +322,7 @@ G
 \uwave off
 \noun off
 \color none
-GM
+GGCN+Metric
 \end_layout
 
 \end_inset
@@ -421,7 +434,7 @@ GM
 \uwave off
 \noun off
 \color none
-GMA
+GGCN+Metric+Attn
 \end_layout
 
 \end_inset
@@ -533,7 +546,7 @@ GMA
 \uwave off
 \noun off
 \color none
-GMAL
+GGCN+Metric+Attn+L
 \end_layout
 
 \end_inset
@@ -645,7 +658,7 @@ GMAL
 \uwave off
 \noun off
 \color none
-GMALN
+GGCN+Metric+Attn+L+NT
 \end_layout
 
 \end_inset
@@ -699,18 +712,7 @@ GMALN
 
 \begin_layout Plain Layout
 
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\xout off
-\uuline off
-\uwave off
-\noun off
-\color none
+\series bold
 100%
 \end_layout
 
@@ -757,7 +759,7 @@ GMALN
 \uwave off
 \noun off
 \color none
-GMALNC
+GGCN+Metric+Attn+L+NT+C
 \end_layout
 
 \end_inset
@@ -767,18 +769,7 @@ GMALNC
 
 \begin_layout Plain Layout
 
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\xout off
-\uuline off
-\uwave off
-\noun off
-\color none
+\series bold
 88.88%
 \end_layout
 
@@ -811,18 +802,7 @@ GMALNC
 
 \begin_layout Plain Layout
 
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\xout off
-\uuline off
-\uwave off
-\noun off
-\color none
+\series bold
 100%
 \end_layout
 
@@ -869,7 +849,7 @@ GMALNC
 \uwave off
 \noun off
 \color none
-GMALNCW
+GGCN+Metric+Attn+L+NT+C+W
 \end_layout
 
 \end_inset
@@ -879,18 +859,7 @@ GMALNCW
 
 \begin_layout Plain Layout
 
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\xout off
-\uuline off
-\uwave off
-\noun off
-\color none
+\series bold
 88.88%
 \end_layout
 
@@ -901,18 +870,7 @@ GMALNCW
 
 \begin_layout Plain Layout
 
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\xout off
-\uuline off
-\uwave off
-\noun off
-\color none
+\series bold
 100%
 \end_layout
 
@@ -923,18 +881,7 @@ GMALNCW
 
 \begin_layout Plain Layout
 
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\xout off
-\uuline off
-\uwave off
-\noun off
-\color none
+\series bold
 100%
 \end_layout
 
@@ -945,18 +892,7 @@ GMALNCW
 
 \begin_layout Plain Layout
 
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\xout off
-\uuline off
-\uwave off
-\noun off
-\color none
+\series bold
 90.02%
 \end_layout
 
