@@ -78,9 +78,8 @@
 
 \begin_layout Standard
 \begin_inset Tabular
-<lyxtabular version="3" rows="19" columns="7">
+<lyxtabular version="3" rows="19" columns="6">
 <features tabularvalignment="middle">
-<column alignment="center" valignment="top">
 <column alignment="center" valignment="top">
 <column alignment="center" valignment="top">
 <column alignment="center" valignment="top">
@@ -110,16 +109,7 @@ Goal Text
 \begin_inset Text
 
 \begin_layout Plain Layout
-Symbolic Actions
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Sub-symbolic Actions
+Actions
 \end_layout
 
 \end_inset
@@ -163,15 +153,6 @@ Home
 \end_inset
 </cell>
 <cell multicolumn="2" alignment="center" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell multicolumn="2" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -266,19 +247,6 @@ Milk in fridge
 \begin_inset Text
 
 \begin_layout Plain Layout
-24.42
-\begin_inset Formula $\pm$
-\end_inset
-
-7.96
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
 40.03
 \begin_inset Formula $\pm$
 \end_inset
@@ -292,11 +260,11 @@ Milk in fridge
 \begin_inset Text
 
 \begin_layout Plain Layout
-1.61
+3.11
 \begin_inset Formula $\pm$
 \end_inset
 
-0.74
+1.04
 \end_layout
 
 \end_inset
@@ -364,19 +332,6 @@ Fruits in cupboard
 \begin_inset Text
 
 \begin_layout Plain Layout
-26.96
-\begin_inset Formula $\pm$
-\end_inset
-
-8.48
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
 48.04
 \begin_inset Formula $\pm$
 \end_inset
@@ -390,11 +345,11 @@ Fruits in cupboard
 \begin_inset Text
 
 \begin_layout Plain Layout
-1.49
+4.69
 \begin_inset Formula $\pm$
 \end_inset
 
-0.81
+1.10
 \end_layout
 
 \end_inset
@@ -462,19 +417,6 @@ Clean dirt
 \begin_inset Text
 
 \begin_layout Plain Layout
-14.94
-\begin_inset Formula $\pm$
-\end_inset
-
-4.82
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
 18.21
 \begin_inset Formula $\pm$
 \end_inset
@@ -488,11 +430,11 @@ Clean dirt
 \begin_inset Text
 
 \begin_layout Plain Layout
-0.59
+3.33
 \begin_inset Formula $\pm$
 \end_inset
 
-0.59
+0.91
 \end_layout
 
 \end_inset
@@ -560,19 +502,6 @@ Paper stuck to wall
 \begin_inset Text
 
 \begin_layout Plain Layout
-22.85
-\begin_inset Formula $\pm$
-\end_inset
-
-7.20
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
 41.29
 \begin_inset Formula $\pm$
 \end_inset
@@ -586,11 +515,11 @@ Paper stuck to wall
 \begin_inset Text
 
 \begin_layout Plain Layout
-2.87
+4.41
 \begin_inset Formula $\pm$
 \end_inset
 
-0.76
+1.17
 \end_layout
 
 \end_inset
@@ -658,19 +587,6 @@ Cubes in box
 \begin_inset Text
 
 \begin_layout Plain Layout
-36.58
-\begin_inset Formula $\pm$
-\end_inset
-
-8.90
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
 66.80
 \begin_inset Formula $\pm$
 \end_inset
@@ -684,11 +600,11 @@ Cubes in box
 \begin_inset Text
 
 \begin_layout Plain Layout
-3
+6.25
 \begin_inset Formula $\pm$
 \end_inset
 
-0.85
+1.18
 \end_layout
 
 \end_inset
@@ -756,19 +672,6 @@ Bottles in dumpster
 \begin_inset Text
 
 \begin_layout Plain Layout
-40.22
-\begin_inset Formula $\pm$
-\end_inset
-
-8.34
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
 313.92
 \begin_inset Formula $\pm$
 \end_inset
@@ -782,11 +685,11 @@ Bottles in dumpster
 \begin_inset Text
 
 \begin_layout Plain Layout
-2.62
+6.99
 \begin_inset Formula $\pm$
 \end_inset
 
-0.94
+1.10
 \end_layout
 
 \end_inset
@@ -854,19 +757,6 @@ Weight on paper
 \begin_inset Text
 
 \begin_layout Plain Layout
-10.58
-\begin_inset Formula $\pm$
-\end_inset
-
-5.49
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
 33.06
 \begin_inset Formula $\pm$
 \end_inset
@@ -880,11 +770,11 @@ Weight on paper
 \begin_inset Text
 
 \begin_layout Plain Layout
-1.33
+2.69
 \begin_inset Formula $\pm$
 \end_inset
 
-0.58
+0.95
 \end_layout
 
 \end_inset
@@ -952,19 +842,6 @@ Light switched off
 \begin_inset Text
 
 \begin_layout Plain Layout
-10.45
-\begin_inset Formula $\pm$
-\end_inset
-
-5.37
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
 13.29
 \begin_inset Formula $\pm$
 \end_inset
@@ -978,11 +855,11 @@ Light switched off
 \begin_inset Text
 
 \begin_layout Plain Layout
-0.38
+1.77
 \begin_inset Formula $\pm$
 \end_inset
 
-0.49
+0.62
 \end_layout
 
 \end_inset
@@ -1012,15 +889,6 @@ Factory
 \end_inset
 </cell>
 <cell multicolumn="2" alignment="center" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1093,7 +961,7 @@ Factory
 \uwave off
 \noun off
 \color none
-Stack heavy boxes on platform
+Stack heavy crates on platform
 \end_layout
 
 \end_inset
@@ -1115,19 +983,6 @@ Stack heavy boxes on platform
 \begin_inset Text
 
 \begin_layout Plain Layout
-49.62
-\begin_inset Formula $\pm$
-\end_inset
-
-13.88
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
 745.55
 \begin_inset Formula $\pm$
 \end_inset
@@ -1141,11 +996,11 @@ Stack heavy boxes on platform
 \begin_inset Text
 
 \begin_layout Plain Layout
-3.27
+5.71
 \begin_inset Formula $\pm$
 \end_inset
 
-1.20
+0.99
 \end_layout
 
 \end_inset
@@ -1213,19 +1068,6 @@ Paper stuck to wall
 \begin_inset Text
 
 \begin_layout Plain Layout
-35.22
-\begin_inset Formula $\pm$
-\end_inset
-
-8.79
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
 495.48
 \begin_inset Formula $\pm$
 \end_inset
@@ -1239,11 +1081,11 @@ Paper stuck to wall
 \begin_inset Text
 
 \begin_layout Plain Layout
-2.95
+4.74
 \begin_inset Formula $\pm$
 \end_inset
 
-0.80
+1.35
 \end_layout
 
 \end_inset
@@ -1311,19 +1153,6 @@ Board fixed on wall
 \begin_inset Text
 
 \begin_layout Plain Layout
-43.50
-\begin_inset Formula $\pm$
-\end_inset
-
-9.76
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
 638.54
 \begin_inset Formula $\pm$
 \end_inset
@@ -1337,11 +1166,11 @@ Board fixed on wall
 \begin_inset Text
 
 \begin_layout Plain Layout
-3.26
+4.73
 \begin_inset Formula $\pm$
 \end_inset
 
-0.48
+0.94
 \end_layout
 
 \end_inset
@@ -1409,19 +1238,6 @@ Generator switched on
 \begin_inset Text
 
 \begin_layout Plain Layout
-29.95
-\begin_inset Formula $\pm$
-\end_inset
-
-5.94
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
 449.01
 \begin_inset Formula $\pm$
 \end_inset
@@ -1435,11 +1251,11 @@ Generator switched on
 \begin_inset Text
 
 \begin_layout Plain Layout
-1.82
+3.15
 \begin_inset Formula $\pm$
 \end_inset
 
-0.80
+0.90
 \end_layout
 
 \end_inset
@@ -1507,19 +1323,6 @@ Assemble & paint parts
 \begin_inset Text
 
 \begin_layout Plain Layout
-86.21
-\begin_inset Formula $\pm$
-\end_inset
-
-18.30
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
 1027.33
 \begin_inset Formula $\pm$
 \end_inset
@@ -1533,11 +1336,11 @@ Assemble & paint parts
 \begin_inset Text
 
 \begin_layout Plain Layout
-2.11
+7.31
 \begin_inset Formula $\pm$
 \end_inset
 
-1.25
+1.38
 \end_layout
 
 \end_inset
@@ -1605,19 +1408,6 @@ Tools on workbench
 \begin_inset Text
 
 \begin_layout Plain Layout
-35.84
-\begin_inset Formula $\pm$
-\end_inset
-
-5.37
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
 514.79
 \begin_inset Formula $\pm$
 \end_inset
@@ -1631,11 +1421,11 @@ Tools on workbench
 \begin_inset Text
 
 \begin_layout Plain Layout
-1.42
+4.54
 \begin_inset Formula $\pm$
 \end_inset
 
-0.72
+0.99
 \end_layout
 
 \end_inset
@@ -1703,19 +1493,6 @@ Clean spilled water
 \begin_inset Text
 
 \begin_layout Plain Layout
-15.45
-\begin_inset Formula $\pm$
-\end_inset
-
-6.61
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
 247.90
 \begin_inset Formula $\pm$
 \end_inset
@@ -1729,11 +1506,11 @@ Clean spilled water
 \begin_inset Text
 
 \begin_layout Plain Layout
-0.03
+2.46
 \begin_inset Formula $\pm$
 \end_inset
 
-0.01
+0.56
 \end_layout
 
 \end_inset
@@ -1801,19 +1578,6 @@ Clean spilled oil
 \begin_inset Text
 
 \begin_layout Plain Layout
-15.74
-\begin_inset Formula $\pm$
-\end_inset
-
-5.56
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
 361.17
 \begin_inset Formula $\pm$
 \end_inset
@@ -1827,11 +1591,11 @@ Clean spilled oil
 \begin_inset Text
 
 \begin_layout Plain Layout
-0.07
+2.44
 \begin_inset Formula $\pm$
 \end_inset
 
-0.01
+0.57
 \end_layout
 
 \end_inset

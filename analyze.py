@@ -107,13 +107,13 @@ def getInteractedObjs(datapoint):
 	for action in datapoint.symbolicActions:
 		if not (str(action[0]) == 'E' or str(action[0]) == 'U'):
 			try: 
-				for i in [1,2]: 
+				for i in [0,1,2]: 
 					if action[0]['args'][i] not in os and action[0]['args'][i] in objs: os.append(action[0]['args'][i])
 			except: pass
 	return os
 
 def getAllData():
-	domain = 'factory'
+	domain = 'home'
 	for goal in GOAL_LISTS[domain]:
 		print(goal)
 		times = []; actions = []; subactions = []; objs = []; tools = []
@@ -350,7 +350,7 @@ def mapObjects():
 # changeAllDatapoints()
 # combineDatasets(4)
 # printGraph("dataset/factory/goal1-crates-platform/world_factory3/0")
-checkActionTypes()
+# checkActionTypes()
 # printGraph("dataset/home/goal1-milk-fridge/world_home4/0")
 # testData()
 # printAllTimes()
@@ -358,4 +358,4 @@ checkActionTypes()
 # mapToolsGoals()
 # mapToolsWorlds()
 # mapObjects()
-# getAllData()
+getAllData()
