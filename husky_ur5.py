@@ -579,7 +579,6 @@ def destroy():
   p.disconnect()
                       
 def executeAction(inp):
-    start(args)
     if execute(convertActionsFromFile(inp), args.goal):
     	print("Goal Success!!!")
     else:
@@ -587,7 +586,9 @@ def executeAction(inp):
 
 if __name__ == '__main__':
 	# take input from user
+	args = initParser()
 	inp = args.input
+	start(args)
 	executeAction(inp)
 
 	datapoint = getDatapoint()

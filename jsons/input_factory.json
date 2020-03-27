@@ -1,20 +1,32 @@
 {
 	"actions":[
 		{
-			"name": "pushTo",
-			"args": ["ladder", "long_shelf"]
+			"name": "placeRamp",
+			"args": []
 		},
 		{
-			"name": "climbUp",
-			"args": ["ladder"]
+			"name": "moveTo",
+			"args": ["gasoline"]
 		},
 		{
 			"name": "pick",
-			"args": ["coal"]
+			"args": ["gasoline"]
 		},
 		{
-			"name": "climbDown",
-			"args": ["ladder"]
+			"name": "moveUp",
+			"args": []
+		},
+		{
+			"name": "fuel",
+			"args": ["generator", "gasoline"]
+		},
+		{
+			"name": "drop",
+			"args": ["gasoline"]
+		},
+		{
+			"name": "changeState",
+			"args": ["generator", "on"]
 		}
 	]
 }

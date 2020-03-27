@@ -1,32 +1,24 @@
 {
 	"actions":[
 		{
-			"name": "moveTo",
-			"args": ["stick"]
-		},	
-		{
-			"name": "pick",
-			"args": ["stick"]
-		},
-		{
-			"name": "dropTo",
-			"args": ["milk", "table"]
-		},
-		{
-			"name": "dropTo",
-			"args": ["stick", "table"]
-		},
-		{
 			"name": "changeState",
-			"args": ["fridge", "open"]
+			"args": ["cupboard", "open"]
 		},
 		{
 			"name": "pickNplaceAonB",
-			"args": ["milk", "fridge"]
+			"args": ["apple", "box"]
 		},
 		{
-			"name": "changeState",
-			"args": ["fridge", "close"]
+			"name": "pickNplaceAonB",
+			"args": ["banana", "box"]
+		},
+		{
+			"name": "pickNplaceAonB",
+			"args": ["orange", "box"]
+		},
+		{
+			"name": "pickNplaceAonB",
+			"args": ["box", "cupboard"]
 		}
 	]
 }
