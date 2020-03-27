@@ -6,7 +6,7 @@ from scipy.spatial import distance
 from statistics import mean 
 from shutil import copyfile
 import json
-from extract_vectors import load_all_vectors
+from src.extract_vectors import load_all_vectors
 import numpy as np
 import matplotlib.pyplot as plt
 from statistics import pstdev
@@ -182,6 +182,7 @@ def allTools():
 def checkActionTypes():
 	actionTypes = []
 	for goal in GOAL_LISTS['home']:
+		print(goal)
 		for world in range(10):
 			directory = './dataset/home/' + goal.split('.')[0] + '/world_home' + str(world) + '/'
 			for point in range(len(listdir(directory))):
@@ -194,6 +195,8 @@ def checkActionTypes():
 							if not action[0]['args'][i] in possible[i]:
 								print(file)
 								print(action[0]['name'], i, action[0]['args'][i])
+							elif action[0]['name'] not in actionTypes: actionTypes.append(action[0]['name'])
+	print(actionTypes)
 
 def testData():
 	# for i in range(1,9):	formTestData(i)
