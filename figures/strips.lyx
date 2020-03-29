@@ -90,7 +90,7 @@
 \begin_inset Text
 
 \begin_layout Plain Layout
-Home: Milk in fridge generalization test case
+Home: Place milk in fridge generalization test case
 \end_layout
 
 \end_inset
@@ -256,7 +256,7 @@ Home: Milk in fridge generalization test case
 \begin_inset Text
 
 \begin_layout Plain Layout
-Home: Fruits in cupboard generalization test case
+Home: Place fruits in cupboard generalization test case
 \end_layout
 
 \end_inset
@@ -422,7 +422,7 @@ Home: Fruits in cupboard generalization test case
 \begin_inset Text
 
 \begin_layout Plain Layout
-Factory: Crates on platform generalization test case
+Factory: Fix board on wall generalization test case
 \end_layout
 
 \end_inset
@@ -498,7 +498,7 @@ Factory: Crates on platform generalization test case
 
 \begin_layout Plain Layout
 \begin_inset Graphics
-	filename figures/factory_strip/215.jpg
+	filename figures/factory_strip/80.jpg
 
 \end_inset
 
@@ -512,7 +512,7 @@ Factory: Crates on platform generalization test case
 
 \begin_layout Plain Layout
 \begin_inset Graphics
-	filename figures/factory_strip/246.jpg
+	filename figures/factory_strip/177.jpg
 
 \end_inset
 
@@ -526,7 +526,7 @@ Factory: Crates on platform generalization test case
 
 \begin_layout Plain Layout
 \begin_inset Graphics
-	filename figures/factory_strip/257.jpg
+	filename figures/factory_strip/214.jpg
 
 \end_inset
 
@@ -559,7 +559,7 @@ Factory: Crates on platform generalization test case
 \begin_inset Text
 
 \begin_layout Plain Layout
-215: Place crates on trolley
+80: Pick Board
 \end_layout
 
 \end_inset
@@ -568,7 +568,7 @@ Factory: Crates on platform generalization test case
 \begin_inset Text
 
 \begin_layout Plain Layout
-246: Move up the ramp
+177: Place board on wall
 \end_layout
 
 \end_inset
@@ -577,7 +577,7 @@ Factory: Crates on platform generalization test case
 \begin_inset Text
 
 \begin_layout Plain Layout
-257: Place trolley on platform
+214: Hammer nail on board
 \end_layout
 
 \end_inset

@@ -6,27 +6,35 @@
 		},
 		{
 			"name": "moveTo",
-			"args": ["gasoline"]
+			"args": ["board"]
 		},
 		{
 			"name": "pick",
-			"args": ["gasoline"]
+			"args": ["board"]
 		},
 		{
 			"name": "moveUp",
 			"args": []
 		},
 		{
-			"name": "fuel",
-			"args": ["generator", "gasoline"]
+			"name": "stick",
+			"args": ["board", "wall_warehouse"]
 		},
 		{
-			"name": "drop",
-			"args": ["gasoline"]
+			"name": "pickNplaceAonB",
+			"args": ["nail", "board"]
 		},
 		{
-			"name": "changeState",
-			"args": ["generator", "on"]
+			"name": "moveTo",
+			"args": ["hammer"]
+		},
+		{
+			"name": "pick",
+			"args": ["hammer"]
+		},
+		{
+			"name": "drive",
+			"args": ["nail", "hammer"]
 		}
 	]
 }
