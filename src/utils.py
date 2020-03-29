@@ -418,6 +418,7 @@ def checkNear(obj1, obj2, metrics):
 
 def checkIn(obj1, obj2, obj1G, obj2G, metrics, constraints):
     if 'Container' in obj2G['properties']:
+        if obj1 in ['cupboard', 'fridge']: return False
         (x1, y1, z1) = metrics[obj1][0]
         (x2, y2, z2) = metrics[obj2][0]
         (l, w, h) = obj2G['size']
