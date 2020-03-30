@@ -9,15 +9,16 @@ from tqdm import tqdm
 import torch
 import torch.nn as nn
 
-training = "sequence" # can be "gcn", "ae", "combined", "agcn", "agcn-tool", "agcn-likelihood", "sequence"
+training = "sequence_list" # can be "gcn", "ae", "combined", "agcn", "agcn-tool", "agcn-likelihood", "sequence", "sequence_list"
 embedding = "conceptnet" # can be conceptnet or fasttext
 split = "world" # can be "random", "world", "tool"
 train = True # can be True or False
 globalnode = False # can be True or False
 ignoreNoTool = False # can be True or False
-sequence = training == "sequence" # can be True or False
+sequence = "sequence" in training # can be True or False
 generalization = False
 weighted = False
+graph_seq_length = 4
 
 embeddings, object2vec, object2idx, idx2object, tool_vec, goal2vec, goalObjects2vec = compute_constants(embedding)
 
@@ -78,10 +79,13 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects, verbose = False):
 			encoding = modelEnc.encode(g)[-1] if globalnode else modelEnc.encode(g)
 			y_pred = model(encoding.flatten(), goal2vec[goal_num], goalObjects2vec[goal_num])
 			denominator += 1
-		elif training == 'sequence':
+		elif 'sequence' in training:
 			actionSeq, graphSeq = g
 			for i in range(len(graphSeq)):
-				y_pred = model(graphSeq[i], goal2vec[goal_num], goalObjects2vec[goal_num])
+				if training == 'sequence':
+					y_pred = model(graphSeq[i], goal2vec[goal_num], goalObjects2vec[goal_num])
+				elif training == 'sequence_list':
+					y_pred = model(graphSeq[max(0,i - graph_seq_length):i], goal2vec[goal_num], goalObjects2vec[goal_num])
 				denominator += 1
 				action_pred = vec2action(y_pred, num_objects, 4, idx2object)
 				# print ("Prediction: ", action_pred)
@@ -105,6 +109,7 @@ def printPredictions(model, data=None):
 			globalNode=globalnode, 
 			ignoreNoTool=ignoreNoTool, 
 			sequence=sequence)
+	total_number = 0
 	for graph in data.graphs:
 		goal_num, world_num, tools, g, t = graph
 		if 'gcn' in training:
@@ -112,6 +117,19 @@ def printPredictions(model, data=None):
 		elif training == 'combined':
 			encoding = modelEnc.encode(g)[-1] if globalnode else modelEnc.encode(g)
 			y_pred = model(encoding.flatten(), goal2vec[goal_num], goalObjects2vec[goal_num])
+		elif 'sequence' in training:
+			actionSeq, graphSeq = g
+			for i in range(len(graphSeq)):
+				if training == 'sequence':
+					y_pred = model(graphSeq[i], goal2vec[goal_num], goalObjects2vec[goal_num])
+				elif training == 'sequence_list':
+					y_pred = model(graphSeq[max(0,i - graph_seq_length):i], goal2vec[goal_num], goalObjects2vec[goal_num])
+				action_pred = vec2action(y_pred, data.num_objects, 4, idx2object)
+				# if (action_pred != actionSeq[i]):
+				# 	print ("Prediction: ", action_pred)
+				# 	print ("Target: ", actionSeq[i])
+				total_number += 1
+			continue
 		tools_possible = data.goal_scene_to_tools[(goal_num,world_num)]
 		y_pred = list(y_pred.reshape(-1))
 		# y_pred[TOOLS.index("box")] = 0
@@ -119,6 +137,7 @@ def printPredictions(model, data=None):
 		# if tool_predicted == "tray" or tool_predicted == "tray2":
 		print(goal_num, world_num, tool_predicted, tools_possible)
 		# print(tool_predicted, "\t\t", tools_possible)
+	print ("Total number of states is", total_number)
 
 def backprop(data, optimizer, graphs, model, num_objects, modelEnc=None):
 	total_loss = 0.0
@@ -144,7 +163,10 @@ def backprop(data, optimizer, graphs, model, num_objects, modelEnc=None):
 		elif 'sequence' in training:
 			actionSeq, graphSeq = g; loss = 0
 			for i in range(len(graphSeq)):
-				y_pred = model(graphSeq[i], goal2vec[goal_num], goalObjects2vec[goal_num])
+				if training == 'sequence':
+					y_pred = model(graphSeq[i], goal2vec[goal_num], goalObjects2vec[goal_num])
+				elif training == 'sequence_list':
+					y_pred = model(graphSeq[max(0,i - graph_seq_length):i], goal2vec[goal_num], goalObjects2vec[goal_num])
 				y_true = action2vec(actionSeq[i], num_objects, 4)
 				loss += l(y_pred, y_true)
 				# loss += torch.sum((y_pred - y_true)** 2)
@@ -178,7 +200,10 @@ def backpropGD(data, optimizer, graphs, model, num_objects, modelEnc=None):
 		elif 'sequence' in training:
 			actionSeq, graphSeq = g; loss = 0
 			for i in range(len(graphSeq)):
-				y_pred = model(graphSeq[i], goal2vec[goal_num], goalObjects2vec[goal_num])
+				if training == 'sequence':
+					y_pred = model(graphSeq[i], goal2vec[goal_num], goalObjects2vec[goal_num])
+				elif training == 'sequence_list':
+					y_pred = model(graphSeq[max(0,i - graph_seq_length):i], goal2vec[goal_num], goalObjects2vec[goal_num])
 				y_true = action2vec(actionSeq[i], num_objects, 4)
 				loss += l(y_pred, y_true)
 				# loss += torch.sum((y_pred - y_true)** 2)
@@ -263,8 +288,11 @@ if __name__ == '__main__':
 			model = GGCN(data.features, data.num_objects, 4 * GRAPH_HIDDEN, NUMTOOLS, 5, etypes, torch.tanh, 0.5)
 			# model = DGL_Simple_Likelihood(data.features, data.num_objects, 4 * GRAPH_HIDDEN, NUMTOOLS, 5, etypes, torch.tanh, 0.5, embedding, weighted)
 		elif training == 'sequence':
-			model = torch.load("trained_models/GatedHeteroRGCN_Attention_Action_128_3_3.pt")
-			# model = DGL_AGCN_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
+			# model = torch.load("trained_models/GatedHeteroRGCN_Attention_Action_128_3_16.pt")
+			model = DGL_AGCN_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
+		elif training == 'sequence_list':
+			# model = torch.load("trained_models/GatedHeteroRGCN_Attention_Action_List_128_3_16.pt")
+			model = DGL_AGCN_Action_List(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5, graph_seq_length)
 
 		optimizer = torch.optim.Adam(model.parameters() , lr = 0.00005)
 		train_set, test_set = world_split(data) if split == 'world' else random_split(data)  if split == 'random' else tool_split(data) 
@@ -289,13 +317,13 @@ if __name__ == '__main__':
 					torch.save(model, MODEL_SAVE_PATH + "/" + model.name + "_" + str(num_epochs) + ".pt")
 			write_training_data(model.name, loss, t1, t2)
 	elif not train and not generalization:
-		model = torch.load(MODEL_SAVE_PATH + "/GGCN_Metric_Attn_L_NT_C_W_256_5_Trained.pt")
+		model = torch.load(MODEL_SAVE_PATH + "/GatedHeteroRGCN_Attention_Action_128_3_16.pt")
 		# print ("Accuracy on complete set is ",accuracy_score(data, data.graphs, model, modelEnc))
 		# train_set, test_set = world_split(data) if split == 'world' else random_split(data)  if split == 'random' else tool_split(data) 
 		# t1, t2 = accuracy_score(data, train_set, model, modelEnc), accuracy_score(data, test_set, model, modelEnc)
 		# print ("Accuracy on training set is ", t1)
 		# print ("Accuracy on test set is ", t2)
-		printPredictions(model)
+		printPredictions(model,data)
 	else:
 		testConcept = TestDataset("dataset/test/" + domain + "/conceptnet/")
 		testFast = TestDataset("dataset/test/" + domain + "/fasttext/")

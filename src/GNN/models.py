@@ -366,3 +366,62 @@ class DGL_AGCN_Action(nn.Module):
         pred2 = self.activation(self.q2(pred2))
         pred2 = F.softmax(self.activation(self.q3(pred2)), dim=1)
         return torch.cat((action, pred1, pred2), 1).flatten()
+class DGL_AGCN_Action_List(nn.Module):
+    def __init__(self,
+                 in_feats,
+                 n_objects,
+                 n_hidden,
+                 n_states,
+                 n_layers,
+                 etypes,
+                 activation,
+                 dropout,
+                 num_states_in_list):
+        super(DGL_AGCN_Action_List, self).__init__()
+        self.name = "GatedHeteroRGCN_Attention_Action_List_" + str(n_hidden) + "_" + str(n_layers)
+        self.layers = nn.ModuleList()
+        self.layers.append(GatedHeteroRGCNLayer(in_feats, n_hidden, etypes, activation=activation))
+        for i in range(n_layers - 1):
+            self.layers.append(GatedHeteroRGCNLayer(n_hidden, n_hidden, etypes, activation=activation))
+        self.attention = nn.Linear(n_hidden + n_hidden, 1)
+        self.embed = nn.Linear(PRETRAINED_VECTOR_SIZE, n_hidden)
+        self.fc1 = nn.Linear(n_hidden * num_states_in_list + n_hidden, n_hidden)
+        self.fc2 = nn.Linear(n_hidden, n_hidden)
+        self.fc3 = nn.Linear(n_hidden, len(possibleActions))
+        self.p1  = nn.Linear(n_hidden * num_states_in_list + n_hidden, n_hidden)
+        self.p2  = nn.Linear(n_hidden, n_hidden)
+        self.p3  = nn.Linear(n_hidden, n_objects+1)
+        self.q1  = nn.Linear(n_hidden * num_states_in_list + n_hidden, n_hidden)
+        self.q2  = nn.Linear(n_hidden, n_hidden)
+        self.q3  = nn.Linear(n_hidden, n_objects+1+n_states)
+        self.n_hidden = n_hidden
+        self.activation = nn.LeakyReLU()
+        self.num_states_in_list = num_states_in_list
+
+    def forward(self, g_list, goalVec, goalObjectsVec):
+        goalObjectsVec = self.activation(self.embed(torch.Tensor(goalObjectsVec)))
+        goal_embed = self.activation(self.embed(torch.Tensor(goalVec.reshape(1, -1))))
+        scene_embedding_list = [torch.zeros(1,self.n_hidden) for i in range(self.num_states_in_list - len(g_list))]
+        for g in g_list:    
+            h = g.ndata['feat']
+            for i, layer in enumerate(self.layers):
+                h = layer(g, h)
+        
+            attn_embedding = torch.cat([h, goalObjectsVec.repeat(h.size(0)).view(h.size(0), -1)], 1)
+            attn_weights = F.softmax(self.attention(attn_embedding), dim=0)
+            # print(attn_weights)
+            scene_embedding = torch.mm(attn_weights.t(), h)
+            scene_embedding_list.append(scene_embedding)
+        scene_embedding = torch.cat(scene_embedding_list,1)
+        final_to_decode = torch.cat([scene_embedding, goal_embed], 1)
+        action = self.activation(self.fc1(final_to_decode))
+        action = self.activation(self.fc2(action))
+        action = self.activation(self.fc3(action))
+        action = F.softmax(action, dim=1)
+        pred1 = self.activation(self.p1(final_to_decode))
+        pred1 = self.activation(self.p2(pred1))
+        pred1 = F.softmax(self.activation(self.p3(pred1)), dim=1)
+        pred2 = self.activation(self.q1(final_to_decode))
+        pred2 = self.activation(self.q2(pred2))
+        pred2 = F.softmax(self.activation(self.q3(pred2)), dim=1)
+        return torch.cat((action, pred1, pred2), 1).flatten()
