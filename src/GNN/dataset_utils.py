@@ -179,6 +179,7 @@ def getDGLSequence(pathToDatapoint, globalNode, ignoreNoTool, e):
 		if not (str(action[0]) == 'E' or str(action[0]) == 'U'): actionSeq.append(action[0])
 	for i in range(len(datapoint.metrics)):
 		if datapoint.actions[i] == 'Start': graphSeq.append(convertToDGLGraph(datapoint.getGraph(i, embeddings=e)["graph_"+str(i)], globalNode, goal_num, getGlobalID(datapoint) if globalNode else -1))
+	assert len(actionSeq) == len(graphSeq)
 	return (goal_num, world_num, tools, (actionSeq, graphSeq), time)
 
 
@@ -189,7 +190,7 @@ class DGLDataset():
 		graphs = []
 		with open('jsons/embeddings/'+embedding+'.vectors') as handle: e = json.load(handle)
 		self.goal_scene_to_tools = {}; self.min_time = {}
-		all_files = os.walk(program_dir)
+		all_files = list(os.walk(program_dir))
 		for path, dirs, files in tqdm(all_files):
 			if (len(files) > 0):
 				for file in files:
