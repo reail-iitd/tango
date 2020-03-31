@@ -96,6 +96,7 @@ class DGL_AGCN_Action(nn.Module):
         pred2 = self.activation(self.q2(pred2))
         pred2 = F.softmax(self.activation(self.q3(pred2)), dim=1)
         return torch.cat((action, pred1, pred2), 1).flatten()
+
 class DGL_AGCN_Action_List(nn.Module):
     def __init__(self,
                  in_feats,

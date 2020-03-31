@@ -1,5 +1,6 @@
 from src.GNN.oldmodels import *
 from src.utils import *
+from src.GNN.action_models import *
 
 class HeteroRGCNLayer(nn.Module):
     # Source = https://docs.dgl.ai/en/0.4.x/tutorials/hetero/1_basics.html
