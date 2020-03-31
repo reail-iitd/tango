@@ -85,7 +85,7 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects, verbose = False):
 				if training == 'sequence':
 					y_pred = model(graphSeq[i], goal2vec[goal_num], goalObjects2vec[goal_num])
 				elif training == 'sequence_list':
-					y_pred = model(graphSeq[max(0,i - graph_seq_length):i], goal2vec[goal_num], goalObjects2vec[goal_num])
+					y_pred = model(graphSeq[max(0,i + 1 - graph_seq_length):i+1], goal2vec[goal_num], goalObjects2vec[goal_num])
 				denominator += 1
 				action_pred = vec2action(y_pred, num_objects, 4, idx2object)
 				# print ("Prediction: ", action_pred)
@@ -123,7 +123,7 @@ def printPredictions(model, data=None):
 				if training == 'sequence':
 					y_pred = model(graphSeq[i], goal2vec[goal_num], goalObjects2vec[goal_num])
 				elif training == 'sequence_list':
-					y_pred = model(graphSeq[max(0,i - graph_seq_length):i], goal2vec[goal_num], goalObjects2vec[goal_num])
+					y_pred = model(graphSeq[max(0,i + 1 - graph_seq_length):i+1], goal2vec[goal_num], goalObjects2vec[goal_num])
 				action_pred = vec2action(y_pred, data.num_objects, 4, idx2object)
 				# if (action_pred != actionSeq[i]):
 				# 	print ("Prediction: ", action_pred)
@@ -166,7 +166,7 @@ def backprop(data, optimizer, graphs, model, num_objects, modelEnc=None):
 				if training == 'sequence':
 					y_pred = model(graphSeq[i], goal2vec[goal_num], goalObjects2vec[goal_num])
 				elif training == 'sequence_list':
-					y_pred = model(graphSeq[max(0,i - graph_seq_length):i], goal2vec[goal_num], goalObjects2vec[goal_num])
+					y_pred = model(graphSeq[max(0,i + 1 - graph_seq_length):i + 1], goal2vec[goal_num], goalObjects2vec[goal_num])
 				y_true = action2vec(actionSeq[i], num_objects, 4)
 				loss += l(y_pred, y_true)
 				# loss += torch.sum((y_pred - y_true)** 2)
@@ -203,7 +203,7 @@ def backpropGD(data, optimizer, graphs, model, num_objects, modelEnc=None):
 				if training == 'sequence':
 					y_pred = model(graphSeq[i], goal2vec[goal_num], goalObjects2vec[goal_num])
 				elif training == 'sequence_list':
-					y_pred = model(graphSeq[max(0,i - graph_seq_length):i], goal2vec[goal_num], goalObjects2vec[goal_num])
+					y_pred = model(graphSeq[max(0,i + 1 - graph_seq_length):i + 1], goal2vec[goal_num], goalObjects2vec[goal_num])
 				y_true = action2vec(actionSeq[i], num_objects, 4)
 				loss += l(y_pred, y_true)
 				# loss += torch.sum((y_pred - y_true)** 2)
