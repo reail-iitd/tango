@@ -291,10 +291,11 @@ if __name__ == '__main__':
 			# model = torch.load("trained_models/GatedHeteroRGCN_Attention_Action_128_3_16.pt")
 			model = DGL_AGCN_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
 		elif training == 'sequence_list':
-			# model = torch.load("trained_models/GatedHeteroRGCN_Attention_Action_List_128_3_16.pt")
+			# model = torch.load("trained_models/GatedHeteroRGCN_Attention_Action_List_128_3_0.pt")
 			model = DGL_AGCN_Action_List(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5, graph_seq_length)
 
 		optimizer = torch.optim.Adam(model.parameters() , lr = 0.00005)
+		# optimizer = torch.load("trained_models/GatedHeteroRGCN_Attention_Action_List_128_3_0.optim")
 		train_set, test_set = world_split(data) if split == 'world' else random_split(data)  if split == 'random' else tool_split(data) 
 
 		print ("Size before split was", len(data.graphs))
@@ -315,6 +316,7 @@ if __name__ == '__main__':
 					print ("Loss on test set is ", loss_score(test_set, model, modelEnc).item()/len(test_set))
 				if num_epochs % 1 == 0:
 					torch.save(model, MODEL_SAVE_PATH + "/" + model.name + "_" + str(num_epochs) + ".pt")
+					torch.save(optimizer, MODEL_SAVE_PATH + "/" + model.name + "_" + str(num_epochs) + ".optim")
 			write_training_data(model.name, loss, t1, t2)
 	elif not train and not generalization:
 		model = torch.load(MODEL_SAVE_PATH + "/GatedHeteroRGCN_Attention_Action_128_3_16.pt")
