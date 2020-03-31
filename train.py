@@ -9,8 +9,7 @@ from tqdm import tqdm
 import torch
 import torch.nn as nn
 
-training = "sequence_list" # can be "gcn", "ae", "combined", "agcn", "agcn-tool", "agcn-likelihood", "sequence", "sequence_list"
-embedding = "conceptnet" # can be conceptnet or fasttext
+training = "agcn-likelihood" # can be "gcn", "ae", "combined", "agcn", "agcn-tool", "agcn-likelihood", "sequence", "sequence_list"
 split = "world" # can be "random", "world", "tool"
 train = True # can be True or False
 globalnode = False # can be True or False
@@ -19,8 +18,6 @@ sequence = "sequence" in training # can be True or False
 generalization = False
 weighted = False
 graph_seq_length = 4
-
-embeddings, object2vec, object2idx, idx2object, tool_vec, goal2vec, goalObjects2vec = compute_constants(embedding)
 
 def load_dataset(filename):
 	global TOOLS, NUMTOOLS, globalnode

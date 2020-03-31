@@ -1,5 +1,3 @@
-from src.GNN.oldmodels import *
-from src.utils import *
 from src.GNN.action_models import *
 
 class HeteroRGCNLayer(nn.Module):
