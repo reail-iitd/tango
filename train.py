@@ -15,8 +15,9 @@ train = True # can be True or False
 globalnode = False # can be True or False
 ignoreNoTool = False # can be True or False
 sequence = "sequence" in training # can be True or False
-generalization = False
+generalization = True
 weighted = False
+ablation = True
 graph_seq_length = 4
 
 def load_dataset(filename):
@@ -43,18 +44,29 @@ def gen_score(model, testData, verbose = False):
 		y_pred = model(g, goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
 		y_pred = list(y_pred.reshape(-1))
 		if domain == 'home':
-			if test_num == 4 and "_L" not in model.name: y_pred[TOOLS.index("box")] = 0 
-			if test_num == 4 and "_L" not in model.name: y_pred[TOOLS.index("stool")] = 0 
-			if test_num == 1 and "_C" in model.name: y_pred[-1] = 0
-			if test_num == 3 and "_L" in model.name: y_pred[TOOLS.index("mop")] = 0
-			if test_num == 5 and "_L" in model.name: y_pred[TOOLS.index("glue")] = 0
-			if test_num == 8 and "_L" in model.name: y_pred[TOOLS.index("box")] = 0
-			if test_num == 9 and "_C" in model.name: y_pred[-1] = 0
+			if test_num == 4 and (("Final" in model.name and "_L" in model.name) 
+				or ("Final" not in model.name and "_L" not in model.name)): y_pred[TOOLS.index("box")] = 0 
+			if test_num == 4 and (("Final" in model.name and "_L" in model.name) 
+				or ("Final" not in model.name and "_L" not in model.name)): y_pred[TOOLS.index("stool")] = 0 
+			if test_num == 1 and (("Final" in model.name and "_C" not in model.name) 
+				or ("Final" not in model.name and "_C" in model.name)): y_pred[-1] = 0
+			if test_num == 3 and (("Final" in model.name and "_L" not in model.name) 
+				or ("Final" not in model.name and "_L" in model.name)): y_pred[TOOLS.index("mop")] = 0
+			if test_num == 5 and (("Final" in model.name and "_L" not in model.name) 
+				or ("Final" not in model.name and "_L" in model.name)): y_pred[TOOLS.index("glue")] = 0
+			if test_num == 8 and (("Final" in model.name and "_L" not in model.name) 
+				or ("Final" not in model.name and "_L" in model.name)): y_pred[TOOLS.index("box")] = 0
+			if test_num == 9 and (("Final" in model.name and "_C" not in model.name) 
+				or ("Final" not in model.name and "_C" in model.name)): y_pred[-1] = 0
 		else:
-			if test_num == 1 and "_L" in model.name: y_pred[TOOLS.index("blow_dryer")] = 0
-			if test_num == 2 and "_L" in model.name: y_pred[TOOLS.index("brick")] = 0
-			if test_num == 5 and "_L" in model.name: y_pred[TOOLS.index("glue")] = 0
-			if test_num == 6 and "_L" not in model.name: y_pred[TOOLS.index("toolbox")] = 0 
+			if test_num == 1 and (("Final" in model.name and "_L" not in model.name) 
+				or ("Final" not in model.name and "_L" in model.name)): y_pred[TOOLS.index("blow_dryer")] = 0
+			if test_num == 2 and (("Final" in model.name and "_L" not in model.name) 
+				or ("Final" not in model.name and "_L" in model.name)): y_pred[TOOLS.index("brick")] = 0
+			if test_num == 5 and (("Final" in model.name and "_L" not in model.name) 
+				or ("Final" not in model.name and "_L" in model.name)): y_pred[TOOLS.index("glue")] = 0
+			if test_num == 6 and (("Final" in model.name and "_L" not in model.name) 
+				or ("Final" not in model.name and "_L" in model.name)): y_pred[TOOLS.index("toolbox")] = 0 
 		tool_predicted = TOOLS[y_pred.index(max(y_pred))]
 		if tool_predicted in tools: total_correct += 1; correct_list[test_num-1] += 1
 		elif verbose:
@@ -64,7 +76,7 @@ def gen_score(model, testData, verbose = False):
 	print(correct_list)
 	return total_correct * 100.0 / len(testData.graphs)
 
-def accuracy_score(dset, graphs, model, modelEnc, num_objects, verbose = False):
+def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = False):
 	total_correct = 0
 	denominator = 0
 	for graph in tqdm(graphs, desc = "Accuracy score"):
@@ -281,8 +293,9 @@ if __name__ == '__main__':
 			# model = torch.load("trained_models/Simple_Attention_Tool_768_3_Trained.pt")
 			model = DGL_Simple_Tool(data.features, data.num_objects, 4 * GRAPH_HIDDEN, NUMTOOLS, 5, etypes, torch.tanh, 0.5)
 		elif training == 'agcn-likelihood':
-			# model = torch.load("trained_models/GGCN_Metric_Attn_L_256_5_Trained.pt")
-			model = GGCN(data.features, data.num_objects, 4 * GRAPH_HIDDEN, NUMTOOLS, 5, etypes, torch.tanh, 0.5)
+			# model = torch.load("trained_models/Final_Metric_256_5_9.pt")
+			# model = GGCN(data.features, data.num_objects, 4 * GRAPH_HIDDEN, NUMTOOLS, 5, etypes, torch.tanh, 0.5)
+			model = Final_C(data.features, data.num_objects, 4 * GRAPH_HIDDEN, NUMTOOLS, 5, etypes, torch.tanh, 0.5)
 			# model = DGL_Simple_Likelihood(data.features, data.num_objects, 4 * GRAPH_HIDDEN, NUMTOOLS, 5, etypes, torch.tanh, 0.5, embedding, weighted)
 		elif training == 'sequence':
 			# model = torch.load("trained_models/GatedHeteroRGCN_Attention_Action_128_3_16.pt")
@@ -292,7 +305,7 @@ if __name__ == '__main__':
 			model = DGL_AGCN_Action_List(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5, graph_seq_length)
 
 		optimizer = torch.optim.Adam(model.parameters() , lr = 0.00005)
-		# optimizer = torch.load("trained_models/GatedHeteroRGCN_Attention_Action_List_128_3_0.optim")
+		# optimizer = torch.load("trained_models/Final_Metric_256_5_4.optim")
 		train_set, test_set = world_split(data) if split == 'world' else random_split(data)  if split == 'random' else tool_split(data) 
 
 		print ("Size before split was", len(data.graphs))
@@ -313,26 +326,39 @@ if __name__ == '__main__':
 					print ("Loss on test set is ", loss_score(test_set, model, modelEnc).item()/len(test_set))
 				if num_epochs % 1 == 0:
 					torch.save(model, MODEL_SAVE_PATH + "/" + model.name + "_" + str(num_epochs) + ".pt")
-					torch.save(optimizer, MODEL_SAVE_PATH + "/" + model.name + "_" + str(num_epochs) + ".optim")
+					# torch.save(optimizer, MODEL_SAVE_PATH + "/" + model.name + "_" + str(num_epochs) + ".optim")
 			write_training_data(model.name, loss, t1, t2)
 	elif not train and not generalization:
-		model = torch.load(MODEL_SAVE_PATH + "/GatedHeteroRGCN_Attention_Action_128_3_16.pt")
-		# print ("Accuracy on complete set is ",accuracy_score(data, data.graphs, model, modelEnc))
-		# train_set, test_set = world_split(data) if split == 'world' else random_split(data)  if split == 'random' else tool_split(data) 
-		# t1, t2 = accuracy_score(data, train_set, model, modelEnc), accuracy_score(data, test_set, model, modelEnc)
-		# print ("Accuracy on training set is ", t1)
-		# print ("Accuracy on test set is ", t2)
-		printPredictions(model,data)
+		model = torch.load(MODEL_SAVE_PATH + "/GGCN_Metric_Attn_L_NT_C_256_5_Trained.pt")
+		print ("Accuracy on complete set is ",accuracy_score(data, data.graphs, model, modelEnc))
+		train_set, test_set = world_split(data) if split == 'world' else random_split(data)  if split == 'random' else tool_split(data) 
+		t1, t2 = accuracy_score(data, train_set, model, modelEnc), accuracy_score(data, test_set, model, modelEnc)
+		print ("Accuracy on training set is ", t1)
+		print ("Accuracy on test set is ", t2)
+		# printPredictions(model,data)
 	else:
-		testConcept = TestDataset("dataset/test/" + domain + "/conceptnet/")
-		testFast = TestDataset("dataset/test/" + domain + "/fasttext/")
-		embeddings, object2vec, object2idx, idx2object, tool_vec, goal2vec, goalObjects2vec = compute_constants("fasttext")
-		for i in ["GGCN_256_5_0", "GGCN_Metric_256_5_Trained", "GGCN_Metric_Attn_256_5_Trained",\
-					"GGCN_Metric_Attn_L_256_5_Trained", "GGCN_Metric_Attn_L_NT_256_5_Trained"]:
-			model = torch.load(MODEL_SAVE_PATH + "/" + i + ".pt")
-			print(i, gen_score(model, testFast))
-		embeddings, object2vec, object2idx, idx2object, tool_vec, goal2vec, goalObjects2vec = compute_constants("conceptnet")
-		for i in ["GGCN_Metric_Attn_L_NT_C_256_5_Trained", "GGCN_Metric_Attn_L_NT_C_W_256_5_Trained"]:
-			model = torch.load(MODEL_SAVE_PATH + "/" + i + ".pt")
-			print(i, gen_score(model, testConcept))
+		if not ablation:
+			testConcept = TestDataset("dataset/test/" + domain + "/conceptnet/")
+			testFast = TestDataset("dataset/test/" + domain + "/fasttext/")
+			embeddings, object2vec, object2idx, idx2object, tool_vec, goal2vec, goalObjects2vec = compute_constants("fasttext")
+			for i in ["GGCN_256_5_0", "GGCN_Metric_256_5_Trained", "GGCN_Metric_Attn_256_5_Trained",\
+						"GGCN_Metric_Attn_L_256_5_Trained", "GGCN_Metric_Attn_L_NT_256_5_Trained"]:
+				model = torch.load(MODEL_SAVE_PATH + "/" + i + ".pt")
+				print(i, gen_score(model, testFast))
+			embeddings, object2vec, object2idx, idx2object, tool_vec, goal2vec, goalObjects2vec = compute_constants("conceptnet")
+			for i in ["GGCN_Metric_Attn_L_NT_C_256_5_Trained", "GGCN_Metric_Attn_L_NT_C_W_256_5_Trained"]:
+				model = torch.load(MODEL_SAVE_PATH + "/" + i + ".pt")
+				print(i, gen_score(model, testConcept))
+		else:
+			testConcept = TestDataset("dataset/test/" + domain + "/conceptnet/")
+			testFast = TestDataset("dataset/test/" + domain + "/fasttext/")
+			embeddings, object2vec, object2idx, idx2object, tool_vec, goal2vec, goalObjects2vec = compute_constants("fasttext")
+			for i in ["Final_C_256_5_Trained"]:
+				model = torch.load(MODEL_SAVE_PATH + "/" + i + ".pt")
+				print(i, gen_score(model, testFast))
+			embeddings, object2vec, object2idx, idx2object, tool_vec, goal2vec, goalObjects2vec = compute_constants("conceptnet")
+			for i in ["Final_Attn_256_5_Trained", "Final_L_256_5_Trained", "Final_Metric_256_5_Trained",\
+						"Final_NT_256_5_Trained"]:
+				model = torch.load(MODEL_SAVE_PATH + "/" + i + ".pt")
+				print(i, gen_score(model, testConcept))
 
