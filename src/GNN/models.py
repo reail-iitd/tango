@@ -1,43 +1,7 @@
 from src.GNN.oldmodels import *
+from src.GNN.action_models import *
+from src.GNN.helper import *
 from src.utils import *
-
-class HeteroRGCNLayer(nn.Module):
-    # Source = https://docs.dgl.ai/en/0.4.x/tutorials/hetero/1_basics.html
-    def __init__(self, in_size, out_size, etypes, activation):
-        super(HeteroRGCNLayer, self).__init__()
-        self.weight = nn.ModuleDict({name : nn.Linear(in_size, out_size) for name in etypes})
-        self.activation = activation
-
-    def forward(self, G, features):
-        funcs = {}
-        for etype in G.etypes:
-            Wh = self.weight[etype](features)
-            G.nodes['object'].data['Wh_%s' % etype] = Wh
-            funcs[etype] = (fn.copy_u('Wh_%s' % etype, 'm'), fn.mean('m', 'h'))
-        G.multi_update_all(funcs, 'sum')
-        return self.activation(G.nodes['object'].data['h'])
-
-class GatedHeteroRGCNLayer(nn.Module):
-    # Source = https://docs.dgl.ai/_modules/dgl/nn/pytorch/conv/gatedgraphconv.html#GatedGraphConv
-    def __init__(self, in_size, out_size, etypes, activation):
-        super(GatedHeteroRGCNLayer, self).__init__()
-        self.weight = nn.ModuleDict({name : nn.Linear(in_size, out_size) for name in etypes})
-        self.reduce = nn.Linear(in_size, out_size)
-        self.activation = activation
-        self.gru = LayerNormGRUCell(out_size, out_size, bias=True)
-
-    def forward(self, G, features):
-        funcs = {}; feat = self.activation(self.reduce(features))
-        for _ in range(N_TIMESEPS):
-            for etype in G.etypes:
-                Wh = self.weight[etype](features)
-                G.nodes['object'].data['Wh_%s' % etype] = Wh
-                funcs[etype] = (fn.copy_u('Wh_%s' % etype, 'm'), fn.mean('m', 'h'))
-            G.multi_update_all(funcs, 'sum')
-            feat = self.gru(G.nodes['object'].data['h'], feat)
-        return self.activation(feat)
-
-######################################################################################
 
 class DGL_Simple_Likelihood(nn.Module):
     def __init__(self,
