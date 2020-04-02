@@ -98,7 +98,7 @@ def formTestDataFactory(testnum):
 					enew = deepcopy(e[2])
 					if testnum == 1: enew["blow_dryer"] = [0] * 300
 					elif testnum == 2: enew["brick"] = [0] * 300
-					elif testnum == 3: enew["list"] = e[0]["headphone"]
+					elif testnum == 3: enew["lift"] = e[0]["headphone"]
 					elif testnum == 4: enew["mop"] = e[0]["mop"] if 'c' in e[1] else e[0]['washcloth']
 					elif testnum == 5: enew["glue"] = [0] * 300
 					elif testnum == 6: enew["toolbox"] = e[0]["box"]

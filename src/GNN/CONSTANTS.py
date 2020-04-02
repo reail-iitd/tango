@@ -5,6 +5,7 @@ from copy import deepcopy
 from sys import argv
 
 domain = argv[1] if len(argv) > 1 else 'home'
+embedding = argv[2] if len(argv) > 2 else "conceptnet" 
 
 STATES = ["Outside", "Inside", "On", "Off", "Close", "Open", "Up", "Down", "Sticky", "Non_Sticky", "Dirty", "Clean", "Grabbed", "Free", "Welded", "Not_Welded", "Drilled", "Not_Drilled", "Driven", "Not_Driven", "Fueled", "Not_Fueled", "Cut", "Not_Cut", "Painted", "Not_Painted", "Different_Height", "Same_Height"]
 if domain == 'factory': STATES += ['To_Print', "Printed"]
@@ -85,3 +86,5 @@ def compute_constants(embedding):
 		goal_object_vec /= len(goal_json["goal-objects"])
 		goalObjects2vec[i+1] = torch.Tensor(goal_object_vec)
 	return embeddings, object2vec, object2idx, idx2object, tool_vec, goal2vec, goalObjects2vec
+
+embeddings, object2vec, object2idx, idx2object, tool_vec, goal2vec, goalObjects2vec = compute_constants(embedding)
