@@ -315,7 +315,7 @@ if __name__ == '__main__':
 			model = GGCN_metric_att_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
 
 		optimizer = torch.optim.Adam(model.parameters() , lr = 0.0005)
-		# optimizer.load_state_dict(torch.load("trained_models/GatedHeteroRGCN_Attention_Action_List_128_3_0.optim"))
+		# optimizer.load_state_dict(torch.load("trained_models/GatedHeteroRGCN_Attention_Action_List_128_3_0.optim").state_dict())
 		print ("Training " + model.name + " with " + embedding)
 		train_set, test_set = world_split(data) if split == 'world' else random_split(data)  if split == 'random' else tool_split(data) 
 
@@ -341,7 +341,7 @@ if __name__ == '__main__':
 					torch.save(optimizer, MODEL_SAVE_PATH + "/" + model.name + "_" + str(num_epochs) + ".optim")
 			pickle.dump(accuracy_list, open(MODEL_SAVE_PATH + "/" + model.name + "_" + embedding + "_" + "accuracies.pkl", "wb"))
 			write_training_data(model.name, loss, t1, t2)
-		print ("The maximum accuracy on test set, train set for " + NUM_EPOCHS + " epochs is ", max(accuracy_list), " at epoch ", accuracy_list.index(max(accuracy_list)))
+		print ("The maximum accuracy on test set, train set for " + NUM_EPOCHS + " epochs is ", max(accuracy_list), " at epoch ", str(accuracy_list.index(max(accuracy_list))))
 	elif not train and not generalization:
 		model = torch.load(MODEL_SAVE_PATH + "/GGCN_Metric_Attn_L_NT_C_256_5_Trained.pt")
 		print ("Accuracy on complete set is ",accuracy_score(data, data.graphs, model, modelEnc))
