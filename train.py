@@ -5,11 +5,12 @@ import random
 import numpy as np
 from os import path
 from tqdm import tqdm
+from sys import argv
 
 import torch
 import torch.nn as nn
 
-training = "sequence_baseline_metric_att" # can be "gcn", "ae", "combined", "agcn", "agcn-tool", "agcn-likelihood", "sequence", "sequence_list", "sequence_baseline", "sequence_baseline_metric", "sequence_baseline_metric_att"
+training = argv[3] if len(argv) > 3 else "sequence_baseline_metric_att" # can be "gcn", "ae", "combined", "agcn", "agcn-tool", "agcn-likelihood", "sequence", "sequence_list", "sequence_baseline", "sequence_baseline_metric", "sequence_baseline_metric_att", "sequence_baseline_metric_att_aseq"
 split = "world" # can be "random", "world", "tool"
 train = True # can be True or False
 globalnode = False # can be True or False
@@ -110,23 +111,37 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 			denominator += 1
 		elif 'sequence' in training:
 			actionSeq, graphSeq = g
-			for i in range(len(graphSeq)):
-				if 'list' not in training:
-					y_pred = model(graphSeq[i], goal2vec[goal_num], goalObjects2vec[goal_num])
-				elif training == 'sequence_list':
-					y_pred = model(graphSeq[max(0,i + 1 - graph_seq_length):i+1], goal2vec[goal_num], goalObjects2vec[goal_num])
-				denominator += 1
-				action_pred = vec2action_grammatical(y_pred, num_objects, 4, idx2object)
-				# print ("Prediction: ", action_pred)
-				# print ("Target: ", actionSeq[i])
-				if verbose:
-					if (not grammatical_action(action_pred)):
-						# print (action_pred)
-						total_ungrammatical += 1
-					if (not grammatical_action(actionSeq[i])):
-						print (actionSeq[i])
-				if (action_pred == actionSeq[i]):
-					total_correct += 1
+			if "aseq" in training:
+				y_pred_list = model(graphSeq, goal2vec[goal_num], goalObjects2vec[goal_num], actionSeq)
+				for i,y_pred in enumerate(y_pred_list):
+					denominator += 1
+					action_pred = vec2action_grammatical(y_pred, num_objects, 4, idx2object)
+					if verbose:
+						if (not grammatical_action(action_pred)):
+							# print (action_pred)
+							total_ungrammatical += 1
+						if (not grammatical_action(actionSeq[i])):
+							print (actionSeq[i])
+					if (action_pred == actionSeq[i]):
+						total_correct += 1
+			else:	
+				for i in range(len(graphSeq)):
+					if 'list' not in training:
+						y_pred = model(graphSeq[i], goal2vec[goal_num], goalObjects2vec[goal_num])
+					elif training == 'sequence_list':
+						y_pred = model(graphSeq[max(0,i + 1 - graph_seq_length):i+1], goal2vec[goal_num], goalObjects2vec[goal_num])
+					denominator += 1
+					action_pred = vec2action_grammatical(y_pred, num_objects, 4, idx2object)
+					# print ("Prediction: ", action_pred)
+					# print ("Target: ", actionSeq[i])
+					if verbose:
+						if (not grammatical_action(action_pred)):
+							# print (action_pred)
+							total_ungrammatical += 1
+						if (not grammatical_action(actionSeq[i])):
+							print (actionSeq[i])
+					if (action_pred == actionSeq[i]):
+						total_correct += 1
 			continue
 		tools_possible = dset.goal_scene_to_tools[(goal_num,world_num)]
 		y_pred = list(y_pred.reshape(-1))
@@ -135,7 +150,7 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 			total_correct += 1
 		elif verbose:
 			print (goal_num, world_num, tool_predicted, tools_possible)
-	if ("sequence" in training and verbose):
+	if (("sequence" in training) and verbose):
 		print ("Total ungrammatical percent is", (total_ungrammatical/denominator) * 100)
 		print ("Denominator is", denominator)
 	return ((total_correct/denominator)*100)
@@ -157,17 +172,31 @@ def printPredictions(model, data=None):
 			y_pred = model(encoding.flatten(), goal2vec[goal_num], goalObjects2vec[goal_num])
 		elif 'sequence' in training:
 			actionSeq, graphSeq = g
-			for i in range(len(graphSeq)):
-				if 'list' not in training:
-					y_pred = model(graphSeq[i], goal2vec[goal_num], goalObjects2vec[goal_num])
-				elif training == 'sequence_list':
-					y_pred = model(graphSeq[max(0,i + 1 - graph_seq_length):i+1], goal2vec[goal_num], goalObjects2vec[goal_num])
-				action_pred = vec2action(y_pred, data.num_objects, 4, idx2object)
-				# if (action_pred != actionSeq[i]):
-				# 	print ("Prediction: ", action_pred)
-				# 	print ("Target: ", actionSeq[i])
-				total_number += 1
-			continue
+			if "aseq" in training:
+				y_pred_list = model(graphSeq, goal2vec[goal_num], goalObjects2vec[goal_num], actionSeq)
+				for i,y_pred in enumerate(y_pred_list):
+					denominator += 1
+					action_pred = vec2action_grammatical(y_pred, num_objects, 4, idx2object)
+					if verbose:
+						if (not grammatical_action(action_pred)):
+							# print (action_pred)
+							total_ungrammatical += 1
+						if (not grammatical_action(actionSeq[i])):
+							print (actionSeq[i])
+					if (action_pred == actionSeq[i]):
+						total_correct += 1
+			else:
+				for i in range(len(graphSeq)):
+					if 'list' not in training:
+						y_pred = model(graphSeq[i], goal2vec[goal_num], goalObjects2vec[goal_num])
+					elif training == 'sequence_list':
+						y_pred = model(graphSeq[max(0,i + 1 - graph_seq_length):i+1], goal2vec[goal_num], goalObjects2vec[goal_num])
+					action_pred = vec2action(y_pred, data.num_objects, 4, idx2object)
+					# if (action_pred != actionSeq[i]):
+					# 	print ("Prediction: ", action_pred)
+					# 	print ("Target: ", actionSeq[i])
+					total_number += 1
+				continue
 		tools_possible = data.goal_scene_to_tools[(goal_num,world_num)]
 		y_pred = list(y_pred.reshape(-1))
 		# y_pred[TOOLS.index("box")] = 0
@@ -177,41 +206,54 @@ def printPredictions(model, data=None):
 		# print(tool_predicted, "\t\t", tools_possible)
 	print ("Total number of states is", total_number)
 
-def backprop(data, optimizer, graphs, model, num_objects, modelEnc=None):
+def backprop(data, optimizer, graphs, model, num_objects, modelEnc=None, batch_size = 1):
 	total_loss = 0.0
 	l = nn.BCELoss()
+	batch_loss = 0.0
 	for iter_num, graph in tqdm(list(enumerate(graphs))):
 		goal_num, world_num, tools, g, t = graph
 		if 'ae' in training:
 			y_pred = model(g)
 			y_true = g.ndata['feat']
 			loss = torch.sum((y_pred - y_true)** 2)
+			batch_loss += loss
 		elif 'gcn' in training:
 			y_pred = model(g, goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
 			y_true = torch.zeros(NUMTOOLS)
 			for tool in tools: y_true[TOOLS.index(tool)] = 1
 			loss = l(y_pred, y_true)
 			if weighted: loss *= (1 if t == data.min_time[(goal_num, world_num)] else 0.5)
+			batch_loss += loss
 		elif 'combined' in training:
 			encoding = modelEnc.encode(g)[-1] if globalnode else modelEnc.encode(g)
 			y_pred = model(encoding.flatten(), goal2vec[goal_num], goalObjects2vec[goal_num])
 			y_true = torch.zeros(NUMTOOLS)
 			for tool in tools: y_true[TOOLS.index(tool)] = 1
 			loss = torch.sum((y_pred - y_true)** 2)
+			batch_loss += loss
 		elif 'sequence' in training:
 			actionSeq, graphSeq = g; loss = 0
-			for i in range(len(graphSeq)):
-				if 'list' not in training:
-					y_pred = model(graphSeq[i], goal2vec[goal_num], goalObjects2vec[goal_num])
-				elif training == 'sequence_list':
-					y_pred = model(graphSeq[max(0,i + 1 - graph_seq_length):i + 1], goal2vec[goal_num], goalObjects2vec[goal_num])
-				y_true = action2vec(actionSeq[i], num_objects, 4)
-				loss += l(y_pred, y_true)
-				# loss += torch.sum((y_pred - y_true)** 2)
+			if "aseq" in training:
+				y_pred_list = model(graphSeq, goal2vec[goal_num], goalObjects2vec[goal_num], actionSeq)
+				for i,y_pred in enumerate(y_pred_list):
+					y_true = action2vec(actionSeq[i], num_objects, 4)
+					loss += l(y_pred, y_true)
+			else:
+				for i in range(len(graphSeq)):
+					if 'list' not in training:
+						y_pred = model(graphSeq[i], goal2vec[goal_num], goalObjects2vec[goal_num])
+					elif training == 'sequence_list':
+						y_pred = model(graphSeq[max(0,i + 1 - graph_seq_length):i + 1], goal2vec[goal_num], goalObjects2vec[goal_num])
+					y_true = action2vec(actionSeq[i], num_objects, 4)
+					loss += l(y_pred, y_true)
+					# loss += torch.sum((y_pred - y_true)** 2)
+			batch_loss += loss
 		total_loss += loss
-		optimizer.zero_grad()
-		loss.backward()
-		optimizer.step()
+		if ((iter_num + 1) % batch_size == 0):
+			optimizer.zero_grad()
+			batch_loss.backward()
+			optimizer.step()
+			batch_loss = 0
 	return (total_loss.item()/len(graphs))
 
 def backpropGD(data, optimizer, graphs, model, num_objects, modelEnc=None):
@@ -237,14 +279,20 @@ def backpropGD(data, optimizer, graphs, model, num_objects, modelEnc=None):
 			loss = torch.sum((y_pred - y_true)** 2)
 		elif 'sequence' in training:
 			actionSeq, graphSeq = g; loss = 0
-			for i in range(len(graphSeq)):
-				if 'list' not in training:
-					y_pred = model(graphSeq[i], goal2vec[goal_num], goalObjects2vec[goal_num])
-				elif training == 'sequence_list':
-					y_pred = model(graphSeq[max(0,i + 1 - graph_seq_length):i + 1], goal2vec[goal_num], goalObjects2vec[goal_num])
-				y_true = action2vec(actionSeq[i], num_objects, 4)
-				loss += l(y_pred, y_true)
-				# loss += torch.sum((y_pred - y_true)** 2)
+			if "aseq" in training:
+				y_pred_list = model(graphSeq, goal2vec[goal_num], goalObjects2vec[goal_num], actionSeq)
+				for i,y_pred in enumerate(y_pred_list):
+					y_true = action2vec(actionSeq[i], num_objects, 4)
+					loss += l(y_pred, y_true)
+			else:
+				for i in range(len(graphSeq)):
+					if 'list' not in training:
+						y_pred = model(graphSeq[i], goal2vec[goal_num], goalObjects2vec[goal_num])
+					elif training == 'sequence_list':
+						y_pred = model(graphSeq[max(0,i + 1 - graph_seq_length):i + 1], goal2vec[goal_num], goalObjects2vec[goal_num])
+					y_true = action2vec(actionSeq[i], num_objects, 4)
+					loss += l(y_pred, y_true)
+					# loss += torch.sum((y_pred - y_true)** 2)
 		total_loss += loss
 	optimizer.zero_grad()
 	total_loss.backward()
@@ -340,9 +388,12 @@ if __name__ == '__main__':
 			model = GGCN_metric_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
 		elif training == 'sequence_baseline_metric_att':
 			# model = torch.load("trained_models/GatedHeteroRGCN_Attention_Action_128_3_16.pt")
-			model = GGCN_metric_att_Action(data.features, data.num_objects, 4 * GRAPH_HIDDEN, 4, 5, etypes, torch.tanh, 0.5)
+			model = GGCN_metric_att_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
+		elif training == 'sequence_baseline_metric_att_aseq':
+			# model = torch.load("trained_models/GatedHeteroRGCN_Attention_Action_128_3_16.pt")
+			model = GGCN_metric_att_aseq_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
 
-		optimizer = torch.optim.Adam(model.parameters() , lr = 0.0001 if 'sequence' in training else 0.00005)
+		optimizer = torch.optim.Adam(model.parameters() , lr = 0.0005 if 'sequence' in training else 0.00005)
 		# optimizer.load_state_dict(torch.load("trained_models/GatedHeteroRGCN_Attention_Action_List_128_3_0.optim").state_dict())
 		print ("Training " + model.name + " with " + embedding)
 		train_set, test_set = world_split(data) if split == 'world' else random_split(data)  if split == 'random' else tool_split(data) 
@@ -356,7 +407,7 @@ if __name__ == '__main__':
 			print ("EPOCH " + str(num_epochs))
 			loss = backprop(data, optimizer, train_set, model, data.num_objects, modelEnc)
 			print(loss)
-			t1, t2 = accuracy_score(data, train_set, model, modelEnc, data.num_objects), accuracy_score(data, test_set, model, modelEnc, data.num_objects,True)
+			t1, t2 = accuracy_score(data, train_set, model, modelEnc, data.num_objects), accuracy_score(data, test_set, model, modelEnc, data.num_objects)
 			accuracy_list.append((t2, t1))
 			if (num_epochs % 1 == 0):
 				if training != "ae":
@@ -365,9 +416,9 @@ if __name__ == '__main__':
 				elif training == 'ae':
 					print ("Loss on test set is ", loss_score(test_set, model, modelEnc).item()/len(test_set))
 				if num_epochs % 1 == 0:
-					torch.save(model, MODEL_SAVE_PATH + "/" + model.name + "_" + str(num_epochs) + ".pt")
-					torch.save(optimizer, MODEL_SAVE_PATH + "/" + model.name + "_" + str(num_epochs) + ".optim")
-			pickle.dump(accuracy_list, open(MODEL_SAVE_PATH + "/" + model.name + "_" + embedding + "_" + "accuracies.pkl", "wb"))
+					torch.save(model, MODEL_SAVE_PATH + "/" + model.name + "_" + embedding[0] + "_" + str(num_epochs) + ".pt")
+					torch.save(optimizer, MODEL_SAVE_PATH + "/" + model.name + "_" + embedding[0] + "_" + str(num_epochs) + ".optim")
+			pickle.dump(accuracy_list, open(MODEL_SAVE_PATH + "/" + model.name + "_" + embedding[0] + "_" + "accuracies.pkl", "wb"))
 			write_training_data(model.name, loss, t1, t2)
 		print ("The maximum accuracy on test set, train set for " + str(NUM_EPOCHS) + " epochs is ", str(max(accuracy_list)), " at epoch ", accuracy_list.index(max(accuracy_list)))
 	elif not train and not generalization:
