@@ -10,7 +10,6 @@ import torch
 import torch.nn as nn
 
 training = "sequence_baseline_metric_att" # can be "gcn", "ae", "combined", "agcn", "agcn-tool", "agcn-likelihood", "sequence", "sequence_list", "sequence_baseline", "sequence_baseline_metric", "sequence_baseline_metric_att"
-embedding = "fasttext" # can be conceptnet or fasttext
 split = "world" # can be "random", "world", "tool"
 train = True # can be True or False
 globalnode = False # can be True or False
@@ -312,9 +311,9 @@ if __name__ == '__main__':
 			model = GGCN_metric_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
 		elif training == 'sequence_baseline_metric_att':
 			# model = torch.load("trained_models/GatedHeteroRGCN_Attention_Action_128_3_16.pt")
-			model = GGCN_metric_att_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
+			model = GGCN_metric_att_Action(data.features, data.num_objects, 4 * GRAPH_HIDDEN, 4, 5, etypes, torch.tanh, 0.5)
 
-		optimizer = torch.optim.Adam(model.parameters() , lr = 0.0005 if 'sequence' in training else 0.00005)
+		optimizer = torch.optim.Adam(model.parameters() , lr = 0.0001 if 'sequence' in training else 0.00005)
 		# optimizer.load_state_dict(torch.load("trained_models/GatedHeteroRGCN_Attention_Action_List_128_3_0.optim").state_dict())
 		print ("Training " + model.name + " with " + embedding)
 		train_set, test_set = world_split(data) if split == 'world' else random_split(data)  if split == 'random' else tool_split(data) 

@@ -319,3 +319,114 @@ class DGL_AGCN_Action_List(nn.Module):
         pred2 = self.activation(self.q2(pred2))
         pred2 = F.softmax(self.activation(self.q3(pred2)), dim=1)
         return torch.cat((action, pred1, pred2), 1).flatten()
+
+#############################################################################
+
+
+class Metric_Action(nn.Module):
+    def __init__(self,
+                 in_feats,
+                 n_objects,
+                 n_hidden,
+                 n_states,
+                 n_layers,
+                 etypes,
+                 activation,
+                 dropout):
+        super(Metric_Action, self).__init__()
+        self.etypes = etypes
+        self.name = "Metric_Action_" + str(n_hidden) + "_" + str(n_layers)
+        self.layers = nn.ModuleList()
+        self.layers.append(nn.Linear(in_feats + n_objects*4, n_hidden))
+        for i in range(n_layers - 1):
+            self.layers.append(nn.Linear(n_hidden, n_hidden))
+        self.attention = nn.Linear(n_hidden + n_hidden, 1)
+        self.embed = nn.Linear(PRETRAINED_VECTOR_SIZE, n_hidden)
+        self.fc1 = nn.Linear(n_hidden + n_hidden, n_hidden)
+        self.fc2 = nn.Linear(n_hidden, n_hidden)
+        self.fc3 = nn.Linear(n_hidden, len(possibleActions))
+        self.p1  = nn.Linear(n_hidden + n_hidden, n_hidden)
+        self.p2  = nn.Linear(n_hidden, n_hidden)
+        self.p3  = nn.Linear(n_hidden, n_objects+1)
+        self.q1  = nn.Linear(n_hidden + n_hidden, n_hidden)
+        self.q2  = nn.Linear(n_hidden, n_hidden)
+        self.q3  = nn.Linear(n_hidden, n_objects+1+n_states)
+        self.activation = nn.PReLU()
+
+    def forward(self, g, goalVec, goalObjectsVec):
+        h = g.ndata['feat']
+        edgeMatrices = [g.adjacency_matrix(etype=t) for t in self.etypes]
+        edges = torch.cat(edgeMatrices, 1).to_dense()
+        h = torch.cat((h, edges), 1)
+        for i, layer in enumerate(self.layers):
+            h = self.activation(layer(h))
+        scene_embedding = torch.sum(h, dim=0).view(1,-1)
+        goal_embed = self.activation(self.embed(torch.Tensor(goalVec.reshape(1, -1))))
+        final_to_decode = torch.cat([scene_embedding, goal_embed], 1)
+        action = self.activation(self.fc1(final_to_decode))
+        action = self.activation(self.fc2(action))
+        action = self.activation(self.fc3(action))
+        action = F.softmax(action, dim=1)
+        pred1 = self.activation(self.p1(final_to_decode))
+        pred1 = self.activation(self.p2(pred1))
+        pred1 = F.softmax(self.activation(self.p3(pred1)), dim=1)
+        pred2 = self.activation(self.q1(final_to_decode))
+        pred2 = self.activation(self.q2(pred2))
+        pred2 = F.softmax(self.activation(self.q3(pred2)), dim=1)
+        return torch.cat((action, pred1, pred2), 1).flatten()
+
+
+class Metric_att_Action(nn.Module):
+    def __init__(self,
+                 in_feats,
+                 n_objects,
+                 n_hidden,
+                 n_states,
+                 n_layers,
+                 etypes,
+                 activation,
+                 dropout):
+        super(Metric_att_Action, self).__init__()
+        self.etypes = etypes
+        self.name = "Metric_att_Action_" + str(n_hidden) + "_" + str(n_layers)
+        self.layers = nn.ModuleList()
+        self.layers.append(nn.Linear(in_feats + n_objects*4, n_hidden))
+        for i in range(n_layers - 1):
+            self.layers.append(nn.Linear(n_hidden, n_hidden))
+        self.attention = nn.Linear(n_hidden + n_hidden, 1)
+        self.embed = nn.Linear(PRETRAINED_VECTOR_SIZE, n_hidden)
+        self.fc1 = nn.Linear(n_hidden + n_hidden, n_hidden)
+        self.fc2 = nn.Linear(n_hidden, n_hidden)
+        self.fc3 = nn.Linear(n_hidden, len(possibleActions))
+        self.p1  = nn.Linear(n_hidden + n_hidden, n_hidden)
+        self.p2  = nn.Linear(n_hidden, n_hidden)
+        self.p3  = nn.Linear(n_hidden, n_objects+1)
+        self.q1  = nn.Linear(n_hidden + n_hidden, n_hidden)
+        self.q2  = nn.Linear(n_hidden, n_hidden)
+        self.q3  = nn.Linear(n_hidden, n_objects+1+n_states)
+        self.activation = nn.PReLU()
+
+    def forward(self, g, goalVec, goalObjectsVec):
+        h = g.ndata['feat']
+        edgeMatrices = [g.adjacency_matrix(etype=t) for t in self.etypes]
+        edges = torch.cat(edgeMatrices, 1).to_dense()
+        h = torch.cat((h, edges), 1)
+        for i, layer in enumerate(self.layers):
+            h = self.activation(layer(h))
+        goalObjectsVec = self.activation(self.embed(torch.Tensor(goalObjectsVec)))
+        attn_embedding = torch.cat([h, goalObjectsVec.repeat(h.size(0)).view(h.size(0), -1)], 1)
+        attn_weights = F.softmax(self.attention(attn_embedding), dim=0)
+        scene_embedding = torch.mm(attn_weights.t(), h)
+        goal_embed = self.activation(self.embed(torch.Tensor(goalVec.reshape(1, -1))))
+        final_to_decode = torch.cat([scene_embedding, goal_embed], 1)
+        action = self.activation(self.fc1(final_to_decode))
+        action = self.activation(self.fc2(action))
+        action = self.activation(self.fc3(action))
+        action = F.softmax(action, dim=1)
+        pred1 = self.activation(self.p1(final_to_decode))
+        pred1 = self.activation(self.p2(pred1))
+        pred1 = F.softmax(self.activation(self.p3(pred1)), dim=1)
+        pred2 = self.activation(self.q1(final_to_decode))
+        pred2 = self.activation(self.q2(pred2))
+        pred2 = F.softmax(self.activation(self.q3(pred2)), dim=1)
+        return torch.cat((action, pred1, pred2), 1).flatten()
