@@ -152,7 +152,7 @@ Examples
 \uwave off
 \noun off
 \color none
- Change goal object position
+ Change goal object location
 \end_layout
 
 \end_inset
@@ -221,7 +221,7 @@ II
 \uwave off
 \noun off
 \color none
-Remove MLP tool
+Remove maximum likelihood tool
 \end_layout
 
 \end_inset
@@ -289,7 +289,7 @@ III
 \uwave off
 \noun off
 \color none
-Tool → Alternate tool
+Tool to alternate tool replacement
 \end_layout
 
 \end_inset
@@ -357,7 +357,7 @@ IV
 \uwave off
 \noun off
 \color none
-Tool → Non alternate object
+Tool to non alternate object replacement
 \end_layout
 
 \end_inset
@@ -425,7 +425,7 @@ V
 \uwave off
 \noun off
 \color none
-Goal object → Another goal object
+Goal object to another goal object replacement
 \end_layout
 
 \end_inset
