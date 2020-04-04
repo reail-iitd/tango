@@ -47,6 +47,41 @@ def vec2action(vec, num_objects, num_states, idx2object):
         ret_action["args"].append(possibleStates[object2_or_state_ind - num_objects - 1])
     return ret_action
 
+def vec2action_grammatical(vec, num_objects, num_states, idx2object):
+    ret_action = {}
+    action_array = list(vec[:len(possibleActions)])
+    ret_action["name"] = possibleActions[action_array.index(max(action_array))]
+    ret_action["args"] = []
+    object1_array = list(vec[len(possibleActions):len(possibleActions)+num_objects+1])
+    object1_ind = object1_array.index(max(object1_array))
+    if object1_ind == len(object1_array) - 1:
+        # return ret_action
+        # Removing the case in which zero objects are predicted
+        object1_array = list(vec[len(possibleActions):len(possibleActions)+num_objects])
+        object1_ind = object1_array.index(max(object1_array))
+        ret_action["args"].append(idx2object[object1_ind])
+    else:
+        ret_action["args"].append(idx2object[object1_ind])
+    if ret_action["name"] in ["moveTo", "pick", "climbUp", "climbDown", "clean"]:
+        return ret_action
+    object2_array = list(vec[len(possibleActions)+num_objects+1:len(possibleActions)+num_objects+1+num_objects])
+    state_array = list(vec[len(possibleActions)+num_objects+1+num_objects+1:])
+    assert len(state_array) == len(possibleStates)
+    if ret_action["name"] == "changeState":
+        ret_action["args"].append(possibleStates[state_array.index(max(state_array))])
+    else:
+        ret_action["args"].append(idx2object[object2_array.index(max(object2_array))])
+    return ret_action
+    # object2_or_state_array = list(vec[len(possibleActions)+num_objects+1:])
+    # object2_or_state_ind = object2_or_state_array.index(max(object2_or_state_array))
+    # if (object2_or_state_ind < num_objects):
+    #     ret_action["args"].append(idx2object[object2_or_state_ind])
+    # elif (object2_or_state_ind == num_objects):
+    #     pass
+    # else:
+    #     ret_action["args"].append(possibleStates[object2_or_state_ind - num_objects - 1])
+    return ret_action
+
 class DGL_AGCN_Action(nn.Module):
     def __init__(self,
                  in_feats,
