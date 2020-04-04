@@ -76,10 +76,30 @@ def gen_score(model, testData, verbose = False):
 	print(correct_list)
 	return total_correct * 100.0 / len(testData.graphs)
 
+def grammatical_action(action):
+	if (action["name"] in ["pushTo", "pickNplaceAonB", "dropTo", "apply", "stick"]):
+		if (len(action["args"]) != 2):
+			return False
+		for i in action["args"]:
+			if i not in object2idx:
+				return False
+	elif action["name"] in ["moveTo", "pick", "climbUp", "climbDown", "clean"]:
+		if (len(action["args"]) != 1):
+			return False
+	elif action["name"] in ["changeState"]:
+		if (len(action["args"]) != 2):
+			return False
+		if action["args"][1] in object2idx:
+			return False
+	else:
+		assert False
+	return True
+
 def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = False):
 	total_correct = 0
+	total_ungrammatical = 0
 	denominator = 0
-	for graph in tqdm(graphs, desc = "Accuracy score"):
+	for graph in (graphs):
 		goal_num, world_num, tools, g, t = graph
 		if 'gcn' in training:
 			y_pred = model(g, goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
@@ -96,9 +116,15 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 				elif training == 'sequence_list':
 					y_pred = model(graphSeq[max(0,i + 1 - graph_seq_length):i+1], goal2vec[goal_num], goalObjects2vec[goal_num])
 				denominator += 1
-				action_pred = vec2action(y_pred, num_objects, 4, idx2object)
+				action_pred = vec2action_grammatical(y_pred, num_objects, 4, idx2object)
 				# print ("Prediction: ", action_pred)
 				# print ("Target: ", actionSeq[i])
+				if verbose:
+					if (not grammatical_action(action_pred)):
+						# print (action_pred)
+						total_ungrammatical += 1
+					if (not grammatical_action(actionSeq[i])):
+						print (actionSeq[i])
 				if (action_pred == actionSeq[i]):
 					total_correct += 1
 			continue
@@ -109,6 +135,9 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 			total_correct += 1
 		elif verbose:
 			print (goal_num, world_num, tool_predicted, tools_possible)
+	if ("sequence" in training and verbose):
+		print ("Total ungrammatical percent is", (total_ungrammatical/denominator) * 100)
+		print ("Denominator is", denominator)
 	return ((total_correct/denominator)*100)
 
 def printPredictions(model, data=None):
@@ -340,12 +369,13 @@ if __name__ == '__main__':
 					torch.save(optimizer, MODEL_SAVE_PATH + "/" + model.name + "_" + str(num_epochs) + ".optim")
 			pickle.dump(accuracy_list, open(MODEL_SAVE_PATH + "/" + model.name + "_" + embedding + "_" + "accuracies.pkl", "wb"))
 			write_training_data(model.name, loss, t1, t2)
-		print ("The maximum accuracy on test set, train set for " + NUM_EPOCHS + " epochs is ", max(accuracy_list), " at epoch ", str(accuracy_list.index(max(accuracy_list))))
+		print ("The maximum accuracy on test set, train set for " + str(NUM_EPOCHS) + " epochs is ", str(max(accuracy_list)), " at epoch ", accuracy_list.index(max(accuracy_list)))
 	elif not train and not generalization:
-		model = torch.load(MODEL_SAVE_PATH + "/GGCN_Metric_Attn_L_NT_C_256_5_Trained.pt")
-		print ("Accuracy on complete set is ",accuracy_score(data, data.graphs, model, modelEnc))
+		print ("Evaluating...")
+		model = torch.load(MODEL_SAVE_PATH + "/checkpoints/sequence_best_78_47.pt")
+		# print ("Accuracy on complete set is ",accuracy_score(data, data.graphs, model, modelEnc))
 		train_set, test_set = world_split(data) if split == 'world' else random_split(data)  if split == 'random' else tool_split(data) 
-		t1, t2 = accuracy_score(data, train_set, model, modelEnc), accuracy_score(data, test_set, model, modelEnc)
+		t1, t2 = accuracy_score(data, train_set, model, modelEnc, data.num_objects, True), accuracy_score(data, test_set, model, modelEnc, data.num_objects, True)
 		print ("Accuracy on training set is ", t1)
 		print ("Accuracy on test set is ", t2)
 		# printPredictions(model,data)
