@@ -401,6 +401,7 @@ if __name__ == '__main__':
 		print ("Size before split was", len(data.graphs))
 		print ("The size of the training set is", len(train_set))
 		print ("The size of the test set is", len(test_set))
+		addEmbedding = embedding[0] + "_" if 'seq' in training else ''
 		accuracy_list = []
 		for num_epochs in range(NUM_EPOCHS+1):
 			random.shuffle(train_set)
@@ -416,9 +417,9 @@ if __name__ == '__main__':
 				elif training == 'ae':
 					print ("Loss on test set is ", loss_score(test_set, model, modelEnc).item()/len(test_set))
 				if num_epochs % 1 == 0:
-					torch.save(model, MODEL_SAVE_PATH + "/" + model.name + "_" + embedding[0] + "_" + str(num_epochs) + ".pt")
-					torch.save(optimizer, MODEL_SAVE_PATH + "/" + model.name + "_" + embedding[0] + "_" + str(num_epochs) + ".optim")
-			pickle.dump(accuracy_list, open(MODEL_SAVE_PATH + "/" + model.name + "_" + embedding[0] + "_" + "accuracies.pkl", "wb"))
+					torch.save(model, MODEL_SAVE_PATH + "/" + model.name + "_" + addEmbedding + str(num_epochs) + ".pt")
+					torch.save(optimizer, MODEL_SAVE_PATH + "/" + model.name + "_" + addEmbedding + str(num_epochs) + ".optim")
+			pickle.dump(accuracy_list, open(MODEL_SAVE_PATH + "/" + model.name + "_" + addEmbedding + "accuracies.pkl", "wb"))
 			write_training_data(model.name, loss, t1, t2)
 		print ("The maximum accuracy on test set, train set for " + str(NUM_EPOCHS) + " epochs is ", str(max(accuracy_list)), " at epoch ", accuracy_list.index(max(accuracy_list)))
 	elif not train and not generalization:
