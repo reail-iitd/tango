@@ -457,7 +457,7 @@ class Metric_Action(nn.Module):
         self.q1  = nn.Linear(n_hidden + n_hidden, n_hidden)
         self.q2  = nn.Linear(n_hidden, n_hidden)
         self.q3  = nn.Linear(n_hidden, n_objects+1+n_states)
-        self.activation = nn.PReLU()
+        self.activation = nn.LeakyReLU()
 
     def forward(self, g, goalVec, goalObjectsVec):
         h = g.ndata['feat']
@@ -480,7 +480,6 @@ class Metric_Action(nn.Module):
         pred2 = self.activation(self.q2(pred2))
         pred2 = F.softmax(self.activation(self.q3(pred2)), dim=1)
         return torch.cat((action, pred1, pred2), 1).flatten()
-
 
 class Metric_att_Action(nn.Module):
     def __init__(self,
@@ -510,7 +509,7 @@ class Metric_att_Action(nn.Module):
         self.q1  = nn.Linear(n_hidden + n_hidden, n_hidden)
         self.q2  = nn.Linear(n_hidden, n_hidden)
         self.q3  = nn.Linear(n_hidden, n_objects+1+n_states)
-        self.activation = nn.PReLU()
+        self.activation = nn.LeakyReLU()
 
     def forward(self, g, goalVec, goalObjectsVec):
         h = g.ndata['feat']

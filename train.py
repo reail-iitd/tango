@@ -391,7 +391,8 @@ if __name__ == '__main__':
 			model = GGCN_metric_att_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
 		elif training == 'sequence_baseline_metric_att_aseq':
 			# model = torch.load("trained_models/GatedHeteroRGCN_Attention_Action_128_3_16.pt")
-			model = GGCN_metric_att_aseq_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
+			model = Metric_att_aseq_Action(data.features, data.num_objects, 5 * GRAPH_HIDDEN, 4, 5, etypes, torch.tanh, 0.5)
+			# model = GGCN_metric_att_aseq_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
 
 		optimizer = torch.optim.Adam(model.parameters() , lr = 0.0005 if 'sequence' in training else 0.00005)
 		# optimizer.load_state_dict(torch.load("trained_models/GatedHeteroRGCN_Attention_Action_List_128_3_0.optim").state_dict())
