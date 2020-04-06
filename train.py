@@ -10,7 +10,7 @@ from sys import argv
 import torch
 import torch.nn as nn
 
-training = argv[3] if len(argv) > 3 else "sequence_baseline_metric_att" # can be "gcn", "ae", "combined", "agcn", "agcn-tool", "agcn-likelihood", "sequence", "sequence_list", "sequence_baseline", "sequence_baseline_metric", "sequence_baseline_metric_att", "sequence_baseline_metric_att_aseq"
+training = argv[3] if len(argv) > 3 else "sequence_baseline_metric_att_tool_aseq" # can be "gcn", "ae", "combined", "agcn", "agcn-tool", "agcn-likelihood", "sequence", "sequence_list", "sequence_baseline", "sequence_baseline_metric", "sequence_baseline_metric_att", "sequence_baseline_metric_att_aseq", "sequence_baseline_metric_att_tool_aseq"
 split = "world" # can be "random", "world", "tool"
 train = True # can be True or False
 globalnode = False # can be True or False
@@ -234,7 +234,12 @@ def backprop(data, optimizer, graphs, model, num_objects, modelEnc=None, batch_s
 		elif 'sequence' in training:
 			actionSeq, graphSeq = g; loss = 0
 			if "aseq" in training:
-				y_pred_list = model(graphSeq, goal2vec[goal_num], goalObjects2vec[goal_num], actionSeq)
+				if "tool" in training:
+					tool_likelihoods = modelEnc(graphSeq[0], goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
+					object_likelihoods = tool2object_likelihoods(num_objects, tool_likelihoods)
+					y_pred_list = model(graphSeq, goal2vec[goal_num], goalObjects2vec[goal_num], actionSeq, object_likelihoods)
+				else:
+					y_pred_list = model(graphSeq, goal2vec[goal_num], goalObjects2vec[goal_num], actionSeq)
 				for i,y_pred in enumerate(y_pred_list):
 					y_true = action2vec(actionSeq[i], num_objects, 4)
 					loss += l(y_pred, y_true)
@@ -388,11 +393,15 @@ if __name__ == '__main__':
 			model = GGCN_metric_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
 		elif training == 'sequence_baseline_metric_att':
 			# model = torch.load("trained_models/GatedHeteroRGCN_Attention_Action_128_3_16.pt")
-			model = GGCN_metric_att_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
+			model = Metric_att_Action(data.features, data.num_objects, 5 * GRAPH_HIDDEN, 4, 5, etypes, torch.tanh, 0.5)
+			# model = GGCN_metric_att_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
 		elif training == 'sequence_baseline_metric_att_aseq':
 			# model = torch.load("trained_models/GatedHeteroRGCN_Attention_Action_128_3_16.pt")
-			model = Metric_att_aseq_Action(data.features, data.num_objects, 5 * GRAPH_HIDDEN, 4, 5, etypes, torch.tanh, 0.5)
-			# model = GGCN_metric_att_aseq_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
+			model = GGCN_metric_att_aseq_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
+		elif training == 'sequence_baseline_metric_att_tool_aseq':
+			# model = torch.load("trained_models/GatedHeteroRGCN_Attention_Action_128_3_16.pt")
+			modelEnc = torch.load("trained_models/GGCN_Metric_Attn_L_NT_C_W_256_5_Trained.pt"); modelEnc.eval()
+			model = GGCN_metric_att_aseq_tool_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
 
 		optimizer = torch.optim.Adam(model.parameters() , lr = 0.0005 if 'sequence' in training else 0.00005)
 		# optimizer.load_state_dict(torch.load("trained_models/GatedHeteroRGCN_Attention_Action_List_128_3_0.optim").state_dict())
