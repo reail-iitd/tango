@@ -112,7 +112,12 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 		elif 'sequence' in training:
 			actionSeq, graphSeq = g
 			if "aseq" in training:
-				y_pred_list = model(graphSeq, goal2vec[goal_num], goalObjects2vec[goal_num], actionSeq)
+				if "tool" in training:
+					tool_likelihoods = modelEnc(graphSeq[0], goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
+					object_likelihoods = tool2object_likelihoods(num_objects, tool_likelihoods)
+					y_pred_list = model(graphSeq, goal2vec[goal_num], goalObjects2vec[goal_num], actionSeq, object_likelihoods)
+				else:
+					y_pred_list = model(graphSeq, goal2vec[goal_num], goalObjects2vec[goal_num], actionSeq)
 				for i,y_pred in enumerate(y_pred_list):
 					denominator += 1
 					action_pred = vec2action_grammatical(y_pred, num_objects, 4, idx2object)
@@ -401,6 +406,8 @@ if __name__ == '__main__':
 		elif training == 'sequence_baseline_metric_att_tool_aseq':
 			# model = torch.load("trained_models/GatedHeteroRGCN_Attention_Action_128_3_16.pt")
 			modelEnc = torch.load("trained_models/GGCN_Metric_Attn_L_NT_C_W_256_5_Trained.pt"); modelEnc.eval()
+			for param in modelEnc.parameters():
+			    param.requires_grad = False
 			model = GGCN_metric_att_aseq_tool_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
 
 		optimizer = torch.optim.Adam(model.parameters() , lr = 0.0005 if 'sequence' in training else 0.00005)
