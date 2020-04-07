@@ -100,6 +100,7 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 	total_correct = 0
 	total_ungrammatical = 0
 	denominator = 0
+	total_test_loss = 0; l = nn.CrossEntropyLoss()
 	for graph in (graphs):
 		goal_num, world_num, tools, g, t = graph
 		if 'gcn_seq' in training:
@@ -114,6 +115,7 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 				elif verbose:
 					print (goal_num, world_num, tool_predicted, tools_possible)
 				denominator += 1
+				total_test_loss += l(y_pred.view(1,-1), torch.LongTensor([TOOLS.index(toolSeq[i])]))
 			continue
 		elif 'gcn' in training:
 			y_pred = model(g, goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
@@ -171,6 +173,8 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 	if (("sequence" in training) and verbose):
 		print ("Total ungrammatical percent is", (total_ungrammatical/denominator) * 100)
 		print ("Denominator is", denominator)
+	if training == 'gcn_seq':
+		print("Normalized Loss:", total_test_loss/len(graphs))
 	return ((total_correct/denominator)*100)
 
 def printPredictions(model, data=None):
@@ -236,12 +240,12 @@ def backprop(data, optimizer, graphs, model, num_objects, modelEnc=None, batch_s
 			loss = torch.sum((y_pred - y_true)** 2)
 			batch_loss += loss
 		elif 'gcn_seq' in training:
+			l = nn.CrossEntropyLoss()
 			actionSeq, graphSeq = g; loss = 0; toolSeq = tools
 			for i, g in enumerate(graphSeq):
 				y_pred = model(g, goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
-				y_true = torch.zeros(NUMTOOLS)
-				y_true[TOOLS.index(toolSeq[i])] = 1
-				loss = l(y_pred, y_true)
+				y_true = torch.LongTensor([TOOLS.index(toolSeq[i])])
+				loss = l(y_pred.view(1,-1), y_true)
 				if weighted: loss *= (1 if t == data.min_time[(goal_num, world_num)] else 0.5)
 				batch_loss += loss
 		elif 'gcn' in training:
