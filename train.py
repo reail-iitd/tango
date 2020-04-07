@@ -107,6 +107,7 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 			actionSeq, graphSeq = g; loss = 0; toolSeq = tools
 			for i, g in enumerate(graphSeq):
 				y_pred = model(g, goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
+				total_test_loss += l(y_pred.view(1,-1), torch.LongTensor([TOOLS.index(toolSeq[i])]))
 				y_pred = list(y_pred.reshape(-1))
 				tools_possible = dset.goal_scene_to_tools[(goal_num,world_num)]
 				tool_predicted = TOOLS[y_pred.index(max(y_pred))]
@@ -115,7 +116,6 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 				elif verbose:
 					print (goal_num, world_num, tool_predicted, tools_possible)
 				denominator += 1
-				total_test_loss += l(y_pred.view(1,-1), torch.LongTensor([TOOLS.index(toolSeq[i])]))
 			continue
 		elif 'gcn' in training:
 			y_pred = model(g, goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
@@ -174,7 +174,7 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 		print ("Total ungrammatical percent is", (total_ungrammatical/denominator) * 100)
 		print ("Denominator is", denominator)
 	if training == 'gcn_seq':
-		print("Normalized Loss:", total_test_loss/len(graphs))
+		print("Normalized Loss:", total_test_loss.item()/denominator)
 	return ((total_correct/denominator)*100)
 
 def printPredictions(model, data=None):
