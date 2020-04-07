@@ -10,12 +10,12 @@ from sys import argv
 import torch
 import torch.nn as nn
 
-training = argv[3] if len(argv) > 3 else "sequence_baseline_metric_att_tool_aseq" # can be "gcn", "ae", "combined", "agcn", "agcn-tool", "agcn-likelihood", "sequence", "sequence_list", "sequence_baseline", "sequence_baseline_metric", "sequence_baseline_metric_att", "sequence_baseline_metric_att_aseq", "sequence_baseline_metric_att_tool_aseq"
+training = argv[3] if len(argv) > 3 else "gcn_seq" # can be "gcn", "ae", "combined", "agcn", "agcn-tool", "agcn-likelihood", "sequence", "sequence_list", "sequence_baseline", "sequence_baseline_metric", "sequence_baseline_metric_att", "sequence_baseline_metric_att_aseq", "sequence_baseline_metric_att_tool_aseq"
 split = "world" # can be "random", "world", "tool"
 train = True # can be True or False
 globalnode = False # can be True or False
 ignoreNoTool = False # can be True or False
-sequence = "sequence" in training # can be True or False
+sequence = "seq" in training # can be True or False
 generalization = False
 weighted = False
 ablation = True
@@ -102,7 +102,20 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 	denominator = 0
 	for graph in (graphs):
 		goal_num, world_num, tools, g, t = graph
-		if 'gcn' in training:
+		if 'gcn_seq' in training:
+			actionSeq, graphSeq = g; loss = 0; toolSeq = tools
+			for i, g in enumerate(graphSeq):
+				y_pred = model(g, goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
+				y_pred = list(y_pred.reshape(-1))
+				tools_possible = dset.goal_scene_to_tools[(goal_num,world_num)]
+				tool_predicted = TOOLS[y_pred.index(max(y_pred))]
+				if tool_predicted in tools_possible:
+					total_correct += 1
+				elif verbose:
+					print (goal_num, world_num, tool_predicted, tools_possible)
+				denominator += 1
+			continue
+		elif 'gcn' in training:
 			y_pred = model(g, goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
 			denominator += 1
 		elif training == 'combined':
@@ -222,6 +235,15 @@ def backprop(data, optimizer, graphs, model, num_objects, modelEnc=None, batch_s
 			y_true = g.ndata['feat']
 			loss = torch.sum((y_pred - y_true)** 2)
 			batch_loss += loss
+		elif 'gcn_seq' in training:
+			actionSeq, graphSeq = g; loss = 0; toolSeq = tools
+			for i, g in enumerate(graphSeq):
+				y_pred = model(g, goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
+				y_true = torch.zeros(NUMTOOLS)
+				y_true[TOOLS.index(toolSeq[i])] = 1
+				loss = l(y_pred, y_true)
+				if weighted: loss *= (1 if t == data.min_time[(goal_num, world_num)] else 0.5)
+				batch_loss += loss
 		elif 'gcn' in training:
 			y_pred = model(g, goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
 			y_true = torch.zeros(NUMTOOLS)
@@ -341,7 +363,7 @@ def tool_split(data):
 	return train_set, test_set
 
 def write_training_data(model_name, loss, training_accuracy, test_accuracy):
-	file_path = "trained_models/training/"+model_name+".pt"
+	file_path = "trained_models/training/"+('Seq_' if training == 'gcn_seq' else '')+model_name+".pt"
 	if path.exists(file_path):
 		with open(file_path, "rb") as f:
 			llist, trlist, telist = pickle.load(f)
@@ -384,6 +406,9 @@ if __name__ == '__main__':
 			# model = GGCN(data.features, data.num_objects, 4 * GRAPH_HIDDEN, NUMTOOLS, 5, etypes, torch.tanh, 0.5)
 			model = Final_C(data.features, data.num_objects, 4 * GRAPH_HIDDEN, NUMTOOLS, 5, etypes, torch.tanh, 0.5)
 			# model = DGL_Simple_Likelihood(data.features, data.num_objects, 4 * GRAPH_HIDDEN, NUMTOOLS, 5, etypes, torch.tanh, 0.5, embedding, weighted)
+		elif training == 'gcn_seq':
+			# model = torch.load("trained_models/Final_Metric_256_5_9.pt")
+			model = DGL_Simple_Likelihood(data.features, data.num_objects, 4 * GRAPH_HIDDEN, NUMTOOLS, 5, etypes, torch.tanh, 0.5, embedding, weighted)
 		elif training == 'sequence':
 			# model = torch.load("trained_models/GatedHeteroRGCN_Attention_Action_128_3_16.pt")
 			model = DGL_AGCN_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
@@ -410,7 +435,9 @@ if __name__ == '__main__':
 			    param.requires_grad = False
 			model = GGCN_metric_att_aseq_tool_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
 
-		optimizer = torch.optim.Adam(model.parameters() , lr = 0.0005 if 'sequence' in training else 0.00005)
+		lr = 0.0005 if 'sequence' in training else 0.00005
+		if training == 'gcn_seq': lr = 0.000005 
+		optimizer = torch.optim.Adam(model.parameters() , lr=lr)
 		# optimizer.load_state_dict(torch.load("trained_models/GatedHeteroRGCN_Attention_Action_List_128_3_0.optim").state_dict())
 		print ("Training " + model.name + " with " + embedding)
 		train_set, test_set = world_split(data) if split == 'world' else random_split(data)  if split == 'random' else tool_split(data) 
@@ -418,7 +445,8 @@ if __name__ == '__main__':
 		print ("Size before split was", len(data.graphs))
 		print ("The size of the training set is", len(train_set))
 		print ("The size of the test set is", len(test_set))
-		addEmbedding = embedding[0] + "_" if 'seq' in training else ''
+		addEmbedding = embedding[0] + "_" if 'sequence' in training else ''
+		seqTool = 'Seq_' if training == 'gcn_seq' else ''
 		accuracy_list = []
 		for num_epochs in range(NUM_EPOCHS+1):
 			random.shuffle(train_set)
@@ -434,9 +462,9 @@ if __name__ == '__main__':
 				elif training == 'ae':
 					print ("Loss on test set is ", loss_score(test_set, model, modelEnc).item()/len(test_set))
 				if num_epochs % 1 == 0:
-					torch.save(model, MODEL_SAVE_PATH + "/" + model.name + "_" + addEmbedding + str(num_epochs) + ".pt")
-					torch.save(optimizer, MODEL_SAVE_PATH + "/" + model.name + "_" + addEmbedding + str(num_epochs) + ".optim")
-			pickle.dump(accuracy_list, open(MODEL_SAVE_PATH + "/" + model.name + "_" + addEmbedding + "accuracies.pkl", "wb"))
+					torch.save(model, MODEL_SAVE_PATH + "/" + seqTool + model.name + "_" + addEmbedding + str(num_epochs) + ".pt")
+					torch.save(optimizer, MODEL_SAVE_PATH + "/" + seqTool + model.name + "_" + addEmbedding + str(num_epochs) + ".optim")
+			pickle.dump(accuracy_list, open(MODEL_SAVE_PATH + "/" + seqTool + model.name + "_" + addEmbedding + "accuracies.pkl", "wb"))
 			write_training_data(model.name, loss, t1, t2)
 		print ("The maximum accuracy on test set, train set for " + str(NUM_EPOCHS) + " epochs is ", str(max(accuracy_list)), " at epoch ", accuracy_list.index(max(accuracy_list)))
 	elif not train and not generalization:

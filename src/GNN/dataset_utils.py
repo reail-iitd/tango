@@ -111,6 +111,17 @@ class Dataset():
 
 ############################ DGL ############################
 
+def getToolSequence(actionSeq):
+	toolSeq = ['no-tool'] * len(actionSeq)
+	currentTool = 'no-tool'
+	for i in range(len(toolSeq)-1, -1, -1):
+		for obj in actionSeq[i]['args']:
+			if obj in TOOLS2: 
+				currentTool = obj
+				break
+		toolSeq[i] = currentTool
+	return toolSeq
+
 def getGlobalID(dp):
 	maxID = 0
 	for i in dp.metrics[0].keys():
@@ -180,8 +191,8 @@ def getDGLSequence(pathToDatapoint, globalNode, ignoreNoTool, e):
 	for i in range(len(datapoint.metrics)):
 		if datapoint.actions[i] == 'Start': graphSeq.append(convertToDGLGraph(datapoint.getGraph(i, embeddings=e)["graph_"+str(i)], globalNode, goal_num, getGlobalID(datapoint) if globalNode else -1))
 	assert len(actionSeq) == len(graphSeq)
-	return (goal_num, world_num, tools, (actionSeq, graphSeq), time)
-
+	toolSeq = getToolSequence(actionSeq)
+	return (goal_num, world_num, toolSeq, (actionSeq, graphSeq), time)
 
 class DGLDataset():
 	def __init__(self, program_dir, augmentation=50, globalNode=False, ignoreNoTool=False, sequence=False, embedding="conceptnet"):
