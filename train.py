@@ -10,7 +10,7 @@ from sys import argv
 import torch
 import torch.nn as nn
 
-training = argv[3] if len(argv) > 3 else "gcn_seq" # can be "gcn", "ae", "combined", "agcn", "agcn-tool", "agcn-likelihood", "sequence", "sequence_list", "sequence_baseline", "sequence_baseline_metric", "sequence_baseline_metric_att", "sequence_baseline_metric_att_aseq", "sequence_baseline_metric_att_tool_aseq"
+training = argv[3] if len(argv) > 3 else "sequence_baseline_metric_att_tool_aseq" # can be "gcn", "ae", "combined", "agcn", "agcn-tool", "agcn-likelihood", "sequence", "sequence_list", "sequence_baseline", "sequence_baseline_metric", "sequence_baseline_metric_att", "sequence_baseline_metric_att_aseq", "sequence_baseline_metric_att_tool_aseq"
 split = "world" # can be "random", "world", "tool"
 train = True # can be True or False
 globalnode = False # can be True or False
@@ -266,8 +266,10 @@ def backprop(data, optimizer, graphs, model, num_objects, modelEnc=None, batch_s
 			actionSeq, graphSeq = g; loss = 0
 			if "aseq" in training:
 				if "tool" in training:
-					tool_likelihoods = modelEnc(graphSeq[0], goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
-					object_likelihoods = tool2object_likelihoods(num_objects, tool_likelihoods)
+					object_likelihoods = []
+					for g in graphSeq:
+						tool_likelihoods = modelEnc(g, goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
+						object_likelihoods.append(tool2object_likelihoods(num_objects, tool_likelihoods))
 					y_pred_list = model(graphSeq, goal2vec[goal_num], goalObjects2vec[goal_num], actionSeq, object_likelihoods)
 				else:
 					y_pred_list = model(graphSeq, goal2vec[goal_num], goalObjects2vec[goal_num], actionSeq)
@@ -411,7 +413,8 @@ if __name__ == '__main__':
 			model = Final_C(data.features, data.num_objects, 4 * GRAPH_HIDDEN, NUMTOOLS, 5, etypes, torch.tanh, 0.5)
 			# model = DGL_Simple_Likelihood(data.features, data.num_objects, 4 * GRAPH_HIDDEN, NUMTOOLS, 5, etypes, torch.tanh, 0.5, embedding, weighted)
 		elif training == 'gcn_seq':
-			# model = torch.load("trained_models/Final_Metric_256_5_9.pt")
+			# model = torch.load("trained_models/Seq_GGCN_Metric_Attn_L_NT_C_256_5_Trained.pt")
+			# model = GGCN_Metric_Attn_L(data.features, data.num_objects, 4 * GRAPH_HIDDEN, NUMTOOLS, 5, etypes, torch.tanh, 0.5)
 			model = DGL_Simple_Likelihood(data.features, data.num_objects, 4 * GRAPH_HIDDEN, NUMTOOLS, 5, etypes, torch.tanh, 0.5, embedding, weighted)
 		elif training == 'sequence':
 			# model = torch.load("trained_models/GatedHeteroRGCN_Attention_Action_128_3_16.pt")
@@ -434,9 +437,8 @@ if __name__ == '__main__':
 			model = GGCN_metric_att_aseq_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
 		elif training == 'sequence_baseline_metric_att_tool_aseq':
 			# model = torch.load("trained_models/GatedHeteroRGCN_Attention_Action_128_3_16.pt")
-			modelEnc = torch.load("trained_models/GGCN_Metric_Attn_L_NT_C_W_256_5_Trained.pt"); modelEnc.eval()
-			for param in modelEnc.parameters():
-			    param.requires_grad = False
+			modelEnc = torch.load("trained_models/Seq_GGCN_Metric_Attn_L_NT_C_256_5_Trained.pt"); modelEnc.eval()
+			for param in modelEnc.parameters(): param.requires_grad = False
 			model = GGCN_metric_att_aseq_tool_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
 
 		lr = 0.0005 if 'sequence' in training else 0.00005

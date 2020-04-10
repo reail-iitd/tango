@@ -428,7 +428,7 @@ class GGCN_metric_att_aseq_tool_Action(nn.Module):
             else:
                 lstm_out = torch.zeros(1, 1, self.n_hidden)
             lstm_out = lstm_out.view(-1)
-            attn_embedding = torch.cat([h, goalObjectsVec.repeat(h.size(0)).view(h.size(0), -1), lstm_out.repeat(h.size(0)).view(h.size(0), -1), object_likelihoods.view(h.size(0),-1)], 1)
+            attn_embedding = torch.cat([h, goalObjectsVec.repeat(h.size(0)).view(h.size(0), -1), lstm_out.repeat(h.size(0)).view(h.size(0), -1), object_likelihoods[ind].view(h.size(0),-1)], 1)
             attn_weights = F.softmax(self.attention(attn_embedding), dim=0)
             scene_embedding = torch.mm(attn_weights.t(), h)
             final_to_decode = torch.cat([scene_embedding, goal_embed, lstm_out.view(1,-1)], 1)
