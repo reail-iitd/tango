@@ -128,8 +128,10 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 			actionSeq, graphSeq = g
 			if "aseq" in training:
 				if "tool" in training:
-					tool_likelihoods = modelEnc(graphSeq[0], goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
-					object_likelihoods = tool2object_likelihoods(num_objects, tool_likelihoods)
+					object_likelihoods = []
+					for g in graphSeq:
+						tool_likelihoods = modelEnc(g, goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
+						object_likelihoods.append(tool2object_likelihoods(num_objects, tool_likelihoods))
 					y_pred_list = model(graphSeq, goal2vec[goal_num], goalObjects2vec[goal_num], actionSeq, object_likelihoods)
 				else:
 					y_pred_list = model(graphSeq, goal2vec[goal_num], goalObjects2vec[goal_num], actionSeq)
