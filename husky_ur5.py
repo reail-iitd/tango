@@ -195,7 +195,7 @@ def firstImage():
 
 keyboard = False
 
-def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None):
+def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None, saveImg = True):
   global x1, y1, o1, world_states, dist, yaw, pitch, camX, camY, imageCount, cleaner, on, datapoint, clean, stick, keyboard, drilled, welded, painted, fueled, cut
   # List of low level actions
   datapoint.addSymbolicAction(actions['actions'])
@@ -222,7 +222,7 @@ def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None):
           counter += 1
           z = 1 if p.getBasePositionAndOrientation(husky)[0][2] > 0.5 else 0
           camTargetPos = [x1, y1, z]
-          if (args.logging or args.display=="both") and (counter % COUNTER_MOD == 0):
+          if (args.logging or args.display=="both") and (counter % COUNTER_MOD == 0) and (saveImg):
             # start_image = time.time()
             lastTime, imageCount = saveImage(lastTime, imageCount, "fp", ax, o1, cam, 3, yaw, pitch, camTargetPos, wall_id, on)
             # image_save_time = time.time() - start_image
@@ -556,10 +556,10 @@ def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None):
           # print ("Fraction", image_save_time/total_time_taken)
           # start_here = time.time()
 
-def execute(actions, goal_file=None, queue_for_execute_to_stop = None):
+def execute(actions, goal_file=None, queue_for_execute_to_stop = None, saveImg = True):
   global datapoint
   try:
-    return executeHelper(actions, goal_file, queue_for_execute_to_stop)
+    return executeHelper(actions, goal_file, queue_for_execute_to_stop, saveImg)
   except Exception as e:
     datapoint.addSymbolicAction("Error = " + str(e))
     datapoint.addPoint(None, None, None, None, 'Error = ' + str(e), None, None, None, None, None, None, None, None, None, None)
@@ -579,7 +579,7 @@ def destroy():
   p.disconnect()
                       
 def executeAction(inp):
-    if execute(convertActionsFromFile(inp), args.goal):
+    if execute(convertActionsFromFile(inp), args.goal, saveImg=False):
     	print("Goal Success!!!")
     else:
     	print("Goal Fail!!!")
