@@ -10,7 +10,7 @@ from sys import argv
 import torch
 import torch.nn as nn
 
-training = argv[3] if len(argv) > 3 else "sequence_baseline_metric_att_tool_aseq" # can be "gcn", "ae", "combined", "agcn", "agcn-tool", "agcn-likelihood", "sequence", "sequence_list", "sequence_baseline", "sequence_baseline_metric", "sequence_baseline_metric_att", "sequence_baseline_metric_att_aseq", "sequence_baseline_metric_att_tool_aseq"
+training = argv[3] if len(argv) > 3 else "gcn_seq" # can be "gcn", "ae", "combined", "agcn", "agcn-tool", "agcn-likelihood", "sequence", "sequence_list", "sequence_baseline", "sequence_baseline_metric", "sequence_baseline_metric_att", "sequence_baseline_metric_att_aseq", "sequence_baseline_metric_att_tool_aseq"
 split = "world" # can be "random", "world", "tool"
 train = True # can be True or False
 globalnode = False # can be True or False
@@ -109,7 +109,8 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 				y_pred = model(g, goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
 				total_test_loss += l(y_pred.view(1,-1), torch.LongTensor([TOOLS.index(toolSeq[i])]))
 				y_pred = list(y_pred.reshape(-1))
-				tools_possible = dset.goal_scene_to_tools[(goal_num,world_num)]
+				# tools_possible = dset.goal_scene_to_tools[(goal_num,world_num)]
+				tools_possible = [toolSeq[i]]
 				tool_predicted = TOOLS[y_pred.index(max(y_pred))]
 				if tool_predicted in tools_possible:
 					total_correct += 1
