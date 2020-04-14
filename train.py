@@ -105,6 +105,7 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 		goal_num, world_num, tools, g, t = graph
 		if 'gcn_seq' in training:
 			actionSeq, graphSeq = g; loss = 0; toolSeq = tools
+			graphSeq = graphSeq[0:-1:1] if len(graphSeq) > 1 else graphSeq
 			for i, g in enumerate(graphSeq):
 				y_pred = model(g, goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
 				total_test_loss += l(y_pred.view(1,-1), torch.LongTensor([TOOLS.index(toolSeq[i])]))
@@ -245,6 +246,7 @@ def backprop(data, optimizer, graphs, model, num_objects, modelEnc=None, batch_s
 		elif 'gcn_seq' in training:
 			l = nn.CrossEntropyLoss()
 			actionSeq, graphSeq = g; loss = 0; toolSeq = tools
+			graphSeq = graphSeq[0:-1:1] if len(graphSeq) > 1 else graphSeq
 			for i, g in enumerate(graphSeq):
 				y_pred = model(g, goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
 				y_true = torch.LongTensor([TOOLS.index(toolSeq[i])])
@@ -445,7 +447,7 @@ if __name__ == '__main__':
 			model = GGCN_metric_att_aseq_tool_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
 
 		lr = 0.0005 if 'sequence' in training else 0.00005
-		if training == 'gcn_seq': lr = 0.000005 
+		if training == 'gcn_seq': lr = 0.00005 
 		optimizer = torch.optim.Adam(model.parameters() , lr=lr)
 		# optimizer.load_state_dict(torch.load("trained_models/GatedHeteroRGCN_Attention_Action_List_128_3_0.optim").state_dict())
 		print ("Training " + model.name + " with " + embedding)
