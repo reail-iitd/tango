@@ -10,7 +10,7 @@ from sys import argv
 import torch
 import torch.nn as nn
 
-training = argv[3] if len(argv) > 3 else "sequence_baseline_metric_att_tool_aseq" # can be "gcn", "ae", "combined", "agcn", "agcn-tool", "agcn-likelihood", "sequence", "sequence_list", "sequence_baseline", "sequence_baseline_metric", "sequence_baseline_metric_att", "sequence_baseline_metric_att_aseq", "sequence_baseline_metric_att_tool_aseq"
+training = argv[3] if len(argv) > 3 else "gcn_seq" # can be "gcn", "ae", "combined", "agcn", "agcn-tool", "agcn-likelihood", "sequence", "sequence_list", "sequence_baseline", "sequence_baseline_metric", "sequence_baseline_metric_att", "sequence_baseline_metric_att_aseq", "sequence_baseline_metric_att_tool_aseq"
 split = "world" # can be "random", "world", "tool"
 train = True # can be True or False
 globalnode = False # can be True or False
@@ -100,12 +100,11 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 	total_correct = 0
 	total_ungrammatical = 0
 	denominator = 0
-	total_test_loss = 0; l = nn.CrossEntropyLoss()
+	total_test_loss = 0; l = nn.BCELoss()
 	for graph in (graphs):
 		goal_num, world_num, tools, g, t = graph
 		if 'gcn_seq' in training:
 			actionSeq, graphSeq = g; loss = 0; toolSeq = tools
-			graphSeq = graphSeq[0:-1:1] if len(graphSeq) > 1 else graphSeq
 			for i, g in enumerate(graphSeq):
 				y_pred = model(g, goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
 				total_test_loss += l(y_pred.view(1,-1), torch.LongTensor([TOOLS.index(toolSeq[i])]))
@@ -244,9 +243,7 @@ def backprop(data, optimizer, graphs, model, num_objects, modelEnc=None, batch_s
 			loss = torch.sum((y_pred - y_true)** 2)
 			batch_loss += loss
 		elif 'gcn_seq' in training:
-			l = nn.CrossEntropyLoss()
 			actionSeq, graphSeq = g; loss = 0; toolSeq = tools
-			graphSeq = graphSeq[0:-1:1] if len(graphSeq) > 1 else graphSeq
 			for i, g in enumerate(graphSeq):
 				y_pred = model(g, goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
 				y_true = torch.LongTensor([TOOLS.index(toolSeq[i])])
