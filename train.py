@@ -246,7 +246,8 @@ def backprop(data, optimizer, graphs, model, num_objects, modelEnc=None, batch_s
 			actionSeq, graphSeq = g; loss = 0; toolSeq = tools
 			for i, g in enumerate(graphSeq):
 				y_pred = model(g, goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
-				y_true = torch.LongTensor([TOOLS.index(toolSeq[i])])
+				y_true = torch.zeros(NUMTOOLS)
+				y_true[TOOLS.index(tools[i])] = 1
 				loss = l(y_pred.view(1,-1), y_true)
 				if weighted: loss *= (1 if t == data.min_time[(goal_num, world_num)] else 0.5)
 				batch_loss += loss
