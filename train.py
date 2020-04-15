@@ -10,7 +10,7 @@ from sys import argv
 import torch
 import torch.nn as nn
 
-training = argv[3] if len(argv) > 3 else "gcn_seq" # can be "gcn", "ae", "combined", "agcn", "agcn-tool", "agcn-likelihood", "sequence", "sequence_list", "sequence_baseline", "sequence_baseline_metric", "sequence_baseline_metric_att", "sequence_baseline_metric_att_aseq", "sequence_baseline_metric_att_tool_aseq"
+training = argv[3] if len(argv) > 3 else "sequence_baseline_metric_att_tool_aseq" # can be "gcn", "ae", "combined", "agcn", "agcn-tool", "agcn-likelihood", "sequence", "sequence_list", "sequence_baseline", "sequence_baseline_metric", "sequence_baseline_metric_att", "sequence_baseline_metric_att_aseq", "sequence_baseline_metric_att_tool_aseq"
 split = "world" # can be "random", "world", "tool"
 train = True # can be True or False
 globalnode = False # can be True or False
