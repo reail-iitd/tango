@@ -71,7 +71,7 @@ def load_world(world_file, object_file):
     states[obj['name']] = obj['states']
     tolerances[obj['name']] = o['tolerance']
     properties[obj['name']] = o['properties']
-    ur5_dist[obj['name']] = o['ur5_dist']
+    ur5_dist[obj['name']] = o['ur5_dist'] if obj['name'] not in ['stool', 'box'] else [0.3, 0, 0.7]
     cons_cpos_lookup[obj['name']] = o['constraint_cpos']
     cons_pos_lookup[obj['name']] = o['constraint_pos']
   return metrics, tolerances, properties, cons_cpos_lookup, cons_pos_lookup, ur5_dist, states
@@ -126,7 +126,7 @@ def getGoalConstraints():
 def fct(o):
   # proxy for find constrained to
   for t in constraints.keys():
-    if i in constraints[t]: return t
+    if o in constraints[t]: return t
   return ""
 
 def fcw(o):
@@ -160,7 +160,9 @@ def cin(o):
           (x1, y1, z1) = metrics[o][0]
           (x2, y2, z2) = metrics[enclosure][0]
           (l, w, h) = 1.0027969752543706, 0.5047863562602029, 1.5023976731489332
-          inside = abs(x2-x1) < 0.5*l and abs(y2-y1) < 1.5*w and abs(z1-z2) < 0.6*h
+          inside = abs(x2-x1) < 0.5*l and abs(y2-y1) < 1.4*w and abs(z1-z2) < 0.6*h
+          # print(enclosure, inside)
+          # print((x1, y1, z1), (x2, y2, z2), abs(x2-x1), abs(y2-y1), abs(z2-z1), 0.5*l, 1.5*w,0.6*h)
           tgt = fct(o)
           while not (tgt == "" or tgt == enclosure):
               tgt = fct(tgt)        
@@ -187,7 +189,7 @@ def updateMetrics():
 
 def instate(o, st):
   global metrics
-  print(st)
+  # print(st)
   positionAndOrientation = states[o][st]
   q = p.getQuaternionFromEuler(positionAndOrientation[1])
   if metrics[o][1] == []:
@@ -263,7 +265,7 @@ def cg(goal_file, constraints, states, on, clean, sticky, fixed, drilled, welded
 
 def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None, saveImg = True):
   global x1, y1, o1, z1, world_states, dist, yaw, pitch, camX, camY, imageCount, cleaner, on, datapoint, clean, stick, keyboard, drilled, welded, painted, fueled, cut
-  global light, args, speed, sticky, fixed, on, fueled, cut, cleaner, stick, clean, drilled, welded, painted, datapoint, metrics
+  global light, args, speed, sticky, fixed, on, fueled, cut, cleaner, stick, clean, drilled, welded, painted, datapoint, metrics, constraints
   # List of low level actions
   datapoint.addSymbolicAction(actions['actions'])
   actions = convertActions(actions, args.world)
@@ -277,16 +279,16 @@ def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None, sav
         return cg(goal_file, constraints, states, on, clean, sticky, fixed, drilled, welded, painted)
 
       inpAction = actions[action_index][0]
-      print("\n---", actions[action_index])
+      # print("\n---", actions[action_index])
       # print("Robot: ", [x1, y1, z1])
-      # print("Stool: ", metrics['stool'][0])
+      # print("milk: ", metrics['milk'][0])
+      # print(constraints)
       # print("o1: ", o1*360/(2*math.pi))
-      print(constraints['ur5'])
 
       if(inpAction == "move"):
         if "husky" in fixed:
           raise Exception("Husky can not move as it is on a stool")    
-        target = metrics[actions[action_index][1]][0]
+        target = actions[action_index][1]
         x2, y2, z2 = target[0], target[1], target[2]
         x1, y1, z1, o1, done = x2, y2, z1, math.atan2((y2-y1),(x2-x1))%(2*math.pi), True
 
@@ -307,17 +309,17 @@ def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None, sav
         target = np.array(metrics[t][0]); cur = np.array([x1, y1, z1])
         vec = target - cur
         objDistance = np.linalg.norm(vec)
-        print(cur)
-        print(target)
-        print(objDistance)
-        if objDistance > 2 and "husky" in fixed:
+        # print(cur)
+        # print(target)
+        # print(objDistance)
+        if objDistance > 4.3 and "husky" in fixed:
               raise Exception("Husky can not move as it is on a stool")  
-        if abs(metrics[t][0][2] - z1) > 1 and not stick:
+        if abs(metrics[t][0][2] - z1) > 1.5 and not stick:
               raise Exception("Object on different height, please use stool")
         if metrics[t][0][2] - z1 < -0.7:
               raise Exception("Object on lower level, please move down")
         cur = cur + (objDistance - tolerances[t]/2) * (vec / objDistance)
-        print(cur)
+        # print(cur)
         x2, y2, z2 = target[0], target[1], target[2]
         x1, y1, z1, o1, done = cur[0], cur[1], z1, math.atan2((y2-y1),(x2-x1))%(2*math.pi), True
 
@@ -326,15 +328,15 @@ def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None, sav
         target = np.array(metrics[t][0]); cur = np.array([x1, y1, z1])
         vec = target - cur
         objDistance = np.linalg.norm(vec)
-        print(cur)
-        print(target)
-        print(objDistance)
+        # print(cur)
+        # print(target)
+        # print(objDistance)
         if objDistance > 2 and "husky" in fixed:
               raise Exception("Husky can not move as it is on a stool")  
         cur = cur + (objDistance - tolerances[t]) * (vec / objDistance)
         x2, y2, z2 = target[0], target[1], target[2]
         x1, y1, z1, o1, done = cur[0], cur[1], z1, math.atan2((y2-y1),(x2-x1))%(2*math.pi), True
-        print(cur)
+        # print(cur)
 
       elif(inpAction == "changeWing"):
         done = True
@@ -349,9 +351,9 @@ def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None, sav
         target = np.array(metrics[obj][0]); cur = np.array([x1, y1, z1])
         vec = target - cur
         objDistance = np.linalg.norm(vec)
-        print(cur)
-        print(target)
-        print(objDistance)
+        # print(cur)
+        # print(target)
+        # print(objDistance)
         if not done:
           if t == 'ur5' and not "Movable" in properties[obj]:
               raise Exception("Object '" + obj + "' is not grabbable")
@@ -368,9 +370,9 @@ def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None, sav
               raise Exception("Object is inside an enclosure, can not grasp it.")
           if (t in enclosures and closed(t)):
               raise Exception("Enclosure is closed, can not place object inside")
-          if (t == 'ur5' and objDistance > 2):
+          if (t == 'ur5' and objDistance > 2.95):
               raise Exception("Object too far away, move closer to it")
-          if (t == 'ur5' and abs(metrics[obj][0][2] - z1 > 1.2)):
+          if (t == 'ur5' and abs(metrics[obj][0][2] - z1 > 1.5)):
                 raise Exception("Object on different height, please use stool/ladder")
           if ("mop" in obj
               or "sponge" in obj
@@ -381,6 +383,8 @@ def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None, sav
               stick = True
           if t not in constraints.keys():
             constraints[t] = []
+          if fct(obj) != "":
+            constraints[fct(obj)].remove(obj)
           constraints[t].append(obj)
           done = True
 
@@ -417,9 +421,7 @@ def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None, sav
         t = actions[action_index][1]
         (x2, y2, z2), _ = metrics[t]
         height = 2 if t == 'ladder' else 0.4
-        print([x1,y1,z1])
         x1, y1, z1, o1, done = x2, y2, z2 + height, math.atan2((y2-y1),(x2-x1))%(2*math.pi), True
-        print([x1,y1,z1])
       
       elif(inpAction == "climbDown"):
         t = actions[action_index][1]
@@ -524,7 +526,7 @@ def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None, sav
         obj, lst = actions[action_index][1], actions[action_index][2]
         if lst == "sticky":
           sticky.remove(obj) 
-        elif lst == "fixed":
+        elif lst == "fixed" and obj in fixed:
           fixed.remove(obj) 
         done = True 
 

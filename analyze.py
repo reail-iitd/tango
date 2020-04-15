@@ -71,8 +71,9 @@ def printAllDatapoints():
 				printDatapoint(directory + '/' + point.split('.')[0])
 
 def changeAllDatapoints():
-	for goal in GOAL_LIST:
-		for world in range(10):
+	for goal in GOAL_LISTS['home']:
+		if goal != "goal8-light-off.json": continue
+		for world in [7]:
 			directory = './dataset/home/' + goal.split('.')[0] + '/world_home' + str(world) + '/'
 			for point in range(len(listdir(directory))):
 				file = directory + str(point) + '.datapoint'
@@ -81,8 +82,9 @@ def changeAllDatapoints():
 				f.close()
 				if True:
 					f = open(file, 'wb')
-					datapoint.world = 'world_home' + str(world)
-					datapoint.goal = goal.split('.')[0]
+					for action in datapoint.symbolicActions:
+						if action[0] != 'E' and action[0]['name'] == 'changeState' and action[0]['args'][1] != 'off':
+							action[0]['args'][1] = 'off'
 					pickle.dump(datapoint, f)
 					f.flush()
 					f.close()
@@ -362,7 +364,7 @@ def checkApprox():
 				args.world = 'jsons/home_worlds/world_home' + str(world) +'.json'
 				args.goal = 'jsons/home_goals/' + goal
 				plan = []
-				print("####### Goal", goal, "on world", world, "######")
+				# print("####### Goal", goal, "on world", world, "######")
 				for action in datapoint.symbolicActions:
 					if str(action[0]) == 'E' or str(action[0]) == 'U':
 						plan = []
