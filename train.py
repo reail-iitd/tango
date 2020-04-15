@@ -444,7 +444,7 @@ if __name__ == '__main__':
 			# model = torch.load("trained_models/GatedHeteroRGCN_Attention_Action_128_3_16.pt")
 			modelEnc = torch.load("trained_models/Seq_GGCN_Metric_Attn_L_NT_C_256_5_Trained.pt"); modelEnc.eval()
 			for param in modelEnc.parameters(): param.requires_grad = False
-			model = GGCN_metric_att_aseq_tool_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
+			model = GGCN_metric_att_aseq_tool_Action(data.features, data.num_objects, 4 * GRAPH_HIDDEN, 4, 5, etypes, torch.tanh, 0.5)
 
 		lr = 0.0005 if 'sequence' in training else 0.00005
 		if training == 'gcn_seq': lr = 0.00005 
