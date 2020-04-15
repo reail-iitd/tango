@@ -446,7 +446,7 @@ if __name__ == '__main__':
 			model = GGCN_metric_att_aseq_tool_Action(data.features, data.num_objects, 4 * GRAPH_HIDDEN, 4, 5, etypes, torch.tanh, 0.5)
 
 		lr = 0.0005 if 'sequence' in training else 0.00005
-		if training == 'gcn_seq': lr = 0.00005 
+		if training == 'gcn_seq': lr = 0.00001 
 		optimizer = torch.optim.Adam(model.parameters() , lr=lr)
 		# optimizer.load_state_dict(torch.load("trained_models/GatedHeteroRGCN_Attention_Action_List_128_3_0.optim").state_dict())
 		print ("Training " + model.name + " with " + embedding)
