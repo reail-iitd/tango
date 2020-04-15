@@ -11,6 +11,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from statistics import pstdev
 import seaborn as sns
+import approx
+import itertools
 # from src.generalization import *
 
 GOAL_LISTS = \
@@ -344,6 +346,34 @@ def mapObjects():
 	plt.tight_layout()
 	f.savefig('figures/'+domain+'_objects.pdf')
 
+def checkApprox():
+	for goal in GOAL_LISTS['home']:
+		print('Goal = ' + goal)
+		for world in range(10):
+			directory = './dataset/home/' + goal.split('.')[0] + '/world_home' + str(world)
+			try:
+				points = listdir(directory)
+			except Exception as e:
+				continue
+			for point in points:
+				f = open(directory + '/' + point, 'rb')
+				datapoint = pickle.load(f)
+				args = approx.initParser()
+				args.world = 'jsons/home_worlds/world_home' + str(world) +'.json'
+				args.goal = 'jsons/home_goals/' + goal
+				plan = []
+				print("####### Goal", goal, "on world", world, "######")
+				for action in datapoint.symbolicActions:
+					if str(action[0]) == 'E' or str(action[0]) == 'U':
+						plan = []
+					else:
+						plan.append(action[0])
+				if plan == []: continue
+				plan = {'actions': plan}
+				approx.start(args)
+				approx.execute(plan, args.goal, saveImg=False)
+				f.close()
+
 # keepNewDatapoints(4)
 # printAllDatapoints()
 # printNumDatapoints(w='home')
@@ -358,4 +388,5 @@ def mapObjects():
 # mapToolsGoals()
 # mapToolsWorlds()
 # mapObjects()
-getAllData()
+# getAllData()
+checkApprox()
