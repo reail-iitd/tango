@@ -107,12 +107,13 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 			actionSeq, graphSeq = g; loss = 0; toolSeq = tools
 			for i, g in enumerate(graphSeq):
 				y_pred = model(g, goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
-				total_test_loss += l(y_pred.view(1,-1), torch.LongTensor([TOOLS.index(toolSeq[i])]))
+				y_true = torch.zeros(NUMTOOLS)
+				y_true[TOOLS.index(toolSeq[i])] = 1
+				total_test_loss += l(y_pred.view(1,-1), y_true)
 				y_pred = list(y_pred.reshape(-1))
 				# tools_possible = dset.goal_scene_to_tools[(goal_num,world_num)]
-				tools_possible = [toolSeq[i]]
 				tool_predicted = TOOLS[y_pred.index(max(y_pred))]
-				if tool_predicted in tools_possible:
+				if tool_predicted == toolSeq[i]:
 					total_correct += 1
 				elif verbose:
 					print (goal_num, world_num, tool_predicted, tools_possible)
