@@ -130,11 +130,7 @@ def fct(o):
   return ""
 
 def fcw(o):
-    l = []
-    for t in constraints.keys():
-        if o in constraints[t]:
-            l.append(t)
-    return l
+    return constraints[o]
 
 def closed(o):
   global metrics
@@ -211,6 +207,7 @@ def cg(goal_file, constraints, states, on, clean, sticky, fixed, drilled, welded
     with open(goal_file, 'r') as handle:
         file = json.load(handle)
     goals = file['goals']
+    # print(constraints, on)
     success = True
     for goal in goals:
         obj = goal['object']
@@ -227,6 +224,7 @@ def cg(goal_file, constraints, states, on, clean, sticky, fixed, drilled, welded
 
         if 'paper' in obj and goal['state'] == "":
             tgt = fcw(obj)
+            # print(tgt)
             heavy = False
             for t in tgt:
                 if not (t == "" or 'paper' in t):
@@ -409,9 +407,9 @@ def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None, sav
             and not obj in fueled):
             raise Exception("First add fuel to object and then switch on")
           if state in on:
-            on.remove(obj)
-          else:
             on.append(obj)
+          else:
+            on.remove(obj)
           done = True
         else:
           metrics[obj] = states[obj][state]

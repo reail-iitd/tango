@@ -365,15 +365,17 @@ def checkApprox():
 				args.goal = 'jsons/home_goals/' + goal
 				plan = []
 				# print("####### Goal", goal, "on world", world, "######")
+				# print("####### Filename", point, " #######")
 				for action in datapoint.symbolicActions:
 					if str(action[0]) == 'E' or str(action[0]) == 'U':
-						plan = []
+						plan = []; break;
 					else:
 						plan.append(action[0])
 				if plan == []: continue
 				plan = {'actions': plan}
 				approx.start(args)
-				approx.execute(plan, args.goal, saveImg=False)
+				res = approx.execute(plan, args.goal, saveImg=False)
+				assert res;
 				f.close()
 
 # keepNewDatapoints(4)
