@@ -249,9 +249,9 @@ def backprop(data, optimizer, graphs, model, num_objects, modelEnc=None, batch_s
 				y_pred = model(g, goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
 				y_true = torch.zeros(NUMTOOLS)
 				y_true[TOOLS.index(tools[i])] = 1
-				loss = l(y_pred.view(1,-1), y_true)
+				loss += l(y_pred.view(1,-1), y_true)
 				if weighted: loss *= (1 if t == data.min_time[(goal_num, world_num)] else 0.5)
-				batch_loss += loss
+			batch_loss += loss
 		elif 'gcn' in training:
 			y_pred = model(g, goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
 			y_true = torch.zeros(NUMTOOLS)
@@ -461,7 +461,7 @@ if __name__ == '__main__':
 		for num_epochs in range(NUM_EPOCHS+1):
 			random.shuffle(train_set)
 			print ("EPOCH " + str(num_epochs))
-			loss = backprop(data, optimizer, train_set, model, data.num_objects, modelEnc)
+			loss = backprop(data, optimizer, train_set, model, data.num_objects, modelEnc, batch_size = 1)
 			print(loss)
 			t1, t2 = accuracy_score(data, train_set, model, modelEnc, data.num_objects), accuracy_score(data, test_set, model, modelEnc, data.num_objects)
 			accuracy_list.append((t2, t1))
