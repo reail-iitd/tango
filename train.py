@@ -116,7 +116,7 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 				if tool_predicted == toolSeq[i]:
 					total_correct += 1
 				elif verbose:
-					print (goal_num, world_num, tool_predicted, tools_possible)
+					print (goal_num, world_num, tool_predicted, toolSeq[i])
 				denominator += 1
 			continue
 		elif 'gcn' in training:
