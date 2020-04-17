@@ -10,7 +10,7 @@ from sys import argv
 import torch
 import torch.nn as nn
 
-training = argv[3] if len(argv) > 3 else "gcn_seq" # can be "gcn", "ae", "combined", "agcn", "agcn-tool", "agcn-likelihood", "sequence", "sequence_list", "sequence_baseline", "sequence_baseline_metric", "sequence_baseline_metric_att", "sequence_baseline_metric_att_aseq", "sequence_baseline_metric_att_tool_aseq"
+training = argv[3] if len(argv) > 3 else "sequence_baseline_metric_att_tool_aseq" # can be "gcn", "ae", "combined", "agcn", "agcn-tool", "agcn-likelihood", "sequence", "sequence_list", "sequence_baseline", "sequence_baseline_metric", "sequence_baseline_metric_att", "sequence_baseline_metric_att_aseq", "sequence_baseline_metric_att_tool_aseq"
 split = "world" # can be "random", "world", "tool"
 train = True # can be True or False
 globalnode = False # can be True or False
@@ -20,6 +20,7 @@ generalization = False
 weighted = False
 ablation = True
 graph_seq_length = 4
+num_actions = len(possibleActions)
 
 def load_dataset(filename):
 	global TOOLS, NUMTOOLS, globalnode
@@ -234,7 +235,7 @@ def printPredictions(model, data=None):
 
 def backprop(data, optimizer, graphs, model, num_objects, modelEnc=None, batch_size = 1):
 	total_loss = 0.0
-	l = nn.BCELoss()
+	l = nn.BCELoss() if "sequence" not in training else nn.CrossEntropyLoss()
 	batch_loss = 0.0
 	for iter_num, graph in tqdm(list(enumerate(graphs))):
 		goal_num, world_num, tools, g, t = graph
@@ -278,8 +279,11 @@ def backprop(data, optimizer, graphs, model, num_objects, modelEnc=None, batch_s
 				else:
 					y_pred_list = model(graphSeq, goal2vec[goal_num], goalObjects2vec[goal_num], actionSeq)
 				for i,y_pred in enumerate(y_pred_list):
-					y_true = action2vec(actionSeq[i], num_objects, 4)
-					loss += l(y_pred, y_true)
+					a, p1, p2 = action2ids(actionSeq[i], num_objects, 4)
+					y_pred = y_pred.view(1,y_pred.shape[0])
+					loss += ( l(y_pred[:,:num_actions], torch.tensor([a])) + 
+							  l(y_pred[:,num_actions:num_actions+num_objects+1],  torch.tensor([p1])) + 
+							  l(y_pred[:,num_actions+num_objects+1:],  torch.tensor([p2])) )
 			else:
 				for i in range(len(graphSeq)):
 					if 'list' not in training:
@@ -288,7 +292,6 @@ def backprop(data, optimizer, graphs, model, num_objects, modelEnc=None, batch_s
 						y_pred = model(graphSeq[max(0,i + 1 - graph_seq_length):i + 1], goal2vec[goal_num], goalObjects2vec[goal_num])
 					y_true = action2vec(actionSeq[i], num_objects, 4)
 					loss += l(y_pred, y_true)
-					# loss += torch.sum((y_pred - y_true)** 2)
 			batch_loss += loss
 		total_loss += loss
 		if ((iter_num + 1) % batch_size == 0):

@@ -26,6 +26,25 @@ def action2vec(action, num_objects, num_states):
             predicate3[possibleStates.index(action['args'][1])] = 1
     return torch.cat((actionArray, predicate1, predicate2, predicate3), 0)
 
+def action2ids(action, num_objects, num_states):
+    actionID = possibleActions.index(action['name'])
+    predicate1, predicate2 = 0, 0
+    if len(action['args']) == 0:
+        predicate1 = num_objects+1
+        predicate2 = num_objects+1
+    elif len(action['args']) == 1:
+        predicate1 = object2idx[action['args'][0]]
+        predicate2 = num_objects+1
+    else:
+        # action['args'][1] can be a state or an object
+        if action['args'][1] in object2idx:
+            predicate1 = object2idx[action['args'][0]]
+            predicate2 = object2idx[action['args'][1]]
+        else:
+            predicate1 = object2idx[action['args'][0]]
+            predicate2 = num_objects + 1 + possibleStates.index(action['args'][1])
+    return actionID, predicate1, predicate2
+
 def vec2action(vec, num_objects, num_states, idx2object):
     ret_action = {}
     action_array = list(vec[:len(possibleActions)])
@@ -455,7 +474,7 @@ class GGCN_metric_att_aseq_tool_auto_Action(nn.Module):
                  etypes,
                  activation,
                  dropout):
-        super(GGCN_metric_att_aseq_tool_areg_Action, self).__init__()
+        super(GGCN_metric_att_aseq_tool_auto_Action, self).__init__()
         self.name = "GGCN_metric_att_aseq_tool_auto_Action_" + str(n_hidden) + "_" + str(n_layers)
         self.layers = nn.ModuleList()
         self.layers.append(GatedHeteroRGCNLayer(in_feats, n_hidden, etypes, activation=activation))
