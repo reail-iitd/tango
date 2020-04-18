@@ -235,7 +235,7 @@ def printPredictions(model, data=None):
 
 def backprop(data, optimizer, graphs, model, num_objects, modelEnc=None, batch_size = 1):
 	total_loss = 0.0
-	l = nn.BCELoss() if "sequence" not in training else nn.CrossEntropyLoss()
+	l = nn.BCELoss()
 	batch_loss = 0.0
 	for iter_num, graph in tqdm(list(enumerate(graphs))):
 		goal_num, world_num, tools, g, t = graph
@@ -279,11 +279,8 @@ def backprop(data, optimizer, graphs, model, num_objects, modelEnc=None, batch_s
 				else:
 					y_pred_list = model(graphSeq, goal2vec[goal_num], goalObjects2vec[goal_num], actionSeq)
 				for i,y_pred in enumerate(y_pred_list):
-					a, p1, p2 = action2ids(actionSeq[i], num_objects, 4)
-					y_pred = y_pred.view(1,y_pred.shape[0])
-					loss += ( l(y_pred[:,:num_actions], torch.tensor([a])) + 
-							  l(y_pred[:,num_actions:num_actions+num_objects+1],  torch.tensor([p1])) + 
-							  l(y_pred[:,num_actions+num_objects+1:],  torch.tensor([p2])) )
+					y_true = action2vec(actionSeq[i], num_objects, 4)
+					loss += l(y_pred, y_true)
 			else:
 				for i in range(len(graphSeq)):
 					if 'list' not in training:
