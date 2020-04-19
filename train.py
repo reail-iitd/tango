@@ -10,7 +10,7 @@ from sys import argv
 import torch
 import torch.nn as nn
 
-training = argv[3] if len(argv) > 3 else "sequence_baseline_metric_att_aseq_L" # can be "gcn", "ae", "combined", "agcn", "agcn-tool", "agcn-likelihood", "sequence", "sequence_list", "sequence_baseline", "sequence_baseline_metric", "sequence_baseline_metric_att", "sequence_baseline_metric_att_aseq", "sequence_baseline_metric_att_tool_aseq"
+training = argv[3] if len(argv) > 3 else "sequence_baseline_metric_att_aseq_auto" # can be "gcn", "ae", "combined", "agcn", "agcn-tool", "agcn-likelihood", "sequence", "sequence_list", "sequence_baseline", "sequence_baseline_metric", "sequence_baseline_metric_att", "sequence_baseline_metric_att_aseq", "sequence_baseline_metric_att_tool_aseq"
 										# sequence_baseline_metric_att_aseq_L
 split = "world" # can be "random", "world", "tool"
 train = True # can be True or False
@@ -103,6 +103,11 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 	total_ungrammatical = 0
 	denominator = 0
 	total_test_loss = 0; l = nn.BCELoss()
+	if verbose:
+		action_correct = 0
+		pred1_correct = 0
+		pred2_correct = 0
+		den_pred2 = 0
 	for graph in (graphs):
 		goal_num, world_num, tools, g, t = graph
 		if 'gcn_seq' in training:
@@ -141,13 +146,21 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 					y_pred_list = model(graphSeq, goal2vec[goal_num], goalObjects2vec[goal_num], actionSeq)
 				for i,y_pred in enumerate(y_pred_list):
 					denominator += 1
-					action_pred = vec2action_grammatical(y_pred, num_objects, 4, idx2object)
+					action_pred = vec2action(y_pred, num_objects, 4, idx2object)
 					if verbose:
 						if (not grammatical_action(action_pred)):
 							# print (action_pred)
 							total_ungrammatical += 1
 						if (not grammatical_action(actionSeq[i])):
 							print (actionSeq[i])
+						if (action_pred["name"] == actionSeq[i]["name"]):
+							action_correct += 1
+						if (action_pred["args"][0] == actionSeq[i]["args"][0]):
+							pred1_correct += 1
+						if (len(action_pred["args"]) > 1):
+							den_pred2 += 1
+							if (action_pred["args"][0] == actionSeq[i]["args"][0]):
+								pred2_correct += 1
 					if (action_pred == actionSeq[i]):
 						total_correct += 1
 			else:	
@@ -157,7 +170,7 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 					elif training == 'sequence_list':
 						y_pred = model(graphSeq[max(0,i + 1 - graph_seq_length):i+1], goal2vec[goal_num], goalObjects2vec[goal_num])
 					denominator += 1
-					action_pred = vec2action_grammatical(y_pred, num_objects, 4, idx2object)
+					action_pred = vec2action(y_pred, num_objects, 4, idx2object)
 					# print ("Prediction: ", action_pred)
 					# print ("Target: ", actionSeq[i])
 					if verbose:
@@ -179,6 +192,9 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 	if (("sequence" in training) and verbose):
 		print ("Total ungrammatical percent is", (total_ungrammatical/denominator) * 100)
 		print ("Denominator is", denominator)
+		print ("Action accuracy is", (action_correct/denominator) * 100)
+		print ("Pred1 accuracy is", (pred1_correct/denominator) * 100)
+		print ("Pred2 accuracy is", (pred2_correct/den_pred2) * 100)
 	if training == 'gcn_seq':
 		print("Normalized Loss:", total_test_loss.item()/denominator)
 	return ((total_correct/denominator)*100)
@@ -453,13 +469,15 @@ if __name__ == '__main__':
 			for param in modelEnc.parameters(): param.requires_grad = False
 			model = GGCN_metric_att_aseq_tool_auto_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
 		elif training == 'sequence_baseline_metric_att_aseq_L':
-			model = torch.load("trained_models/GGCN_metric_att_aseq_L_Action_128_3_c_81.pt")
-			# model = GGCN_metric_att_aseq_L_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
+			# model = torch.load("trained_models/GGCN_metric_att_aseq_L_Action_128_3_c_81.pt")
+			model = GGCN_metric_att_aseq_L_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
+		elif training == 'sequence_baseline_metric_att_aseq_auto':
+			model = GGCN_metric_att_aseq_auto_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
 
 		lr = 0.0005 if 'sequence' in training else 0.00005
 		if training == 'gcn_seq': lr = 0.0005
 		optimizer = torch.optim.Adam(model.parameters() , lr=lr)
-		optimizer.load_state_dict(torch.load("trained_models/GGCN_metric_att_aseq_L_Action_128_3_c_81.optim").state_dict())
+		# optimizer.load_state_dict(torch.load("trained_models/GGCN_metric_att_aseq_L_Action_128_3_c_81.optim").state_dict())
 		print ("Training " + model.name + " with " + embedding)
 		train_set, test_set = world_split(data) if split == 'world' else random_split(data)  if split == 'random' else tool_split(data) 
 
@@ -490,7 +508,9 @@ if __name__ == '__main__':
 		print ("The maximum accuracy on test set, train set for " + str(NUM_EPOCHS) + " epochs is ", str(max(accuracy_list)), " at epoch ", accuracy_list.index(max(accuracy_list)))
 	elif not train and not generalization:
 		print ("Evaluating...")
-		model = torch.load(MODEL_SAVE_PATH + "/checkpoints/sequence_best_78_47.pt")
+		# model = torch.load(MODEL_SAVE_PATH + "/checkpoints/baseline_metric_att_aseq_c_best_81_61.pt")
+		model = GGCN_metric_att_aseq_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
+		model.load_state_dict(torch.load(MODEL_SAVE_PATH + "/checkpoints/baseline_metric_att_aseq_c_best_81_61.pt"))
 		# print ("Accuracy on complete set is ",accuracy_score(data, data.graphs, model, modelEnc))
 		train_set, test_set = world_split(data) if split == 'world' else random_split(data)  if split == 'random' else tool_split(data) 
 		t1, t2 = accuracy_score(data, train_set, model, modelEnc, data.num_objects, True), accuracy_score(data, test_set, model, modelEnc, data.num_objects, True)
