@@ -393,6 +393,108 @@ class GGCN_metric_att_aseq_Action(nn.Module):
             predicted_actions.append(torch.cat((action, pred1, pred2), 1).flatten())
         return predicted_actions
 
+class GGCN_metric_att_aseq_L_Action(nn.Module):
+    def __init__(self,
+                 in_feats,
+                 n_objects,
+                 n_hidden,
+                 n_states,
+                 n_layers,
+                 etypes,
+                 activation,
+                 dropout):
+        super(GGCN_metric_att_aseq_L_Action, self).__init__()
+        self.name = "GGCN_metric_att_aseq_L_Action_" + str(n_hidden) + "_" + str(n_layers)
+        self.layers = nn.ModuleList()
+        self.layers.append(GatedHeteroRGCNLayer(in_feats, n_hidden, etypes, activation=activation))
+        for i in range(n_layers - 1):
+            self.layers.append(GatedHeteroRGCNLayer(n_hidden, n_hidden, etypes, activation=activation))
+        self.attention = nn.Sequential(nn.Linear(n_hidden + n_hidden + n_hidden + n_hidden, n_hidden), nn.Linear(n_hidden, 1))
+        self.embed = nn.Linear(PRETRAINED_VECTOR_SIZE, n_hidden)
+        self.fc1 = nn.Linear(n_hidden*4, n_hidden)
+        self.fc2 = nn.Linear(n_hidden, n_hidden)
+        self.fc3 = nn.Linear(n_hidden, len(possibleActions))
+        self.p1_object  = nn.Linear(n_hidden*5, n_hidden)
+        self.p2_object  = nn.Linear(n_hidden, n_hidden)
+        self.p3_object  = nn.Linear(n_hidden, 1)
+        self.p1_no_object  = nn.Linear(n_hidden*4, n_hidden)
+        self.p2_no_object  = nn.Linear(n_hidden, n_hidden)
+        self.p3_no_object  = nn.Linear(n_hidden, 1)
+        self.q1_object  = nn.Linear(n_hidden*5, n_hidden)
+        self.q2_object  = nn.Linear(n_hidden, n_hidden)
+        self.q3_object  = nn.Linear(n_hidden, 1)
+        self.q1_no_object  = nn.Linear(n_hidden*4, n_hidden)
+        self.q2_no_object  = nn.Linear(n_hidden, n_hidden)
+        self.q3_no_object  = nn.Linear(n_hidden, 1)
+        self.q1_state  = nn.Linear(n_hidden*4, n_hidden)
+        self.q2_state  = nn.Linear(n_hidden, n_hidden)
+        self.q3_state  = nn.Linear(n_hidden, n_states)
+        self.activation = nn.LeakyReLU()
+        self.metric1 = nn.Linear(in_feats, n_hidden)
+        self.metric2 = nn.Linear(n_hidden, n_hidden)
+        self.action_lstm = nn.LSTM(len(possibleActions) + n_objects + 1 + n_objects + 1 + n_states, n_hidden)
+        self.n_hidden = n_hidden
+        self.n_objects = n_objects
+        self.n_states = n_states
+        l = []
+        for i in range(n_objects):
+            l.append(object2vec[idx2object[i]])
+        self.object_vec = torch.Tensor(l)
+
+    def forward(self, g_list, goalVec, goalObjectsVec, a_list):
+        a_list = [action2vec(i, self.n_objects, self.n_states) for i in a_list]
+        predicted_actions = []
+        lstm_hidden = (torch.randn(1, 1, self.n_hidden),torch.randn(1, 1, self.n_hidden))
+        goalObjectsVec = self.activation(self.embed(torch.Tensor(goalObjectsVec)))
+        goal_embed = self.activation(self.embed(torch.Tensor(goalVec.reshape(1, -1))))
+        for ind,g in enumerate(g_list):
+            h = g.ndata['feat']
+            for i, layer in enumerate(self.layers):
+                h = layer(g, h)
+            metric_part = g.ndata['feat']
+            metric_part = self.activation(self.metric1(metric_part))
+            metric_part = self.activation(self.metric2(metric_part))
+            h = torch.cat([h, metric_part], dim = 1)
+            if (ind != 0):
+                lstm_out, lstm_hidden = self.action_lstm(a_list[ind-1].view(1,1,-1), lstm_hidden)
+            else:
+                lstm_out = torch.zeros(1, 1, self.n_hidden)
+            lstm_out = lstm_out.view(-1)
+            attn_embedding = torch.cat([h, goalObjectsVec.repeat(h.size(0)).view(h.size(0), -1), lstm_out.repeat(h.size(0)).view(h.size(0), -1)], 1)
+            attn_weights = F.softmax(self.attention(attn_embedding), dim=0)
+            scene_embedding = torch.mm(attn_weights.t(), h)
+            final_to_decode = torch.cat([scene_embedding, goal_embed, lstm_out.view(1,-1)], 1)
+            action = self.activation(self.fc1(final_to_decode))
+            action = self.activation(self.fc2(action))
+            action = self.activation(self.fc3(action))
+            action = F.softmax(action, dim=1)
+
+            #Predicting the first argument of the action
+            pred1_object = self.activation(self.p1_object(
+                        torch.cat([final_to_decode.view(-1).repeat(self.n_objects).view(self.n_objects, -1), self.activation(self.embed(self.object_vec))], 1)))
+            pred1_object = self.activation(self.p2_object(pred1_object))
+            pred1_object = torch.sigmoid(self.p3_object(pred1_object))
+
+            pred1_no_object = self.activation(self.p1_no_object(final_to_decode))
+            pred1_no_object = self.activation(self.p2_no_object(pred1_no_object))
+            pred1_no_object = torch.sigmoid(self.p3_no_object(pred1_no_object))
+
+            # Predicting the second argument of the action
+            pred2_object = self.activation(self.q1_object(
+                        torch.cat([final_to_decode.view(-1).repeat(self.n_objects).view(self.n_objects, -1), self.activation(self.embed(self.object_vec))], 1)))
+            pred2_object = self.activation(self.q2_object(pred2_object))
+            pred2_object = torch.sigmoid(self.q3_object(pred2_object))
+
+            pred2_no_object = self.activation(self.q1_no_object(final_to_decode))
+            pred2_no_object = self.activation(self.q2_no_object(pred2_no_object))
+            pred2_no_object = torch.sigmoid(self.q3_no_object(pred2_no_object))
+
+            pred2_state = self.activation(self.q1_state(final_to_decode))
+            pred2_state = self.activation(self.q2_state(pred2_state))
+            pred2_state = F.softmax(self.q3_state(pred2_state), dim = 1)
+            predicted_actions.append(torch.cat((action, pred1_object.view(1,-1), pred1_no_object, pred2_object.view(1,-1), pred2_no_object, pred2_state), 1).flatten())
+        return predicted_actions
+
 class GGCN_metric_att_aseq_tool_Action(nn.Module):
     def __init__(self,
                  in_feats,
