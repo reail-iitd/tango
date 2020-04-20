@@ -673,7 +673,7 @@ class GGCN_metric_att_aseq_tool_auto_Action(nn.Module):
         self.n_states = n_states
 
     def forward(self, g_list, goalVec, goalObjectsVec, a_list, object_likelihoods):
-        a_list = [action2vec(i, self.n_objects, self.n_states) for i in a_list]
+        a_list = [action2vec(i, self.n_objects, self.n_states) if i else None for i in a_list]
         predicted_actions = []
         lstm_hidden = (torch.randn(1, 1, self.n_hidden),torch.randn(1, 1, self.n_hidden))
         goalObjectsVec = self.activation(self.embed(torch.Tensor(goalObjectsVec)))

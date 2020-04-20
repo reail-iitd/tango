@@ -11,6 +11,7 @@ from src.utils import *
 from src.basic_actions import *
 from src.actions import *
 from src.datapoint import Datapoint
+from src.GNN.dataset_utils import *
 from operator import sub
 import math
 import pickle
@@ -584,6 +585,23 @@ def testPlan(domain, goal_num, world_num, plan):
     return 0, 1, 0, ''
   except Exception as e:
     return 0, 0, 1, str(e)
+
+def initPolicy(domain, goal_num, world_num):
+  args = initParser()
+  args.world = 'jsons/'+ domain + '_worlds/world_' + domain + str(world_num) +'.json'
+  args.goal = 'jsons/' + domain + '_goals/' + GOAL_LISTS[domain][goal_num - 1]
+  start(args)
+
+def execAction(action):
+  plan = {'actions': [action]}
+  try:
+    res = execute(plan, args.goal, saveImg=False)
+    graph_data = datapoint.getGraph(embeddings = e)
+    graph_data = graph_data["graph_"+str(len(graph_data)-1)] 
+    g = convertToDGLGraph(graph_data, globalNode, goal_num, getGlobalID(datapoint) if globalNode else -1)
+    return res, g, ''
+  except Exception as e:
+    return False, None, str(e)
 
 if __name__ == '__main__':
 	# take input from user

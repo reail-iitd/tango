@@ -99,6 +99,32 @@ def grammatical_action(action):
 		assert False
 	return True
 
+def test_policy(dset, graphs, model, modelEnc, num_objects = 0, verbose = False):
+	assert "sequence" in training
+	correct, incorrect, error = 0, 0, 0
+	for graph in (graphs):
+		goal_num, world_num, tools, g, t = graph
+		actionSeq, graphSeq = g
+		actionSeq, graphSeq = [None], [graphSeq[0]]
+		approx.initPolicy(domain, goal_num, world_num)
+		while True:
+			if "aseq" in training:
+				if "tool" in training:
+					tool_likelihoods = modelEnc(graphSeq[-1], goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
+					object_likelihoods = [tool2object_likelihoods(num_objects, tool_likelihoods)]
+					y_pred_list = model(graphSeq, goal2vec[goal_num], goalObjects2vec[goal_num], actionSeq, object_likelihoods)
+				else:
+					y_pred_list = model(graphSeq, goal2vec[goal_num], goalObjects2vec[goal_num], actionSeq)
+				y_pred = y_pred_list[-1]
+				action_pred = vec2action_grammatical(y_pred, num_objects, 4, idx2object)
+				res, g, err = approx.execAction(action_pred)
+				actionSeq.append(action_pred); graphSeq.append(g)
+				if res:	correct += 1; break
+				elif err == '' and len(actionSeq) > 20:	incorrect += 1; break
+				elif err != '': error += 1; break
+	den = correct + incorrect + error
+	print ("Correct, Incorrect, Error: ", (correct*100/den), (incorrect*100/den), (error*100/den))
+
 def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = False):
 	total_correct = 0
 	total_ungrammatical = 0
@@ -464,10 +490,10 @@ if __name__ == '__main__':
 			# model = torch.load("trained_models/GatedHeteroRGCN_Attention_Action_128_3_16.pt")
 			model = GGCN_metric_att_aseq_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
 		elif training == 'sequence_baseline_metric_att_tool_aseq':
-			# model = torch.load("trained_models/GGCN_metric_att_aseq_tool_auto_Action_128_3_c_Trained.pt")
+			model = torch.load("trained_models/GGCN_metric_att_aseq_tool_auto_Action_128_3_c_Trained.pt")
 			modelEnc = torch.load("trained_models/Seq_GGCN_Metric_Attn_L_NT_C_128_3_Trained.pt"); modelEnc.eval()
 			for param in modelEnc.parameters(): param.requires_grad = False
-			model = GGCN_metric_att_aseq_tool_auto_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
+			# model = GGCN_metric_att_aseq_tool_auto_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
 		elif training == 'sequence_baseline_metric_att_aseq_L':
 			# model = torch.load("trained_models/GGCN_metric_att_aseq_L_Action_128_3_c_81.pt")
 			model = GGCN_metric_att_aseq_L_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
@@ -487,6 +513,11 @@ if __name__ == '__main__':
 		addEmbedding = embedding[0] + "_" if 'sequence' in training else ''
 		seqTool = 'Seq_' if training == 'gcn_seq' else ''
 		accuracy_list = []
+
+		# test_policy(data, train_set, model, modelEnc, data.num_objects)
+		# test_policy(data, test_set, model, modelEnc, data.num_objects)
+		# exit()
+
 		for num_epochs in range(NUM_EPOCHS+1):
 			random.shuffle(train_set)
 			print ("EPOCH " + str(num_epochs))
