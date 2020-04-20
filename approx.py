@@ -16,6 +16,10 @@ import math
 import pickle
 from operator import add
 
+GOAL_LISTS = \
+{'home': ["goal1-milk-fridge.json", "goal2-fruits-cupboard.json", "goal3-clean-dirt.json", "goal4-stick-paper.json", "goal5-cubes-box.json", "goal6-bottles-dumpster.json", "goal7-weight-paper.json", "goal8-light-off.json"],
+'factory': ["goal1-crates-platform.json", "goal2-paper-wall.json", "goal3-board-wall.json", "goal4-generator-on.json", "goal5-assemble-parts.json", "goal6-tools-workbench.json", "goal7-clean-water.json", "goal8-clean-oil.json"]}
+
 object_file = "jsons/objects.json"
 wings_file = "jsons/wings.json"
 tolerance_file = "jsons/tolerance.json"
@@ -566,6 +570,20 @@ def executeAction(inp):
     	print("Goal Success!!!")
     else:
     	print("Goal Fail!!!")
+
+def testPlan(domain, goal_num, world_num, plan):
+  args = initParser()
+  args.world = 'jsons/'+ domain + '_worlds/world_' + domain + str(world_num) +'.json'
+  args.goal = 'jsons/' + domain + '_goals/' + GOAL_LISTS[domain][goal_num - 1]
+  plan = {'actions': plan}
+  start(args)
+  try:
+    res = execute(plan, args.goal, saveImg=False)
+    if res:
+      return 1, 0, 0, ''
+    return 0, 1, 0, ''
+  except Exception as e:
+    return 0, 0, 1, str(e)
 
 if __name__ == '__main__':
 	# take input from user
