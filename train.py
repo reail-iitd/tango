@@ -6,6 +6,7 @@ import numpy as np
 from os import path
 from tqdm import tqdm
 from sys import argv
+import approx
 
 import torch
 import torch.nn as nn
@@ -102,6 +103,7 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 	total_ungrammatical = 0
 	denominator = 0
 	total_test_loss = 0; l = nn.BCELoss()
+	correct, incorrect, error = 0, 0, 0
 	for graph in (graphs):
 		goal_num, world_num, tools, g, t = graph
 		if 'gcn_seq' in training:
@@ -138,9 +140,11 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 					y_pred_list = model(graphSeq, goal2vec[goal_num], goalObjects2vec[goal_num], actionSeq, object_likelihoods)
 				else:
 					y_pred_list = model(graphSeq, goal2vec[goal_num], goalObjects2vec[goal_num], actionSeq)
+				plan = []
 				for i,y_pred in enumerate(y_pred_list):
 					denominator += 1
 					action_pred = vec2action_grammatical(y_pred, num_objects, 4, idx2object)
+					plan.append(action_pred)
 					if verbose:
 						if (not grammatical_action(action_pred)):
 							# print (action_pred)
@@ -149,6 +153,9 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 							print (actionSeq[i])
 					if (action_pred == actionSeq[i]):
 						total_correct += 1
+				c, i, e, err = approx.testPlan(domain, goal_num, world_num, plan)
+				correct += c; incorrect += i; error += e
+				# if True: print(plan, err)
 			else:	
 				for i in range(len(graphSeq)):
 					if 'list' not in training:
@@ -178,6 +185,9 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 	if (("sequence" in training) and verbose):
 		print ("Total ungrammatical percent is", (total_ungrammatical/denominator) * 100)
 		print ("Denominator is", denominator)
+	if 'sequence' in training:
+		den = correct + incorrect + error
+		print ("Correct, Incorrect, Error: ", (correct*100/den), (incorrect*100/den), (error*100/den))
 	if training == 'gcn_seq':
 		print("Normalized Loss:", total_test_loss.item()/denominator)
 	return ((total_correct/denominator)*100)
@@ -440,10 +450,10 @@ if __name__ == '__main__':
 			# model = torch.load("trained_models/GatedHeteroRGCN_Attention_Action_128_3_16.pt")
 			model = GGCN_metric_att_aseq_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
 		elif training == 'sequence_baseline_metric_att_tool_aseq':
-			# model = torch.load("trained_models/GatedHeteroRGCN_Attention_Action_128_3_16.pt")
+			model = torch.load("trained_models/GGCN_metric_att_aseq_tool_auto_Action_128_3_c_Trained.pt")
 			modelEnc = torch.load("trained_models/Seq_GGCN_Metric_Attn_L_NT_C_128_3_Trained.pt"); modelEnc.eval()
 			for param in modelEnc.parameters(): param.requires_grad = False
-			model = GGCN_metric_att_aseq_tool_auto_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
+			# model = GGCN_metric_att_aseq_tool_auto_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
 
 		lr = 0.0005 if 'sequence' in training else 0.00005
 		if training == 'gcn_seq': lr = 0.0005 
@@ -461,14 +471,14 @@ if __name__ == '__main__':
 		for num_epochs in range(NUM_EPOCHS+1):
 			random.shuffle(train_set)
 			print ("EPOCH " + str(num_epochs))
-			loss = backprop(data, optimizer, train_set, model, data.num_objects, modelEnc, batch_size = 1)
-			print(loss)
+			# loss = backprop(data, optimizer, train_set, model, data.num_objects, modelEnc, batch_size = 1)
+			# print(loss)
 			t1, t2 = accuracy_score(data, train_set, model, modelEnc, data.num_objects), accuracy_score(data, test_set, model, modelEnc, data.num_objects)
 			accuracy_list.append((t2, t1))
 			if (num_epochs % 1 == 0):
 				if training != "ae":
 					print ("Accuracy on training set is ", t1)
-					print ("Accuracy on test set is ", t2)
+					print ("Accuracy on test set is ", t2); exit()
 				elif training == 'ae':
 					print ("Loss on test set is ", loss_score(test_set, model, modelEnc).item()/len(test_set))
 				if num_epochs % 1 == 0:
