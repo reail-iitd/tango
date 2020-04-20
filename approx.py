@@ -73,7 +73,7 @@ def load_world(world_file, object_file):
     for o in all_objects:
       if o['name'] == obj['name']: break
     metrics[obj['name']] = [obj['position'], obj['orientation']]
-    states[obj['name']] = obj['states']
+    states[obj['name']] = obj['states'] if len(obj['states']) > 0 else {}
     tolerances[obj['name']] = o['tolerance']
     properties[obj['name']] = o['properties']
     ur5_dist[obj['name']] = o['ur5_dist'] if obj['name'] not in ['stool', 'box'] else [0.3, 0, 0.7]
@@ -315,11 +315,11 @@ def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None, sav
         # print(cur)
         # print(target)
         # print(objDistance)
-        if objDistance > 4.3 and "husky" in fixed:
+        if objDistance > 10.3 and "husky" in fixed:
               raise Exception("Husky can not move as it is on a stool")  
-        if abs(metrics[t][0][2] - z1) > 1.5 and not stick:
+        if abs(metrics[t][0][2] - z1) > 1.8 and not stick:
               raise Exception("Object on different height, please use stool")
-        if metrics[t][0][2] - z1 < -0.7:
+        if metrics[t][0][2] - z1 < -1.1:
               raise Exception("Object on lower level, please move down")
         cur = cur + (objDistance - tolerances[t]/2) * (vec / objDistance)
         # print(cur)
@@ -414,7 +414,7 @@ def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None, sav
           if state in on:
             on.append(obj)
           else:
-            on.remove(obj)
+            if obj in on: on.remove(obj)
           done = True
         else:
           metrics[obj] = states[obj][state]
@@ -450,35 +450,25 @@ def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None, sav
       elif(inpAction == "addTo"):
         obj, lst = actions[action_index][1], actions[action_index][2]
         if lst == "sticky":
-          if obj in sticky:
-              raise Exception("Object already sticky")
           if not "Stickable" in properties[obj]:
             raise Exception("Object is not stickable, cannot apply glue/tape agent")
-          sticky.append(obj) 
+          if obj not in sticky: sticky.append(obj) 
         elif lst == "fixed":
-          if obj in fixed:
-              raise Exception("Object already driven")
           if obj == "screw" and not "screwdriver" in constraints['ur5']:
               raise Exception("Driving a screw needs screwdriver")
           if obj == "screw" and not fct(obj) in drilled:
               raise Exception("Driving a screw needs object to be drilled first")
           if obj == "nail" and not ("hammer" in constraints['ur5'] or "brick" in constraints['ur5']):
               raise Exception("Driving a nail needs hammer or brick")
-          fixed.append(obj) 
+          if obj not in fixed: fixed.append(obj) 
         if lst == "drilled":
-          if obj in drilled:
-              raise Exception("Object already drilled")
-          drilled.append(obj) 
+          if obj not in drilled: drilled.append(obj) 
         if lst == "welded":
-          if obj in welded:
-              raise Exception("Object already welded")
           if fct(obj) != "assembly_station":
               raise Exception("First place object on assembly station")
-          welded.append(obj)
+          if obj not in welded: welded.append(obj) 
         if lst == "painted":
-          if obj in painted:
-              raise Exception("Object already painted")
-          painted.append(obj)
+          if obj not in painted: painted.append(obj) 
         done = True 
 
       elif(inpAction == "fuel"):
@@ -528,9 +518,9 @@ def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None, sav
       elif(inpAction == "removeFrom"):
         obj, lst = actions[action_index][1], actions[action_index][2]
         if lst == "sticky":
-          sticky.remove(obj) 
+          if obj in sticky: sticky.remove(obj) 
         elif lst == "fixed" and obj in fixed:
-          fixed.remove(obj) 
+          if obj in fixed: fixed.remove(obj) 
         done = True 
 
       elif(inpAction == "saveBulletState"):
@@ -592,13 +582,13 @@ def initPolicy(domain, goal_num, world_num):
   args.goal = 'jsons/' + domain + '_goals/' + GOAL_LISTS[domain][goal_num - 1]
   start(args)
 
-def execAction(action):
+def execAction(goal_num, action, e):
   plan = {'actions': [action]}
   try:
     res = execute(plan, args.goal, saveImg=False)
     graph_data = datapoint.getGraph(embeddings = e)
     graph_data = graph_data["graph_"+str(len(graph_data)-1)] 
-    g = convertToDGLGraph(graph_data, globalNode, goal_num, getGlobalID(datapoint) if globalNode else -1)
+    g = convertToDGLGraph(graph_data, False, goal_num, -1)
     return res, g, ''
   except Exception as e:
     return False, None, str(e)

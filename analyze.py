@@ -378,6 +378,16 @@ def checkApprox():
 				assert res;
 				f.close()
 
+def checkPlan():
+	goal, world = 2, 0
+	args = approx.initParser()
+	args.world = 'jsons/home_worlds/world_home' + str(world) +'.json'
+	args.goal = 'jsons/home_goals/' + GOAL_LISTS['home'][goal]
+	plan = [{'name': 'changeState', 'args': ['box', 'open']}, {'name': 'changeState', 'args': ['cupboard', 'open']}, {'name': 'pickNplaceAonB', 'args': ['apple', 'cupboard']}, {'name': 'pickNplaceAonB', 'args': ['orange', 'cupboard']}, {'name': 'pickNplaceAonB', 'args': ['banana', 'cupboard']}]
+	plan = {'actions': plan}
+	approx.start(args)
+	res = approx.execute(plan, args.goal, saveImg=False)
+
 # keepNewDatapoints(4)
 # printAllDatapoints()
 # printNumDatapoints(w='home')
@@ -393,4 +403,5 @@ def checkApprox():
 # mapToolsWorlds()
 # mapObjects()
 # getAllData()
-checkApprox()
+# checkApprox()
+checkPlan()

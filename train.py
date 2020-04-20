@@ -101,24 +101,26 @@ def grammatical_action(action):
 
 def test_policy(dset, graphs, model, modelEnc, num_objects = 0, verbose = False):
 	assert "sequence" in training
+	with open('jsons/embeddings/'+embedding+'.vectors') as handle: e = json.load(handle)
 	correct, incorrect, error = 0, 0, 0
 	for graph in (graphs):
 		goal_num, world_num, tools, g, t = graph
 		actionSeq, graphSeq = g
-		actionSeq, graphSeq = [None], [graphSeq[0]]
+		actionSeq, graphSeq, object_likelihoods = [], [graphSeq[0]], []
 		approx.initPolicy(domain, goal_num, world_num)
 		while True:
 			if "aseq" in training:
 				if "tool" in training:
 					tool_likelihoods = modelEnc(graphSeq[-1], goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
-					object_likelihoods = [tool2object_likelihoods(num_objects, tool_likelihoods)]
+					object_likelihoods.append(tool2object_likelihoods(num_objects, tool_likelihoods))
 					y_pred_list = model(graphSeq, goal2vec[goal_num], goalObjects2vec[goal_num], actionSeq, object_likelihoods)
 				else:
 					y_pred_list = model(graphSeq, goal2vec[goal_num], goalObjects2vec[goal_num], actionSeq)
 				y_pred = y_pred_list[-1]
 				action_pred = vec2action_grammatical(y_pred, num_objects, 4, idx2object)
-				res, g, err = approx.execAction(action_pred)
+				res, g, err = approx.execAction(goal_num, action_pred, e)
 				actionSeq.append(action_pred); graphSeq.append(g)
+				if verbose and err != '': print(goal_num, world_num); print(actionSeq, err); print('----------')
 				if res:	correct += 1; break
 				elif err == '' and len(actionSeq) > 20:	incorrect += 1; break
 				elif err != '': error += 1; break
@@ -192,7 +194,7 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 						total_correct += 1
 				c, i, e, err = approx.testPlan(domain, goal_num, world_num, plan)
 				correct += c; incorrect += i; error += e
-				if verbose: print(plan, err)
+				if verbose and err != '': print(goal_num, world_num); print(plan, err); print('----------')
 			else:	
 				for i in range(len(graphSeq)):
 					if 'list' not in training:
