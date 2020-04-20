@@ -174,7 +174,7 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 					elif training == 'sequence_list':
 						y_pred = model(graphSeq[max(0,i + 1 - graph_seq_length):i+1], goal2vec[goal_num], goalObjects2vec[goal_num])
 					denominator += 1
-					action_pred = vec2action(y_pred, num_objects, 4, idx2object)
+					action_pred = vec2action_grammatical(y_pred, num_objects, 4, idx2object)
 					# print ("Prediction: ", action_pred)
 					# print ("Target: ", actionSeq[i])
 					if verbose:
@@ -468,7 +468,6 @@ if __name__ == '__main__':
 			modelEnc = torch.load("trained_models/Seq_GGCN_Metric_Attn_L_NT_C_128_3_Trained.pt"); modelEnc.eval()
 			for param in modelEnc.parameters(): param.requires_grad = False
 			# model = GGCN_metric_att_aseq_tool_auto_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
-			model = GGCN_metric_att_aseq_tool_auto_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
 		elif training == 'sequence_baseline_metric_att_aseq_L':
 			# model = torch.load("trained_models/GGCN_metric_att_aseq_L_Action_128_3_c_81.pt")
 			model = GGCN_metric_att_aseq_L_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
