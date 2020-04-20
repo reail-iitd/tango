@@ -539,9 +539,9 @@ if __name__ == '__main__':
 		print ("The maximum accuracy on test set, train set for " + str(NUM_EPOCHS) + " epochs is ", str(max(accuracy_list)), " at epoch ", accuracy_list.index(max(accuracy_list)))
 	elif not train and not generalization:
 		print ("Evaluating...")
-		# model = torch.load(MODEL_SAVE_PATH + "/checkpoints/baseline_metric_att_aseq_c_best_81_61.pt")
-		model = GGCN_metric_att_aseq_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
-		model.load_state_dict(torch.load(MODEL_SAVE_PATH + "/checkpoints/baseline_metric_att_aseq_c_best_81_61.pt"))
+		model = torch.load(MODEL_SAVE_PATH + "/GGCN_metric_att_aseq_auto_Action_128_3_c_36.pt")
+		# model = GGCN_metric_att_aseq_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
+		# model.load_state_dict(torch.load(MODEL_SAVE_PATH + "/checkpoints/baseline_metric_att_aseq_c_best_81_61.pt"))
 		# print ("Accuracy on complete set is ",accuracy_score(data, data.graphs, model, modelEnc))
 		train_set, test_set = world_split(data) if split == 'world' else random_split(data)  if split == 'random' else tool_split(data) 
 		t1, t2 = accuracy_score(data, train_set, model, modelEnc, data.num_objects, True), accuracy_score(data, test_set, model, modelEnc, data.num_objects, True)
