@@ -462,10 +462,11 @@ def load_model(filename, model, modelEnc):
 		epoch = -1; accuracy_list = []
 		print("Creating new model: ", model.name)
 	if "action" in training:
-		enc_path = MODEL_SAVE_PATH + "/Seq_GGCN_Metric_Attn_L_NT_C_128_3_Trained.ckpt"
-		assert(path.exists(enc_path))
-		checkpoint_enc = torch.load(enc_path)
-		modelEnc.load_state_dict(checkpoint_enc['model_state_dict'])
+		if "action_tool" in training:
+			enc_path = MODEL_SAVE_PATH + "/Seq_GGCN_Metric_Attn_L_NT_C_128_3_Trained.ckpt"
+			assert(path.exists(enc_path))
+			checkpoint_enc = torch.load(enc_path)
+			modelEnc.load_state_dict(checkpoint_enc['model_state_dict'])
 		modelEnc.eval()
 	return model, modelEnc, optimizer, epoch, accuracy_list
 
