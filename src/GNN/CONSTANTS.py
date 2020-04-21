@@ -4,8 +4,8 @@ import torch
 from copy import deepcopy
 from sys import argv
 
-domain = argv[1] if len(argv) > 1 else 'home'
-embedding = argv[2] if len(argv) > 2 else "conceptnet" 
+domain = argv[1] # can be 'home' or 'factory'
+embedding = "conceptnet" if (("_C" in argv[3]) ^ ("Final" in argv[3])) or "Action" in argv[3] else "fasttext"
 
 STATES = ["Outside", "Inside", "On", "Off", "Close", "Open", "Up", "Down", "Sticky", "Non_Sticky", "Dirty", "Clean", "Grabbed", "Free", "Welded", "Not_Welded", "Drilled", "Not_Drilled", "Driven", "Not_Driven", "Fueled", "Not_Fueled", "Cut", "Not_Cut", "Painted", "Not_Painted", "Different_Height", "Same_Height"]
 if domain == 'factory': STATES += ['To_Print', "Printed"]
