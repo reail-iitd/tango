@@ -527,7 +527,7 @@ if __name__ == '__main__':
 			print ("EPOCH " + str(num_epochs))
 			loss = backprop(data, optimizer, train_set, model, data.num_objects, modelEnc, batch_size = 1)
 			print(loss)
-			t1, t2 = 0, accuracy_score(data, test_set, model, modelEnc, data.num_objects)
+			t1, t2 = accuracy_score(data, train_set, model, modelEnc, data.num_objects), accuracy_score(data, test_set, model, modelEnc, data.num_objects)
 			accuracy_list.append((t2, t1))
 			if (num_epochs % 1 == 0):
 				if training != "ae":
