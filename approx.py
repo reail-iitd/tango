@@ -105,7 +105,7 @@ def start(input_args):
     states) = load_world(args.world, object_file)
 
   # Position of the robot
-  x1, y1, o1 = 0, 0, 0
+  x1, y1, z1, o1 = 0, 0, 0, 0
   constraint = 0
 
   # Dict of constraints with target: [obj1, obj2, ...]

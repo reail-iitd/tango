@@ -103,15 +103,17 @@ def test_policy(dset, graphs, model, modelEnc, num_objects = 0, verbose = False)
 	assert "sequence" in training
 	with open('jsons/embeddings/'+embedding+'.vectors') as handle: e = json.load(handle)
 	correct, incorrect, error = 0, 0, 0
-	for graph in (graphs):
+	for graph in tqdm(graphs):
 		goal_num, world_num, tools, g, t = graph
 		actionSeq, graphSeq = g
-		actionSeq, graphSeq, object_likelihoods = [], [graphSeq[0]], []
+		actionSeq, graphSeq, object_likelihoods, tool_preds = [], [graphSeq[0]], [], []
 		approx.initPolicy(domain, goal_num, world_num)
 		while True:
 			if "aseq" in training:
 				if "tool" in training:
 					tool_likelihoods = modelEnc(graphSeq[-1], goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
+					tool_ls = list(tool_likelihoods.reshape(-1))
+					tool_preds.append(TOOLS[tool_ls.index(max(tool_ls))])
 					object_likelihoods.append(tool2object_likelihoods(num_objects, tool_likelihoods))
 					y_pred_list = model(graphSeq, goal2vec[goal_num], goalObjects2vec[goal_num], actionSeq, object_likelihoods)
 				else:
@@ -120,7 +122,7 @@ def test_policy(dset, graphs, model, modelEnc, num_objects = 0, verbose = False)
 				action_pred = vec2action_grammatical(y_pred, num_objects, 4, idx2object)
 				res, g, err = approx.execAction(goal_num, action_pred, e)
 				actionSeq.append(action_pred); graphSeq.append(g)
-				if verbose and err != '': print(goal_num, world_num); print(actionSeq, err); print('----------')
+				if verbose and err != '': print(goal_num, world_num); print(tool_preds); print(actionSeq, err); print('----------')
 				if res:	correct += 1; break
 				elif err == '' and len(actionSeq) > 20:	incorrect += 1; break
 				elif err != '': error += 1; break
@@ -516,16 +518,16 @@ if __name__ == '__main__':
 		seqTool = 'Seq_' if training == 'gcn_seq' else ''
 		accuracy_list = []
 
-		test_policy(data, train_set, model, modelEnc, data.num_objects)
-		test_policy(data, test_set, model, modelEnc, data.num_objects)
-		exit()
+		# test_policy(data, train_set, model, modelEnc, data.num_objects)
+		# test_policy(data, test_set, model, modelEnc, data.num_objects)
+		# exit()
 
 		for num_epochs in range(NUM_EPOCHS+1):
 			random.shuffle(train_set)
 			print ("EPOCH " + str(num_epochs))
 			loss = backprop(data, optimizer, train_set, model, data.num_objects, modelEnc, batch_size = 1)
 			print(loss)
-			t1, t2 = accuracy_score(data, train_set, model, modelEnc, data.num_objects), accuracy_score(data, test_set, model, modelEnc, data.num_objects)
+			t1, t2 = 0, accuracy_score(data, test_set, model, modelEnc, data.num_objects)
 			accuracy_list.append((t2, t1))
 			if (num_epochs % 1 == 0):
 				if training != "ae":
