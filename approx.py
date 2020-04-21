@@ -17,6 +17,11 @@ import math
 import pickle
 from operator import add
 
+class Args():
+  goal = ''
+  world = ''
+  speed = 1
+
 GOAL_LISTS = \
 {'home': ["goal1-milk-fridge.json", "goal2-fruits-cupboard.json", "goal3-clean-dirt.json", "goal4-stick-paper.json", "goal5-cubes-box.json", "goal6-bottles-dumpster.json", "goal7-weight-paper.json", "goal8-light-off.json"],
 'factory': ["goal1-crates-platform.json", "goal2-paper-wall.json", "goal3-board-wall.json", "goal4-generator-on.json", "goal5-assemble-parts.json", "goal6-tools-workbench.json", "goal7-clean-water.json", "goal8-clean-oil.json"]}
@@ -563,7 +568,7 @@ def executeAction(inp):
     	print("Goal Fail!!!")
 
 def testPlan(domain, goal_num, world_num, plan):
-  args = initParser()
+  args = Args()
   args.world = 'jsons/'+ domain + '_worlds/world_' + domain + str(world_num) +'.json'
   args.goal = 'jsons/' + domain + '_goals/' + GOAL_LISTS[domain][goal_num - 1]
   plan = {'actions': plan}
@@ -577,7 +582,7 @@ def testPlan(domain, goal_num, world_num, plan):
     return 0, 0, 1, str(e)
 
 def initPolicy(domain, goal_num, world_num):
-  args = initParser()
+  args = Args()
   args.world = 'jsons/'+ domain + '_worlds/world_' + domain + str(world_num) +'.json'
   args.goal = 'jsons/' + domain + '_goals/' + GOAL_LISTS[domain][goal_num - 1]
   start(args)
@@ -592,6 +597,9 @@ def execAction(goal_num, action, e):
     return res, g, ''
   except Exception as e:
     return False, None, str(e)
+
+def printAllValues():
+  print(sticky, fixed, on, fueled, cut, cleaner, stick, clean, drilled, welded, painted, metrics)
 
 if __name__ == '__main__':
 	# take input from user

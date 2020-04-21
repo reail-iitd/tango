@@ -2,6 +2,7 @@ from src.GNN.helper import *
 from src.GNN.CONSTANTS import *
 from src.utils import *
 from src.GNN.oldmodels import *
+torch.manual_seed(1)
 
 def action2vec(action, num_objects, num_states):
     actionArray = torch.zeros(len(possibleActions))

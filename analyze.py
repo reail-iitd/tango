@@ -360,7 +360,7 @@ def checkApprox():
 			for point in points:
 				f = open(directory + '/' + point, 'rb')
 				datapoint = pickle.load(f)
-				args = approx.initParser()
+				args = approx.Args()
 				args.world = 'jsons/home_worlds/world_home' + str(world) +'.json'
 				args.goal = 'jsons/home_goals/' + goal
 				plan = []
@@ -380,13 +380,18 @@ def checkApprox():
 
 def checkPlan():
 	goal, world = 2, 0
-	args = approx.initParser()
+	args = approx.Args()
 	args.world = 'jsons/home_worlds/world_home' + str(world) +'.json'
 	args.goal = 'jsons/home_goals/' + GOAL_LISTS['home'][goal]
 	plan = [{'name': 'changeState', 'args': ['box', 'open']}, {'name': 'changeState', 'args': ['cupboard', 'open']}, {'name': 'pickNplaceAonB', 'args': ['apple', 'cupboard']}, {'name': 'pickNplaceAonB', 'args': ['orange', 'cupboard']}, {'name': 'pickNplaceAonB', 'args': ['banana', 'cupboard']}]
 	plan = {'actions': plan}
 	approx.start(args)
-	res = approx.execute(plan, args.goal, saveImg=False)
+	approx.printAllValues()
+	try:
+		res = approx.execute(plan, args.goal, saveImg=False)
+	except Exception as e:
+		print(str(e))
+
 
 # keepNewDatapoints(4)
 # printAllDatapoints()
