@@ -494,10 +494,10 @@ if __name__ == '__main__':
 			# model = torch.load("trained_models/GatedHeteroRGCN_Attention_Action_128_3_16.pt")
 			model = GGCN_metric_att_aseq_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
 		elif training == 'sequence_baseline_metric_att_tool_aseq':
-			model = torch.load("trained_models/GGCN_metric_att_aseq_tool_auto_Action_128_3_c_Trained.pt")
+			# model = torch.load("trained_models/GGCN_metric_att_aseq_tool_auto_Action_128_3_c_Trained.pt")
 			modelEnc = torch.load("trained_models/Seq_GGCN_Metric_Attn_L_NT_C_128_3_Trained.pt"); modelEnc.eval()
 			for param in modelEnc.parameters(): param.requires_grad = False
-			# model = GGCN_metric_att_aseq_tool_auto_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
+			model = GGCN_metric_att_aseq_tool_auto_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
 		elif training == 'sequence_baseline_metric_att_aseq_L':
 			# model = torch.load("trained_models/GGCN_metric_att_aseq_L_Action_128_3_c_81.pt")
 			model = GGCN_metric_att_aseq_L_Action(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
