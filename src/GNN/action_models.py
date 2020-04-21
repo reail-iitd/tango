@@ -774,7 +774,11 @@ class GGCN_metric_att_aseq_tool_auto_Action(nn.Module):
             action = self.activation(self.fc2(action))
             action = self.activation(self.fc3(action))
             action = F.softmax(action, dim=1)
-            pred1 = self.activation(self.p1(torch.cat([action, final_to_decode], dim=1)))
+            pred_action_values = list(action[0])
+            ind_max_action = pred_action_values.index(max(pred_action_values))
+            one_hot_action = [0] * len(pred_action_values); one_hot_action[ind_max_action] = 1
+            one_hot_action = torch.Tensor(one_hot_action).view(1,-1)
+            pred1 = self.activation(self.p1(torch.cat([one_hot_action, final_to_decode], dim=1)))
             pred1 = self.activation(self.p2(pred1))
             pred1 = F.softmax(self.activation(self.p3(pred1)), dim=1)
             pred2 = self.activation(self.q1(torch.cat([action, pred1, final_to_decode], dim=1)))
