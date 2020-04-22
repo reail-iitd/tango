@@ -113,14 +113,24 @@ EXEC_TYPE can be as follows:
 
 | EXEC_TYPE                         | Meaning                     
 | --------------------------------- | --------------------------- 
-| **train**                         | Tool prediction model predicting most probable tool using inital state  
-| **gcn_seq**                       | Tool sequence prediction model, which predicts the sequence of tools that will be used in the plan      
-| **action**                        | Action prediction model which does not use the trained tool prediction model
-| **action_tool**                   | Action prediction model which uses the trained tool prediction model
-
+| **train**                         | Train the model 
+| **accuracy**                      | Determine the prediction accuracy for tool/action prediction model on the given dataset     
+| **ablation**                      | Determine tool prediction accuracies for ablated models of the form Final_*
+| **generalization**                | Calculate accuracies of all models on generalization test set
+| **policy**                        | Run the action model for the given dataset and determine percentage task completion using the model as a policy in approximate simulated environment
 To train the best tool prediction model, use the following command
 ```bash
 python3 train.py home gcn GGCN_Metric_Attn_L_NT_C train
+```
+
+To test the tool prediction accuracies of all ablated models, use the following command
+```bash
+python3 train.py home gcn GGCN ablation
+```
+
+To test the generalization accuracies of all models, use the following command
+```bash
+python3 train.py home gcn GGCN generalization
 ```
 
 To train the best tool sequence prediction model, use the following command
