@@ -27,6 +27,8 @@ $ source commonsense_tool/bin/activate
 (commonsense_tool) $ pip3 install -r requirements.txt
 ```
 
+We used a system with 32gb RAM CPU and 8GB graphics RAM to run our simulator. The models were trained using the same system. The simulator and training pipeline has been tested on MacOS and Ubuntu 16.04.
+
 ## Directory Structure
 | Folder/File                       | Utility 		              
 | --------------------------------- | --------------------------- 
@@ -125,3 +127,4 @@ To train the best tool sequence prediction model, use the following command
 ```bash
 python3 train.py home gcn_seq GGCN_Metric_Attn_L_NT_C train
 ```
+
