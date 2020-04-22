@@ -204,7 +204,7 @@ class DGLDataset():
 		self.graphs[i][-2] -> Every element of this object is a datapoint.
 					  If sequence is true this is a graph sequence, otherwise it contains the initial state of the datapoint.
 
-		self.graphs[i][-3] -> The tools used in the datapoibt. If sequence is true contains the sequence of next most recent tool. 
+		self.graphs[i][-3] -> The tools used in the datapoint. If sequence is true contains the sequence of next most recent tool. 
 						Otherwise, if sequence is false, contains a list of tools used in the plan.
 
 	"""

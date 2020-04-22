@@ -4,9 +4,11 @@ from src.GNN.helper import *
 from src.utils import *
 
 class DGL_Simple_Likelihood(nn.Module):
-    """ The best performing model for the one-step tool prediction task. 
-        Separate likelihood prediction of no tool for more robust tool output considering any tool to be used or not as prior.
-        GGCN_Metric+Attn+L+NT"""
+    """ 
+        The best performing model for the one-step tool prediction task. 
+        Separate likelihood prediction of no tool for more robust tool output considering any tool 
+        to be used or not as prior. 
+    """
     def __init__(self,
                  in_feats,
                  n_objects,
@@ -69,8 +71,10 @@ class DGL_Simple_Likelihood(nn.Module):
         return output
 
 class GGCN(nn.Module):
-    """ Baseline model using hetero gated graph convolution to encode world state. 
-    Uses goal and world representations to predict tool likelihood estimates.   """
+    """ 
+    Baseline model using hetero gated graph convolution to encode world state. 
+    Uses goal and world representations to predict tool likelihood estimates.   
+    """
     def __init__(self,
                  in_feats,
                  n_objects,
@@ -106,7 +110,8 @@ class GGCN(nn.Module):
         return h
 
 class GGCN_Metric(nn.Module):
-    """ Uses metric properties of objects as well to incorporate metric dependencies in tool prediction.
+    """ 
+        Uses metric properties of objects as well to incorporate metric dependencies in tool prediction.
         GGCN+Metric
     """
     def __init__(self,
