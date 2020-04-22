@@ -5,6 +5,7 @@ This implementation contains all the models mentioned in the paper for next-tool
 ## Contents 
 - Introduction
 - Environment Setup
+- Directory Structure
 - Setup Web Interface for Data Collection
 - Dataset
 - Training models
@@ -20,18 +21,34 @@ In order to effectively perform activities in realistic environments like a home
 ```bash
 $ python3 -m venv commonsense_tool
 $ source commonsense_tool/bin/activate
-(commonsense_tool) $ git clone https://github.com/shreshthtuli/Robot-task-planning.git
+(commonsense_tool) $ git clone https://github.com/reail-iitd/commonsense-task-planning.git
 (commonsense_tool) $ cd Robot-task-planning
 (commonsense_tool) $ git checkout release
 (commonsense_tool) $ pip3 install -r requirements.txt
 ```
 
+## Directory Structure
+| Folder/File                       | Utility 		              
+| --------------------------------- | --------------------------- 
+| **app.py** 				        | This is the main file to run the data collection platform. This file starts the web server at the default port 5000 on localhost. It starts an instance of PyBullet on the system and exposes the simulator to the user at the appropriate website.
+| **train.py**                      | This is the main file used to train and evaluate all the models as mentioned in the paper.
+| **husky_ur5.py**                  | This is the main file for the PyBullet simulator. It is responsible for loading the PyBullet simulator, running the appropriate action and sending the appropriate exceptions wherever applicable. It also checks if the goal specified has been completed.
+| **src/GNN/CONSTANTS.py**			| This file contains the global constant used by the training pipeline like the number of epochs, hidden size used etc.
+| **src/GNN/dataset_utils.py**      | This file contains the Dataset class, which can be used to process the dataset in any form as required by the training pipeline.
+| **src/GNN/\*models** 	            | These contain the different PyTorch models that were used for training the system.
+| **src/datapoint.py** 				| This contains the datapoint class. All datapoints found in the dataset are an instance of this class.
+| **jsons/embeddings**              | These contain the files corresponding to [fasttext](https://fasttext.cc/docs/en/english-vectors.html) and [conceptnet](https://github.com/commonsense/conceptnet-numberbatch) embeddings.
+| **jsons/\*\_goals**               | These contain the goals which can be completed by the robot in the factory and the home domain.
+| **jsons/\*\_worlds**      	    | These contain the different world instances in the home and factory domain.
+| **jsons/\*.json**					| These are configuration files for the simulator and the webapp. These define the different actions possible in the simulator, the different objects present in the simulator, states possible, readable form of actions to show on the webapp etc.
+| **models/\***                     | This folder contains the stl and urdf files for all models which are loaded by the physics simulator used i.e Pybullet.
+| **templates/\***				    | These are the templates that are used by the webapp to load the different tutorial webpages along with the actual data collection platform.
+
 ## Setup Web Interface for Data Collection
 To execute the website that is needed for data collection, use the following command:
 ```bash
-$ python3 app.py --world WORLD --randomize
+$ python3 app.py --randomize
 ```
-WORLD here can be home/factory.
 The website can now be accessed by using the link (http://0.0.0.0:5000/).
 For all the arguments that can be provided look at the help provided,
 
@@ -41,7 +58,7 @@ $ python3 app.py --help
 
 ## Dataset
 
-Download the program dataset [here](https://drive.google.com/file/d/1txrMTiVnhxBhblf6ypGJ_m3jr3MBBlUe/view?usp=sharing).
+Download the dataset [here](https://drive.google.com/open?id=18dmWjDjz3DPYZTFv92vAnMssK2YFZh3j).
 
 Here is how the dataset structure should look like:
 
@@ -54,25 +71,57 @@ dataset
     └── factory
 ```
 
+The dataset is organized as follows. We have 8 different goals and 10 different world instances for both the domains, home and factory. Each domain has 8 directories corresponding to the goals possible for the domain. These goals itself, contain directories for the 10 different world instances. Each goal for each world instance in a particular domain thus has a number of different human demonstrations, and these are saved in the form of a .datapoint file for each plan. This is a pickled instance of the Datapoint class found in `src/datapoint.py` and contains all the information needed about the plan. Refer to the [class](src/datapoint.py) for more information.
+
 ## Training
 
-All the trained models can be found [here](http://xyz/temp_placeholder). These can be run by setting
+All the trained models can be found [here](https://drive.google.com/open?id=1Kw65B55DehnteO1hwLUk0k1rWw2eCTl0). These can be run by setting
 train variable to false in `train.py`.
 
 All the models mentioned in the paper can be trained through the command
 
 ```bash
-$ python3 train.py DOMAIN EMBEDDING MODEL_TYPE
+$ python3 train.py $DOMAIN $TRAINING_TYPE $MODEL_NAME $EXEC_TYPE
 ```
 Here DOMAIN can be home/factory.
-EMBEDDING is the embeddings that will be used by the model
-and can be conceptnet/fasttext.
-All ablated models can also be trained by changing the model variable appropriately and can be found in `src/GNN/models.py` and `src/GNN/action_models.py`. The following table
-contains what the MODEL_TYPE can be along with its name as mentioned in the paper.
 
-| MODEL_TYPE                        | Name of model (as in paper) |
-| --------------------------------- | --------------------------- |
-| agcn-likelihood                   | GGCN+Metric+Attn+L+NT+C+W   |
-| sequence_baseline_metric_att_aseq | GGCN+Metric+Attn+Aseq       |
+TRAINING_TYPE can be as follows:
 
+| TRAINING_TYPE                     | Meaning                     
+| --------------------------------- | --------------------------- 
+| **gcn**                           | Tool prediction model predicting most probable tool using inital state  
+| **gcn_seq**                       | Tool sequence prediction model, which predicts the sequence of tools that will be used in the plan      
+| **action**                        | Action prediction model which does not use the trained tool prediction model
+| **action_tool**                   | Action prediction model which uses the trained tool prediction model
 
+MODEL_NAME specifies the specific PyTorch model that you want to train. Look at `src/GNN/models.py` or `src/GNN/models.py` to specify the name. They are specified here for reference.
+
+| MODEL_NAME                     | Name in paper                     
+| -------------------------------| --------------------------- 
+| **GGCN**                           | GGCN
+| **GGCN_Metric**                    | GGCN+Metric
+| **GGCN_Metric_Attn**               | GGCN+Metric+Attn
+| **GGCN_Metric_Attn_L**             | GGCN+Metric+Attn+L    
+| **GGCN_Metric_Attn_L_NT**          | GGCN+Metric+Attn+L+NT
+| **GGCN_Metric_Attn_L_NT_C**        | GGCN+Metric+Attn+L+NT+C
+| **GGCN_Metric_Attn_L_NT_C_W**      | GGCN+Metric+Attn+L+NT+C+W
+| **Final_\***                       | These are ablated model with the best GGCN_Metric_Attn_L_NT_C_W model - the * component.
+
+EXEC_TYPE can be as follows:
+
+| EXEC_TYPE                         | Meaning                     
+| --------------------------------- | --------------------------- 
+| **train**                         | Tool prediction model predicting most probable tool using inital state  
+| **gcn_seq**                       | Tool sequence prediction model, which predicts the sequence of tools that will be used in the plan      
+| **action**                        | Action prediction model which does not use the trained tool prediction model
+| **action_tool**                   | Action prediction model which uses the trained tool prediction model
+
+To train the best tool prediction model, use the following command
+```bash
+python3 train.py home gcn GGCN_Metric_Attn_L_NT_C train
+```
+
+To train the best tool sequence prediction model, use the following command
+```bash
+python3 train.py home gcn_seq GGCN_Metric_Attn_L_NT_C train
+```
