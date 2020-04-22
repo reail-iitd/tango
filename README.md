@@ -117,7 +117,8 @@ EXEC_TYPE can be as follows:
 | **accuracy**                      | Determine the prediction accuracy for tool/action prediction model on the given dataset     
 | **ablation**                      | Determine tool prediction accuracies for ablated models of the form Final_*
 | **generalization**                | Calculate accuracies of all models on generalization test set
-| **policy**                        | Run the action model for the given dataset and determine percentage task completion using the model as a policy in approximate simulated environment
+| **policy**                        | Run the action model for the given dataset and determine percentage task completion using the model as a policy in approximate simulated environment.
+
 To train the best tool prediction model, use the following command
 ```bash
 python3 train.py home gcn GGCN_Metric_Attn_L_NT_C train
