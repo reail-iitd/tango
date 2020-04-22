@@ -461,7 +461,7 @@ def load_model(filename, model, modelEnc):
 		if "train" not in exec_type: print("File '%s' not found!" % filename); exit()
 		epoch = -1; accuracy_list = []
 		print("Creating new model: ", model.name)
-	if "action" in training:
+	if "tool" in training:
 		enc_path = MODEL_SAVE_PATH + "/Seq_GGCN_Metric_Attn_L_NT_C_128_3_Trained.ckpt"
 		assert(path.exists(enc_path))
 		checkpoint_enc = torch.load(enc_path)

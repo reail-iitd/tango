@@ -4,6 +4,8 @@ from src.utils import *
 from src.GNN.oldmodels import *
 torch.manual_seed(1)
 
+# Contains the action prediction task models. Will be released in a future publication.
+
 def action2vec(action, num_objects, num_states):
     actionArray = torch.zeros(len(possibleActions))
     actionArray[possibleActions.index(action['name'])] = 1
