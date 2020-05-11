@@ -120,7 +120,7 @@ def grammatical_action(action):
 	return True
 
 def test_policy(dset, graphs, model, modelEnc, num_objects = 0, verbose = False):
-	assert "sequence" in training
+	assert "action" in training
 	with open('jsons/embeddings/'+embedding+'.vectors') as handle: e = json.load(handle)
 	correct, incorrect, error = 0, 0, 0
 	for graph in tqdm(graphs):
@@ -129,8 +129,8 @@ def test_policy(dset, graphs, model, modelEnc, num_objects = 0, verbose = False)
 		actionSeq, graphSeq, object_likelihoods, tool_preds = [], [graphSeq[0]], [], []
 		approx.initPolicy(domain, goal_num, world_num)
 		while True:
-			if "aseq" in training:
-				if "tool" in training:
+			if "aseq" in model_name:
+				if "tool" in model_name:
 					tool_likelihoods = modelEnc(graphSeq[-1], goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
 					tool_ls = list(tool_likelihoods.reshape(-1))
 					tool_preds.append(TOOLS[tool_ls.index(max(tool_ls))])
@@ -239,13 +239,13 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 			total_correct += 1
 		elif verbose:
 			print (goal_num, world_num, tool_predicted, tools_possible)
-	if (("sequence" in training) and verbose):
+	if (("action" in training) and verbose):
 		print ("Total ungrammatical percent is", (total_ungrammatical/denominator) * 100)
 		print ("Denominator is", denominator)
 		print ("Action accuracy is", (action_correct/denominator) * 100)
 		print ("Pred1 accuracy is", (pred1_correct/denominator) * 100)
 		print ("Pred2 accuracy is", (pred2_correct/den_pred2) * 100)
-	if 'sequence' in training:
+	if 'action' in training:
 		den = correct + incorrect + error
 		print ("Correct, Incorrect, Error: ", (correct*100/den), (incorrect*100/den), (error*100/den))
 	if training == 'gcn_seq':
@@ -452,6 +452,7 @@ def load_model(filename, model, modelEnc):
 	optimizer = torch.optim.Adam(model.parameters() , lr=lr)
 	file_path = MODEL_SAVE_PATH + "/" + filename + ".ckpt"
 	if path.exists(file_path):
+		print(color.GREEN+"Loading pre-trained model: "+filename+color.ENDC)
 		checkpoint = torch.load(file_path)
 		model.load_state_dict(checkpoint['model_state_dict'])
 		optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
@@ -460,7 +461,7 @@ def load_model(filename, model, modelEnc):
 	else:
 		if "train" not in exec_type: print("File '%s' not found!" % filename); exit()
 		epoch = -1; accuracy_list = []
-		print("Creating new model: ", model.name)
+		print(color.GREEN+"Creating new model: "+model.name+color.ENDC)
 	if "action" in training:
 		if "action_tool" in training:
 			enc_path = MODEL_SAVE_PATH + "/Seq_GGCN_Metric_Attn_L_NT_C_128_3_Trained.ckpt"
@@ -513,6 +514,9 @@ if __name__ == '__main__':
 			print(loss)
 			t1, t2 = eval_accuracy(data, train_set, test_set, model, modelEnc)
 			accuracy_list.append((t2, t1, loss))
+			if 'action' in training:
+				test_policy(data, train_set, model, modelEnc, data.num_objects)
+				test_policy(data, test_set, model, modelEnc, data.num_objects)
 			save_model(model, optimizer, num_epochs, accuracy_list)
 		print ("The maximum accuracy on test set is ", str(max(accuracy_list)), " at epoch ", accuracy_list.index(max(accuracy_list)))
 
