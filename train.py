@@ -470,9 +470,10 @@ def load_model(filename, model, modelEnc):
 			modelEnc.eval()
 	return model, modelEnc, optimizer, epoch, accuracy_list
 
-def save_model(model, optimizer, epoch, accuracy_list):
+def save_model(model, optimizer, epoch, accuracy_list, file_path = None):
 	seqTool = 'Seq_' if training == 'gcn_seq' else ''
-	file_path = MODEL_SAVE_PATH + "/" + seqTool + model.name + "_" + str(epoch) + ".ckpt"
+	if file_path == None:
+		file_path = MODEL_SAVE_PATH + "/" + seqTool + model.name + "_" + str(epoch) + ".ckpt"
 	torch.save({
         'epoch': epoch,
         'model_state_dict': model.state_dict(),
@@ -490,17 +491,26 @@ def convert_model(filename, training_type):
 	file_path = MODEL_SAVE_PATH + "/" + filename + ".pt"
 	assert(path.exists(file_path))
 	model = torch.load(file_path)
+	flag = False
+	if str(type(model)) == "<class 'collections.OrderedDict'>": # If only model state dict is saved
+		flag = True
+		model, modelEnc = get_model(model_name)
+		model.load_state_dict(torch.load(file_path))
 	lr = 0.0005 if 'action' in training_type else 0.00005
 	if training_type == 'gcn_seq': lr = 0.0005
 	optimizer = torch.optim.Adam(model.parameters() , lr=lr)
 	training = training_type
-	save_model(model, optimizer, 0, [])
+	if flag:
+		save_model(model, optimizer, 0, [], file_path = file_path)		
+	else:
+		save_model(model, optimizer, 0, [])
 
 if __name__ == '__main__':
 	data = load_dataset()
 	model, modelEnc = get_model(model_name)
 	seqTool = 'Seq_' if training == 'gcn_seq' else ''
-	model, modelEnc, optimizer, epoch, accuracy_list = load_model(seqTool + model.name + "_Trained", model, modelEnc)
+	# model, modelEnc, optimizer, epoch, accuracy_list = load_model(seqTool + model.name + "_Trained", model, modelEnc)
+	model, modelEnc, optimizer, epoch, accuracy_list = load_model("checkpoints/baseline_metric_att_aseq_auto_c_best_69_64", model, modelEnc)
 	# model, modelEnc, optimizer, epoch, accuracy_list = load_model("GGCN_256_5_0", model, modelEnc)
 	train_set, test_set = split_data(data)
 
