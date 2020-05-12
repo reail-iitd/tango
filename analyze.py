@@ -11,7 +11,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from statistics import pstdev
 import seaborn as sns
-import approx
 import itertools
 # from src.generalization import *
 
@@ -349,6 +348,7 @@ def mapObjects():
 	f.savefig('figures/'+domain+'_objects.pdf')
 
 def checkApprox():
+	import approx
 	for goal in GOAL_LISTS['home']:
 		print('Goal = ' + goal)
 		for world in range(10):
@@ -379,6 +379,7 @@ def checkApprox():
 				f.close()
 
 def checkPlan():
+	import approx
 	goal, world = 2, 0
 	args = approx.Args()
 	args.world = 'jsons/home_worlds/world_home' + str(world) +'.json'
@@ -395,7 +396,7 @@ def checkPlan():
 
 # keepNewDatapoints(4)
 # printAllDatapoints()
-# printNumDatapoints(w='home')
+printNumDatapoints(w='factory')
 # changeAllDatapoints()
 # combineDatasets(4)
 # printGraph("dataset/factory/goal1-crates-platform/world_factory3/0")
@@ -409,4 +410,4 @@ def checkPlan():
 # mapObjects()
 # getAllData()
 # checkApprox()
-checkPlan()
+# checkPlan()
