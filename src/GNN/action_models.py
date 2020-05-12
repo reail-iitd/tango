@@ -648,9 +648,13 @@ class GGCN_metric_att_aseq_L_auto_Action(nn.Module):
             action = self.activation(self.fc2(action))
             action = self.activation(self.fc3(action))
             action = F.softmax(action, dim=1)
+            pred_action_values = list(action[0])
+            ind_max_action = pred_action_values.index(max(pred_action_values))
+            one_hot_action = [0] * len(pred_action_values); one_hot_action[ind_max_action] = 1
+            one_hot_action = torch.Tensor(one_hot_action).view(1,-1)
 
             #Predicting the first argument of the action
-            pred1_input = torch.cat([final_to_decode, action], 1)
+            pred1_input = torch.cat([final_to_decode, one_hot_action], 1)
             pred1_object = self.activation(self.p1_object(
                         torch.cat([pred1_input.view(-1).repeat(self.n_objects).view(self.n_objects, -1), self.activation(self.embed(self.object_vec))], 1)))
             pred1_object = self.activation(self.p2_object(pred1_object))
@@ -662,7 +666,7 @@ class GGCN_metric_att_aseq_L_auto_Action(nn.Module):
             pred1_output = torch.cat([pred1_object.view(1,-1), pred1_no_object], 1)
 
             # Predicting the second argument of the action
-            pred2_input = torch.cat([final_to_decode, action, pred1_output], 1)
+            pred2_input = torch.cat([final_to_decode, one_hot_action, pred1_output], 1)
             pred2_object = self.activation(self.q1_object(
                         torch.cat([pred2_input.view(-1).repeat(self.n_objects).view(self.n_objects, -1), self.activation(self.embed(self.object_vec))], 1)))
             pred2_object = self.activation(self.q2_object(pred2_object))
