@@ -210,9 +210,10 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 								pred2_correct += 1
 					if (action_pred == actionSeq[i]):
 						total_correct += 1
-				c, i, e, err = approx.testPlan(domain, goal_num, world_num, plan)
-				correct += c; incorrect += i; error += e
-				if verbose and err != '': print(goal_num, world_num); print(plan, err); print('----------')
+				if verbose:
+					c, i, e, err = approx.testPlan(domain, goal_num, world_num, plan)
+					correct += c; incorrect += i; error += e
+					if err != '': print(goal_num, world_num); print(plan, err); print('----------')
 			else:	
 				for i in range(len(graphSeq)):
 					if 'list' not in model_name:
@@ -245,7 +246,7 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 		print ("Action accuracy is", (action_correct/denominator) * 100)
 		print ("Pred1 accuracy is", (pred1_correct/denominator) * 100)
 		print ("Pred2 accuracy is", (pred2_correct/den_pred2) * 100)
-	if 'action' in training:
+	if 'action' in training and verbose:
 		den = correct + incorrect + error
 		print ("Correct, Incorrect, Error: ", (correct*100/den), (incorrect*100/den), (error*100/den))
 	if training == 'gcn_seq':
