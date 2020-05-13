@@ -609,7 +609,7 @@ class GGCN_metric_att_aseq_L_auto_Action(nn.Module):
         self.q1_state  = nn.Linear(n_hidden*4 + len(possibleActions) + n_objects + 1, n_hidden)
         self.q2_state  = nn.Linear(n_hidden, n_hidden)
         self.q3_state  = nn.Linear(n_hidden, n_states)
-        self.activation = nn.PReLU()
+        self.activation = nn.LeakyReLU()
         self.metric1 = nn.Linear(in_feats, n_hidden)
         self.metric2 = nn.Linear(n_hidden, n_hidden)
         self.action_lstm = nn.LSTM(len(possibleActions) + n_objects + 1 + n_objects + 1 + n_states, n_hidden)
@@ -682,7 +682,6 @@ class GGCN_metric_att_aseq_L_auto_Action(nn.Module):
             pred2_output = F.softmax(torch.cat([pred2_object.view(1,-1), pred2_no_object, pred2_state], 1), dim = 1)
             predicted_actions.append(torch.cat((action, pred1_output, pred2_output), 1).flatten())
         return predicted_actions
-
 
 class GGCN_metric_att_aseq_tool_Action(nn.Module):
     def __init__(self,
