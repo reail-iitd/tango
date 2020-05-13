@@ -515,7 +515,6 @@ if __name__ == '__main__':
 			t1, t2 = eval_accuracy(data, train_set, test_set, model, modelEnc)
 			accuracy_list.append((t2, t1, loss))
 			if 'action' in training:
-				test_policy(data, train_set, model, modelEnc, data.num_objects)
 				test_policy(data, test_set, model, modelEnc, data.num_objects)
 			save_model(model, optimizer, num_epochs, accuracy_list)
 		print ("The maximum accuracy on test set is ", str(max(accuracy_list)), " at epoch ", accuracy_list.index(max(accuracy_list)))
