@@ -3,6 +3,7 @@ from src.utils import *
 import json
 from tqdm import tqdm
 from random import randint
+from src.GNN.CONSTANTS import *
 
 tools = ['stool', 'tray', 'tray2', 'lift', 'big-tray', 'book', 'box', 'chair',\
 		'stick', 'glue', 'tape', 'mop', 'sponge', 'vacuum', 'drill', 'screwdriver',\
@@ -153,7 +154,7 @@ class Datapoint:
 		for obj in sceneobjects:
 			if obj in skip: continue
 			node = {}; objID = globalidlookup[obj]
-			node['id'] = objID
+			node['id'] = all_objects.index(obj)
 			node['name'] = obj
 			node['properties'] = objects[objID]['properties']
 			if 'Movable' in node['properties'] and obj in self.fixed[index]: node['properties'].remove('Movable')
@@ -202,16 +203,17 @@ class Datapoint:
 				obj2 = sceneobjects[j]
 				if obj2 in skip or i == j or not obj2 in metrics.keys(): continue
 				obj1ID = globalidlookup[obj1]; obj2ID = globalidlookup[obj2]
+				fromID = all_objects.index(obj1); toID = all_objects.index(obj2)
 				if checkNear(obj1, obj2, metrics):
-					edges.append({'from': obj1ID, 'to': obj2ID, 'relation': 'Close'}) 
+					edges.append({'from': fromID, 'to': toID, 'relation': 'Close'}) 
 				if checkIn(obj1, obj2, objects[obj1ID], objects[obj2ID], metrics, self.constraints[index]):
-					edges.append({'from': obj1ID, 'to': obj2ID, 'relation': 'Inside'}) 
+					edges.append({'from': fromID, 'to': toID, 'relation': 'Inside'}) 
 				if checkOn(obj1, obj2, objects[obj1ID], objects[obj2ID], metrics, self.constraints[index]):
-					edges.append({'from': obj1ID, 'to': obj2ID, 'relation': 'On'}) 
+					edges.append({'from': fromID, 'to': toID, 'relation': 'On'}) 
 				if obj2 == 'walls' and 'Stickable' in objects[obj1ID]['properties'] and isInState(obj1, allStates[world][obj1]['stuck'], metrics[obj1]):
-					edges.append({'from': obj1ID, 'to': obj2ID, 'relation': 'Stuck'}) 
+					edges.append({'from': fromID, 'to': toID, 'relation': 'Stuck'}) 
 				if distance:
-					edges.append({'from': obj1ID, 'to': obj2ID, 'distance': getDirectedDist(obj1, obj2, metrics)})
+					edges.append({'from': fromID, 'to': toID, 'distance': getDirectedDist(obj1, obj2, metrics)})
 		return {'graph_'+str(index): {'nodes': nodes, 'edges': edges}}
 
 	def getAugmentedGraph(self, index=0, distance=False, remove=5):

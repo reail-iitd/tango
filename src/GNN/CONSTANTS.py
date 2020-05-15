@@ -48,6 +48,15 @@ NUMTOOLS = len(TOOLS)
 MODEL_SAVE_PATH = "trained_models/"
 AUGMENTATION = 1
 
+all_home_objects = ['floor', 'walls', 'door', 'fridge', 'cupboard', 'husky', 'table', 'table2', 'couch', 'big-tray',\
+		'book', 'paper', 'paper2', 'cube_gray', 'cube_green', 'cube_red', 'tray', 'tray2', 'light', 'bottle_blue', \
+		'bottle_gray', 'bottle_red', 'box', 'apple', 'orange', 'banana', 'chair', 'ball', 'stick', 'dumpster', 'milk', \
+		'shelf', 'glue', 'tape', 'stool', 'mop', 'sponge', 'vacuum', 'dirt']
+
+all_factory_objects = []
+
+all_objects = all_home_objects if domain == 'home' else all_factory_objects
+
 goal_jsons = ["jsons/home_goals/goal1-milk-fridge.json", "jsons/home_goals/goal2-fruits-cupboard.json",\
             "jsons/home_goals/goal3-clean-dirt.json", "jsons/home_goals/goal4-stick-paper.json",\
             "jsons/home_goals/goal5-cubes-box.json", "jsons/home_goals/goal6-bottles-dumpster.json",\
@@ -56,14 +65,16 @@ goal_jsons = ["jsons/home_goals/goal1-milk-fridge.json", "jsons/home_goals/goal2
             "jsons/factory_goals/goal3-board-wall.json", "jsons/factory_goals/goal4-generator-on.json", \
             "jsons/factory_goals/goal5-assemble-parts.json", "jsons/factory_goals/goal6-tools-workbench.json", \
             "jsons/factory_goals/goal7-clean-water.json", "jsons/factory_goals/goal8-clean-oil.json"]
+
 goalObjects = {}
 for i in range(len(goal_jsons)):
 	goal_json = json.load(open(goal_jsons[i], "r"))
 	goalObjects[i+1] = goal_json["goal-objects"]
 
-object2idx = {};
-for i, obj in enumerate(json.load(open("jsons/objects.json", "r"))["objects"]):
-	object2idx[obj["name"]] = i
+object2idx = {}; idx2object = {}
+for i, obj in enumerate(all_objects):
+	object2idx[obj] = i
+	idx2object[i] = obj
 
 def compute_constants(embedding):
 	# Global Constants
@@ -72,10 +83,10 @@ def compute_constants(embedding):
 		embeddings = json.load(handle)
 
 	# Object to vectors
-	object2vec = {}; idx2object = {}
-	for i, obj in enumerate(json.load(open("jsons/objects.json", "r"))["objects"]):
-		object2vec[obj["name"]] = embeddings[obj["name"]]
-		idx2object[i] = obj["name"]
+	object2vec = {}
+	for i, obj in enumerate(all_objects):
+		object2vec[obj] = embeddings[obj]
+		
 	tool_vec = torch.Tensor([object2vec[i] for i in TOOLS2])
 
 	# Goal objects and vectors
