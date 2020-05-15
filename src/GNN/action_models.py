@@ -515,8 +515,8 @@ class GGCN_metric_att_aseq_L_Action(nn.Module):
         self.n_objects = n_objects
         self.n_states = n_states
         l = []
-        for i in range(n_objects):
-            l.append(object2vec[idx2object[i]])
+        for obj in all_objects:
+            l.append(object2vec[obj])
         self.object_vec = torch.Tensor(l)
 
     def forward(self, g_list, goalVec, goalObjectsVec, a_list):
@@ -617,8 +617,8 @@ class GGCN_metric_att_aseq_L_auto_Action(nn.Module):
         self.n_objects = n_objects
         self.n_states = n_states
         l = []
-        for i in range(n_objects):
-            l.append(object2vec[idx2object[i]])
+        for obj in all_objects:
+            l.append(object2vec[obj])
         self.object_vec = torch.Tensor(l)
 
     def forward(self, g_list, goalVec, goalObjectsVec, a_list):

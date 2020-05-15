@@ -54,7 +54,7 @@ def convertToDGLGraph(graph_data, globalNode, goal_num, globalID):
 		edgeDict[('object', 'Global', 'object')] = globalList
 	g = dgl.heterograph(edgeDict)
 	# Add node features
-	n_nodes = g.number_of_nodes()
+	n_nodes = len(all_objects)
 	node_states = torch.zeros([n_nodes, N_STATES], dtype=torch.float) # State vector
 	node_vectors = torch.zeros([n_nodes, PRETRAINED_VECTOR_SIZE], dtype=torch.float) # Fasttext embedding 
 	node_size_and_pos = torch.zeros([n_nodes, 10], dtype=torch.float) # Size and position
@@ -139,7 +139,7 @@ class DGLDataset():
 							self.min_time[(goal_num,world_num)] = min(self.min_time[(goal_num,world_num)], graphs[-1][4])
 		self.graphs = graphs
 		self.features = self.graphs[0][3].ndata['feat'].shape[1] if not sequence else self.graphs[0][3][1][0].ndata['feat'].shape[1]
-		self.num_objects = self.graphs[0][3].number_of_nodes() if not sequence else self.graphs[0][3][1][0].number_of_nodes()
+		self.num_objects = len(all_objects)
 		if globalNode: self.num_objects -= 1
 
 class TestDataset():
