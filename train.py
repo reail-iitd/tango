@@ -123,7 +123,7 @@ def test_policy(dset, graphs, model, modelEnc, num_objects = 0, verbose = False)
 	assert "action" in training
 	with open('jsons/embeddings/'+embedding+'.vectors') as handle: e = json.load(handle)
 	correct, incorrect, error = 0, 0, 0
-	for graph in tqdm(graphs):
+	for graph in tqdm(graphs, ncols=80):
 		goal_num, world_num, tools, g, t = graph
 		actionSeq, graphSeq = g
 		actionSeq, graphSeq, object_likelihoods, tool_preds = [], [graphSeq[0]], [], []
@@ -308,7 +308,7 @@ def backprop(data, optimizer, graphs, model, num_objects, modelEnc=None, batch_s
 	total_loss = 0.0
 	l = nn.BCELoss()
 	batch_loss = 0.0
-	for iter_num, graph in tqdm(list(enumerate(graphs))):
+	for iter_num, graph in tqdm(list(enumerate(graphs)), ncols=80):
 		goal_num, world_num, tools, g, t = graph
 		if 'gcn_seq' in training:
 			actionSeq, graphSeq = g; loss = 0; toolSeq = tools
