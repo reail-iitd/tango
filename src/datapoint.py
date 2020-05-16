@@ -152,7 +152,7 @@ class Datapoint:
 		globalidlookup = globalIDLookup(sceneobjects, objects)
 		nodes = []
 		for obj in sceneobjects:
-			if obj in skip: continue
+			if obj not in all_objects: continue
 			node = {}; objID = globalidlookup[obj]
 			node['id'] = all_objects.index(obj)
 			node['name'] = obj
