@@ -704,13 +704,13 @@ class GGCN_metric_att_aseq_L_auto_tool_Action(nn.Module):
         self.fc1 = nn.Linear(n_hidden*4, n_hidden)
         self.fc2 = nn.Linear(n_hidden, n_hidden)
         self.fc3 = nn.Linear(n_hidden, len(possibleActions))
-        self.p1_object  = nn.Linear(n_hidden*5 + len(possibleActions) + 1, n_hidden)
+        self.p1_object  = nn.Linear(n_hidden*5 + len(possibleActions) + n_objects, n_hidden)
         self.p2_object  = nn.Linear(n_hidden, n_hidden)
         self.p3_object  = nn.Linear(n_hidden, 1)
-        self.p1_no_object  = nn.Linear(n_hidden*4 + len(possibleActions), n_hidden)
+        self.p1_no_object  = nn.Linear(n_hidden*4 + len(possibleActions) +n_objects, n_hidden)
         self.p2_no_object  = nn.Linear(n_hidden, n_hidden)
         self.p3_no_object  = nn.Linear(n_hidden, 1)
-        self.q1_object  = nn.Linear(n_hidden*5 + len(possibleActions) + n_objects + 1 + 1, n_hidden)
+        self.q1_object  = nn.Linear(n_hidden*5 + len(possibleActions) + n_objects + 1, n_hidden)
         self.q2_object  = nn.Linear(n_hidden, n_hidden)
         self.q3_object  = nn.Linear(n_hidden, 1)
         self.q1_no_object  = nn.Linear(n_hidden*4 + len(possibleActions) + n_objects + 1, n_hidden)
@@ -764,9 +764,9 @@ class GGCN_metric_att_aseq_L_auto_tool_Action(nn.Module):
             one_hot_action = torch.Tensor(one_hot_action).view(1,-1)
 
             #Predicting the first argument of the action
-            pred1_input = torch.cat([final_to_decode, one_hot_action], 1)
+            pred1_input = torch.cat([final_to_decode, one_hot_action, object_likelihoods[ind].view(1, self.n_objects)], 1)
             pred1_object = self.activation(self.p1_object(
-                        torch.cat([pred1_input.view(-1).repeat(self.n_objects).view(self.n_objects, -1), self.activation(self.embed(self.object_vec)), object_likelihoods[ind].view(self.n_objects, -1)], 1)))
+                        torch.cat([pred1_input.view(-1).repeat(self.n_objects).view(self.n_objects, -1), self.activation(self.embed(self.object_vec))], 1)))
             pred1_object = self.activation(self.p2_object(pred1_object))
             pred1_object = self.activation(self.p3_object(pred1_object))
 
@@ -778,7 +778,7 @@ class GGCN_metric_att_aseq_L_auto_tool_Action(nn.Module):
             # Predicting the second argument of the action
             pred2_input = torch.cat([final_to_decode, one_hot_action, pred1_output], 1)
             pred2_object = self.activation(self.q1_object(
-                        torch.cat([pred2_input.view(-1).repeat(self.n_objects).view(self.n_objects, -1), self.activation(self.embed(self.object_vec)), object_likelihoods[ind].view(self.n_objects,-1)], 1)))
+                        torch.cat([pred2_input.view(-1).repeat(self.n_objects).view(self.n_objects, -1), self.activation(self.embed(self.object_vec))], 1)))
             pred2_object = self.activation(self.q2_object(pred2_object))
             pred2_object = self.activation(self.q3_object(pred2_object))
 

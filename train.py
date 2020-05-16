@@ -470,6 +470,7 @@ def load_model(filename, model, modelEnc):
 			checkpoint_enc = torch.load(enc_path)
 			modelEnc.load_state_dict(checkpoint_enc['model_state_dict'])
 			modelEnc.eval()
+			for p in modelEnc.parameters(): p.requires_grad = False
 	return model, modelEnc, optimizer, epoch, accuracy_list
 
 def save_model(model, optimizer, epoch, accuracy_list, file_path = None):
