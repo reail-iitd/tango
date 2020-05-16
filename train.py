@@ -442,7 +442,7 @@ def get_model(model_name):
 			model_class = getattr(src.GNN.models, model_name)
 			model = model_class(data.features, data.num_objects, size * GRAPH_HIDDEN, NUMTOOLS, layers, etypes, torch.tanh, 0.5)
 	elif training == 'action' or training == 'action_tool':
-		modelEnc = DGL_Simple_Likelihood(data.features, data.num_objects, 2 * GRAPH_HIDDEN, NUMTOOLS, 3, etypes, torch.tanh, 0.5, embedding, weighted)
+		modelEnc = DGL_Simple_Likelihood(data.features, data.num_objects, 2 * GRAPH_HIDDEN, NUMTOOLS, 3, etypes, torch.tanh, 0.5, embedding, weighted) if 'tool' in training else None 
 		model_class = getattr(src.GNN.models, model_name)
 		model = model_class(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
 	return model, modelEnc
