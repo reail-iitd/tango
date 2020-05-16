@@ -123,7 +123,7 @@ def test_policy(dset, graphs, model, modelEnc, num_objects = 0, verbose = False)
 	assert "action" in training
 	with open('jsons/embeddings/'+embedding+'.vectors') as handle: e = json.load(handle)
 	correct, incorrect, error = 0, 0, 0
-	for graph in tqdm(graphs):
+	for graph in tqdm(graphs, desc = "Policy Testing"):
 		goal_num, world_num, tools, g, t = graph
 		actionSeq, graphSeq = g
 		actionSeq, graphSeq, object_likelihoods, tool_preds = [], [graphSeq[0]], [], []
@@ -157,7 +157,7 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 	correct, incorrect, error = 0, 0, 0
 	if verbose:
 		action_correct, pred1_correct, pred2_correct, den_pred2 = 0, 0, 0, 0
-	for graph in (graphs):
+	for graph in tqdm(graphs, desc = "Accuracy Score"):
 		goal_num, world_num, tools, g, t = graph
 		if 'gcn_seq' in training:
 			actionSeq, graphSeq = g; loss = 0; toolSeq = tools
@@ -512,6 +512,8 @@ if __name__ == '__main__':
 	model, modelEnc = get_model(model_name)
 	seqTool = 'Seq_' if training == 'gcn_seq' else ''
 	model, modelEnc, optimizer, epoch, accuracy_list = load_model(seqTool + model.name + "_Trained", model, modelEnc)
+	# model, modelEnc, optimizer, epoch, accuracy_list = load_model("checkpoints/baseline_metric_att_aseq_auto_c_best_69_64", model, modelEnc)
+	# model, modelEnc, optimizer, epoch, accuracy_list = load_model("GGCN_256_5_0", model, modelEnc)
 	train_set, test_set = split_data(data)
 
 	if exec_type == "train":
