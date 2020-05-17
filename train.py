@@ -122,8 +122,7 @@ def grammatical_action(action):
 def test_policy(dset, graphs, model, modelEnc, num_objects = 0, verbose = False):
 	assert "action" in training
 	with open('jsons/embeddings/'+embedding+'.vectors') as handle: e = json.load(handle)
-	if verbose:
-		print ("Policy Testing")
+	if verbose: print ("Policy Testing")
 	correct, incorrect, error = 0, 0, 0
 	for graph in tqdm(graphs, desc = "Policy Testing", ncols=80):
 		goal_num, world_num, tools, g, t = graph
@@ -515,10 +514,8 @@ if __name__ == '__main__':
 	data = load_dataset()
 	model, modelEnc = get_model(model_name)
 	seqTool = 'Seq_' if training == 'gcn_seq' else ''
-	model, modelEnc, optimizer, epoch, accuracy_list = load_model("GGCN_metric_att_aseq_L_graph_auto_Action_128_3_28", model, modelEnc)
-	# model, modelEnc, optimizer, epoch, accuracy_list = load_model(seqTool + model.name + "_Trained", model, modelEnc)
+	model, modelEnc, optimizer, epoch, accuracy_list = load_model(seqTool + model.name + "_Trained", model, modelEnc)
 	# model, modelEnc, optimizer, epoch, accuracy_list = load_model("checkpoints/baseline_metric_att_aseq_auto_c_best_69_64", model, modelEnc)
-	# model, modelEnc, optimizer, epoch, accuracy_list = load_model("GGCN_256_5_0", model, modelEnc)
 	train_set, test_set = split_data(data)
 
 	if exec_type == "train":
@@ -539,9 +536,6 @@ if __name__ == '__main__':
 		print ("Evaluating " + model.name)
 		model.eval()
 		eval_accuracy(data, train_set, test_set, model, modelEnc, True)
-		if "action" in training: 
-			# test_policy(data, train_set, model, modelEnc, data.num_objects, True)
-			test_policy(data, test_set, model, modelEnc, data.num_objects, True)
 		if training != 'gcn': exit()
 		genTest = TestDataset("dataset/test/" + domain + "/" + embedding + "/")
 		print("Generalization accuracy is ", gen_score(model, genTest))
@@ -577,5 +571,6 @@ if __name__ == '__main__':
 			print(i, gen_score(model, testFast))
 
 	elif exec_type == "policy":
-		test_policy(data, train_set, model, modelEnc, data.num_objects)
-		test_policy(data, test_set, model, modelEnc, data.num_objects)
+		assert "action" in training and "Action" in model.name
+		# test_policy(data, train_set, model, modelEnc, data.num_objects, True)
+		test_policy(data, test_set, model, modelEnc, data.num_objects, True)

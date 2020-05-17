@@ -2,6 +2,7 @@ from src.GNN.helper import *
 from src.GNN.CONSTANTS import *
 from src.utils import *
 from src.GNN.oldmodels import *
+torch.manual_seed(1)
 
 # Contains the action prediction task models. Will be released in a future publication.
 
