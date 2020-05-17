@@ -123,7 +123,7 @@ def test_policy(dset, graphs, model, modelEnc, num_objects = 0, verbose = False)
 	assert "action" in training
 	with open('jsons/embeddings/'+embedding+'.vectors') as handle: e = json.load(handle)
 	correct, incorrect, error = 0, 0, 0
-	for graph in tqdm(graphs, desc = "Policy Testing", ncols=80):
+	for graph in tqdm(graphs, desc = "Policy Testing", ncols=40):
 		goal_num, world_num, tools, g, t = graph
 		actionSeq, graphSeq = g
 		actionSeq, graphSeq, object_likelihoods, tool_preds = [], [graphSeq[0]], [], []
@@ -157,7 +157,7 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 	correct, incorrect, error = 0, 0, 0
 	if verbose:
 		action_correct, pred1_correct, pred2_correct, den_pred2 = 0, 0, 0, 0
-	for graph in tqdm(graphs, desc = "Accuracy Score"):
+	for graph in tqdm(graphs, desc = "Accuracy Score", ncols=40):
 		goal_num, world_num, tools, g, t = graph
 		if 'gcn_seq' in training:
 			actionSeq, graphSeq = g; loss = 0; toolSeq = tools
@@ -450,7 +450,7 @@ def get_model(model_name):
 def load_model(filename, model, modelEnc):
 	lr = 0.0005 if 'action' in training else 0.00005
 	if training == 'gcn_seq': lr = 0.0005
-	optimizer = torch.optim.Adam(model.parameters() , lr=lr)
+	optimizer = torch.optim.Adam(model.parameters() , lr=lr, weight_decay=1e-5)
 	file_path = MODEL_SAVE_PATH + "/" + filename + ".ckpt"
 	if path.exists(file_path):
 		print(color.GREEN+"Loading pre-trained model: "+filename+color.ENDC)
