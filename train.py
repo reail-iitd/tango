@@ -122,6 +122,8 @@ def grammatical_action(action):
 def test_policy(dset, graphs, model, modelEnc, num_objects = 0, verbose = False):
 	assert "action" in training
 	with open('jsons/embeddings/'+embedding+'.vectors') as handle: e = json.load(handle)
+	if verbose:
+		print ("Policy Testing")
 	correct, incorrect, error = 0, 0, 0
 	for graph in tqdm(graphs, desc = "Policy Testing", ncols=80):
 		goal_num, world_num, tools, g, t = graph
@@ -156,6 +158,7 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 	total_test_loss = 0; l = nn.BCELoss()
 	correct, incorrect, error = 0, 0, 0
 	if verbose:
+		print ("Accuracy score: ")
 		action_correct, pred1_correct, pred2_correct, den_pred2 = 0, 0, 0, 0
 	for graph in tqdm(graphs, desc = "Accuracy Score"):
 		goal_num, world_num, tools, g, t = graph
@@ -483,8 +486,8 @@ def save_model(model, optimizer, epoch, accuracy_list, file_path = None):
         'optimizer_state_dict': optimizer.state_dict(),
         'accuracy_list': accuracy_list}, file_path)
 
-def eval_accuracy(data, train_set, test_set, model, modelEnc):
-	t1, t2 = accuracy_score(data, train_set, model, modelEnc, data.num_objects), accuracy_score(data, test_set, model, modelEnc, data.num_objects)
+def eval_accuracy(data, train_set, test_set, model, modelEnc, verbose=False):
+	t1, t2 = accuracy_score(data, train_set, model, modelEnc, data.num_objects, verbose), accuracy_score(data, test_set, model, modelEnc, data.num_objects, verbose)
 	print ("Accuracy on training set is ", t1)
 	print ("Accuracy on test set is ", t2)
 	return t1, t2
@@ -512,7 +515,8 @@ if __name__ == '__main__':
 	data = load_dataset()
 	model, modelEnc = get_model(model_name)
 	seqTool = 'Seq_' if training == 'gcn_seq' else ''
-	model, modelEnc, optimizer, epoch, accuracy_list = load_model(seqTool + model.name + "_Trained", model, modelEnc)
+	model, modelEnc, optimizer, epoch, accuracy_list = load_model("GGCN_metric_att_aseq_L_graph_auto_Action_128_3_28", model, modelEnc)
+	# model, modelEnc, optimizer, epoch, accuracy_list = load_model(seqTool + model.name + "_Trained", model, modelEnc)
 	# model, modelEnc, optimizer, epoch, accuracy_list = load_model("checkpoints/baseline_metric_att_aseq_auto_c_best_69_64", model, modelEnc)
 	# model, modelEnc, optimizer, epoch, accuracy_list = load_model("GGCN_256_5_0", model, modelEnc)
 	train_set, test_set = split_data(data)
@@ -534,7 +538,10 @@ if __name__ == '__main__':
 	elif exec_type == "accuracy":
 		print ("Evaluating " + model.name)
 		model.eval()
-		eval_accuracy(data, train_set, test_set, model, modelEnc)
+		eval_accuracy(data, train_set, test_set, model, modelEnc, True)
+		if "action" in training: 
+			# test_policy(data, train_set, model, modelEnc, data.num_objects, True)
+			test_policy(data, test_set, model, modelEnc, data.num_objects, True)
 		if training != 'gcn': exit()
 		genTest = TestDataset("dataset/test/" + domain + "/" + embedding + "/")
 		print("Generalization accuracy is ", gen_score(model, genTest))
