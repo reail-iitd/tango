@@ -131,8 +131,8 @@ def test_policy(dset, graphs, model, modelEnc, num_objects = 0, verbose = False)
 		actionSeq, graphSeq, object_likelihoods, tool_preds = [], [graphSeq[0]], [], []
 		approx.initPolicy(domain, goal_num, world_num)
 		while True:
-			if "aseq" in model_name:
-				if "tool" in model_name:
+			if "Aseq" in model_name:
+				if "Tool" in model_name:
 					tool_likelihoods = modelEnc(graphSeq[-1], goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
 					tool_ls = list(tool_likelihoods.reshape(-1))
 					tool_preds.append(TOOLS[tool_ls.index(max(tool_ls))])
@@ -141,7 +141,7 @@ def test_policy(dset, graphs, model, modelEnc, num_objects = 0, verbose = False)
 				else:
 					y_pred_list = model(graphSeq, goal2vec[goal_num], goalObjects2vec[goal_num], actionSeq)
 				y_pred = y_pred_list[-1]
-				action_pred = vec2action_grammatical(y_pred, num_objects, 4, idx2object)
+				action_pred = vec2action_grammatical(y_pred, num_objects, 4, idx2object) if "Cons" in model.name else vec2action(y_pred, num_objects, 4, idx2object)
 				res, g, err = approx.execAction(goal_num, action_pred, e)
 				actionSeq.append(action_pred); graphSeq.append(g)
 				if verbose and err != '': print(goal_num, world_num); print(tool_preds); print(actionSeq, err); print('----------')
@@ -160,7 +160,7 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 	if verbose:
 		print ("Accuracy score: ")
 		action_correct, pred1_correct, pred2_correct, den_pred2 = 0, 0, 0, 0
-	for graph in tqdm(graphs, desc = "Accuracy Score"):
+	for graph in tqdm(graphs, desc = "Accuracy Score", ncols=80):
 		goal_num, world_num, tools, g, t = graph
 		if 'gcn_seq' in training:
 			actionSeq, graphSeq = g; loss = 0; toolSeq = tools
@@ -183,8 +183,8 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 			denominator += 1
 		elif 'action' in training:
 			actionSeq, graphSeq = g
-			if "aseq" in model_name:
-				if "tool" in model_name:
+			if "Aseq" in model_name:
+				if "Tool" in model_name:
 					object_likelihoods = []
 					for g in graphSeq:
 						tool_likelihoods = modelEnc(g, goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
@@ -195,13 +195,13 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 				plan = []
 				for i,y_pred in enumerate(y_pred_list):
 					denominator += 1
-					action_pred = vec2action_grammatical(y_pred, num_objects, 4, idx2object)
+					action_pred = vec2action_grammatical(y_pred, num_objects, 4, idx2object) if "Cons" in model.name else vec2action(y_pred, num_objects, 4, idx2object)
 					plan.append(action_pred)
 					if verbose:
-						if (not grammatical_action(action_pred)):
+						if "Cons" not in model.name and (not grammatical_action(action_pred)):
 							# print (action_pred)
 							total_ungrammatical += 1
-						if (not grammatical_action(actionSeq[i])):
+						if "Cons" not in model.name and (not grammatical_action(actionSeq[i])):
 							print (actionSeq[i])
 						if (action_pred["name"] == actionSeq[i]["name"]):
 							action_correct += 1
@@ -271,9 +271,9 @@ def printPredictions(model, data=None):
 		elif training == 'combined':
 			encoding = modelEnc.encode(g)[-1] if globalnode else modelEnc.encode(g)
 			y_pred = model(encoding.flatten(), goal2vec[goal_num], goalObjects2vec[goal_num])
-		elif 'sequence' in training:
+		elif 'action' in training:
 			actionSeq, graphSeq = g
-			if "aseq" in training:
+			if "Aseq" in model.name:
 				y_pred_list = model(graphSeq, goal2vec[goal_num], goalObjects2vec[goal_num], actionSeq)
 				for i,y_pred in enumerate(y_pred_list):
 					denominator += 1
@@ -331,8 +331,8 @@ def backprop(data, optimizer, graphs, model, num_objects, modelEnc=None, batch_s
 			batch_loss += loss
 		elif 'action' in training:
 			actionSeq, graphSeq = g; loss = 0
-			if "aseq" in model_name:
-				if "tool" in model_name:
+			if "Aseq" in model_name:
+				if "Tool" in model_name:
 					object_likelihoods = []
 					for g in graphSeq:
 						tool_likelihoods = modelEnc(g, goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
@@ -341,7 +341,7 @@ def backprop(data, optimizer, graphs, model, num_objects, modelEnc=None, batch_s
 				else:
 					y_pred_list = model(graphSeq, goal2vec[goal_num], goalObjects2vec[goal_num], actionSeq)
 				for i,y_pred in enumerate(y_pred_list):
-					y_true = action2vec(actionSeq[i], num_objects, 4)
+					y_true = action2vec_cons(actionSeq[i], num_objects, 4) if "Cons" in model.name else action2vec(actionSeq[i], num_objects, 4)
 					loss += l(y_pred, y_true)
 			else:
 				for i in range(len(graphSeq)):
@@ -453,7 +453,7 @@ def get_model(model_name):
 def load_model(filename, model, modelEnc):
 	lr = 0.0005 if 'action' in training else 0.00005
 	if training == 'gcn_seq': lr = 0.0005
-	optimizer = torch.optim.Adam(model.parameters() , lr=lr)
+	optimizer = torch.optim.Adam(model.parameters() , lr=lr, weight_decay=1e-5)
 	file_path = MODEL_SAVE_PATH + "/" + filename + ".ckpt"
 	if path.exists(file_path):
 		print(color.GREEN+"Loading pre-trained model: "+filename+color.ENDC)
