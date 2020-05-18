@@ -199,7 +199,7 @@ class GGCN_Metric_Attn_Aseq_L_Auto_Tool_Cons_C_Action(nn.Module):
             final_to_decode = torch.cat([scene_embedding, goal_embed, lstm_out.view(1,-1)], 1)
             action = self.activation(self.fc1(final_to_decode))
             action = self.activation(self.fc2(action))
-            action = self.activation(self.fc3(action))
+            action = self.fc3(action)
             action = F.softmax(action, dim=1)
             pred_action_values = list(action[0])
             ind_max_action = pred_action_values.index(max(pred_action_values))
@@ -211,7 +211,7 @@ class GGCN_Metric_Attn_Aseq_L_Auto_Tool_Cons_C_Action(nn.Module):
             pred1_object = self.activation(self.p1_object(
                         torch.cat([pred1_input.view(-1).repeat(self.n_objects).view(self.n_objects, -1), self.activation(self.embed(self.object_vec)), object_likelihoods[ind].view(self.n_objects, -1)], 1)))
             pred1_object = self.activation(self.p2_object(pred1_object))
-            pred1_object = self.activation(self.p3_object(pred1_object))
+            pred1_object = self.p3_object(pred1_object)
             pred1_output = torch.sigmoid(pred1_object)
 
             # Predicting the second argument of the action
@@ -219,12 +219,12 @@ class GGCN_Metric_Attn_Aseq_L_Auto_Tool_Cons_C_Action(nn.Module):
             pred2_object = self.activation(self.q1_object(
                         torch.cat([pred2_input.view(-1).repeat(self.n_objects).view(self.n_objects, -1), self.activation(self.embed(self.object_vec)), object_likelihoods[ind].view(self.n_objects, -1), pred1_output.view(self.n_objects, 1)], 1)))
             pred2_object = self.activation(self.q2_object(pred2_object))
-            pred2_object = self.activation(self.q3_object(pred2_object))
+            pred2_object = self.q3_object(pred2_object)
             pred2_object = torch.sigmoid(pred2_object)
 
             pred2_state = self.activation(self.q1_state(pred2_input))
             pred2_state = self.activation(self.q2_state(pred2_state))
-            pred2_state = self.activation(self.q3_state(pred2_state))
+            pred2_state = self.q3_state(pred2_state)
             pred2_state = torch.sigmoid(pred2_state)
             pred2_output = torch.cat([pred2_object.view(1,-1), pred2_state], 1)
             predicted_actions.append(torch.cat((action, pred1_output.view(1,-1), pred2_output.view(1,-1)), 1).flatten())
