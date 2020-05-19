@@ -477,7 +477,7 @@ class GGCN_Metric_Attn_Aseq_L_Auto_Tool_Goal_2_Cons_C_Action(nn.Module):
         goal_embed = self.activation(self.embed(torch.Tensor(goalVec.reshape(1, -1))))
         for ind,g in enumerate(g_list):
             h = g.ndata['feat']
-            goal_data = h[:,-1].view(self.n_objects, -1)
+            goal_data = h[:,-1].view(1, -1)
             for i, layer in enumerate(self.layers):
                 h = layer(g, h)
             metric_part = g.ndata['feat']
