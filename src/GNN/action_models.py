@@ -477,7 +477,7 @@ class GGCN_Metric_Attn_Aseq_L_Auto_Tool_Goal_2_Cons_C_Action(nn.Module):
         goal_embed = self.activation(self.embed(torch.Tensor(goalVec.reshape(1, -1))))
         for ind,g in enumerate(g_list):
             h = g.ndata['feat']
-            goal_data = h[:,-1].view(1, self.n_objects)
+            goal_data = h[:,-1].view(self.n_objects, -1)
             for i, layer in enumerate(self.layers):
                 h = layer(g, h)
             metric_part = g.ndata['feat']
@@ -509,15 +509,15 @@ class GGCN_Metric_Attn_Aseq_L_Auto_Tool_Goal_2_Cons_C_Action(nn.Module):
             pred1_object = self.activation(self.p2_object(pred1_object))
             pred1_object = self.p3_object(pred1_object)
             pred1_output = torch.sigmoid(pred1_object)
-            one_hot_pred1 = list(pred1_output[0])
+            one_hot_pred1 = list(pred1_output)
             ind_max_pred = one_hot_pred1.index(max(one_hot_pred1))
             one_hot_pred1 = [0] * len(one_hot_pred1); one_hot_pred1[ind_max_pred] = 1
-            one_hot_pred1 = torch.Tensor(one_hot_pred1).view(1,-1)
+            one_hot_pred1 = torch.Tensor(one_hot_pred1).view(-1,1)
 
             # Predicting the second argument of the action
             pred2_input = torch.cat([final_to_decode, one_hot_action], 1)
             pred2_object = self.activation(self.q1_object(
-                        torch.cat([pred2_input.view(-1).repeat(self.n_objects).view(self.n_objects, -1), self.activation(self.embed(self.object_vec)), object_likelihoods[ind].view(self.n_objects, -1), one_hot_pred1.view(self.n_objects, 1), goal_data], 1)))
+                        torch.cat([pred2_input.view(-1).repeat(self.n_objects).view(self.n_objects, -1), self.activation(self.embed(self.object_vec)), object_likelihoods[ind].view(self.n_objects, -1), one_hot_pred1, goal_data], 1)))
             pred2_object = self.activation(self.q2_object(pred2_object))
             pred2_object = self.q3_object(pred2_object)
             pred2_object = torch.sigmoid(pred2_object)
