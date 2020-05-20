@@ -37,8 +37,11 @@ def convertToDGLGraph(graph_data, globalNode, goal_num, globalID):
 	""" Converts the graph from the datapoint into a DGL form of graph."""
 	# Make edge sets
 	close, inside, on, stuck = [], [], [], []
+	closeToAgent = []
 	for edge in graph_data["edges"]:
-		if edge["relation"] == "Close": close.append((edge["from"], edge["to"]))
+		if edge["relation"] == "Close": 
+			close.append((edge["from"], edge["to"]))
+			if edge['from'] == all_objects.index('husky'): closeToAgent.append(edge['to'])
 		elif edge["relation"] == "Inside": inside.append((edge["from"], edge["to"]))
 		elif edge["relation"] == "On": on.append((edge["from"], edge["to"]))
 		elif edge["relation"] == "Stuck": stuck.append((edge["from"], edge["to"]))
@@ -59,6 +62,7 @@ def convertToDGLGraph(graph_data, globalNode, goal_num, globalID):
 	node_vectors = torch.zeros([n_nodes, PRETRAINED_VECTOR_SIZE], dtype=torch.float) # Fasttext embedding 
 	node_size_and_pos = torch.zeros([n_nodes, 10], dtype=torch.float) # Size and position
 	node_in_goal = torch.zeros([n_nodes, 1], dtype=torch.float) # Object in goal
+	node_close_agent = torch.zeros([n_nodes, 1], dtype=torch.float) # Close to husky
 	for i, node in enumerate(graph_data["nodes"]):
 		states = node["states"]
 		node_id = node["id"]
@@ -69,6 +73,8 @@ def convertToDGLGraph(graph_data, globalNode, goal_num, globalID):
 		node_size_and_pos[node_id] = torch.FloatTensor(list(node["size"]) + list(node["position"][0]) + (list(node["position"][1]) if len(node['position'][1]) > 0 else [0, 0, 0, 0]))
 		node_in_goal[node_id] = 1 if node["name"] in goalObjects[goal_num] else 0
 
+	for node in closeToAgent: node_close_agent[node] = 1
+	g.ndata['close'] = node_close_agent
 	g.ndata['feat'] = torch.cat((node_vectors, node_states, node_size_and_pos, node_in_goal), 1)
 	return g
 
