@@ -212,7 +212,7 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 								pred2_correct += 1
 					if (action_pred == actionSeq[i]):
 						total_correct += 1
-				if verbose:
+				if False:
 					c, i, e, err = approx.testPlan(domain, goal_num, world_num, plan)
 					correct += c; incorrect += i; error += e
 					if err != '' and False: print(goal_num, world_num); print(plan, err); print('----------')
@@ -247,8 +247,8 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 		print ("Denominator is", denominator)
 		print ("Action accuracy is", (action_correct/denominator) * 100)
 		print ("Pred1 accuracy is", (pred1_correct/denominator) * 100)
-		print ("Pred2 accuracy is", (pred2_correct/den_pred2) * 100)
-	if 'action' in training and verbose:
+		print ("Pred2 accuracy is", (pred2_correct/den_pred2+0.001) * 100)
+	if 'action' in training and False:
 		den = correct + incorrect + error
 		print ("Correct, Incorrect, Error: ", (correct*100/den), (incorrect*100/den), (error*100/den))
 	if training == 'gcn_seq':
@@ -310,7 +310,6 @@ def backprop(data, optimizer, graphs, model, num_objects, modelEnc=None, batch_s
 	total_loss = 0.0
 	l = nn.BCELoss()
 	batch_loss = 0.0
-	correct, incorrect, error = 0, 0, 0
 	for iter_num, graph in tqdm(list(enumerate(graphs)), ncols=80):
 		goal_num, world_num, tools, g, t = graph
 		if 'gcn_seq' in training:
@@ -343,10 +342,6 @@ def backprop(data, optimizer, graphs, model, num_objects, modelEnc=None, batch_s
 				for i,y_pred in enumerate(y_pred_list):
 					y_true = action2vec_cons(actionSeq[i], num_objects, 4) if "Cons" in model.name else action2vec(actionSeq[i], num_objects, 4)
 					loss += l(y_pred, y_true)
-				plan = [vec2action_grammatical(y_pred, num_objects, 4, idx2object) for y_pred in y_pred_list]
-				c, i, e, err = approx.testPlan(domain, goal_num, world_num, plan)
-				correct += c; incorrect += i; error += e
-				# loss = loss * 0.7 if c == 1 else loss * 1 if e == 0 else loss * 1.5
 			else:
 				for i in range(len(graphSeq)):
 					if 'list' not in model_name:
@@ -362,8 +357,6 @@ def backprop(data, optimizer, graphs, model, num_objects, modelEnc=None, batch_s
 			batch_loss.backward()
 			optimizer.step()
 			batch_loss = 0
-	den = correct + incorrect + error
-	print ("Correct, Incorrect, Error: ", (correct*100/den), (incorrect*100/den), (error*100/den))
 	return (total_loss.item()/len(graphs))
 
 def backpropGD(data, optimizer, graphs, model, num_objects, modelEnc=None):
@@ -457,7 +450,7 @@ def get_model(model_name):
 	return model, modelEnc
 
 def load_model(filename, model, modelEnc):
-	lr = 0.0005 if 'action' in training else 0.00005
+	lr = 0.002 if 'action' in training else 0.00005
 	if training == 'gcn_seq': lr = 0.0005
 	optimizer = torch.optim.Adam(model.parameters() , lr=lr, weight_decay=1e-5)
 	file_path = MODEL_SAVE_PATH + "/" + filename + ".ckpt"
@@ -535,7 +528,7 @@ if __name__ == '__main__':
 			t1, t2 = eval_accuracy(data, train_set, test_set, model, modelEnc, True)
 			accuracy_list.append((t2, t1, loss))
 			if 'action' in training:
-				test_policy(data, test_set, model, modelEnc, data.num_objects, True)
+				test_policy(data, test_set, model, modelEnc, data.num_objects, False)
 			save_model(model, optimizer, num_epochs, accuracy_list)
 		print ("The maximum accuracy on test set is ", str(max(accuracy_list)), " at epoch ", accuracy_list.index(max(accuracy_list)))
 

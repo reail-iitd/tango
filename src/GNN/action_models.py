@@ -622,3 +622,154 @@ class GGCN_Metric_Attn_Aseq_L_Auto_Tool_G_N_Cons_C_2_Action(nn.Module):
             pred2_output = torch.cat([pred2_object.view(1,-1), pred2_state], 1)
             predicted_actions.append(torch.cat((action, pred1_output.view(1,-1), pred2_output.view(1,-1)), 1).flatten())
         return predicted_actions
+
+class GGCN_Metric_Attn_Aseq_L_Auto_Tool_G_N_Cons_C_3_Action(nn.Module):
+    def __init__(self,
+                 in_feats,
+                 n_objects,
+                 n_hidden,
+                 n_states,
+                 n_layers,
+                 etypes,
+                 activation,
+                 dropout):
+        super(GGCN_Metric_Attn_Aseq_L_Auto_Tool_G_N_Cons_C_3_Action, self).__init__()
+        self.name = "GGCN_Metric_Attn_Aseq_L_Auto_Tool_G_N_Cons_C_3_Action_" + str(n_hidden) + "_" + str(n_layers)
+        self.layers = nn.ModuleList()
+        self.activation = nn.LeakyReLU()
+        self.layers.append(nn.Linear(in_feats + 4*n_objects, 2*n_hidden))
+        for i in range(n_layers - 1):
+            self.layers.append(nn.Linear(2*n_hidden, 2*n_hidden))
+        self.attention = nn.Sequential(nn.Linear(n_hidden + n_hidden + n_hidden + n_hidden + 1, n_hidden), self.activation, nn.Linear(n_hidden, 1))
+        self.embed = nn.Sequential(nn.Linear(PRETRAINED_VECTOR_SIZE, 2*n_hidden), self.activation, nn.Linear(2*n_hidden, n_hidden))
+        self.a = nn.Sequential(nn.Linear(n_hidden*4, n_hidden), self.activation, nn.Linear(n_hidden, n_hidden), self.activation, nn.Linear(n_hidden, len(possibleActions)))
+        self.p = nn.Sequential(nn.Linear(n_hidden*7 + 2*n_hidden, n_hidden), self.activation, nn.Linear(n_hidden, n_hidden), self.activation, nn.Linear(n_hidden, 1))
+        self.q_obj = nn.Sequential(nn.Linear(n_hidden*7 + 2*n_hidden + 1, n_hidden), self.activation, nn.Linear(n_hidden, n_hidden), self.activation, nn.Linear(n_hidden, 1))
+        self.q_state = nn.Sequential(nn.Linear(n_hidden*7 + 2*n_hidden, n_hidden), self.activation, nn.Linear(n_hidden, n_hidden), self.activation, nn.Linear(n_hidden, n_states))
+        self.action_lstm = nn.LSTM(len(possibleActions) + PRETRAINED_VECTOR_SIZE + PRETRAINED_VECTOR_SIZE + n_states, n_hidden)
+        self.action_embedding = nn.Embedding(len(possibleActions), 2*n_hidden)
+        self.n_hidden = n_hidden
+        self.n_objects = n_objects
+        self.n_states = n_states
+        self.etypes = etypes
+        l = [object2vec[obj] for obj in all_objects]
+        self.object_vec = torch.Tensor(l)
+
+    def forward(self, g_list, goalVec, goalObjectsVec, a_list, object_likelihoods):
+        a_list = [action2vec_generalizable(i, self.n_objects, self.n_states) for i in a_list]
+        predicted_actions = []
+        lstm_hidden = (torch.randn(1, 1, self.n_hidden),torch.randn(1, 1, self.n_hidden))
+        goalObjectsVec = self.activation(self.embed(torch.Tensor(goalObjectsVec)))
+        goal_embed = self.activation(self.embed(torch.Tensor(goalVec.reshape(1, -1))))
+        for ind,g in enumerate(g_list):
+            h = g.ndata['feat']
+            edgeMatrices = [g.adjacency_matrix(etype=t) for t in self.etypes]
+            edges = torch.cat(edgeMatrices, 1).to_dense()
+            h = torch.cat((h, edges), 1)
+            for i, layer in enumerate(self.layers):
+                h = self.activation(layer(h))
+            if (ind != 0):
+                lstm_out, lstm_hidden = self.action_lstm(a_list[ind-1].view(1,1,-1), lstm_hidden)
+            else:
+                lstm_out = torch.zeros(1, 1, self.n_hidden)
+            lstm_out = lstm_out.view(-1)
+            attn_embedding = torch.cat([h, goalObjectsVec.repeat(h.size(0)).view(h.size(0), -1), lstm_out.repeat(h.size(0)).view(h.size(0), -1), object_likelihoods[ind].view(h.size(0),-1)], 1)
+            attn_weights = F.softmax(self.attention(attn_embedding), dim=0)
+            scene_embedding = torch.mm(attn_weights.t(), h)
+            final_to_decode = torch.cat([scene_embedding, goal_embed, lstm_out.view(1,-1)], 1)
+            action = F.softmax(self.a(final_to_decode), dim=1)
+            pred_action_values = list(action[0])
+            ind_max_action = pred_action_values.index(max(pred_action_values))
+            one_hot_action = self.action_embedding(torch.LongTensor([ind_max_action]))
+
+            #Predicting the first argument of the action
+            objs_embeddings = self.activation(self.embed(self.object_vec))
+            pred1_input = torch.cat([final_to_decode, one_hot_action], 1)
+            pred1_output = F.softmax(self.p(torch.cat([pred1_input.view(-1).repeat(self.n_objects).view(self.n_objects, -1), objs_embeddings, h], 1)).view(1,-1), dim=1)
+            pred1_values = list(pred1_output.view(-1))
+            ind_max_pred1 = pred1_values.index(max(pred1_values))
+
+            # Predicting the second argument of the action
+            pred2_object = F.softmax(self.q_obj(
+                        torch.cat([pred1_input.view(-1).repeat(self.n_objects).view(self.n_objects, -1), objs_embeddings, h, pred1_output.view(-1, 1)], 1)).view(1,-1), dim=1)
+            pred2_state = F.softmax(self.q_state(torch.cat([pred1_input, objs_embeddings[ind_max_pred1].view(1,-1), h[ind_max_pred1].view(1,-1)], 1)).view(1,-1), dim=1)
+            predicted_actions.append(torch.cat((action, pred1_output, pred2_object, pred2_state), 1).flatten())
+        return predicted_actions
+
+
+class GGCN_Metric_Attn_Aseq_L_Auto_Tool_G_N_Cons_C_4_Action(nn.Module):
+    def __init__(self,
+                 in_feats,
+                 n_objects,
+                 n_hidden,
+                 n_states,
+                 n_layers,
+                 etypes,
+                 activation,
+                 dropout):
+        super(GGCN_Metric_Attn_Aseq_L_Auto_Tool_G_N_Cons_C_4_Action, self).__init__()
+        self.name = "GGCN_Metric_Attn_Aseq_L_Auto_Tool_G_N_Cons_C_4_Action_" + str(n_hidden) + "_" + str(n_layers)
+        self.layers = nn.ModuleList()
+        self.activation = nn.LeakyReLU()
+        self.layers.append(nn.Linear(in_feats + 4*n_objects, 2*n_hidden))
+        for i in range(n_layers - 1):
+            self.layers.append(nn.Linear(2*n_hidden, 2*n_hidden))
+        self.zero_embed_sz = n_hidden
+        self.zero_one_embeddings = nn.Embedding(2,self.zero_embed_sz)
+        self.attention = nn.Sequential(nn.Linear(n_hidden + n_hidden + n_hidden + n_hidden + 1, n_hidden), self.activation, nn.Linear(n_hidden, 1))
+        self.embed = nn.Sequential(nn.Linear(PRETRAINED_VECTOR_SIZE, 2*n_hidden), self.activation, nn.Linear(2*n_hidden, n_hidden))
+        self.a = nn.Sequential(nn.Linear(n_hidden*4, n_hidden), self.activation, nn.Linear(n_hidden, n_hidden), self.activation, nn.Linear(n_hidden, len(possibleActions)))
+        self.p = nn.Sequential(nn.Linear(n_hidden*7 + 2*n_hidden, n_hidden), self.activation, nn.Linear(n_hidden, n_hidden), self.activation, nn.Linear(n_hidden, 1))
+        self.q_obj = nn.Sequential(nn.Linear(n_hidden*7 + 2*n_hidden + self.zero_embed_sz, n_hidden), self.activation, nn.Linear(n_hidden, n_hidden), self.activation, nn.Linear(n_hidden, 1))
+        self.q_state = nn.Sequential(nn.Linear(n_hidden*7 + 2*n_hidden, n_hidden), self.activation, nn.Linear(n_hidden, n_hidden), self.activation, nn.Linear(n_hidden, n_states))
+        self.action_lstm = nn.LSTM(len(possibleActions) + PRETRAINED_VECTOR_SIZE + PRETRAINED_VECTOR_SIZE + n_states, n_hidden)
+        self.action_embedding = nn.Embedding(len(possibleActions), 2*n_hidden)
+        self.n_hidden = n_hidden
+        self.n_objects = n_objects
+        self.n_states = n_states
+        self.etypes = etypes
+        l = [object2vec[obj] for obj in all_objects]
+        self.object_vec = torch.Tensor(l)
+
+    def forward(self, g_list, goalVec, goalObjectsVec, a_list, object_likelihoods):
+        a_list = [action2vec_generalizable(i, self.n_objects, self.n_states) for i in a_list]
+        predicted_actions = []
+        lstm_hidden = (torch.randn(1, 1, self.n_hidden),torch.randn(1, 1, self.n_hidden))
+        goalObjectsVec = self.activation(self.embed(torch.Tensor(goalObjectsVec)))
+        goal_embed = self.activation(self.embed(torch.Tensor(goalVec.reshape(1, -1))))
+        for ind,g in enumerate(g_list):
+            h = g.ndata['feat']
+            edgeMatrices = [g.adjacency_matrix(etype=t) for t in self.etypes]
+            edges = torch.cat(edgeMatrices, 1).to_dense()
+            h = torch.cat((h, edges), 1)
+            for i, layer in enumerate(self.layers):
+                h = self.activation(layer(h))
+            if (ind != 0):
+                lstm_out, lstm_hidden = self.action_lstm(a_list[ind-1].view(1,1,-1), lstm_hidden)
+            else:
+                lstm_out = torch.zeros(1, 1, self.n_hidden)
+            lstm_out = lstm_out.view(-1)
+            attn_embedding = torch.cat([h, goalObjectsVec.repeat(h.size(0)).view(h.size(0), -1), lstm_out.repeat(h.size(0)).view(h.size(0), -1), object_likelihoods[ind].view(h.size(0),-1)], 1)
+            attn_weights = F.softmax(self.attention(attn_embedding), dim=0)
+            scene_embedding = torch.mm(attn_weights.t(), h)
+            final_to_decode = torch.cat([scene_embedding, goal_embed, lstm_out.view(1,-1)], 1)
+            action = F.softmax(self.a(final_to_decode), dim=1)
+            pred_action_values = list(action[0])
+            ind_max_action = pred_action_values.index(max(pred_action_values))
+            one_hot_action = self.action_embedding(torch.LongTensor([ind_max_action]))
+
+            #Predicting the first argument of the action
+            objs_embeddings = self.activation(self.embed(self.object_vec))
+            pred1_input = torch.cat([final_to_decode, one_hot_action], 1)
+            pred1_output = F.softmax(self.p(torch.cat([pred1_input.view(-1).repeat(self.n_objects).view(self.n_objects, -1), objs_embeddings, h], 1)).view(1,-1), dim=1)
+            pred1_values = list(pred1_output.view(-1))
+            ind_max_pred1 = pred1_values.index(max(pred1_values))
+            one_hot_pred1 = [self.zero_one_embeddings(torch.LongTensor([0]).view(-1))]*len(pred1_values); one_hot_pred1[ind_max_pred1] = self.zero_one_embeddings(torch.LongTensor([1]).view(-1))
+            one_hot_pred1 = torch.stack(one_hot_pred1).view(-1,self.zero_embed_sz)
+
+            # Predicting the second argument of the action
+            pred2_object = F.softmax(self.q_obj(
+                        torch.cat([pred1_input.view(-1).repeat(self.n_objects).view(self.n_objects, -1), objs_embeddings, h, one_hot_pred1], 1)).view(1,-1), dim=1)
+            pred2_state = F.softmax(self.q_state(torch.cat([pred1_input, objs_embeddings[ind_max_pred1].view(1,-1), h[ind_max_pred1].view(1,-1)], 1)).view(1,-1), dim=1)
+            predicted_actions.append(torch.cat((action, pred1_output, pred2_object, pred2_state), 1).flatten())
+        return predicted_actions
