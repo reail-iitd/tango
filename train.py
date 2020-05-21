@@ -210,6 +210,8 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 							den_pred2 += 1
 							if (action_pred["args"][0] == actionSeq[i]["args"][0]):
 								pred2_correct += 1
+						if (len(action_pred["args"]) == 2 and action_pred["args"][0] == action_pred["args"][1]):
+							print ("Check here")
 					if (action_pred == actionSeq[i]):
 						total_correct += 1
 				if verbose:
@@ -514,7 +516,8 @@ if __name__ == '__main__':
 	data = load_dataset()
 	model, modelEnc = get_model(model_name)
 	seqTool = 'Seq_' if training == 'gcn_seq' else ''
-	model, modelEnc, optimizer, epoch, accuracy_list = load_model(seqTool + model.name + "_Trained", model, modelEnc)
+	model, modelEnc, optimizer, epoch, accuracy_list = load_model("GGCN_Metric_Attn_Aseq_L_Auto_Cons_C_3_Action_128_3_33", model, modelEnc)
+	# model, modelEnc, optimizer, epoch, accuracy_list = load_model(seqTool + model.name + "_Trained", model, modelEnc)
 	# model, modelEnc, optimizer, epoch, accuracy_list = load_model("checkpoints/baseline_metric_att_aseq_auto_c_best_69_64", model, modelEnc)
 	train_set, test_set = split_data(data)
 
