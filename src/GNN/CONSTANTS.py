@@ -53,6 +53,8 @@ all_home_objects = ['floor', 'walls', 'door', 'fridge', 'cupboard', 'husky', 'ta
 		'bottle_gray', 'bottle_red', 'box', 'apple', 'orange', 'banana', 'chair', 'ball', 'stick', 'dumpster', 'milk', \
 		'shelf', 'glue', 'tape', 'stool', 'mop', 'sponge', 'vacuum', 'dirt']
 
+all_objects_with_states = ['door', 'fridge', 'cupboard']
+
 all_factory_objects = []
 
 all_objects = all_home_objects if domain == 'home' else all_factory_objects

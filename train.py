@@ -310,6 +310,7 @@ def backprop(data, optimizer, graphs, model, num_objects, modelEnc=None, batch_s
 	total_loss = 0.0
 	l = nn.BCELoss()
 	batch_loss = 0.0
+	correct, incorrect, error = 0, 0, 0
 	for iter_num, graph in tqdm(list(enumerate(graphs)), ncols=80):
 		goal_num, world_num, tools, g, t = graph
 		if 'gcn_seq' in training:
@@ -342,6 +343,10 @@ def backprop(data, optimizer, graphs, model, num_objects, modelEnc=None, batch_s
 				for i,y_pred in enumerate(y_pred_list):
 					y_true = action2vec_cons(actionSeq[i], num_objects, 4) if "Cons" in model.name else action2vec(actionSeq[i], num_objects, 4)
 					loss += l(y_pred, y_true)
+				plan = [vec2action_grammatical(y_pred, num_objects, 4, idx2object) for y_pred in y_pred_list]
+				c, i, e, err = approx.testPlan(domain, goal_num, world_num, plan)
+				correct += c; incorrect += i; error += e
+				# loss = loss * 0.7 if c == 1 else loss * 1 if e == 0 else loss * 1.5
 			else:
 				for i in range(len(graphSeq)):
 					if 'list' not in model_name:
@@ -357,6 +362,8 @@ def backprop(data, optimizer, graphs, model, num_objects, modelEnc=None, batch_s
 			batch_loss.backward()
 			optimizer.step()
 			batch_loss = 0
+	den = correct + incorrect + error
+	print ("Correct, Incorrect, Error: ", (correct*100/den), (incorrect*100/den), (error*100/den))
 	return (total_loss.item()/len(graphs))
 
 def backpropGD(data, optimizer, graphs, model, num_objects, modelEnc=None):
