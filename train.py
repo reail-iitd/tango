@@ -451,7 +451,7 @@ def get_model(model_name):
 	return model, modelEnc
 
 def load_model(filename, model, modelEnc):
-	lr = 0.005 if 'action' in training else 0.00005
+	lr = 0.0005 if 'action' in training else 0.00005
 	if training == 'gcn_seq': lr = 0.0005
 	optimizer = torch.optim.Adam(model.parameters() , lr=lr, weight_decay=1e-5)
 	file_path = MODEL_SAVE_PATH + "/" + filename + ".ckpt"
