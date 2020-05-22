@@ -341,7 +341,7 @@ class GGCN_Metric_Attn_Aseq_L_Auto_Cons_C_Action(nn.Module):
         self.q3_state  = nn.Linear(n_hidden, n_states)
         self.metric1 = nn.Linear(in_feats, n_hidden)
         self.metric2 = nn.Linear(n_hidden, n_hidden)
-        self.action_lstm = nn.LSTM(len(possibleActions) + PRETRAINED_VECTOR_SIZE + PRETRAINED_VECTOR_SIZE + n_states, n_hidden)
+        self.action_lstm = nn.LSTM(len(possibleActions) + n_hidden + n_hidden + n_states, n_hidden)
         self.n_hidden = n_hidden
         self.n_objects = n_objects
         self.n_states = n_states
@@ -351,7 +351,7 @@ class GGCN_Metric_Attn_Aseq_L_Auto_Cons_C_Action(nn.Module):
         self.object_vec = torch.Tensor(l)
 
     def forward(self, g_list, goalVec, goalObjectsVec, a_list):
-        a_list = [action2vec_generalizable(i, self.n_objects, self.n_states) for i in a_list]
+        a_list = [action2vec_lstm(i, self.n_objects, self.n_states, self.n_hidden, self.embed) for i in a_list]
         predicted_actions = []
         lstm_hidden = (torch.randn(1, 1, self.n_hidden),torch.randn(1, 1, self.n_hidden))
         goalObjectsVec = self.activation(self.embed(torch.Tensor(goalObjectsVec)))
