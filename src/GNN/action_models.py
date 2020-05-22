@@ -609,7 +609,7 @@ class GGCN_Metric_Attn_Aseq_L_Auto_Cons_N_C_5_Action(nn.Module):
             pred2_object = self.q3_object(pred2_object)
             pred2_object = torch.sigmoid(pred2_object).view(1,-1)
 
-            pred2_state = self.activation(self.q1_state(torch.cat([pred2_input, objs_embeddings[ind_max_pred1]], 1)))
+            pred2_state = self.activation(self.q1_state(torch.cat([pred2_input, objs_embeddings[ind_max_pred1].view(1,-1)], 1)))
             pred2_state = self.activation(self.q2_state(pred2_state))
             pred2_state = self.q3_state(pred2_state)
             pred2_state = torch.sigmoid(pred2_state)
