@@ -160,6 +160,7 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 	if verbose:
 		print ("Accuracy score: ")
 		action_correct, pred1_correct, pred2_correct, den_pred2 = 0, 0, 0, 0
+		stuttering = 0
 	for graph in tqdm(graphs, desc = "Accuracy Score", ncols=80):
 		goal_num, world_num, tools, g, t = graph
 		if 'gcn_seq' in training:
@@ -213,6 +214,8 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 								pred2_correct += 1
 					if (action_pred == actionSeq[i]):
 						total_correct += 1
+					if (len(action_pred["args"]) == 2 and action_pred["args"][0] == action_pred["args"][1]):
+						stuttering += 1
 				if False:
 					c, i, e, err = approx.testPlan(domain, goal_num, world_num, plan)
 					correct += c; incorrect += i; error += e
@@ -249,6 +252,7 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 		print ("Action accuracy is", (action_correct/denominator) * 100)
 		print ("Pred1 accuracy is", (pred1_correct/denominator) * 100)
 		print ("Pred2 accuracy is", (pred2_correct/den_pred2+0.001) * 100)
+		print ("Stuttering count is " stuttering)
 	if 'action' in training and False:
 		den = correct + incorrect + error
 		print ("Correct, Incorrect, Error: ", (correct*100/den), (incorrect*100/den), (error*100/den))
