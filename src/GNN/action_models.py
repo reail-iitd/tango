@@ -539,7 +539,7 @@ class GGCN_Metric_Attn_Aseq_L_Auto_Cons_N_C_5_Action(nn.Module):
         self.p1_object  = nn.Linear(n_hidden*5 + len(possibleActions) + 2*n_hidden + 1, n_hidden*2)
         self.p2_object  = nn.Linear(n_hidden*2, n_hidden*2)
         self.p3_object  = nn.Linear(n_hidden*2, 1)
-        self.q1_object  = nn.Linear(n_hidden*5 + len(possibleActions) + 2*n_hidden, n_hidden*2)
+        self.q1_object  = nn.Linear(n_hidden*5 + len(possibleActions) + 2*n_hidden + 1, n_hidden*2)
         self.q2_object  = nn.Linear(n_hidden*2, n_hidden*2)
         self.q3_object  = nn.Linear(n_hidden*2, 1)
         self.q1_state  = nn.Linear(n_hidden*4 + len(possibleActions) + n_hidden, n_hidden*2)
@@ -595,7 +595,7 @@ class GGCN_Metric_Attn_Aseq_L_Auto_Cons_N_C_5_Action(nn.Module):
             objs_embeddings = self.embed(self.object_vec)
             pred1_input = torch.cat([final_to_decode, one_hot_action], 1)
             pred1_object = self.activation(self.p1_object(
-                        torch.cat([pred1_input.view(-1).repeat(self.n_objects).view(self.n_objects, -1), objs_embeddings, h], 1)))
+                        torch.cat([pred1_input.view(-1).repeat(self.n_objects).view(self.n_objects, -1), objs_embeddings, h, close_data], 1)))
             pred1_object = self.activation(self.p2_object(pred1_object))
             pred1_object = self.p3_object(pred1_object)
             pred1_output = torch.sigmoid(pred1_object).view(1,-1)
@@ -604,7 +604,7 @@ class GGCN_Metric_Attn_Aseq_L_Auto_Cons_N_C_5_Action(nn.Module):
             # Predicting the second argument of the action
             pred2_input = torch.cat([final_to_decode, one_hot_action], 1)
             pred2_object = self.activation(self.q1_object(
-                        torch.cat([pred2_input.view(-1).repeat(self.n_objects).view(self.n_objects, -1), objs_embeddings, h], 1)))
+                        torch.cat([pred2_input.view(-1).repeat(self.n_objects).view(self.n_objects, -1), objs_embeddings, h, close_data], 1)))
             pred2_object = self.activation(self.q2_object(pred2_object))
             pred2_object = self.q3_object(pred2_object)
             pred2_object = torch.sigmoid(pred2_object).view(1,-1)
