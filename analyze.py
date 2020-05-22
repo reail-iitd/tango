@@ -378,6 +378,53 @@ def checkApprox():
 				assert res;
 				f.close()
 
+def get_all_possible_actions():
+	actions = []
+	for a in ["moveTo", "pick"]:
+		for obj in all_objects:
+			actions.append({'name': a, 'args':[obj]})
+	actions.extend([{'name': i, 'args': ['stool']} for i in ["climbUp", "climbDown"]])
+	actions.append({'name': 'clean', 'args': ['dirt']})
+	for a in ["dropTo", "pushTo", "pickNplaceAonB"]:
+		for obj in all_objects:
+			for obj2 in all_objects:
+				actions.append({'name': a, 'args':[obj, obj2]})
+	for obj in ['glue', 'tape']:
+		actions.append({'name': 'apply', 'args':[obj, 'paper']})
+	actions.append({'name': 'stick', 'args': ['paper', 'walls']})
+	for obj in all_objects_with_states:
+		actions.extend([{'name': 'changeState', 'args':[obj, i]} for i in ['open', 'close']])
+	actions.extend([{'name': 'changeState', 'args':['light', i]} for i in ['off']])
+	return actions
+
+def checkAllActions():
+	import approx
+	all_possible_actions = get_all_possible_actions()
+	for goal in GOAL_LISTS['home']:
+		print('Goal = ' + goal)
+		for world in range(10):
+			directory = './dataset/home/' + goal.split('.')[0] + '/world_home' + str(world)
+			try:
+				points = listdir(directory)
+			except Exception as e:
+				continue
+			for point in points:
+				f = open(directory + '/' + point, 'rb')
+				datapoint = pickle.load(f)
+				args = approx.Args()
+				args.world = 'jsons/home_worlds/world_home' + str(world) +'.json'
+				args.goal = 'jsons/home_goals/' + goal
+				plan = []
+				for action in datapoint.symbolicActions:
+					if str(action[0]) == 'E' or str(action[0]) == 'U':
+						plan = []; break;
+					else:
+						plan.append(action[0])
+				if plan == []: continue
+				for action in plan:
+					if action not in all_possible_actions:
+						print(action)
+
 def checkPlan():
 	import approx
 	goal, world = 2, 0
@@ -396,7 +443,7 @@ def checkPlan():
 
 # keepNewDatapoints(4)
 # printAllDatapoints()
-printNumDatapoints(w='factory')
+# printNumDatapoints(w='factory')
 # changeAllDatapoints()
 # combineDatasets(4)
 # printGraph("dataset/factory/goal1-crates-platform/world_factory3/0")
@@ -411,3 +458,4 @@ printNumDatapoints(w='factory')
 # getAllData()
 # checkApprox()
 # checkPlan()
+checkAllActions()
