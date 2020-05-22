@@ -514,7 +514,6 @@ class GGCN_Metric_Attn_Aseq_L_Auto_Cons_N_C_Action(nn.Module):
             predicted_actions.append(torch.cat((action, pred1_output, pred2_object, pred2_state), 1).flatten())
         return predicted_actions
 
-
 class GGCN_Metric_Attn_Aseq_L_Auto_Cons_N_C_5_Action(nn.Module):
     def __init__(self,
                  in_feats,
