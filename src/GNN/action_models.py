@@ -599,10 +599,6 @@ class GGCN_Metric_Attn_Aseq_L_Auto_Cons_N_C_5_Action(nn.Module):
             pred1_object = self.activation(self.p2_object(pred1_object))
             pred1_object = self.p3_object(pred1_object)
             pred1_output = torch.sigmoid(pred1_object).view(1,-1)
-            pred1_values = list(pred1_output[0])
-            ind_max_pred1 = pred1_values.index(max(pred1_values))
-            one_hot_pred1 = [self.zero_one_embeddings(torch.LongTensor([0]).view(-1))]*len(pred1_values); one_hot_pred1[ind_max_pred1] = self.zero_one_embeddings(torch.LongTensor([1]).view(-1))
-            one_hot_pred1 = torch.stack(one_hot_pred1).view(-1,self.zero_embed_sz)
 
             # Predicting the second argument of the action
             pred2_input = torch.cat([final_to_decode, one_hot_action], 1)
