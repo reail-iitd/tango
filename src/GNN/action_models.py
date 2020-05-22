@@ -531,18 +531,18 @@ class GGCN_Metric_Attn_Aseq_L_Auto_Cons_N_C_5_Action(nn.Module):
         self.layers.append(GatedHeteroRGCNLayer(in_feats, n_hidden, etypes, activation=activation))
         for i in range(n_layers - 1):
             self.layers.append(GatedHeteroRGCNLayer(n_hidden, n_hidden, etypes, activation=activation))
-        self.attention = nn.Sequential(nn.Linear(n_hidden + n_hidden + n_hidden + n_hidden, n_hidden), self.activation, nn.Linear(n_hidden, 1))
+        self.attention = nn.Sequential(nn.Linear(n_hidden + n_hidden + n_hidden + n_hidden + 1, n_hidden), self.activation, nn.Linear(n_hidden, 1))
         self.embed = nn.Sequential(nn.Linear(PRETRAINED_VECTOR_SIZE, n_hidden), self.activation, nn.Linear(n_hidden, n_hidden), self.activation)
         self.fc1 = nn.Linear(n_hidden*4, n_hidden)
         self.fc2 = nn.Linear(n_hidden, n_hidden)
         self.fc3 = nn.Linear(n_hidden, len(possibleActions))
-        self.p1_object  = nn.Linear(n_hidden*5 + len(possibleActions) + 2*n_hidden, n_hidden*2)
+        self.p1_object  = nn.Linear(n_hidden*5 + len(possibleActions) + 2*n_hidden + 1, n_hidden*2)
         self.p2_object  = nn.Linear(n_hidden*2, n_hidden*2)
         self.p3_object  = nn.Linear(n_hidden*2, 1)
-        self.q1_object  = nn.Linear(n_hidden*5 + len(possibleActions) + 2*n_hidden, n_hidden*2)
+        self.q1_object  = nn.Linear(n_hidden*5 + len(possibleActions) + 2*n_hidden + 1, n_hidden*2)
         self.q2_object  = nn.Linear(n_hidden*2, n_hidden*2)
         self.q3_object  = nn.Linear(n_hidden*2, 1)
-        self.q1_state  = nn.Linear(n_hidden*4 + len(possibleActions), n_hidden*2)
+        self.q1_state  = nn.Linear(n_hidden*4 + len(possibleActions) + n_hidden, n_hidden*2)
         self.q2_state  = nn.Linear(n_hidden*2, n_hidden*2)
         self.q3_state  = nn.Linear(n_hidden*2, n_states)
         self.metric1 = nn.Linear(in_feats, 2*n_hidden)
@@ -571,13 +571,14 @@ class GGCN_Metric_Attn_Aseq_L_Auto_Cons_N_C_5_Action(nn.Module):
             metric_part = self.activation(self.metric1(metric_part))
             metric_part = self.activation(self.metric2(metric_part))
             metric_part = self.activation(self.metric3(metric_part))
+            close_data = g.ndata['close']
             h = torch.cat([h, metric_part], dim = 1)
             if (ind != 0):
                 lstm_out, lstm_hidden = self.action_lstm(a_list[ind-1].view(1,1,-1), lstm_hidden)
             else:
                 lstm_out = torch.zeros(1, 1, self.n_hidden)
             lstm_out = lstm_out.view(-1)
-            attn_embedding = torch.cat([h, goalObjectsVec.repeat(h.size(0)).view(h.size(0), -1), lstm_out.repeat(h.size(0)).view(h.size(0), -1)], 1)
+            attn_embedding = torch.cat([h, goalObjectsVec.repeat(h.size(0)).view(h.size(0), -1), lstm_out.repeat(h.size(0)).view(h.size(0), -1), close_data], 1)
             attn_weights = F.softmax(self.attention(attn_embedding), dim=0)
             scene_embedding = torch.mm(attn_weights.t(), h)
             final_to_decode = torch.cat([scene_embedding, goal_embed, lstm_out.view(1,-1)], 1)
@@ -598,6 +599,7 @@ class GGCN_Metric_Attn_Aseq_L_Auto_Cons_N_C_5_Action(nn.Module):
             pred1_object = self.activation(self.p2_object(pred1_object))
             pred1_object = self.p3_object(pred1_object)
             pred1_output = torch.sigmoid(pred1_object).view(1,-1)
+            pred1_values = list(pred1_output[0]); ind_max_pred1 = pred1_values.index(max(pred1_values))
 
             # Predicting the second argument of the action
             pred2_input = torch.cat([final_to_decode, one_hot_action], 1)
@@ -607,7 +609,7 @@ class GGCN_Metric_Attn_Aseq_L_Auto_Cons_N_C_5_Action(nn.Module):
             pred2_object = self.q3_object(pred2_object)
             pred2_object = torch.sigmoid(pred2_object).view(1,-1)
 
-            pred2_state = self.activation(self.q1_state(pred2_input))
+            pred2_state = self.activation(self.q1_state(torch.cat([pred2_input, objs_embeddings[ind_max_pred1]], 1)))
             pred2_state = self.activation(self.q2_state(pred2_state))
             pred2_state = self.q3_state(pred2_state)
             pred2_state = torch.sigmoid(pred2_state)
