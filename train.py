@@ -145,10 +145,11 @@ def test_policy(dset, graphs, model, modelEnc, num_objects = 0, verbose = False)
 				actionSeq.append(action_pred); graphSeq.append(g)
 				if verbose and err != '': print(goal_num, world_num); print(tool_preds); print(actionSeq, err); print('----------')
 				if res:	correct += 1; break
-				elif err == '' and len(actionSeq) > 20:	incorrect += 1; break
+				elif err == '' and len(actionSeq) > 30:	incorrect += 1; break
 				elif err != '': error += 1; break
 	den = correct + incorrect + error
 	print ("Correct, Incorrect, Error: ", (correct*100/den), (incorrect*100/den), (error*100/den))
+	return (correct*100/den), (incorrect*100/den), (error*100/den)
 
 def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = False):
 	total_correct = 0
@@ -159,6 +160,7 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 	if verbose:
 		print ("Accuracy score: ")
 		action_correct, pred1_correct, pred2_correct, den_pred2 = 0, 0, 0, 0
+		stuttering = 0
 	for graph in tqdm(graphs, desc = "Accuracy Score", ncols=80):
 		goal_num, world_num, tools, g, t = graph
 		if 'gcn_seq' in training:
@@ -212,10 +214,12 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 								pred2_correct += 1
 					if (action_pred == actionSeq[i]):
 						total_correct += 1
-				if verbose:
+					if (len(action_pred["args"]) == 2 and action_pred["args"][0] == action_pred["args"][1]):
+						stuttering += 1
+				if False:
 					c, i, e, err = approx.testPlan(domain, goal_num, world_num, plan)
 					correct += c; incorrect += i; error += e
-					if err != '': print(goal_num, world_num); print(plan, err); print('----------')
+					if err != '' and False: print(goal_num, world_num); print(plan, err); print('----------')
 			else:	
 				for i in range(len(graphSeq)):
 					if 'list' not in model_name:
@@ -247,8 +251,9 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 		print ("Denominator is", denominator)
 		print ("Action accuracy is", (action_correct/denominator) * 100)
 		print ("Pred1 accuracy is", (pred1_correct/denominator) * 100)
-		print ("Pred2 accuracy is", (pred2_correct/den_pred2) * 100)
-	if 'action' in training and verbose:
+		print ("Pred2 accuracy is", (pred2_correct/den_pred2+0.001) * 100)
+		print ("Stuttering count is", stuttering)
+	if 'action' in training and False:
 		den = correct + incorrect + error
 		print ("Correct, Incorrect, Error: ", (correct*100/den), (incorrect*100/den), (error*100/den))
 	if training == 'gcn_seq':
@@ -525,12 +530,15 @@ if __name__ == '__main__':
 			print ("EPOCH " + str(num_epochs))
 			loss = backprop(data, optimizer, train_set, model, data.num_objects, modelEnc, batch_size = 1)
 			print(loss)
-			t1, t2 = eval_accuracy(data, train_set, test_set, model, modelEnc)
-			accuracy_list.append((t2, t1, loss))
+			t1, t2 = eval_accuracy(data, train_set, test_set, model, modelEnc, True)
 			if 'action' in training:
-				test_policy(data, test_set, model, modelEnc, data.num_objects)
+				c, i, e = test_policy(data, test_set, model, modelEnc, data.num_objects, False)
+			accuracy_list.append((t2, t1, loss, c, i, e))
 			save_model(model, optimizer, num_epochs, accuracy_list)
 		print ("The maximum accuracy on test set is ", str(max(accuracy_list)), " at epoch ", accuracy_list.index(max(accuracy_list)))
+		if 'action' in training:
+			policy_acc = [i[3] for i in accuracy_list]
+			print("The maximum policy on test set is ", str(max(policy_acc)), " at epoch ", policy_acc.index(max(policy_acc)))
 
 	elif exec_type == "accuracy":
 		print ("Evaluating " + model.name)
