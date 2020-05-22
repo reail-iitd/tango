@@ -539,7 +539,7 @@ class GGCN_Metric_Attn_Aseq_L_Auto_Cons_N_C_5_Action(nn.Module):
         self.p1_object  = nn.Linear(n_hidden*5 + len(possibleActions) + 2*n_hidden + 1, n_hidden*2)
         self.p2_object  = nn.Linear(n_hidden*2, n_hidden*2)
         self.p3_object  = nn.Linear(n_hidden*2, 1)
-        self.q1_object  = nn.Linear(n_hidden*5 + len(possibleActions) + 2*n_hidden + 1, n_hidden*2)
+        self.q1_object  = nn.Linear(n_hidden*5 + len(possibleActions) + 2*n_hidden, n_hidden*2)
         self.q2_object  = nn.Linear(n_hidden*2, n_hidden*2)
         self.q3_object  = nn.Linear(n_hidden*2, 1)
         self.q1_state  = nn.Linear(n_hidden*4 + len(possibleActions) + n_hidden, n_hidden*2)
