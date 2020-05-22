@@ -701,6 +701,7 @@ class GGCN_Metric_Attn_Aseq_L_Auto_Tool_G_N_Cons_C_3_Action(nn.Module):
             pred2_output = F.softmax(torch.cat([pred2_object, pred2_state], 1), dim=1)
             predicted_actions.append(torch.cat((action, pred1_output, pred2_output), 1).flatten())
         return predicted_actions
+        
 class GGCN_Metric_Attn_Aseq_L_Auto_Tool_G_N_Cons_C_4_Action(nn.Module):
     def __init__(self,
                  in_feats,
