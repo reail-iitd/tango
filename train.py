@@ -451,7 +451,7 @@ def get_model(model_name):
 	return model, modelEnc
 
 def load_model(filename, model, modelEnc):
-	lr = 0.002 if 'action' in training else 0.00005
+	lr = 0.005 if 'action' in training else 0.00005
 	if training == 'gcn_seq': lr = 0.0005
 	optimizer = torch.optim.Adam(model.parameters() , lr=lr, weight_decay=1e-5)
 	file_path = MODEL_SAVE_PATH + "/" + filename + ".ckpt"
@@ -532,6 +532,9 @@ if __name__ == '__main__':
 			accuracy_list.append((t2, t1, loss, c, i, e))
 			save_model(model, optimizer, num_epochs, accuracy_list)
 		print ("The maximum accuracy on test set is ", str(max(accuracy_list)), " at epoch ", accuracy_list.index(max(accuracy_list)))
+		if 'action' in training:
+			policy_acc = [i[3] for i in accuracy_list]
+			print("The maximum policy on test set is ", str(max(policy_acc)), " at epoch ", policy_acc.index(max(policy_acc)))
 
 	elif exec_type == "accuracy":
 		print ("Evaluating " + model.name)
