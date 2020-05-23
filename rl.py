@@ -68,10 +68,10 @@ def test_policy(dset, graphs, model, num_objects = 0, verbose = False):
 	print ("Correct, Incorrect, Error: ", (correct*100/den), (incorrect*100/den), (error*100/den))
 	return (correct*100/den), (incorrect*100/den), (error*100/den)
 
-def train_policy(model, init_graphs, all_actions, num_episodes):
+def test_policy_training(model, init_graphs, all_actions, num_episodes):
 	g, goal_num, world_num = init_graphs[np.random.choice(range(len(init_graphs)))]
 	approx.initPolicy(domain, goal_num, world_num); correct = 0
-	for _ in tqdm(list(range(num_episodes)), desc = 'Testing on train set', n_cols=80):
+	for _ in tqdm(list(range(num_episodes)), desc = 'Testing on train set', ncols=80):
 		while True:
 			possible_actions = []
 			for action in all_actions: 
@@ -80,7 +80,7 @@ def train_policy(model, init_graphs, all_actions, num_episodes):
 			if 'A2C' in model.name:
 				a = np.random.choice(possible_actions, p=probs); p.append(probs[possible_actions.index(a)])
 			if 'DQN' in model.name:
-				possible_actions[probs.index(max(probs))]; p.append(1)
+				a = possible_actions[probs.index(max(probs))]; p.append(1)
 			complete, new_g, err = approx.execAction(goal_num, a, e);
 			g = new_g; i += 1;
 			if err != '': print(approx.checkActionPossible(goal_num, a, e)); print(a, err)
@@ -202,7 +202,7 @@ def run_new_plan(model, init_graphs, all_actions):
 			else: a = possible_actions[probs.index(max(probs))]
 		complete, new_g, err = approx.execAction(goal_num, a, e);
 		old_graphs.append(g); actions.append(a); new_graphs.append(new_g)
-		g = new_g; i += 1;
+		g = new_g; i += 1; #print(i, a)
 		if err != '': print(approx.checkActionPossible(goal_num, a, e)); print(a, err)
 		if complete: r = [1]*len(old_graphs); break
 		elif i >= 30: r = [0]*len(old_graphs); break
@@ -265,9 +265,9 @@ if __name__ == '__main__':
 
 	for num_epochs in range(epoch+1, epoch+NUM_EPOCHS+1):
 		print("EPOCH ", num_epochs)
+		if 'DQN' in model.name: epsilon = max(min_epsilon, epsilon*decay); print('Epsilon =', epsilon)
 		replay_buffer, avg_r = updateBuffer(model, init_graphs, all_actions, replay_buffer, 5)
 		save_buffer(replay_buffer)
-		if 'DQN' in model.name: epsilon = max(min_epsilon, epsilon*decay); print('Epsilon =', epsilon)
 		global_loss = []
 		for _ in tqdm(range(20), desc = 'Training', ncols=80):
 			val_loss, total_loss, p_loss = [], [], []
@@ -294,6 +294,6 @@ if __name__ == '__main__':
 		accuracy_list.append((avg_r, avg(global_loss), epsilon))
 		save_model(model, optimizer, num_epochs, accuracy_list)
 		print('Avg loss of epoch', avg(global_loss))
-		print("Average reward ", train_policy(model, init_graphs, all_actions, 10))
+		print("Average reward ", test_policy_training(model, init_graphs, all_actions, 10))
 	print ("The maximum avg return on train set is ", str(max(accuracy_list)), " at epoch ", accuracy_list.index(max(accuracy_list)))
 	test_policy(data, test_set, model, data.num_objects, False)
