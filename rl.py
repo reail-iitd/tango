@@ -78,9 +78,9 @@ def test_policy_training(model, init_graphs, all_actions, num_episodes):
 				if approx.checkActionPossible(goal_num, action, e): possible_actions.append(action)
 			probs = list(model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], possible_actions).detach().numpy())
 			if 'A2C' in model.name:
-				a = np.random.choice(possible_actions, p=probs); p.append(probs[possible_actions.index(a)])
+				a = np.random.choice(possible_actions, p=probs)
 			if 'DQN' in model.name:
-				a = possible_actions[probs.index(max(probs))]; p.append(1)
+				a = possible_actions[probs.index(max(probs))]
 			complete, new_g, err = approx.execAction(goal_num, a, e);
 			g = new_g; i += 1;
 			if err != '': print(approx.checkActionPossible(goal_num, a, e)); print(a, err)

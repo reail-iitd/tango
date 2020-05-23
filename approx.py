@@ -608,7 +608,7 @@ def checkAction(actions, goal_file=None, queue_for_execute_to_stop = None, saveI
   global light, args, speed, sticky, fixed, on, fueled, cut, cleaner, stick, clean, drilled, welded, painted, datapoint, metrics, constraints
   actions = convertActions(actions, args.world)
   action_index = 0
-  while True:
+  for action_index in range(len(actions)):
     if action_index >= len(actions): break
     inpAction = actions[action_index][0]
 
