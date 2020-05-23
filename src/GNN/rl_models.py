@@ -44,7 +44,7 @@ class A2C(nn.Module):
 
     def value(self, g, goalVec, goalObjectsVec):
     	final_to_decode = self.graph(g, goalVec, goalObjectsVec)
-    	value = torch.tanh(self.critic(final_to_decode))
+    	value = torch.sigmoid(self.critic(final_to_decode))
     	return value
 
     def policy(self, g, goalVec, goalObjectsVec, a_list):

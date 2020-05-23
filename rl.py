@@ -151,8 +151,8 @@ def run_new_plan(model, init_graphs, all_actions):
 		old_graphs.append(g); actions.append(a); new_graphs.append(new_g)
 		g = new_g; i += 1;
 		if complete: r = [1]*len(old_graphs); break
-		elif i >= 40: r = [-1]*len(old_graphs); break
-		if err != '': r = [-1]*len(old_graphs); break
+		elif i >= 40: r = [0]*len(old_graphs); break
+		if err != '': r = [0]*len(old_graphs); break
 	return pd.DataFrame({'goal_num':[goal_num]*len(old_graphs), 'st':old_graphs, 'at':actions, 'p':p, 'st+1':new_graphs, 'r':r}), r[0]
 
 def updateBuffer(model, init_graphs, all_actions, replay_buffer, num_runs):
@@ -167,7 +167,7 @@ def updateBuffer(model, init_graphs, all_actions, replay_buffer, num_runs):
 def get_training_data(replay_buffer, crowdsource_df, sample_size):
 	total_data = pd.concat([replay_buffer, crowdsource_df], ignore_index=True)
 	positive_data = total_data[total_data.r == 1].sample(sample_size)
-	negative_data = total_data[total_data.r == -1].sample(sample_size)
+	negative_data = total_data[total_data.r == 0].sample(sample_size)
 	return pd.concat([positive_data, negative_data], ignore_index=True)
 
 if __name__ == '__main__':
@@ -188,7 +188,7 @@ if __name__ == '__main__':
 			for ind in dataset.index:
 				goal_num, g, p, r = dataset['goal_num'][ind], dataset['st'][ind], dataset['p'][ind], dataset['r'][ind]
 				pred_val = model.value(g, goal2vec[goal_num], goalObjects2vec[goal_num])
-				p_loss.append((r - pred_val) * -torch.log(torch.tensor([p], dtype=torch.float)))
+				p_loss.append(r * -torch.log(torch.tensor([p], dtype=torch.float)))
 				val_loss.append(F.smooth_l1_loss(torch.Tensor([r]), pred_val))
 			loss = torch.stack(p_loss).sum() + torch.stack(val_loss).sum()
 			optimizer.zero_grad()
