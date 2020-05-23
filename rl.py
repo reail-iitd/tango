@@ -83,7 +83,7 @@ def get_all_possible_actions():
 		actions.append({'name': 'apply', 'args':[obj, 'paper']})
 	actions.append({'name': 'stick', 'args': ['paper', 'walls']})
 	for obj in all_objects_with_states:
-		actions.extend([{'name': 'changeState', 'args':[obj, i]} for i in ['open', 'close']])
+		if obj != 'light': actions.extend([{'name': 'changeState', 'args':[obj, i]} for i in ['open', 'close']])
 	actions.extend([{'name': 'changeState', 'args':['light', i]} for i in ['off']])
 	return actions
 
