@@ -179,9 +179,9 @@ if __name__ == '__main__':
 	l = nn.MSELoss()
 
 	while True:
-		# replay_buffer, avg_r = updateBuffer(model, init_graphs, all_actions, replay_buffer, 1)
-		# save_buffer(replay_buffer)
-		# print("Average reward =", avg_r)
+		replay_buffer, avg_r = updateBuffer(model, init_graphs, all_actions, replay_buffer, 1)
+		save_buffer(replay_buffer)
+		print("Average reward =", avg_r)
 		for _ in range(10):
 			val_loss, total_loss, p_loss = [], [], []
 			dataset = get_training_data(replay_buffer, crowdsource_df, 10)
