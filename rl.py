@@ -39,7 +39,7 @@ num_actions = len(possibleActions)
 memory_size = 2000
 with open('jsons/embeddings/'+embedding+'.vectors') as handle: e = json.load(handle)
 avg = lambda a : sum(a)/len(a)
-
+epsilon = 0.9; decay = 0.999; min_epsilon = 0.01
 
 def test_policy(dset, graphs, model, num_objects = 0, verbose = False):
 	with open('jsons/embeddings/'+embedding+'.vectors') as handle: e = json.load(handle)
@@ -117,7 +117,7 @@ def load_buffer():
 
 def save_buffer(replay_buffer):
 	filename = 'dataset/rl_buffer.pkl'
-	print("Buffer Size =", replay_buffer.shape[0])
+	if replay_buffer.shape[0] < 2000: print("Buffer Size =", replay_buffer.shape[0])
 	pickle.dump(replay_buffer, open(filename, "wb"))
 
 def world_split(data):
@@ -177,7 +177,9 @@ def run_new_plan(model, init_graphs, all_actions):
 		if 'A2C' in model.name:
 			a = np.random.choice(possible_actions, p=probs); p.append(probs[possible_actions.index(a)])
 		if 'DQN' in model.name:
-			a = possible_actions[probs.index(max(probs))]; p.append(1)
+			e_prob = np.random.random(); p.append(1); 
+			if e_prob < epsilon: a = np.random.choice(possible_actions)
+			else: a = possible_actions[probs.index(max(probs))]
 		complete, new_g, err = approx.execAction(goal_num, a, e);
 		old_graphs.append(g); actions.append(a); new_graphs.append(new_g)
 		g = new_g; i += 1;
@@ -247,6 +249,7 @@ if __name__ == '__main__':
 		replay_buffer, avg_r = updateBuffer(model, init_graphs, all_actions, replay_buffer, 10)
 		save_buffer(replay_buffer)
 		print("Average reward =", avg_r)
+		if 'DQN' in model.name: epsilon = max(min_epsilon, epsilon*decay); print('Epsilon =', epsilon)
 		global_loss = []
 		for _ in tqdm(range(20), desc = 'Training', ncols=80):
 			val_loss, total_loss, p_loss = [], [], []
