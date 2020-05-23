@@ -39,7 +39,7 @@ num_actions = len(possibleActions)
 memory_size = 2000
 with open('jsons/embeddings/'+embedding+'.vectors') as handle: e = json.load(handle)
 avg = lambda a : sum(a)/len(a)
-epsilon = 0.9; decay = 0.999; min_epsilon = 0.01
+epsilon = 0.9; decay = 0.95; min_epsilon = 0.01
 
 def test_policy(dset, graphs, model, num_objects = 0, verbose = False):
 	with open('jsons/embeddings/'+embedding+'.vectors') as handle: e = json.load(handle)
@@ -195,6 +195,7 @@ def run_new_plan(model, init_graphs, all_actions):
 			if approx.checkActionPossible(goal_num, action, e): possible_actions.append(action)
 		probs = list(model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], possible_actions).detach().numpy())
 		if 'A2C' in model.name:
+			probs /= sum(probs)
 			a = np.random.choice(possible_actions, p=probs); p.append(probs[possible_actions.index(a)])
 		if 'DQN' in model.name:
 			e_prob = np.random.random(); p.append(1); 
@@ -202,7 +203,7 @@ def run_new_plan(model, init_graphs, all_actions):
 			else: a = possible_actions[probs.index(max(probs))]
 		complete, new_g, err = approx.execAction(goal_num, a, e);
 		old_graphs.append(g); actions.append(a); new_graphs.append(new_g)
-		g = new_g; i += 1; #print(i, a)
+		g = new_g; i += 1; print(i, a)
 		if err != '': print(approx.checkActionPossible(goal_num, a, e)); print(a, err)
 		if complete: r = [1]*len(old_graphs); break
 		elif i >= 30: r = [0]*len(old_graphs); break
@@ -260,7 +261,7 @@ if __name__ == '__main__':
 	all_actions = get_all_possible_actions()
 	data, crowdsource_df, init_graphs, test_set = form_initial_dataset()
 	replay_buffer = load_buffer()
-	model = get_model('DQN')
+	model = get_model('A2C')
 	model, optimizer, epoch, accuracy_list, epsilon = load_model(model.name + "_Trained", model)
 
 	for num_epochs in range(epoch+1, epoch+NUM_EPOCHS+1):
@@ -273,11 +274,11 @@ if __name__ == '__main__':
 			val_loss, total_loss, p_loss = [], [], []
 			dataset = get_training_data(replay_buffer, crowdsource_df, 50)
 			for ind in dataset.index:
-				goal_num, g, a, p, r = dataset['goal_num'][ind], dataset['st'][ind], dataset['at'][ind], dataset['p'][ind], dataset['r'][ind]
+				goal_num, g, a, r = dataset['goal_num'][ind], dataset['st'][ind], dataset['at'][ind], dataset['r'][ind]
 				if 'A2C' in model.name:
 					pred_val = model.value(g, goal2vec[goal_num], goalObjects2vec[goal_num])
-					if p != 1:
-						p_loss.append(r * -torch.log(torch.tensor([p], dtype=torch.float)) - (1-r) * torch.log(torch.tensor([1-p], dtype=torch.float)))
+					p = model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], [a])
+					p_loss.append(r * -torch.log(torch.tensor([p], dtype=torch.float)) - (1-r) * torch.log(torch.tensor([1-p+0.0001], dtype=torch.float)))
 					val_loss.append(F.smooth_l1_loss(torch.Tensor([r]), pred_val))
 				if 'DQN' in model.name:
 					pred_val = model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], [a])
