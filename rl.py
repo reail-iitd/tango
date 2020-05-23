@@ -36,7 +36,7 @@ sequence = "seq" in training or "action" in training # can be True or False
 weighted = ("_W" in model_name) ^ ("Final" in model_name)
 graph_seq_length = 4
 num_actions = len(possibleActions)
-memory_size = 1000
+memory_size = 2000
 with open('jsons/embeddings/'+embedding+'.vectors') as handle: e = json.load(handle)
 avg = lambda a : sum(a)/len(a)
 
@@ -250,7 +250,7 @@ if __name__ == '__main__':
 		save_buffer(replay_buffer)
 		print("Average reward =", avg_r)
 		global_loss = []
-		for _ in range(20):
+		for _ in tqdm(range(20), ncols=80):
 			val_loss, total_loss, p_loss = [], [], []
 			dataset = get_training_data(replay_buffer, crowdsource_df, 50)
 			for ind in dataset.index:
@@ -269,10 +269,11 @@ if __name__ == '__main__':
 			optimizer.zero_grad()
 			loss.backward()
 			optimizer.step()
-			if 'A2C' in model.name: print("Loss =", loss.item(), " Value Loss =", avg(val_loss).item(), " Policy Loss =", avg(p_loss).item())
-			else: print("Value Loss =", avg(val_loss).item())
+			# if 'A2C' in model.name: print("Loss =", loss.item(), " Value Loss =", avg(val_loss).item(), " Policy Loss =", avg(p_loss).item())
+			# else: print("Value Loss =", avg(val_loss).item())
 			global_loss.append(loss.item())
 		accuracy_list.append((avg_r, avg(global_loss)))
+		print('Avg loss of epoch', avg(global_loss))
 		save_model(model, optimizer, num_epochs, accuracy_list)
 	print ("The maximum avg return on train set is ", str(max(accuracy_list)), " at epoch ", accuracy_list.index(max(accuracy_list)))
 	test_policy(data, test_set, model, data.num_objects, False)
