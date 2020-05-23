@@ -262,7 +262,7 @@ if __name__ == '__main__':
 					val_loss.append(F.smooth_l1_loss(torch.Tensor([r]), pred_val))
 				if 'DQN' in model.name:
 					pred_val = model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], [a])
-					print(r, pred_val)
+					# print(r, pred_val)
 					val_loss.append(F.smooth_l1_loss(torch.Tensor([r]), pred_val))
 			loss = torch.stack(val_loss).sum()
 			if 'A2C' in model.name: loss += torch.stack(p_loss).sum()
