@@ -189,7 +189,7 @@ def run_new_plan(model, init_graphs, all_actions):
 
 def updateBuffer(model, init_graphs, all_actions, replay_buffer, num_runs):
 	dataframes = []; rewards = []
-	for run in tqdm(list(range(num_runs)), ncols=80):
+	for run in tqdm(list(range(num_runs)), desc = 'Running episodes', ncols=80):
 		plan_df, plan_r = run_new_plan(model, init_graphs, all_actions)
 		dataframes.append(plan_df); rewards.append(plan_r)
 	replay_buffer = pd.concat([replay_buffer]+dataframes, ignore_index=True)
@@ -211,8 +211,6 @@ def get_model(name):
 	return model
 
 def load_model(filename, model):
-	lr = 0.0005 if 'action' in training else 0.00005
-	if training == 'gcn_seq': lr = 0.0005
 	optimizer = torch.optim.SGD(model.parameters(), lr=0.01, momentum=0.9, weight_decay=0.0001)
 	file_path = MODEL_SAVE_PATH + "/" + filename + ".ckpt"
 	if path.exists(file_path):
@@ -250,7 +248,7 @@ if __name__ == '__main__':
 		save_buffer(replay_buffer)
 		print("Average reward =", avg_r)
 		global_loss = []
-		for _ in tqdm(range(20), ncols=80):
+		for _ in tqdm(range(20), desc = 'Training', ncols=80):
 			val_loss, total_loss, p_loss = [], [], []
 			dataset = get_training_data(replay_buffer, crowdsource_df, 50)
 			for ind in dataset.index:
