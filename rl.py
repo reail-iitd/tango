@@ -13,6 +13,7 @@ import torch.utils.data
 import torch.nn as nn
 from torch.autograd import Variable
 import torch.nn.functional as F
+from torch.distributions import Categorical
 
 import warnings
 warnings.simplefilter("ignore")
@@ -76,10 +77,12 @@ def test_policy_training(model, init_graphs, all_actions, num_episodes):
 			possible_actions = []
 			for action in all_actions: 
 				if approx.checkActionPossible(goal_num, action, e): possible_actions.append(action)
-			probs = list(model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], possible_actions).detach().numpy())
 			if 'A2C' in model.name:
-				a = np.random.choice(possible_actions, p=probs)
+				probs = model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], possible_actions)
+				m = Categorical(probs); ai = m.sample()
+				a = possible_actions[ai.item()]
 			if 'DQN' in model.name:
+				probs = list(model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], possible_actions).detach().numpy())
 				a = possible_actions[probs.index(max(probs))]
 			complete, new_g, err = approx.execAction(goal_num, a, e);
 			g = new_g; 
@@ -193,11 +196,12 @@ def run_new_plan(model, init_graphs, all_actions):
 		possible_actions = []
 		for action in all_actions: 
 			if approx.checkActionPossible(goal_num, action, e): possible_actions.append(action)
-		probs = list(model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], possible_actions).detach().numpy())
 		if 'A2C' in model.name:
-			probs /= sum(probs)
-			a = np.random.choice(possible_actions, p=probs); p.append(probs[possible_actions.index(a)])
+			probs = model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], possible_actions)
+			m = Categorical(probs); ai = m.sample()
+			a = possible_actions[ai.item()]; p.append(probs[ai])
 		if 'DQN' in model.name:
+			probs = list(model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], possible_actions).detach().numpy())
 			e_prob = np.random.random(); p.append(1); 
 			if e_prob < epsilon: a = np.random.choice(possible_actions)
 			else: a = possible_actions[probs.index(max(probs))]
@@ -274,11 +278,11 @@ if __name__ == '__main__':
 			val_loss, total_loss, p_loss = [], [], []
 			dataset = get_training_data(replay_buffer, crowdsource_df, 50)
 			for ind in dataset.index:
-				goal_num, g, a, r = dataset['goal_num'][ind], dataset['st'][ind], dataset['at'][ind], dataset['r'][ind]
+				goal_num, g, a, p, r = dataset['goal_num'][ind], dataset['st'][ind], dataset['at'][ind], dataset['p'][ind], dataset['r'][ind]
 				if 'A2C' in model.name:
 					pred_val = model.value(g, goal2vec[goal_num], goalObjects2vec[goal_num])
-					p = model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], [a])
-					p_loss.append(r * -torch.log(torch.tensor([p], dtype=torch.float)) - (1-r) * torch.log(torch.tensor([1-p+0.0001], dtype=torch.float)))
+					if p != 1:
+						p_loss.append(r * -torch.log(torch.tensor([p], dtype=torch.float)) - (1-r) * torch.log(torch.tensor([1-p], dtype=torch.float)))
 					val_loss.append(F.smooth_l1_loss(torch.Tensor([r]), pred_val))
 				if 'DQN' in model.name:
 					pred_val = model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], [a])
