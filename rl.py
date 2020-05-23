@@ -72,7 +72,7 @@ def test_policy_training(model, init_graphs, all_actions, num_episodes):
 	g, goal_num, world_num = init_graphs[np.random.choice(range(len(init_graphs)))]
 	approx.initPolicy(domain, goal_num, world_num); correct = 0
 	for _ in tqdm(list(range(num_episodes)), desc = 'Testing on train set', ncols=80):
-		while True:
+		for i in range(30):
 			possible_actions = []
 			for action in all_actions: 
 				if approx.checkActionPossible(goal_num, action, e): possible_actions.append(action)
@@ -82,10 +82,10 @@ def test_policy_training(model, init_graphs, all_actions, num_episodes):
 			if 'DQN' in model.name:
 				a = possible_actions[probs.index(max(probs))]
 			complete, new_g, err = approx.execAction(goal_num, a, e);
-			g = new_g; i += 1;
+			g = new_g; 
 			if err != '': print(approx.checkActionPossible(goal_num, a, e)); print(a, err)
 			if complete: correct += 1; break
-			elif i >= 30 or err != '': break
+			elif err != '': break
 	return correct / len(num_episodes)
 
 def get_all_possible_actions():
