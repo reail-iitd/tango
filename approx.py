@@ -190,7 +190,8 @@ def updateMetrics():
           metrics[obj][0][1] = metrics[target][0][1] +  ur5_dist[obj][0] * math.sin(o1)
       else:
         for i, obj in enumerate(constraints[target]):
-          metrics[obj][0] = listSum(metrics[target][0], cons_pos_lookup[target][i])
+          try: metrics[obj][0] = listSum(metrics[target][0], cons_pos_lookup[target][i])
+          except: metrics[obj][0] = metrics[target][0]
   return metrics
 
 def instate(o, st):
@@ -233,6 +234,7 @@ def cg(goal_file, constraints, states, on, clean, sticky, fixed, drilled, welded
             success = success and obj in welded and obj in painted
 
         if 'paper' in obj and goal['state'] == "":
+            if obj not in constraints: success = False; break
             tgt = fcw(obj)
             # print(tgt)
             heavy = False
@@ -411,6 +413,8 @@ def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None, sav
             raise Exception("Gripper is not free, can not change state")
         if (state == 'stuck' and "Stickable" not in properties[obj]):
             raise Exception("Object not stickable")
+        if 'paper' in obj and state == 'stuck' and obj not in sticky:
+            raise Exception("Object not sticky")
         if state == 'on' or state == 'off':
           if (state == 'on'
             and "Can_Fuel" in properties[obj]
@@ -596,6 +600,7 @@ def execAction(goal_num, action, e):
     g = convertToDGLGraph(graph_data, False, goal_num, -1)
     return res, g, ''
   except Exception as e:
+    # raise(e)
     return False, None, str(e)
 
 def checkAction(actions, goal_file=None, queue_for_execute_to_stop = None, saveImg = True):
@@ -603,54 +608,55 @@ def checkAction(actions, goal_file=None, queue_for_execute_to_stop = None, saveI
   global light, args, speed, sticky, fixed, on, fueled, cut, cleaner, stick, clean, drilled, welded, painted, datapoint, metrics, constraints
   actions = convertActions(actions, args.world)
   action_index = 0
-  inpAction = actions[action_index][0]
+  while True:
+    if action_index >= len(actions): break
+    inpAction = actions[action_index][0]
 
-  if(inpAction == "move"):
-    if "husky" in fixed:
-      raise Exception("Husky can not move as it is on a stool")    
+    if(inpAction == "move"):
+      if "husky" in fixed:
+        raise Exception("Husky can not move as it is on a stool")    
 
-  elif(inpAction == "moveZ"):
-    if "husky" in fixed:
-          raise Exception("Husky can not move as it is on a stool") 
-    if (actions[action_index][1][0] == -1.5
-        and actions[action_index][1][1] == 1.5
-        and actions[action_index][1][2] == 1):
-        if (fct('ramp') != 'floor_warehouse'):
-          raise Exception("Can not move up without ramp")
+    elif(inpAction == "moveZ"):
+      if "husky" in fixed:
+            raise Exception("Husky can not move as it is on a stool") 
+      if (actions[action_index][1][0] == -1.5
+          and actions[action_index][1][1] == 1.5
+          and actions[action_index][1][2] == 1):
+          if (fct('ramp') != 'floor_warehouse'):
+            raise Exception("Can not move up without ramp")
 
-  elif(inpAction == "moveTo"):
-    t = actions[action_index][1]
-    target = np.array(metrics[t][0]); cur = np.array([x1, y1, z1])
-    vec = target - cur
-    objDistance = np.linalg.norm(vec)
-    if objDistance > 10.3 and "husky" in fixed:
-          raise Exception("Husky can not move as it is on a stool")  
-    if abs(metrics[t][0][2] - z1) > 1.8 and not stick:
-          raise Exception("Object on different height, please use stool")
-    if metrics[t][0][2] - z1 < -1.1:
-          raise Exception("Object on lower level, please move down")
+    elif(inpAction == "moveTo"):
+      t = actions[action_index][1]
+      target = np.array(metrics[t][0]); cur = np.array([x1, y1, z1])
+      vec = target - cur
+      objDistance = np.linalg.norm(vec)
+      if objDistance > 10.3 and "husky" in fixed:
+            raise Exception("Husky can not move as it is on a stool")  
+      if abs(metrics[t][0][2] - z1) > 1.8 and not stick:
+            raise Exception("Object on different height, please use stool")
+      if metrics[t][0][2] - z1 < -1.1:
+            raise Exception("Object on lower level, please move down")
 
-  elif(inpAction == "moveToXY"):
-    t = actions[action_index][1]
-    target = np.array(metrics[t][0]); cur = np.array([x1, y1, z1])
-    vec = target - cur
-    objDistance = np.linalg.norm(vec)
-    if objDistance > 2 and "husky" in fixed:
-          raise Exception("Husky can not move as it is on a stool")  
+    elif(inpAction == "moveToXY"):
+      t = actions[action_index][1]
+      target = np.array(metrics[t][0]); cur = np.array([x1, y1, z1])
+      vec = target - cur
+      objDistance = np.linalg.norm(vec)
+      if objDistance > 2 and "husky" in fixed:
+            raise Exception("Husky can not move as it is on a stool")  
 
-  elif(inpAction == "changeWing"):
-    pass
+    elif(inpAction == "changeWing"):
+      pass
 
-  elif(inpAction == "checkGrabbed"):
-    if actions[action_index][1] not in constraints['ur5']:
-      raise Exception("Object '" + actions[action_index][1] + "' not grabbed by the robot")
+    elif(inpAction == "checkGrabbed"):
+      if actions[action_index][1] not in constraints['ur5']:
+        raise Exception("Object '" + actions[action_index][1] + "' not grabbed by the robot")
 
-  elif(inpAction == "constrain"):
-    obj, t = actions[action_index][1], actions[action_index][2]
-    target = np.array(metrics[obj][0]); cur = np.array([x1, y1, z1])
-    vec = target - cur
-    objDistance = np.linalg.norm(vec)
-    if not done:
+    elif(inpAction == "constrain"):
+      obj, t = actions[action_index][1], actions[action_index][2]
+      target = np.array(metrics[obj][0]); cur = np.array([x1, y1, z1])
+      vec = target - cur
+      objDistance = np.linalg.norm(vec)
       if t == 'ur5' and not "Movable" in properties[obj]:
           raise Exception("Object '" + obj + "' is not grabbable")
       if (t == 'ur5'
@@ -671,86 +677,92 @@ def checkAction(actions, goal_file=None, queue_for_execute_to_stop = None, saveI
       if (t == 'ur5' and abs(metrics[obj][0][2] - z1 > 1.5)):
             raise Exception("Object on different height, please use stool/ladder")
 
-  elif(inpAction == "removeConstraint"):
-    pass
+    elif(inpAction == "removeConstraint"):
+      pass
 
-  elif(inpAction == "changeState"):
-    obj, state = actions[action_index][1], actions[action_index][2]
-    if len(constraints['ur5']) > 0 and not stick:
-        raise Exception("Gripper is not free, can not change state")
-    if (state == 'stuck' and "Stickable" not in properties[obj]):
-        raise Exception("Object not stickable")
-    if state == 'on' or state == 'off':
-      if (state == 'on'
-        and "Can_Fuel" in properties[obj]
-        and not obj in fueled):
-        raise Exception("First add fuel to object and then switch on")
+    elif(inpAction == "changeState"):
+      obj, state = actions[action_index][1], actions[action_index][2]
+      if len(constraints['ur5']) > 0 and not stick:
+          raise Exception("Gripper is not free, can not change state")
+      if (state == 'stuck' and "Stickable" not in properties[obj]):
+          raise Exception("Object not stickable")
+      if state == 'on' or state == 'off':
+        if (state == 'on'
+          and "Can_Fuel" in properties[obj]
+          and not obj in fueled):
+          raise Exception("First add fuel to object and then switch on")
+      if state == 'open' and not closed(obj) or state == 'closed' and closed(obj):
+        raise Exception('Object already in state')
+      if 'paper' in obj and state == 'stuck' and obj not in sticky:
+        raise Exception("Object not sticky")
 
-  elif(inpAction == "climbUp"):
-    pass
-  
-  elif(inpAction == "climbDown"):
-    pass
+    elif(inpAction == "climbUp"):
+      pass
+    
+    elif(inpAction == "climbDown"):
+      pass
 
-  elif(inpAction == "clean"):
-    obj = actions[action_index][1]
-    if obj in clean:
-        raise Exception("Object already clean")
-    if not cleaner:
-        raise Exception("No cleaning agent with the robot")
-    if "Oily" in properties[obj] and 'blow_dryer' in constraints['ur5']:
-        raise Exception("Can not clean oily substance with blow dryer")
-    if 'blow_dryer' in constraints['ur5'] and not 'blow_dryer' in on:
-        raise Exception("Please switch on blow dryer")
+    elif(inpAction == "clean"):
+      obj = actions[action_index][1]
+      if obj in clean:
+          raise Exception("Object already clean")
+      if not cleaner:
+          raise Exception("No cleaning agent with the robot")
+      if "Oily" in properties[obj] and 'blow_dryer' in constraints['ur5']:
+          raise Exception("Can not clean oily substance with blow dryer")
+      if 'blow_dryer' in constraints['ur5'] and not 'blow_dryer' in on:
+          raise Exception("Please switch on blow dryer")
 
-  elif(inpAction == "addTo"):
-    obj, lst = actions[action_index][1], actions[action_index][2]
-    if lst == "sticky":
-      if not "Stickable" in properties[obj]:
-        raise Exception("Object is not stickable, cannot apply glue/tape agent")
-    elif lst == "fixed":
-      if obj == "screw" and not "screwdriver" in constraints['ur5']:
-          raise Exception("Driving a screw needs screwdriver")
-      if obj == "screw" and not fct(obj) in drilled:
-          raise Exception("Driving a screw needs object to be drilled first")
-      if obj == "nail" and not ("hammer" in constraints['ur5'] or "brick" in constraints['ur5']):
-          raise Exception("Driving a nail needs hammer or brick")
-    if lst == "welded":
-      if fct(obj) != "assembly_station":
-          raise Exception("First place object on assembly station")
+    elif(inpAction == "addTo"):
+      obj, lst = actions[action_index][1], actions[action_index][2]
+      if lst == "sticky":
+        if not "Stickable" in properties[obj]:
+          raise Exception("Object is not stickable, cannot apply glue/tape agent")
+      elif lst == "fixed":
+        if obj == "screw" and not "screwdriver" in constraints['ur5']:
+            raise Exception("Driving a screw needs screwdriver")
+        if obj == "screw" and not fct(obj) in drilled:
+            raise Exception("Driving a screw needs object to be drilled first")
+        if obj == "nail" and not ("hammer" in constraints['ur5'] or "brick" in constraints['ur5']):
+            raise Exception("Driving a nail needs hammer or brick")
+      if lst == "welded":
+        if fct(obj) != "assembly_station":
+            raise Exception("First place object on assembly station")
 
-  elif(inpAction == "fuel"):
-    obj, fuel = actions[action_index][1], actions[action_index][2]
-    if obj in fueled:
-        raise Exception("Object has already been fueled")
-    if not "Fuel" in properties[fuel]:
-        raise Exception("Objects is not a fuel")
-    if "Cuttable" in properties[fuel] and fuel not in cut:
-        raise Exception("Object needs to be cut before being used as a fuel")
-    if not "Can_Fuel" in properties[obj]:
-        raise Exception("Can not fuel object " + obj)
+    elif(inpAction == "fuel"):
+      obj, fuel = actions[action_index][1], actions[action_index][2]
+      if obj in fueled:
+          raise Exception("Object has already been fueled")
+      if not "Fuel" in properties[fuel]:
+          raise Exception("Objects is not a fuel")
+      if "Cuttable" in properties[fuel] and fuel not in cut:
+          raise Exception("Object needs to be cut before being used as a fuel")
+      if not "Can_Fuel" in properties[obj]:
+          raise Exception("Can not fuel object " + obj)
 
-  elif(inpAction == "cut"):
-    obj, cutter = actions[action_index][1], actions[action_index][2]
-    if obj in cut:
-        raise Exception("Object has already been cut")
-    if not "Cuttable" in properties[obj]:
-        raise Exception("Objects " + obj + " is not cuttable")
-    if not "Cutter" in properties[cutter]:
-        raise Exception("Object " + cutter + " is not a cutter")
+    elif(inpAction == "cut"):
+      obj, cutter = actions[action_index][1], actions[action_index][2]
+      if obj in cut:
+          raise Exception("Object has already been cut")
+      if not "Cuttable" in properties[obj]:
+          raise Exception("Objects " + obj + " is not cuttable")
+      if not "Cutter" in properties[cutter]:
+          raise Exception("Object " + cutter + " is not a cutter")
 
-  elif(inpAction == "print"):
-    obj = actions[action_index][1]
-    if obj in id_lookup.keys():
-        raise Exception("Object already in world")
-    if 'Printable' not in "Movable" in properties[obj]:
-        raise Exception("Object "+obj+" is not printable")
-  
-  elif(inpAction == "removeFrom"):
-    pass
+    elif(inpAction == "print"):
+      obj = actions[action_index][1]
+      if obj in id_lookup.keys():
+          raise Exception("Object already in world")
+      if 'Printable' not in "Movable" in properties[obj]:
+          raise Exception("Object "+obj+" is not printable")
+    
+    elif(inpAction == "removeFrom"):
+      pass
 
-  elif(inpAction == "saveBulletState"):
-    pass
+    elif(inpAction == "saveBulletState"):
+      pass
+
+    action_index += 1
 
 def checkActionPossible(goal_num, action, e):
   plan = {'actions': [action]}
@@ -758,6 +770,9 @@ def checkActionPossible(goal_num, action, e):
     checkAction(plan, args.goal, saveImg=False)
     return True
   except Exception as e:
+    if 'can only concatenate' in str(e):
+      print(action, e)
+      raise(e)
     return False
 
 def printAllValues():
