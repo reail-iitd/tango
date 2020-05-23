@@ -86,7 +86,7 @@ def test_policy_training(model, init_graphs, all_actions, num_episodes):
 			if err != '': print(approx.checkActionPossible(goal_num, a, e)); print(a, err)
 			if complete: correct += 1; break
 			elif err != '': break
-	return correct / len(num_episodes)
+	return correct / num_episodes
 
 def get_all_possible_actions():
 	actions = []
@@ -291,9 +291,10 @@ if __name__ == '__main__':
 			# if 'A2C' in model.name: print("Loss =", loss.item(), " Value Loss =", avg(val_loss).item(), " Policy Loss =", avg(p_loss).item())
 			# else: print("Value Loss =", avg(val_loss).item())
 			global_loss.append(loss.item())
+		print('Avg loss of epoch', avg(global_loss))
+		avg_r = test_policy_training(model, init_graphs, all_actions, 10)
+		print("Average reward ", avg_r)
 		accuracy_list.append((avg_r, avg(global_loss), epsilon))
 		save_model(model, optimizer, num_epochs, accuracy_list)
-		print('Avg loss of epoch', avg(global_loss))
-		print("Average reward ", test_policy_training(model, init_graphs, all_actions, 10))
 	print ("The maximum avg return on train set is ", str(max(accuracy_list)), " at epoch ", accuracy_list.index(max(accuracy_list)))
 	test_policy(data, test_set, model, data.num_objects, False)
