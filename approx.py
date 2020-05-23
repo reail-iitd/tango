@@ -762,8 +762,6 @@ def checkAction(actions, goal_file=None, queue_for_execute_to_stop = None, saveI
     elif(inpAction == "saveBulletState"):
       pass
 
-    action_index += 1
-
 def checkActionPossible(goal_num, action, e):
   plan = {'actions': [action]}
   try:
