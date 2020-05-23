@@ -207,7 +207,7 @@ def run_new_plan(model, init_graphs, all_actions):
 			else: a = possible_actions[probs.index(max(probs))]
 		complete, new_g, err = approx.execAction(goal_num, a, e);
 		old_graphs.append(g); actions.append(a); new_graphs.append(new_g)
-		g = new_g; i += 1; print(i, a)
+		g = new_g; i += 1; #print(i, a)
 		if err != '': print(approx.checkActionPossible(goal_num, a, e)); print(a, err)
 		if complete: r = [1]*len(old_graphs); break
 		elif i >= 30: r = [0]*len(old_graphs); break
@@ -238,7 +238,7 @@ def get_model(name):
 	return model
 
 def load_model(filename, model):
-	optimizer = torch.optim.SGD(model.parameters(), lr=0.01, momentum=0.9, weight_decay=0.0001)
+	optimizer = torch.optim.Adam(model.parameters(), lr=0.05, weight_decay=0.00001)
 	file_path = MODEL_SAVE_PATH + "/" + filename + ".ckpt"
 	if path.exists(file_path):
 		print(color.GREEN+"Loading pre-trained model: "+filename+color.ENDC)
