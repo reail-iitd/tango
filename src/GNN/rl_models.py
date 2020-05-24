@@ -110,6 +110,7 @@ class DQN2(nn.Module):
                  etypes,
                  activation):
         super(DQN2, self).__init__()
+        self.etypes = etypes
         self.name = "DQN2_" + str(n_hidden) + "_" + str(n_layers)
         self.activation = nn.PReLU()
         self.metric = nn.ModuleList()
