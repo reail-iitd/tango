@@ -169,9 +169,9 @@ def cin(o):
           inside = abs(x2-x1) < 0.5*l and abs(y2-y1) < 1.4*w and abs(z1-z2) < 0.6*h
           # print(enclosure, inside)
           # print((x1, y1, z1), (x2, y2, z2), abs(x2-x1), abs(y2-y1), abs(z2-z1), 0.5*l, 1.5*w,0.6*h)
-          tgt = fct(o)
-          while not (tgt == "" or tgt == enclosure):
-              tgt = fct(tgt)        
+          tgt = fct(o); i = 0
+          while not (tgt == "" or tgt == enclosure or i > 10):
+              tgt = fct(tgt); i += 1        
           if inside or (tgt == enclosure): return True
   return False
 
@@ -247,9 +247,9 @@ def cg(goal_file, constraints, states, on, clean, sticky, fixed, drilled, welded
             success = success and obj in clean
 
         if goal['target'] != "":
-            tgt = fct(obj)
-            while not (tgt == "" or tgt == goal['target']):
-                tgt = fct(tgt)
+            tgt = fct(obj); i = 0
+            while not (tgt == "" or tgt == goal['target'] or i > 10):
+                tgt = fct(tgt); i += 1
             success = success and (tgt == goal['target'])
 
         if goal['state'] != "":
@@ -369,10 +369,10 @@ def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None, sav
               raise Exception("Object '" + obj + "' is not grabbable")
           if (t == 'ur5'
               and "Heavy" in properties[obj]
-              and len(fcw(obj)) > 0
+              and obj in constraints and len(fcw(obj)) > 0
               and "Heavy" in properties[fcw(obj)[0]]):
               raise Exception("Robot can not hold stack of heavy objects")
-          if len(constraints['ur5']) > 0 and t == 'ur5':
+          if 'ur5' in constraints and len(constraints['ur5']) > 0 and t == 'ur5':
               raise Exception("Gripper is not free, can not hold object")
           if t == obj:
               raise Exception("Cant place object on itself")
@@ -608,9 +608,11 @@ def checkAction(actions, goal_file=None, queue_for_execute_to_stop = None, saveI
   global light, args, speed, sticky, fixed, on, fueled, cut, cleaner, stick, clean, drilled, welded, painted, datapoint, metrics, constraints
   actions = convertActions(actions, args.world)
   action_index = 0
-  while True:
+  # print(actions)
+  for action_index in range(len(actions)):
     if action_index >= len(actions): break
     inpAction = actions[action_index][0]
+    # print(action_index, len(actions), actions[action_index])
 
     if(inpAction == "move"):
       if "husky" in fixed:
@@ -661,10 +663,10 @@ def checkAction(actions, goal_file=None, queue_for_execute_to_stop = None, saveI
           raise Exception("Object '" + obj + "' is not grabbable")
       if (t == 'ur5'
           and "Heavy" in properties[obj]
-          and len(fcw(obj)) > 0
+          and obj in constraints and len(fcw(obj)) > 0
           and "Heavy" in properties[fcw(obj)[0]]):
           raise Exception("Robot can not hold stack of heavy objects")
-      if len(constraints['ur5']) > 0 and t == 'ur5':
+      if 'ur5' in constraints and len(constraints['ur5']) > 0 and t == 'ur5':
           raise Exception("Gripper is not free, can not hold object")
       if t == obj:
           raise Exception("Cant place object on itself")
@@ -762,17 +764,14 @@ def checkAction(actions, goal_file=None, queue_for_execute_to_stop = None, saveI
     elif(inpAction == "saveBulletState"):
       pass
 
-    action_index += 1
-
 def checkActionPossible(goal_num, action, e):
   plan = {'actions': [action]}
   try:
     checkAction(plan, args.goal, saveImg=False)
     return True
   except Exception as e:
-    if 'can only concatenate' in str(e):
-      print(action, e)
-      raise(e)
+    # print(action, e)
+    # raise(e)
     return False
 
 def printAllValues():
