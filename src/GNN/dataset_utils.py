@@ -34,7 +34,7 @@ def getGlobalID(dp):
 		maxID = max(maxID, object2idx[i])
 	return maxID + 1
 
-def convertToDGLGraph(graph_data, globalNode, goal_num, globalID):
+def convertToDGLGraph(graph_data, globalNode, goal_num, globalID, ignore=[]):
 	""" Converts the graph from the datapoint into a DGL form of graph."""
 	# Make edge sets
 	close, inside, on, stuck = [], [], [], []
@@ -47,7 +47,7 @@ def convertToDGLGraph(graph_data, globalNode, goal_num, globalID):
 		elif edge["relation"] == "On": on.append((edge["from"], edge["to"]))
 		elif edge["relation"] == "Stuck": stuck.append((edge["from"], edge["to"]))
 	edgeDict = {
-		('object', 'Close', 'object'): close,
+		('object', 'Close', 'object'): close+[(i,i) for i in ignore],
 		('object', 'Inside', 'object'): inside,
 		('object', 'On', 'object'): on,
 		('object', 'Stuck', 'object'): stuck
@@ -67,6 +67,7 @@ def convertToDGLGraph(graph_data, globalNode, goal_num, globalID):
 	for i, node in enumerate(graph_data["nodes"]):
 		states = node["states"]
 		node_id = node["id"]
+		if node_id in ignore: continue
 		for state in states:
 			idx = state2indx[state]
 			node_states[node_id, idx] = 1
@@ -105,7 +106,9 @@ def getDGLSequence(pathToDatapoint, globalNode, ignoreNoTool, e):
 		if not (str(action[0]) == 'E' or str(action[0]) == 'U'): actionSeq.append(action[0])
 	for i in range(len(datapoint.metrics)):
 		if datapoint.actions[i] == 'Start' and AUGMENTATION == 1: graphSeq.append(convertToDGLGraph(datapoint.getGraph(i, embeddings=e)["graph_"+str(i)], globalNode, goal_num, getGlobalID(datapoint) if globalNode else -1))
-		elif datapoint.actions[i] == 'Start': graphSeq.append(convertToDGLGraph(datapoint.getAugmentedGraph(i, embeddings=e)["graph_"+str(i)], globalNode, goal_num, getGlobalID(datapoint) if globalNode else -1))
+		elif datapoint.actions[i] == 'Start' and AUGMENTATION > 1: 
+			ignoreList, graph = datapoint.getAugmentedGraph(i, embeddings=e)
+			graphSeq.append(convertToDGLGraph(graph["graph_"+str(i)], globalNode, goal_num, getGlobalID(datapoint) if globalNode else -1, ignore=ignoreList))
 	assert len(actionSeq) == len(graphSeq)
 	toolSeq = getToolSequence(actionSeq)
 	return (goal_num, world_num, toolSeq, (actionSeq, graphSeq), time)

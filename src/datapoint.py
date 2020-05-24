@@ -225,12 +225,13 @@ class Datapoint:
 			for i in range(1, len(action)):
 				if action[i] in allObjects and not action[i] in actionObjects and 'str' in str(type(action[i])):
 					actionObjects.append(action[i])
-		actionObjects.append('husky')
+		actionObjects.append('husky'); removedObjs = []
 		for j in range(randint(1, remove)):
 			obj = allObjects[randint(0, len(allObjects)-1)]
 			if obj in allObjects and not obj in actionObjects:
 				allObjects.remove(obj)
-		return self.getGraph(index, distance, sceneobjects=allObjects, embeddings)
+				if obj in all_objects: removedObjs.append(all_objects.index(obj))
+		return removedObjs, self.getGraph(index, distance, sceneobjects=allObjects, embeddings=embeddings)
 
 	def getTools(self, returnNoTool=False):
 		# Returns the set of tools used in the plan corresponding to this datapoint
