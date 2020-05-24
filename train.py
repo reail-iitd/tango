@@ -157,10 +157,10 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 	denominator = 0
 	total_test_loss = 0; l = nn.BCELoss()
 	correct, incorrect, error = 0, 0, 0
+	stuttering = 0
 	if verbose:
 		print ("Accuracy score: ")
 		action_correct, pred1_correct, pred2_correct, den_pred2 = 0, 0, 0, 0
-		stuttering = 0
 	for graph in tqdm(graphs, desc = "Accuracy Score", ncols=80):
 		goal_num, world_num, tools, g, t = graph
 		if 'gcn_seq' in training:
@@ -252,7 +252,7 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 		print ("Action accuracy is", (action_correct/denominator) * 100)
 		print ("Pred1 accuracy is", (pred1_correct/denominator) * 100)
 		print ("Pred2 accuracy is", (pred2_correct/den_pred2+0.001) * 100)
-		print ("Stuttering count is", stuttering)
+	print ("Stuttering count is", stuttering)
 	if 'action' in training and False:
 		den = correct + incorrect + error
 		print ("Correct, Incorrect, Error: ", (correct*100/den), (incorrect*100/den), (error*100/den))
@@ -530,7 +530,7 @@ if __name__ == '__main__':
 			print ("EPOCH " + str(num_epochs))
 			loss = backprop(data, optimizer, train_set, model, data.num_objects, modelEnc, batch_size = 1)
 			print(loss)
-			t1, t2 = eval_accuracy(data, train_set, test_set, model, modelEnc, True)
+			t1, t2 = eval_accuracy(data, train_set, test_set, model, modelEnc)
 			if 'action' in training:
 				c, i, e = test_policy(data, test_set, model, modelEnc, data.num_objects, False)
 			accuracy_list.append((t2, t1, loss, c, i, e))
