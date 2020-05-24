@@ -270,7 +270,7 @@ if __name__ == '__main__':
 	for num_epochs in range(epoch+1, epoch+NUM_EPOCHS+1):
 		print("EPOCH ", num_epochs)
 		if 'DQN' in model.name: epsilon = max(min_epsilon, epsilon*decay); print('Epsilon =', epsilon)
-		replay_buffer, avg_r = updateBuffer(model, init_graphs, all_actions, replay_buffer, 1)
+		replay_buffer, avg_r = updateBuffer(model, init_graphs, all_actions, replay_buffer, 5 if num_epochs == epoch+1 else 1)
 		save_buffer(replay_buffer)
 		global_loss = []
 		for _ in tqdm(range(100), desc = 'Training', ncols=80):
