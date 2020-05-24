@@ -48,7 +48,7 @@ def test_policy(dset, graphs, model, num_objects = 0, verbose = False):
 	for graph in tqdm(graphs, desc = "Policy Testing", ncols=80):
 		goal_num, world_num, tools, g, t = graph
 		actionSeq, graphSeq = g
-		g = graphSeq[0]
+		g = graphSeq[0]; i = 0
 		approx.initPolicy(domain, goal_num, world_num)
 		while True:
 			possible_actions = []
@@ -238,7 +238,7 @@ def get_model(name):
 	return model
 
 def load_model(filename, model):
-	optimizer = torch.optim.Adam(model.parameters(), lr=0.05, weight_decay=0.00001)
+	optimizer = torch.optim.Adam(model.parameters(), lr=0.0001, weight_decay=0.00001)
 	file_path = MODEL_SAVE_PATH + "/" + filename + ".ckpt"
 	if path.exists(file_path):
 		print(color.GREEN+"Loading pre-trained model: "+filename+color.ENDC)
@@ -265,16 +265,16 @@ if __name__ == '__main__':
 	all_actions = get_all_possible_actions()
 	data, crowdsource_df, init_graphs, test_set = form_initial_dataset()
 	replay_buffer = load_buffer()
-	model = get_model('A2C')
+	model = get_model('DQN')
 	model, optimizer, epoch, accuracy_list, epsilon = load_model(model.name + "_Trained", model)
 
 	for num_epochs in range(epoch+1, epoch+NUM_EPOCHS+1):
 		print("EPOCH ", num_epochs)
 		if 'DQN' in model.name: epsilon = max(min_epsilon, epsilon*decay); print('Epsilon =', epsilon)
-		replay_buffer, avg_r = updateBuffer(model, init_graphs, all_actions, replay_buffer, 5)
+		replay_buffer, avg_r = updateBuffer(model, init_graphs, all_actions, replay_buffer, 1)
 		save_buffer(replay_buffer)
 		global_loss = []
-		for _ in tqdm(range(20), desc = 'Training', ncols=80):
+		for _ in tqdm(range(100), desc = 'Training', ncols=80):
 			val_loss, total_loss, p_loss = [], [], []
 			dataset = get_training_data(replay_buffer, crowdsource_df, 50)
 			for ind in dataset.index:
@@ -297,7 +297,7 @@ if __name__ == '__main__':
 			# else: print("Value Loss =", avg(val_loss).item())
 			global_loss.append(loss.item())
 		print('Avg loss of epoch', avg(global_loss))
-		avg_r = test_policy_training(model, init_graphs, all_actions, 10)
+		avg_r = test_policy_training(model, init_graphs, all_actions, 5)
 		print("Average reward ", avg_r)
 		accuracy_list.append((avg_r, avg(global_loss), epsilon))
 		save_model(model, optimizer, num_epochs, accuracy_list)
