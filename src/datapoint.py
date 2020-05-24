@@ -216,7 +216,7 @@ class Datapoint:
 					edges.append({'from': fromID, 'to': toID, 'distance': getDirectedDist(obj1, obj2, metrics)})
 		return {'graph_'+str(index): {'nodes': nodes, 'edges': edges}}
 
-	def getAugmentedGraph(self, index=0, distance=False, remove=5):
+	def getAugmentedGraph(self, index=0, embeddings={}, distance=False, remove=5):
 		# Augment dataset by removing objects unrelated to goal
 		allObjects = list(self.metrics[index].keys())
 		actionObjects = []
@@ -230,7 +230,7 @@ class Datapoint:
 			obj = allObjects[randint(0, len(allObjects)-1)]
 			if obj in allObjects and not obj in actionObjects:
 				allObjects.remove(obj)
-		return self.getGraph(index, distance, sceneobjects=allObjects)
+		return self.getGraph(index, distance, sceneobjects=allObjects, embeddings)
 
 	def getTools(self, returnNoTool=False):
 		# Returns the set of tools used in the plan corresponding to this datapoint
