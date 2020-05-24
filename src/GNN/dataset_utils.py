@@ -104,7 +104,8 @@ def getDGLSequence(pathToDatapoint, globalNode, ignoreNoTool, e):
 	for action in datapoint.symbolicActions:
 		if not (str(action[0]) == 'E' or str(action[0]) == 'U'): actionSeq.append(action[0])
 	for i in range(len(datapoint.metrics)):
-		if datapoint.actions[i] == 'Start': graphSeq.append(convertToDGLGraph(datapoint.getGraph(i, embeddings=e)["graph_"+str(i)], globalNode, goal_num, getGlobalID(datapoint) if globalNode else -1))
+		if datapoint.actions[i] == 'Start' and AUGMENTATION == 1: graphSeq.append(convertToDGLGraph(datapoint.getGraph(i, embeddings=e)["graph_"+str(i)], globalNode, goal_num, getGlobalID(datapoint) if globalNode else -1))
+		elif datapoint.actions[i] == 'Start': graphSeq.append(convertToDGLGraph(datapoint.getAugmentedGraph(i, embeddings=e)["graph_"+str(i)], globalNode, goal_num, getGlobalID(datapoint) if globalNode else -1))
 	assert len(actionSeq) == len(graphSeq)
 	toolSeq = getToolSequence(actionSeq)
 	return (goal_num, world_num, toolSeq, (actionSeq, graphSeq), time)
