@@ -2,7 +2,7 @@ from src.GNN.helper import *
 from src.GNN.CONSTANTS import *
 from src.utils import *
 from src.GNN.oldmodels import *
-torch.manual_seed(1)
+# torch.manual_seed(1)
 
 # Contains the action prediction task models. Will be released in a future publication.
 
@@ -636,17 +636,19 @@ class GGCN_Metric_Attn_Aseq_L_Auto_Cons_C_5_Action(nn.Module):
         for i in range(n_layers - 1):
             self.layers.append(GatedHeteroRGCNLayer(n_hidden, n_hidden, etypes, activation=activation))
         self.attention = nn.Sequential(nn.Linear(n_hidden + n_hidden + n_hidden + n_hidden, n_hidden), self.activation, nn.Linear(n_hidden, 1))
-        self.embed = nn.Sequential(nn.Linear(PRETRAINED_VECTOR_SIZE, n_hidden), self.activation, nn.Linear(n_hidden, n_hidden))
+        self.embed = nn.Sequential(nn.Linear(PRETRAINED_VECTOR_SIZE, 2*n_hidden), self.activation, nn.Linear(2*n_hidden, n_hidden))
+        self.embed1 = nn.Sequential(nn.Linear(PRETRAINED_VECTOR_SIZE, 2*n_hidden), self.activation, nn.Linear(2*n_hidden, n_hidden))
+        self.embed2 = nn.Sequential(nn.Linear(PRETRAINED_VECTOR_SIZE, 2*n_hidden), self.activation, nn.Linear(2*n_hidden, n_hidden))
         self.zero_embed_sz = 5
         self.zero_one_embeddings = nn.Embedding(2,self.zero_embed_sz)
 
         self.fc1 = nn.Linear(n_hidden*4, n_hidden)
         self.fc2 = nn.Linear(n_hidden, n_hidden)
         self.fc3 = nn.Linear(n_hidden, len(possibleActions))
-        self.p1_object  = nn.Linear(n_hidden*5 + len(possibleActions) + 2*n_hidden, n_hidden*2)
+        self.p1_object  = nn.Linear(n_hidden*5 + len(possibleActions) + 2*n_hidden + (in_feats - PRETRAINED_VECTOR_SIZE), n_hidden*2)
         self.p2_object  = nn.Linear(n_hidden*2, n_hidden)
         self.p3_object  = nn.Linear(n_hidden, 1)
-        self.q1_object  = nn.Linear(n_hidden*5 + len(possibleActions) + 2*n_hidden +  self.zero_embed_sz, n_hidden*2)
+        self.q1_object  = nn.Linear(n_hidden*5 + len(possibleActions) + 2*n_hidden + (in_feats - PRETRAINED_VECTOR_SIZE) + self.zero_embed_sz, n_hidden*2)
         self.q2_object  = nn.Linear(n_hidden*2, n_hidden)
         self.q3_object  = nn.Linear(n_hidden, 1)
         self.q1_state  = nn.Linear(n_hidden*4 + len(possibleActions), n_hidden)
@@ -664,7 +666,7 @@ class GGCN_Metric_Attn_Aseq_L_Auto_Cons_C_5_Action(nn.Module):
         self.object_vec = torch.Tensor(l)
 
     def forward(self, g_list, goalVec, goalObjectsVec, a_list):
-        a_list = [action2vec_lstm(i, self.n_objects, self.n_states, self.n_hidden, self.embed) for i in a_list]
+        a_list = [action2vec_lstm(i, self.n_objects, self.n_states, self.n_hidden, self.embed1) for i in a_list]
         predicted_actions = []
         lstm_hidden = (torch.randn(1, 1, self.n_hidden),torch.randn(1, 1, self.n_hidden))
         goalObjectsVec = self.activation(self.embed(torch.Tensor(goalObjectsVec)))
@@ -698,7 +700,7 @@ class GGCN_Metric_Attn_Aseq_L_Auto_Cons_C_5_Action(nn.Module):
             #Predicting the first argument of the action
             pred1_input = torch.cat([final_to_decode, one_hot_action], 1)
             pred1_object = self.activation(self.p1_object(
-                        torch.cat([pred1_input.view(-1).repeat(self.n_objects).view(self.n_objects, -1), self.activation(self.embed(self.object_vec)), h], 1)))
+                        torch.cat([pred1_input.view(-1).repeat(self.n_objects).view(self.n_objects, -1), self.activation(self.embed2(self.object_vec)), h, g.ndata['feat'][:,PRETRAINED_VECTOR_SIZE:]], 1)))
             pred1_object = self.activation(self.p2_object(pred1_object))
             pred1_object = self.p3_object(pred1_object)
             pred1_output = torch.sigmoid(pred1_object)
@@ -710,7 +712,7 @@ class GGCN_Metric_Attn_Aseq_L_Auto_Cons_C_5_Action(nn.Module):
             # Predicting the second argument of the action
             pred2_input = torch.cat([final_to_decode, one_hot_action], 1)
             pred2_object = self.activation(self.q1_object(
-                        torch.cat([pred2_input.view(-1).repeat(self.n_objects).view(self.n_objects, -1), self.activation(self.embed(self.object_vec)), h, one_hot_pred1], 1)))
+                        torch.cat([pred2_input.view(-1).repeat(self.n_objects).view(self.n_objects, -1), self.activation(self.embed2(self.object_vec)), h, g.ndata['feat'][:,PRETRAINED_VECTOR_SIZE:], one_hot_pred1], 1)))
             pred2_object = self.activation(self.q2_object(pred2_object))
             pred2_object = self.q3_object(pred2_object)
             pred2_object = torch.sigmoid(pred2_object)
