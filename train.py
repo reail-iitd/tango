@@ -519,8 +519,8 @@ if __name__ == '__main__':
 	data = load_dataset()
 	model, modelEnc = get_model(model_name)
 	seqTool = 'Seq_' if training == 'gcn_seq' else ''
-	model, modelEnc, optimizer, epoch, accuracy_list = load_model("GGCN_Metric_Attn_Aseq_L_Auto_Cons_C_5_Action_128_3_13", model, modelEnc)
-	# model, modelEnc, optimizer, epoch, accuracy_list = load_model(seqTool + model.name + "_Trained", model, modelEnc)
+	# model, modelEnc, optimizer, epoch, accuracy_list = load_model("GGCN_Metric_Attn_Aseq_L_Auto_Cons_C_5_Action_128_3_13", model, modelEnc)
+	model, modelEnc, optimizer, epoch, accuracy_list = load_model(seqTool + model.name + "_Trained", model, modelEnc)
 	# model, modelEnc, optimizer, epoch, accuracy_list = load_model("checkpoints/baseline_metric_att_aseq_auto_c_best_69_64", model, modelEnc)
 	train_set, test_set = split_data(data)
 
