@@ -113,7 +113,7 @@ class DQN2(nn.Module):
         self.name = "DQN2_" + str(n_hidden) + "_" + str(n_layers)
         self.activation = nn.PReLU()
         self.metric = nn.ModuleList()
-        self.metric.append(nn.Linear(in_feats, 2*n_hidden))
+        self.metric.append(nn.Linear(in_feats + n_objects*4, 2*n_hidden))
         for i in range(n_layers + 1):
             self.metric.append(nn.Linear(2*n_hidden, 2*n_hidden))
         self.attention = nn.Sequential(nn.Linear(n_hidden + n_hidden + n_hidden + 1, n_hidden), self.activation, nn.Linear(n_hidden, 1))
@@ -126,6 +126,9 @@ class DQN2(nn.Module):
         goalObjectsVec = self.embed(torch.Tensor(goalObjectsVec))
         goal_embed = self.embed(torch.Tensor(goalVec.reshape(1, -1)))
         h = g.ndata['feat']
+        edgeMatrices = [g.adjacency_matrix(etype=t) for t in self.etypes]
+        edges = torch.cat(edgeMatrices, 1).to_dense()
+        h = torch.cat((h, edges), 1)
         for i in range(self.n_layers):
             h = self.activation(self.metric[i](h))
         attn_embedding = torch.cat([h, goalObjectsVec.repeat(h.size(0)).view(h.size(0), -1), g.ndata['close']], 1)
