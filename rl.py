@@ -231,10 +231,9 @@ def get_training_data(replay_buffer, crowdsource_df, sample_size):
 	return pd.concat([positive_data, negative_data], ignore_index=True)
 
 def get_model(name):
-	if 'A2C' in name:
-		model = A2C(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh)
-	if 'DQN' in name:
-		model = DQN(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh)
+	import src.GNN.rl_models
+	model_class = getattr(src.GNN.rl_models, name)
+	model = model_class(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh)
 	return model
 
 def load_model(filename, model):
@@ -265,7 +264,7 @@ if __name__ == '__main__':
 	all_actions = get_all_possible_actions()
 	data, crowdsource_df, init_graphs, test_set = form_initial_dataset()
 	replay_buffer = load_buffer()
-	model = get_model('DQN')
+	model = get_model('DQN2')
 	model, optimizer, epoch, accuracy_list, epsilon = load_model(model.name + "_Trained", model)
 
 	for num_epochs in range(epoch+1, epoch+NUM_EPOCHS+1):

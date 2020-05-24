@@ -678,6 +678,8 @@ def checkAction(actions, goal_file=None, queue_for_execute_to_stop = None, saveI
           raise Exception("Object too far away, move closer to it")
       if (t == 'ur5' and abs(metrics[obj][0][2] - z1 > 1.5)):
             raise Exception("Object on different height, please use stool/ladder")
+      if obj in constraints[t]:
+            raise Exception("Object already constrained to target")
 
     elif(inpAction == "removeConstraint"):
       pass
