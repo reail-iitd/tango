@@ -230,7 +230,7 @@ class Datapoint:
 			obj = allObjects[randint(0, len(allObjects)-1)]
 			if obj in allObjects and not obj in actionObjects:
 				allObjects.remove(obj)
-		return self.getGraph(index, distance, sceneobjects=allObjects, embeddings)
+		return self.getGraph(index, distance, sceneobjects=allObjects, embeddings=embeddings)
 
 	def getTools(self, returnNoTool=False):
 		# Returns the set of tools used in the plan corresponding to this datapoint
