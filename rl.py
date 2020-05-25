@@ -238,7 +238,7 @@ def get_model(name):
 	return model
 
 def load_model(filename, model):
-	optimizer = torch.optim.Adam(model.parameters(), lr=0.00001, weight_decay=0.00001)
+	optimizer = torch.optim.Adam(model.parameters(), lr=0.0001, weight_decay=0.00001)
 	file_path = MODEL_SAVE_PATH + "/" + filename + ".ckpt"
 	if path.exists(file_path):
 		print(color.GREEN+"Loading pre-trained model: "+filename+color.ENDC)
