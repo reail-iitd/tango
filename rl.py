@@ -54,10 +54,12 @@ def test_policy(dset, graphs, model, num_objects = 0, verbose = False):
 			possible_actions = []
 			for action in all_actions: 
 				if approx.checkActionPossible(goal_num, action, e): possible_actions.append(action)
-			probs = list(model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], possible_actions))
 			if 'A2C' in model.name:
+				probs = list(model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], possible_actions))
 				a = np.random.choice(possible_actions, p=probs)
 			if 'DQN' in model.name:
+				if 'Aseq' not in model.name: probs = list(model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], possible_actions).detach().numpy())
+				else: probs = list(model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], possible_actions, actions).detach().numpy())
 				a = possible_actions[probs.index(max(probs))]
 			complete, new_g, err = approx.execAction(goal_num, a, e);
 			g = new_g; i += 1; print(a)
@@ -82,7 +84,8 @@ def test_policy_training(model, init_graphs, all_actions, num_episodes):
 				m = Categorical(probs); ai = m.sample()
 				a = possible_actions[ai.item()]
 			if 'DQN' in model.name:
-				probs = list(model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], possible_actions).detach().numpy())
+				if 'Aseq' not in model.name: probs = list(model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], possible_actions).detach().numpy())
+				else: probs = list(model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], possible_actions, actions).detach().numpy())
 				a = possible_actions[probs.index(max(probs))]
 			complete, new_g, err = approx.execAction(goal_num, a, e);
 			g = new_g; 
@@ -173,29 +176,29 @@ def form_initial_dataset():
 			df, init_graphs, test_set = pickle.load(f)
 		return data, df, init_graphs, test_set
 	train_set, test_set = split_data(data)
-	df = pd.DataFrame(columns=['goal_num', 'st', 'at', 'p', 'stv', 'st+1', 'r'])
+	df = pd.DataFrame(columns=['goal_num', 'st', 'at', 'aseq', 'p', 'stv', 'st+1', 'r'])
 	init_graphs = []
 	for datapoint in tqdm(train_set, ncols=80):
 		goal_num, world_num, tools, g, t = datapoint
 		actionSeq, graphSeq = g; complete = False
 		approx.initPolicy(domain, goal_num, world_num)
-		old_graph = graphSeq[0]; init_graphs.append((old_graph, goal_num, world_num))
+		old_graph = graphSeq[0]; init_graphs.append((old_graph, goal_num, world_num)); aseq = []
 		for action in actionSeq:
 			complete, new_graph, err = approx.execAction(goal_num, action, e); 
 			if err == '': 
-				df = df.append({'goal_num':goal_num, 'st':old_graph, 'at':action, 'p':1, 'st+1':new_graph, 'r':gamma**len(actionSeq)}, ignore_index=True)
-				old_graph = new_graph
+				df = df.append({'goal_num':goal_num, 'st':old_graph, 'at':action, 'aseq':deepcopy(aseq), 'p':1, 'st+1':new_graph, 'r':gamma**len(actionSeq)}, ignore_index=True)
+				old_graph = new_graph; aseq.append(action);
 	pickle.dump((df, init_graphs, test_set), open(filename, "wb"))
 	return data, df, init_graphs, test_set
 
 def run_new_plan(model, init_graphs, all_actions):
 	g, goal_num, world_num = init_graphs[np.random.choice(range(len(init_graphs)))]
 	approx.initPolicy(domain, goal_num, world_num)
-	old_graphs, actions, p, new_graphs, i = [], [], [], [], 0
+	old_graphs, actions, p, new_graphs, aseq, i = [], [], [], [], [], 0
 	while True:
 		possible_actions = []
-		for action in all_actions: 
-			if approx.checkActionPossible(goal_num, action, e): possible_actions.append(action)
+		for action_check in all_actions: 
+			if approx.checkActionPossible(goal_num, action_check, e): possible_actions.append(action_check)
 		if 'A2C' in model.name:
 			probs = model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], possible_actions)
 			m = Categorical(probs); ai = m.sample()
@@ -204,16 +207,17 @@ def run_new_plan(model, init_graphs, all_actions):
 			e_prob = np.random.random(); p.append(1); 
 			if e_prob < 0.2: a = np.random.choice(possible_actions)
 			else: 
-				probs = list(model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], possible_actions).detach().numpy())
+				if 'Aseq' not in model.name: probs = list(model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], possible_actions).detach().numpy())
+				else: probs = list(model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], possible_actions, actions).detach().numpy())
 				a = possible_actions[probs.index(max(probs))]
 		complete, new_g, err = approx.execAction(goal_num, a, e);
-		old_graphs.append(g); actions.append(a); new_graphs.append(new_g)
+		old_graphs.append(g); actions.append(a); new_graphs.append(new_g); aseq.append(deepcopy(actions));
 		g = new_g; i += 1; #print(i, a)
 		if err != '': print(approx.checkActionPossible(goal_num, a, e)); print(a, err)
 		if complete: r = [gamma**len(old_graphs)]*len(old_graphs); break
 		elif i >= 30: r = [0]*len(old_graphs); break
 		if err != '': r = [0]*len(old_graphs); break
-	return pd.DataFrame({'goal_num':[goal_num]*len(old_graphs), 'st':old_graphs, 'at':actions, 'p':p, 'st+1':new_graphs, 'r':r}), r[0]
+	return pd.DataFrame({'goal_num':[goal_num]*len(old_graphs), 'st':old_graphs, 'at':actions, 'aseq':aseq, 'p':p, 'st+1':new_graphs, 'r':r}), r[0]
 
 def updateBuffer(model, init_graphs, all_actions, replay_buffer, num_runs):
 	dataframes = []; rewards = []
@@ -265,7 +269,7 @@ if __name__ == '__main__':
 	all_actions = get_all_possible_actions()
 	data, crowdsource_df, init_graphs, test_set = form_initial_dataset()
 	replay_buffer = load_buffer()
-	model = get_model('DQN2')
+	model = get_model('DQN_Aseq')
 	model, optimizer, epoch, accuracy_list = load_model(model.name + "_Trained", model)
 
 	for num_epochs in range(epoch+1, epoch+NUM_EPOCHS+1):
@@ -277,14 +281,15 @@ if __name__ == '__main__':
 			val_loss, total_loss, p_loss = [], [], []
 			dataset = get_training_data(replay_buffer, crowdsource_df, 50)
 			for ind in dataset.index:
-				goal_num, g, a, p, r = dataset['goal_num'][ind], dataset['st'][ind], dataset['at'][ind], dataset['p'][ind], dataset['r'][ind]
+				goal_num, g, a, aseq, p, r = dataset['goal_num'][ind], dataset['st'][ind], dataset['at'][ind], dataset['aseq'][ind], dataset['p'][ind], dataset['r'][ind]
 				if 'A2C' in model.name:
 					pred_val = model.value(g, goal2vec[goal_num], goalObjects2vec[goal_num])
 					if p != 1:
 						p_loss.append(r * -torch.log(torch.tensor([p], dtype=torch.float)) - (1-r) * torch.log(torch.tensor([1-p], dtype=torch.float)))
 					val_loss.append(F.smooth_l1_loss(torch.Tensor([r]), pred_val))
 				if 'DQN' in model.name:
-					pred_val = model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], [a])
+					if 'Aseq' not in model.name: pred_val = model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], [a])
+					else: pred_val = model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], [a], aseq)
 					# print(r, pred_val)
 					val_loss.append(F.smooth_l1_loss(torch.Tensor([r]), pred_val))
 			loss = torch.stack(val_loss).sum()
