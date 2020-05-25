@@ -48,7 +48,7 @@ def test_policy(dset, graphs, model, num_objects = 0, verbose = False):
 	for graph in tqdm(graphs, desc = "Policy Testing", ncols=80):
 		goal_num, world_num, tools, g, t = graph
 		actionSeq, graphSeq = g
-		g = graphSeq[0]; i = 0
+		g = graphSeq[0]; i = 0; aseq = []
 		approx.initPolicy(domain, goal_num, world_num)
 		while True:
 			possible_actions = []
@@ -59,8 +59,8 @@ def test_policy(dset, graphs, model, num_objects = 0, verbose = False):
 				a = np.random.choice(possible_actions, p=probs)
 			if 'DQN' in model.name:
 				if 'Aseq' not in model.name: probs = list(model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], possible_actions).detach().numpy())
-				else: probs = list(model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], possible_actions, actions).detach().numpy())
-				a = possible_actions[probs.index(max(probs))]
+				else: probs = list(model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], possible_actions, aseq).detach().numpy())
+				a = possible_actions[probs.index(max(probs))]; aseq.append(a)
 			complete, new_g, err = approx.execAction(goal_num, a, e);
 			g = new_g; i += 1; print(a)
 			if verbose and err != '': print(goal_num, world_num); print(tool_preds); print(actionSeq, err); print('----------')
@@ -73,7 +73,7 @@ def test_policy(dset, graphs, model, num_objects = 0, verbose = False):
 
 def test_policy_training(model, init_graphs, all_actions, num_episodes):
 	g, goal_num, world_num = init_graphs[np.random.choice(range(len(init_graphs)))]
-	approx.initPolicy(domain, goal_num, world_num); correct = 0
+	approx.initPolicy(domain, goal_num, world_num); correct = 0; aseq = []
 	for _ in tqdm(list(range(num_episodes)), desc = 'Testing on train set', ncols=80):
 		for i in range(30):
 			possible_actions = []
@@ -85,8 +85,8 @@ def test_policy_training(model, init_graphs, all_actions, num_episodes):
 				a = possible_actions[ai.item()]
 			if 'DQN' in model.name:
 				if 'Aseq' not in model.name: probs = list(model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], possible_actions).detach().numpy())
-				else: probs = list(model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], possible_actions, actions).detach().numpy())
-				a = possible_actions[probs.index(max(probs))]
+				else: probs = list(model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], possible_actions, aseq).detach().numpy())
+				a = possible_actions[probs.index(max(probs))]; aseq.append(a)
 			complete, new_g, err = approx.execAction(goal_num, a, e);
 			g = new_g; 
 			if err != '': print(approx.checkActionPossible(goal_num, a, e)); print(a, err)
