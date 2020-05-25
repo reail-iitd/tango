@@ -391,6 +391,8 @@ def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None, sav
               cleaner = True
           if ("stick" in obj):
               stick = True
+          if obj in constraints[t]:
+                raise Exception("Object already constrained to target")
           if t not in constraints.keys():
             constraints[t] = []
           if fct(obj) != "":
@@ -638,6 +640,8 @@ def checkAction(actions, goal_file=None, queue_for_execute_to_stop = None, saveI
             raise Exception("Object on different height, please use stool")
       if metrics[t][0][2] - z1 < -1.1:
             raise Exception("Object on lower level, please move down")
+      if objDistance < tolerances[t]:
+            raise Exception("Object already in vicinity")
 
     elif(inpAction == "moveToXY"):
       t = actions[action_index][1]
@@ -701,10 +705,12 @@ def checkAction(actions, goal_file=None, queue_for_execute_to_stop = None, saveI
         raise Exception("Object not sticky")
 
     elif(inpAction == "climbUp"):
-      pass
+      if 'husky' in fixed:
+        raise Exception('Husky is fixed')
     
     elif(inpAction == "climbDown"):
-      pass
+      if 'husky' not in fixed:
+        raise Exception('Husky not on stool')
 
     elif(inpAction == "clean"):
       obj = actions[action_index][1]

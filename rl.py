@@ -40,7 +40,7 @@ num_actions = len(possibleActions)
 memory_size = 2000
 with open('jsons/embeddings/'+embedding+'.vectors') as handle: e = json.load(handle)
 avg = lambda a : sum(a)/len(a)
-epsilon = 0.9; decay = 0.95; min_epsilon = 0.01
+gamma = 0.98
 
 def test_policy(dset, graphs, model, num_objects = 0, verbose = False):
 	with open('jsons/embeddings/'+embedding+'.vectors') as handle: e = json.load(handle)
@@ -59,10 +59,10 @@ def test_policy(dset, graphs, model, num_objects = 0, verbose = False):
 				a = np.random.choice(possible_actions, p=probs)
 			if 'DQN' in model.name:
 				a = possible_actions[probs.index(max(probs))]
-			complete, new_g, err = approx.execAction(goal_num, action, e);
-			g = new_g; i += 1;
+			complete, new_g, err = approx.execAction(goal_num, a, e);
+			g = new_g; i += 1; print(a)
 			if verbose and err != '': print(goal_num, world_num); print(tool_preds); print(actionSeq, err); print('----------')
-			if res:	correct += 1; break
+			if complete:	correct += 1; break
 			elif err == '' and i > 30:	incorrect += 1; break
 			elif err != '': error += 1; break
 	den = correct + incorrect + error
@@ -183,7 +183,7 @@ def form_initial_dataset():
 		for action in actionSeq:
 			complete, new_graph, err = approx.execAction(goal_num, action, e); 
 			if err == '': 
-				df = df.append({'goal_num':goal_num, 'st':old_graph, 'at':action, 'p':1, 'st+1':new_graph, 'r':1}, ignore_index=True)
+				df = df.append({'goal_num':goal_num, 'st':old_graph, 'at':action, 'p':1, 'st+1':new_graph, 'r':gamma**len(actionSeq)}, ignore_index=True)
 				old_graph = new_graph
 	pickle.dump((df, init_graphs, test_set), open(filename, "wb"))
 	return data, df, init_graphs, test_set
@@ -201,15 +201,16 @@ def run_new_plan(model, init_graphs, all_actions):
 			m = Categorical(probs); ai = m.sample()
 			a = possible_actions[ai.item()]; p.append(probs[ai])
 		if 'DQN' in model.name:
-			probs = list(model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], possible_actions).detach().numpy())
 			e_prob = np.random.random(); p.append(1); 
-			if e_prob < epsilon: a = np.random.choice(possible_actions)
-			else: a = possible_actions[probs.index(max(probs))]
+			if e_prob < 0.2: a = np.random.choice(possible_actions)
+			else: 
+				probs = list(model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], possible_actions).detach().numpy())
+				a = possible_actions[probs.index(max(probs))]
 		complete, new_g, err = approx.execAction(goal_num, a, e);
 		old_graphs.append(g); actions.append(a); new_graphs.append(new_g)
 		g = new_g; i += 1; #print(i, a)
 		if err != '': print(approx.checkActionPossible(goal_num, a, e)); print(a, err)
-		if complete: r = [1]*len(old_graphs); break
+		if complete: r = [gamma**len(old_graphs)]*len(old_graphs); break
 		elif i >= 30: r = [0]*len(old_graphs); break
 		if err != '': r = [0]*len(old_graphs); break
 	return pd.DataFrame({'goal_num':[goal_num]*len(old_graphs), 'st':old_graphs, 'at':actions, 'p':p, 'st+1':new_graphs, 'r':r}), r[0]
@@ -225,9 +226,9 @@ def updateBuffer(model, init_graphs, all_actions, replay_buffer, num_runs):
 
 def get_training_data(replay_buffer, crowdsource_df, sample_size):
 	total_data = pd.concat([replay_buffer, crowdsource_df], ignore_index=True)
-	positive_data = total_data[total_data.r == 1].sample(sample_size)
+	positive_data = total_data[total_data.r > 0].sample(sample_size)
 	try: negative_data = total_data[total_data.r == 0].sample(sample_size)
-	except: print('Insufficient negative examples'); negative_data = total_data[total_data.r == 1].sample(sample_size)
+	except: print('Insufficient negative examples'); negative_data = total_data[total_data.r > 0].sample(sample_size)
 	return pd.concat([positive_data, negative_data], ignore_index=True)
 
 def get_model(name):
@@ -249,7 +250,7 @@ def load_model(filename, model):
 	else:
 		epoch = -1; accuracy_list = []
 		print(color.GREEN+"Creating new model: "+model.name+color.ENDC)
-	return model, optimizer, epoch, accuracy_list, accuracy_list[-1][-1] if len(accuracy_list) else epsilon
+	return model, optimizer, epoch, accuracy_list
 
 def save_model(model, optimizer, epoch, accuracy_list, file_path = None):
 	if file_path == None:
@@ -265,11 +266,10 @@ if __name__ == '__main__':
 	data, crowdsource_df, init_graphs, test_set = form_initial_dataset()
 	replay_buffer = load_buffer()
 	model = get_model('DQN2')
-	model, optimizer, epoch, accuracy_list, epsilon = load_model(model.name + "_Trained", model)
+	model, optimizer, epoch, accuracy_list = load_model(model.name + "_Trained", model)
 
 	for num_epochs in range(epoch+1, epoch+NUM_EPOCHS+1):
 		print("EPOCH ", num_epochs)
-		if 'DQN' in model.name: epsilon = max(min_epsilon, epsilon*decay); print('Epsilon =', epsilon)
 		replay_buffer, avg_r = updateBuffer(model, init_graphs, all_actions, replay_buffer, 5 if num_epochs == epoch+1 else 1)
 		save_buffer(replay_buffer)
 		global_loss = []
@@ -298,7 +298,7 @@ if __name__ == '__main__':
 		print('Avg loss of epoch', avg(global_loss))
 		avg_r = test_policy_training(model, init_graphs, all_actions, 5)
 		print("Average reward ", avg_r)
-		accuracy_list.append((avg_r, avg(global_loss), epsilon))
+		accuracy_list.append((avg_r, avg(global_loss)))
 		save_model(model, optimizer, num_epochs, accuracy_list)
 	print ("The maximum avg return on train set is ", str(max(accuracy_list)), " at epoch ", accuracy_list.index(max(accuracy_list)))
 	test_policy(data, test_set, model, data.num_objects, False)
