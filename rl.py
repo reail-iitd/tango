@@ -40,7 +40,7 @@ num_actions = len(possibleActions)
 memory_size = 2000
 with open('jsons/embeddings/'+embedding+'.vectors') as handle: e = json.load(handle)
 avg = lambda a : sum(a)/len(a)
-epsilon = 0.9; decay = 0.95; min_epsilon = 0.01
+gamma = 0.98
 
 def test_policy(dset, graphs, model, num_objects = 0, verbose = False):
 	with open('jsons/embeddings/'+embedding+'.vectors') as handle: e = json.load(handle)
@@ -48,21 +48,23 @@ def test_policy(dset, graphs, model, num_objects = 0, verbose = False):
 	for graph in tqdm(graphs, desc = "Policy Testing", ncols=80):
 		goal_num, world_num, tools, g, t = graph
 		actionSeq, graphSeq = g
-		g = graphSeq[0]; i = 0
+		g = graphSeq[0]; i = 0; aseq = []
 		approx.initPolicy(domain, goal_num, world_num)
 		while True:
 			possible_actions = []
 			for action in all_actions: 
 				if approx.checkActionPossible(goal_num, action, e): possible_actions.append(action)
-			probs = list(model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], possible_actions))
 			if 'A2C' in model.name:
+				probs = list(model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], possible_actions))
 				a = np.random.choice(possible_actions, p=probs)
 			if 'DQN' in model.name:
-				a = possible_actions[probs.index(max(probs))]
-			complete, new_g, err = approx.execAction(goal_num, action, e);
-			g = new_g; i += 1;
+				if 'Aseq' not in model.name: probs = list(model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], possible_actions).detach().numpy())
+				else: probs = list(model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], possible_actions, aseq).detach().numpy())
+				a = possible_actions[probs.index(max(probs))]; aseq.append(a)
+			complete, new_g, err = approx.execAction(goal_num, a, e);
+			g = new_g; i += 1; print(a)
 			if verbose and err != '': print(goal_num, world_num); print(tool_preds); print(actionSeq, err); print('----------')
-			if res:	correct += 1; break
+			if complete:	correct += 1; break
 			elif err == '' and i > 30:	incorrect += 1; break
 			elif err != '': error += 1; break
 	den = correct + incorrect + error
@@ -71,7 +73,7 @@ def test_policy(dset, graphs, model, num_objects = 0, verbose = False):
 
 def test_policy_training(model, init_graphs, all_actions, num_episodes):
 	g, goal_num, world_num = init_graphs[np.random.choice(range(len(init_graphs)))]
-	approx.initPolicy(domain, goal_num, world_num); correct = 0
+	approx.initPolicy(domain, goal_num, world_num); correct = 0; aseq = []
 	for _ in tqdm(list(range(num_episodes)), desc = 'Testing on train set', ncols=80):
 		for i in range(30):
 			possible_actions = []
@@ -82,8 +84,9 @@ def test_policy_training(model, init_graphs, all_actions, num_episodes):
 				m = Categorical(probs); ai = m.sample()
 				a = possible_actions[ai.item()]
 			if 'DQN' in model.name:
-				probs = list(model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], possible_actions).detach().numpy())
-				a = possible_actions[probs.index(max(probs))]
+				if 'Aseq' not in model.name: probs = list(model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], possible_actions).detach().numpy())
+				else: probs = list(model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], possible_actions, aseq).detach().numpy())
+				a = possible_actions[probs.index(max(probs))]; aseq.append(a)
 			complete, new_g, err = approx.execAction(goal_num, a, e);
 			g = new_g; 
 			if err != '': print(approx.checkActionPossible(goal_num, a, e)); print(a, err)
@@ -173,46 +176,48 @@ def form_initial_dataset():
 			df, init_graphs, test_set = pickle.load(f)
 		return data, df, init_graphs, test_set
 	train_set, test_set = split_data(data)
-	df = pd.DataFrame(columns=['goal_num', 'st', 'at', 'p', 'stv', 'st+1', 'r'])
+	df = pd.DataFrame(columns=['goal_num', 'st', 'at', 'aseq', 'p', 'stv', 'st+1', 'r'])
 	init_graphs = []
 	for datapoint in tqdm(train_set, ncols=80):
 		goal_num, world_num, tools, g, t = datapoint
 		actionSeq, graphSeq = g; complete = False
 		approx.initPolicy(domain, goal_num, world_num)
-		old_graph = graphSeq[0]; init_graphs.append((old_graph, goal_num, world_num))
+		old_graph = graphSeq[0]; init_graphs.append((old_graph, goal_num, world_num)); aseq = []
 		for action in actionSeq:
 			complete, new_graph, err = approx.execAction(goal_num, action, e); 
 			if err == '': 
-				df = df.append({'goal_num':goal_num, 'st':old_graph, 'at':action, 'p':1, 'st+1':new_graph, 'r':1}, ignore_index=True)
-				old_graph = new_graph
+				df = df.append({'goal_num':goal_num, 'st':old_graph, 'at':action, 'aseq':deepcopy(aseq), 'p':1, 'st+1':new_graph, 'r':gamma**len(actionSeq)}, ignore_index=True)
+				old_graph = new_graph; aseq.append(action);
 	pickle.dump((df, init_graphs, test_set), open(filename, "wb"))
 	return data, df, init_graphs, test_set
 
 def run_new_plan(model, init_graphs, all_actions):
 	g, goal_num, world_num = init_graphs[np.random.choice(range(len(init_graphs)))]
 	approx.initPolicy(domain, goal_num, world_num)
-	old_graphs, actions, p, new_graphs, i = [], [], [], [], 0
+	old_graphs, actions, p, new_graphs, aseq, i = [], [], [], [], [], 0
 	while True:
 		possible_actions = []
-		for action in all_actions: 
-			if approx.checkActionPossible(goal_num, action, e): possible_actions.append(action)
+		for action_check in all_actions: 
+			if approx.checkActionPossible(goal_num, action_check, e): possible_actions.append(action_check)
 		if 'A2C' in model.name:
 			probs = model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], possible_actions)
 			m = Categorical(probs); ai = m.sample()
 			a = possible_actions[ai.item()]; p.append(probs[ai])
 		if 'DQN' in model.name:
-			probs = list(model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], possible_actions).detach().numpy())
 			e_prob = np.random.random(); p.append(1); 
-			if e_prob < epsilon: a = np.random.choice(possible_actions)
-			else: a = possible_actions[probs.index(max(probs))]
+			if e_prob < 0.2: a = np.random.choice(possible_actions)
+			else: 
+				if 'Aseq' not in model.name: probs = list(model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], possible_actions).detach().numpy())
+				else: probs = list(model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], possible_actions, actions).detach().numpy())
+				a = possible_actions[probs.index(max(probs))]
 		complete, new_g, err = approx.execAction(goal_num, a, e);
-		old_graphs.append(g); actions.append(a); new_graphs.append(new_g)
+		old_graphs.append(g); actions.append(a); new_graphs.append(new_g); aseq.append(deepcopy(actions));
 		g = new_g; i += 1; #print(i, a)
 		if err != '': print(approx.checkActionPossible(goal_num, a, e)); print(a, err)
-		if complete: r = [1]*len(old_graphs); break
+		if complete: r = [gamma**len(old_graphs)]*len(old_graphs); break
 		elif i >= 30: r = [0]*len(old_graphs); break
 		if err != '': r = [0]*len(old_graphs); break
-	return pd.DataFrame({'goal_num':[goal_num]*len(old_graphs), 'st':old_graphs, 'at':actions, 'p':p, 'st+1':new_graphs, 'r':r}), r[0]
+	return pd.DataFrame({'goal_num':[goal_num]*len(old_graphs), 'st':old_graphs, 'at':actions, 'aseq':aseq, 'p':p, 'st+1':new_graphs, 'r':r}), r[0]
 
 def updateBuffer(model, init_graphs, all_actions, replay_buffer, num_runs):
 	dataframes = []; rewards = []
@@ -225,20 +230,19 @@ def updateBuffer(model, init_graphs, all_actions, replay_buffer, num_runs):
 
 def get_training_data(replay_buffer, crowdsource_df, sample_size):
 	total_data = pd.concat([replay_buffer, crowdsource_df], ignore_index=True)
-	positive_data = total_data[total_data.r == 1].sample(sample_size)
+	positive_data = total_data[total_data.r > 0].sample(sample_size)
 	try: negative_data = total_data[total_data.r == 0].sample(sample_size)
-	except: print('Insufficient negative examples'); negative_data = total_data[total_data.r == 1].sample(sample_size)
+	except: print('Insufficient negative examples'); negative_data = total_data[total_data.r > 0].sample(sample_size)
 	return pd.concat([positive_data, negative_data], ignore_index=True)
 
 def get_model(name):
-	if 'A2C' in name:
-		model = A2C(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh)
-	if 'DQN' in name:
-		model = DQN(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh)
+	import src.GNN.rl_models
+	model_class = getattr(src.GNN.rl_models, name)
+	model = model_class(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh)
 	return model
 
 def load_model(filename, model):
-	optimizer = torch.optim.Adam(model.parameters(), lr=0.00001, weight_decay=0.00001)
+	optimizer = torch.optim.Adam(model.parameters(), lr=0.0001, weight_decay=0.00001)
 	file_path = MODEL_SAVE_PATH + "/" + filename + ".ckpt"
 	if path.exists(file_path):
 		print(color.GREEN+"Loading pre-trained model: "+filename+color.ENDC)
@@ -250,7 +254,7 @@ def load_model(filename, model):
 	else:
 		epoch = -1; accuracy_list = []
 		print(color.GREEN+"Creating new model: "+model.name+color.ENDC)
-	return model, optimizer, epoch, accuracy_list, accuracy_list[-1][-1] if len(accuracy_list) else epsilon
+	return model, optimizer, epoch, accuracy_list
 
 def save_model(model, optimizer, epoch, accuracy_list, file_path = None):
 	if file_path == None:
@@ -265,27 +269,27 @@ if __name__ == '__main__':
 	all_actions = get_all_possible_actions()
 	data, crowdsource_df, init_graphs, test_set = form_initial_dataset()
 	replay_buffer = load_buffer()
-	model = get_model('DQN')
-	model, optimizer, epoch, accuracy_list, epsilon = load_model(model.name + "_Trained", model)
+	model = get_model('DQN_Aseq')
+	model, optimizer, epoch, accuracy_list = load_model(model.name + "_Trained", model)
 
 	for num_epochs in range(epoch+1, epoch+NUM_EPOCHS+1):
 		print("EPOCH ", num_epochs)
-		if 'DQN' in model.name: epsilon = max(min_epsilon, epsilon*decay); print('Epsilon =', epsilon)
-		replay_buffer, avg_r = updateBuffer(model, init_graphs, all_actions, replay_buffer, 1)
+		replay_buffer, avg_r = updateBuffer(model, init_graphs, all_actions, replay_buffer, 5 if num_epochs == epoch+1 else 1)
 		save_buffer(replay_buffer)
 		global_loss = []
 		for _ in tqdm(range(100), desc = 'Training', ncols=80):
 			val_loss, total_loss, p_loss = [], [], []
 			dataset = get_training_data(replay_buffer, crowdsource_df, 50)
 			for ind in dataset.index:
-				goal_num, g, a, p, r = dataset['goal_num'][ind], dataset['st'][ind], dataset['at'][ind], dataset['p'][ind], dataset['r'][ind]
+				goal_num, g, a, aseq, p, r = dataset['goal_num'][ind], dataset['st'][ind], dataset['at'][ind], dataset['aseq'][ind], dataset['p'][ind], dataset['r'][ind]
 				if 'A2C' in model.name:
 					pred_val = model.value(g, goal2vec[goal_num], goalObjects2vec[goal_num])
 					if p != 1:
 						p_loss.append(r * -torch.log(torch.tensor([p], dtype=torch.float)) - (1-r) * torch.log(torch.tensor([1-p], dtype=torch.float)))
 					val_loss.append(F.smooth_l1_loss(torch.Tensor([r]), pred_val))
 				if 'DQN' in model.name:
-					pred_val = model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], [a])
+					if 'Aseq' not in model.name: pred_val = model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], [a])
+					else: pred_val = model.policy(g, goal2vec[goal_num], goalObjects2vec[goal_num], [a], aseq)
 					# print(r, pred_val)
 					val_loss.append(F.smooth_l1_loss(torch.Tensor([r]), pred_val))
 			loss = torch.stack(val_loss).sum()
@@ -299,7 +303,7 @@ if __name__ == '__main__':
 		print('Avg loss of epoch', avg(global_loss))
 		avg_r = test_policy_training(model, init_graphs, all_actions, 5)
 		print("Average reward ", avg_r)
-		accuracy_list.append((avg_r, avg(global_loss), epsilon))
+		accuracy_list.append((avg_r, avg(global_loss)))
 		save_model(model, optimizer, num_epochs, accuracy_list)
 	print ("The maximum avg return on train set is ", str(max(accuracy_list)), " at epoch ", accuracy_list.index(max(accuracy_list)))
 	test_policy(data, test_set, model, data.num_objects, False)
