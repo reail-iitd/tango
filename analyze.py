@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from statistics import pstdev
 import seaborn as sns
 import itertools
-# from src.generalization import *
+from src.generalization import *
 
 GOAL_LISTS = \
 {'home': ["goal1-milk-fridge.json", "goal2-fruits-cupboard.json", "goal3-clean-dirt.json", "goal4-stick-paper.json", "goal5-cubes-box.json", "goal6-bottles-dumpster.json", "goal7-weight-paper.json", "goal8-light-off.json"],
@@ -202,8 +202,8 @@ def checkActionTypes():
 	print(actionTypes)
 
 def testData():
-	# for i in range(1,9):	formTestData(i)
-	formTestDataFactory(4)
+	for i in range(1,10):	formTestData(i)
+	# formTestDataFactory(4)
 	# for i in range(1,9): formTestDataFactory(i)
 
 def printAllTimes():
@@ -449,7 +449,7 @@ def checkPlan():
 # printGraph("dataset/factory/goal1-crates-platform/world_factory3/0")
 # checkActionTypes()
 # printGraph("dataset/home/goal1-milk-fridge/world_home4/0")
-# testData()
+testData()
 # printAllTimes()
 # allTools()
 # mapToolsGoals()
@@ -458,4 +458,4 @@ def checkPlan():
 # getAllData()
 # checkApprox()
 # checkPlan()
-checkAllActions()
+# checkAllActions()

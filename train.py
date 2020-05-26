@@ -63,7 +63,7 @@ def gen_score(model, testData, verbose = False):
 	testcases = (9 if domain == 'home' else 8)
 	correct_list = [0] * testcases; total_list = [0] * testcases
 	for graph in testData.graphs:
-		goal_num, test_num, tools, g, tool_vec = graph
+		goal_num, _, test_num, tools, g, tool_vec, _ = graph
 		tool_vec = torch.Tensor(tool_vec)
 		y_pred = model(g, goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
 		y_pred = list(y_pred.reshape(-1))
@@ -118,6 +118,38 @@ def grammatical_action(action):
 	else:
 		assert False
 	return True
+
+def gen_policy_score(model, testData, num_objects, verbose = True):
+	if verbose: print ("Generalization Testing")
+	correct, incorrect, error = 0, 0, 0
+	for graph in tqdm(testData.graphs, desc = "Generalization Testing", ncols=80):
+		goal_num, world_num, test_num, _, g, _, e = graph
+		actionSeq, graphSeq, object_likelihoods, tool_preds = [], [g], [], []
+		approx.initPolicy(domain, goal_num, world_num)
+		while True:
+			if "Aseq" in model_name:
+				if "Tool" in model_name:
+					tool_likelihoods = modelEnc(graphSeq[-1], goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
+					tool_ls = list(tool_likelihoods.reshape(-1))
+					tool_preds.append(TOOLS[tool_ls.index(max(tool_ls))])
+					object_likelihoods.append(tool2object_likelihoods(num_objects, tool_likelihoods))
+					y_pred_list = model(graphSeq, goal2vec[goal_num], goalObjects2vec[goal_num], actionSeq, object_likelihoods)
+				else:
+					y_pred_list = model(graphSeq, goal2vec[goal_num], goalObjects2vec[goal_num], actionSeq)
+				y_pred = y_pred_list[-1]
+				action_pred = vec2action_grammatical(y_pred, num_objects, 4, idx2object) if "Cons" in model.name else vec2action(y_pred, num_objects, 4, idx2object)
+				if test_num == 7 and action_pred['name'] in ['climbUp', 'climbDown'] and action_pred['args'][0] == 'stool': 
+					print(goal_num, world_num); print(actionSeq, 'Climb up/down headphone'); print('----------')
+					error += 1; break
+				res, g, err = approx.execAction(goal_num, action_pred, e)
+				actionSeq.append(action_pred); graphSeq.append(g)
+				if verbose and err != '': print(goal_num, world_num); print(actionSeq, err); print('----------')
+				if res:	correct += 1; break
+				elif err == '' and len(actionSeq) > 30:	incorrect += 1; break
+				elif err != '': error += 1; break
+	den = correct + incorrect + error
+	print ("Correct, Incorrect, Error: ", (correct*100/den), (incorrect*100/den), (error*100/den))
+	return (correct*100/den), (incorrect*100/den), (error*100/den)
 
 def test_policy(dset, graphs, model, modelEnc, num_objects = 0, verbose = False):
 	assert "action" in training
@@ -549,7 +581,7 @@ if __name__ == '__main__':
 		genTest = TestDataset("dataset/test/" + domain + "/" + embedding + "/")
 		print("Generalization accuracy is ", gen_score(model, genTest))
 
-	elif exec_type == "generalization":
+	elif exec_type == "generalization" and "Action" not in model.name:
 		testConcept = TestDataset("dataset/test/" + domain + "/conceptnet/")
 		testFast = TestDataset("dataset/test/" + domain + "/fasttext/")
 		embeddings, object2vec, object2idx, idx2object, tool_vec, goal2vec, goalObjects2vec = compute_constants("fasttext")
@@ -563,6 +595,13 @@ if __name__ == '__main__':
 			model, _ = get_model('_'.join(i.split("_")[:-3]))
 			model, _, _, _, _ = load_model(i, model, None)
 			print(i, gen_score(model, testConcept))
+
+	elif exec_type == "generalization" and "Action" in model.name:
+		testConcept = TestDataset("dataset/test/" + domain + "/conceptnet/")
+		i = "GGCN_Metric_Attn_Aseq_L_Auto_Cons_C_Action_128_3_Trained"
+		model, _ = get_model('_'.join(i.split("_")[:-3]))
+		model, _, _, _, _ = load_model(i, model, None)
+		print(i, gen_policy_score(model, testConcept, data.num_objects))
 
 	elif exec_type == "ablation":
 		testConcept = TestDataset("dataset/test/" + domain + "/conceptnet/")

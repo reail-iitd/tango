@@ -165,5 +165,5 @@ class TestDataset():
 						with open(file_path, 'r') as handle:
 						    graph = json.load(handle)
 						g = convertToDGLGraph(graph["graph_0"], False, graph["goal_num"], -1)	
-						graphs.append((graph["goal_num"], int(path[-1]), graph["tools"], convertToDGLGraph(graph["graph_0"], False, graph["goal_num"], -1), graph["tool_embeddings"]))					
+						graphs.append((graph["goal_num"], graph["world_num"], int(path[-1]), graph["tools"], convertToDGLGraph(graph["graph_0"], False, graph["goal_num"], -1), graph["tool_embeddings"], graph["object_embeddings"]))					
 		self.graphs = graphs

@@ -1,9 +1,9 @@
 from src.datapoint import *
 import pickle
 import json
-from extract_vectors import load_all_vectors
+from src.extract_vectors import load_all_vectors
 from copy import deepcopy
-from src.GNN.CONSTANTS import TOOLS2, domain
+from src.GNN.CONSTANTS import TOOLS2, domain, all_objects
 from os import listdir
 
 conceptnet = load_all_vectors("jsons/embeddings/conceptnet.txt") # {} #
@@ -50,7 +50,7 @@ def formTestData(testnum):
 				with open(file_path, 'rb') as f:
 					datapoint = pickle.load(f)
 				for e in [(conceptnet, "conceptnet", ce), (fasttext, "fasttext", fe)]:	
-					d = {"goal_num": goal_num_home[testnum], "tools": tools_home[testnum]} 
+					d = {"goal_num": goal_num_home[testnum], "tools": tools_home[testnum], "world_num": int(datapoint.world[-1])} 
 					enew = deepcopy(e[2])
 					if testnum == 3: enew["mop"] = [0] * 300
 					elif testnum == 4: enew["box"] = e[0]["crate"] 
@@ -62,6 +62,7 @@ def formTestData(testnum):
 					g = datapoint.getGraph(embeddings = enew)
 					d["graph_0"] = g["graph_0"]
 					d["tool_embeddings"] = [enew[i] for i in TOOLS2]
+					d["object_embeddings"] = dict(zip(all_objects, [enew[i] for i in all_objects]))
 					writeFiles(5 if testnum <= 2 or testnum == 9 else 1, "dataset/test/home/" + e[1] + "/test"+ str(testnum) + "/", d)
 
 directory_factory = {1: "dataset/factory/goal7-clean-water/",
@@ -110,4 +111,3 @@ def formTestDataFactory(testnum):
 							if i["name"] == "screwdriver" and 'To_Print' in i['states']: i["states"].remove('To_Print'); i['states'].append('Printed')
 					d["tool_embeddings"] = [enew[i] for i in TOOLS2]
 					writeFiles(5 if testnum == 8 else 1, "dataset/test/factory/" + e[1] + "/test"+ str(testnum) + "/", d)
-
