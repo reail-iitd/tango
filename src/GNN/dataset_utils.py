@@ -77,7 +77,7 @@ def convertToDGLGraph(graph_data, globalNode, goal_num, globalID, ignore=[]):
 
 	for node in closeToAgent: node_close_agent[node] = 1
 	g.ndata['close'] = node_close_agent
-	g.ndata['feat'] = torch.cat((node_vectors, node_states, node_size_and_pos, node_in_goal), 1)
+	g.ndata['feat'] = torch.cat((node_vectors, node_states, node_size_and_pos), 1)
 	return g
 
 def getDGLGraph(pathToDatapoint, globalNode, ignoreNoTool, e):
