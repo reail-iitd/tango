@@ -391,8 +391,8 @@ def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None, sav
               cleaner = True
           if ("stick" in obj):
               stick = True
-          if obj in constraints[t]:
-                raise Exception("Object already constrained to target")
+          # if obj in constraints[t]:
+          #       raise Exception("Object already constrained to target")
           if t not in constraints.keys():
             constraints[t] = []
           if fct(obj) != "":
