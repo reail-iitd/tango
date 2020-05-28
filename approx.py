@@ -380,8 +380,8 @@ def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None, sav
               raise Exception("Object is inside an enclosure, can not grasp it.")
           if (t in enclosures and closed(t)):
               raise Exception("Enclosure is closed, can not place object inside")
-          if (t == 'ur5' and objDistance > 2.95):
-              raise Exception("Object too far away, move closer to it")
+          # if (t == 'ur5' and objDistance > 2.95):
+          #     raise Exception("Object too far away, move closer to it")
           if (t == 'ur5' and abs(metrics[obj][0][2] - z1 > 1.5)):
                 raise Exception("Object on different height, please use stool/ladder")
           if ("mop" in obj
