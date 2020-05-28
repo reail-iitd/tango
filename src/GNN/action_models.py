@@ -745,16 +745,16 @@ class GGCN_Auto_Action(nn.Module):
             self.layers.append(GatedHeteroRGCNLayer(n_hidden, n_hidden, etypes, activation=activation))
         self.attention = nn.Linear(n_hidden + n_hidden, 1)
         self.embed = nn.Linear(PRETRAINED_VECTOR_SIZE, n_hidden)
-        self.fc1 = nn.Linear(n_hidden + n_hidden, n_hidden)
+        self.fc1 = nn.Linear(n_hidden + n_hidden + n_objects+1, n_hidden)
         self.fc2 = nn.Linear(n_hidden, n_hidden)
         self.fc3 = nn.Linear(n_hidden, len(possibleActions))
-        self.p1  = nn.Linear(n_hidden + n_hidden + len(possibleActions), n_hidden)
+        self.p1  = nn.Linear(n_hidden + n_hidden, n_hidden)
         self.p2  = nn.Linear(n_hidden, n_hidden)
         self.p3  = nn.Linear(n_hidden, n_objects+1)
-        self.q1  = nn.Linear(n_hidden + n_hidden + len(possibleActions), n_hidden)
+        self.q1  = nn.Linear(n_hidden + n_hidden + n_objects+1 + len(possibleActions), n_hidden)
         self.q2  = nn.Linear(n_hidden, n_hidden)
         self.q3  = nn.Linear(n_hidden, n_objects+1)
-        self.q1_state  = nn.Linear(n_hidden + n_hidden + len(possibleActions), n_hidden)
+        self.q1_state  = nn.Linear(n_hidden + n_hidden + n_objects+1 + len(possibleActions), n_hidden)
         self.q2_state  = nn.Linear(n_hidden, n_hidden)
         self.q3_state  = nn.Linear(n_hidden, n_states)
         self.activation = nn.LeakyReLU()
@@ -767,7 +767,15 @@ class GGCN_Auto_Action(nn.Module):
         scene_embedding = torch.sum(h, dim=0).view(1,-1)
         goal_embed = self.activation(self.embed(torch.Tensor(goalVec.reshape(1, -1))))
         final_to_decode = torch.cat([scene_embedding, goal_embed], 1)
-        action = self.activation(self.fc1(final_to_decode))
+        
+        pred1_object = self.activation(self.p1(final_to_decode))
+        pred1_object = self.activation(self.p2(pred1_object))
+        pred1_object = F.softmax(self.p3(pred1_object), dim=1)
+        pred1_values = list(pred1_object[0]); ind_max_pred1 = pred1_values.index(max(pred1_values))
+        one_hot_pred1 = [0 for _ in range(len(pred1_values))]; one_hot_pred1[ind_max_pred1] = 1
+        one_hot_pred1 = torch.Tensor(one_hot_pred1).view(1,-1)
+
+        action = self.activation(self.fc1(torch.cat([final_to_decode, one_hot_pred1],1)))
         action = self.activation(self.fc2(action))
         action = self.fc3(action)
         action = F.softmax(action, dim=1)
@@ -776,18 +784,11 @@ class GGCN_Auto_Action(nn.Module):
         one_hot_action = [0] * len(pred_action_values); one_hot_action[ind_max_action] = 1
         one_hot_action = torch.Tensor(one_hot_action).view(1,-1)
 
-        pred1_object = self.activation(self.p1(torch.cat([final_to_decode, one_hot_action],1)))
-        pred1_object = self.activation(self.p2(pred1_object))
-        pred1_object = F.softmax(self.p3(pred1_object), dim=1)
-        # pred1_values = list(pred1_object[0]); ind_max_pred1 = pred1_values.index(max(pred1_values))
-        # one_hot_pred1 = [0 for _ in range(len(pred1_values))]; one_hot_pred1[ind_max_pred1] = 1
-        # one_hot_pred1 = torch.Tensor(one_hot_pred1).view(1,-1)
-
-        pred2_object = self.activation(self.q1(torch.cat([final_to_decode, one_hot_action],1)))
+        pred2_object = self.activation(self.q1(torch.cat([final_to_decode, one_hot_pred1, one_hot_action],1)))
         pred2_object = self.activation(self.q2(pred2_object))
         pred2_object = F.softmax(self.q3(pred2_object), dim=1)
 
-        pred2_state = self.activation(self.q1_state(torch.cat([final_to_decode, one_hot_action],1)))
+        pred2_state = self.activation(self.q1_state(torch.cat([final_to_decode, one_hot_pred1, one_hot_action],1)))
         pred2_state = self.activation(self.q2_state(pred2_state))
         pred2_state = F.softmax(self.q3_state(pred2_state), dim=1)
 
