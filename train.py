@@ -172,13 +172,15 @@ def test_policy(dset, graphs, model, modelEnc, num_objects = 0, verbose = False)
 				else:
 					y_pred_list = model(graphSeq, goal2vec[goal_num], goalObjects2vec[goal_num], actionSeq)
 				y_pred = y_pred_list[-1]
-				action_pred = vec2action_grammatical(y_pred, num_objects, 4, idx2object) if "Cons" in model.name else vec2action(y_pred, num_objects, 4, idx2object)
-				res, g, err = approx.execAction(goal_num, action_pred, e)
-				actionSeq.append(action_pred); graphSeq.append(g)
-				if verbose and err != '': print(goal_num, world_num); print(tool_preds); print(actionSeq, err); print('----------')
-				if res:	correct += 1; break
-				elif err == '' and len(actionSeq) > 30:	incorrect += 1; break
-				elif err != '': error += 1; break
+			else:
+				y_pred = model(graphSeq[-1], goal2vec[goal_num], goalObjects2vec[goal_num])
+			action_pred = vec2action_grammatical(y_pred, num_objects, 4, idx2object) if "Cons" in model.name else vec2action(y_pred, num_objects, 4, idx2object)
+			res, g, err = approx.execAction(goal_num, action_pred, e)
+			actionSeq.append(action_pred); graphSeq.append(g)
+			if verbose and err != '': print(goal_num, world_num); print(tool_preds); print(actionSeq, err); print('----------')
+			if res:	correct += 1; break
+			elif err == '' and len(actionSeq) > 30:	incorrect += 1; break
+			elif err != '': error += 1; break
 	den = correct + incorrect + error
 	print ("Correct, Incorrect, Error: ", (correct*100/den), (incorrect*100/den), (error*100/den))
 	return (correct*100/den), (incorrect*100/den), (error*100/den)
@@ -259,7 +261,7 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 					elif model_name == 'sequence_list':
 						y_pred = model(graphSeq[max(0,i + 1 - graph_seq_length):i+1], goal2vec[goal_num], goalObjects2vec[goal_num])
 					denominator += 1
-					action_pred = vec2action_grammatical(y_pred, num_objects, 4, idx2object)
+					action_pred = vec2action_grammatical(y_pred, num_objects, 4, idx2object) if "Cons" in model.name else vec2action(y_pred, num_objects, 4, idx2object)
 					# print ("Prediction: ", action_pred)
 					# print ("Target: ", actionSeq[i])
 					if verbose:
