@@ -119,9 +119,11 @@ def grammatical_action(action):
 		assert False
 	return True
 
-def gen_policy_score(model, testData, num_objects, verbose = True):
+def gen_policy_score(model, testData, num_objects, verbose = False):
 	if verbose: print ("Generalization Testing")
-	correct, incorrect, error = 0, 0, 0
+	testcases = (9 if domain == 'home' else 8)
+	correct, incorrect, error = 0, 0, 0; total_list = []; 
+	for i in range(testcases): total_list.append([0,0,0])
 	for graph in tqdm(testData.graphs, desc = "Generalization Testing", ncols=80):
 		goal_num, world_num, test_num, _, g, _, e = graph
 		actionSeq, graphSeq, object_likelihoods, tool_preds = [], [g], [], []
@@ -139,16 +141,20 @@ def gen_policy_score(model, testData, num_objects, verbose = True):
 				y_pred = y_pred_list[-1]
 				action_pred = vec2action_grammatical(y_pred, num_objects, 4, idx2object) if "Cons" in model.name else vec2action(y_pred, num_objects, 4, idx2object)
 				if test_num == 7 and action_pred['name'] in ['climbUp', 'climbDown'] and action_pred['args'][0] == 'stool': 
-					print(goal_num, world_num); print(actionSeq, 'Climb up/down headphone'); print('----------')
-					error += 1; break
+					if verbose: print(goal_num, world_num); print(actionSeq, 'Climb up/down headphone'); print('----------')
+					error += 1; total_list[test_num-1][2] += 1; break
 				res, g, err = approx.execAction(goal_num, action_pred, e)
 				actionSeq.append(action_pred); graphSeq.append(g)
 				if verbose and err != '': print(goal_num, world_num); print(actionSeq, err); print('----------')
-				if res:	correct += 1; break
-				elif err == '' and len(actionSeq) > 30:	incorrect += 1; break
-				elif err != '': error += 1; break
+				if res:	correct += 1; total_list[test_num-1][0] += 1; break
+				elif err == '' and len(actionSeq) > 30:	incorrect += 1; total_list[test_num-1][1] += 1; break
+				elif err != '': error += 1; total_list[test_num-1][2] += 1; break
 	den = correct + incorrect + error
 	print ("Correct, Incorrect, Error: ", (correct*100/den), (incorrect*100/den), (error*100/den))
+	for i, tup in enumerate(total_list):
+		res = []
+		for j in tup: res.append(j * 100 / sum(tup))
+		print("Testcase", i+1, res)
 	return (correct*100/den), (incorrect*100/den), (error*100/den)
 
 def test_policy(dset, graphs, model, modelEnc, num_objects = 0, verbose = False):
@@ -622,5 +628,5 @@ if __name__ == '__main__':
 
 	elif exec_type == "policy":
 		assert "action" in training and "Action" in model.name
-		# test_policy(data, train_set, model, modelEnc, data.num_objects, True)
+		# test_policy(data, train_set, model, modelEnc, data.num_objects)
 		test_policy(data, test_set, model, modelEnc, data.num_objects, True)
