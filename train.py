@@ -139,16 +139,18 @@ def gen_policy_score(model, testData, num_objects, verbose = False):
 				else:
 					y_pred_list = model(graphSeq, goal2vec[goal_num], goalObjects2vec[goal_num], actionSeq)
 				y_pred = y_pred_list[-1]
-				action_pred = vec2action_grammatical(y_pred, num_objects, 4, idx2object) if "Cons" in model.name else vec2action(y_pred, num_objects, 4, idx2object)
-				if test_num == 7 and action_pred['name'] in ['climbUp', 'climbDown'] and action_pred['args'][0] == 'stool': 
-					if verbose: print(goal_num, world_num); print(actionSeq, 'Climb up/down headphone'); print('----------')
-					error += 1; total_list[test_num-1][2] += 1; break
-				res, g, err = approx.execAction(goal_num, action_pred, e)
-				actionSeq.append(action_pred); graphSeq.append(g)
-				if verbose and err != '': print(goal_num, world_num); print(actionSeq, err); print('----------')
-				if res:	correct += 1; total_list[test_num-1][0] += 1; break
-				elif err == '' and len(actionSeq) > 30:	incorrect += 1; total_list[test_num-1][1] += 1; break
-				elif err != '': error += 1; total_list[test_num-1][2] += 1; break
+			else:
+				y_pred = model(graphSeq[-1], goal2vec[goal_num], goalObjects2vec[goal_num])
+			action_pred = vec2action_grammatical(y_pred, num_objects, 4, idx2object) if "Cons" in model.name else vec2action(y_pred, num_objects, 4, idx2object)
+			if test_num == 7 and action_pred['name'] in ['climbUp', 'climbDown'] and action_pred['args'][0] == 'stool': 
+				if verbose: print(goal_num, world_num); print(actionSeq, 'Climb up/down headphone'); print('----------')
+				error += 1; total_list[test_num-1][2] += 1; break
+			res, g, err = approx.execAction(goal_num, action_pred, e)
+			actionSeq.append(action_pred); graphSeq.append(g)
+			if verbose and err != '': print(goal_num, world_num); print(actionSeq, err); print('----------')
+			if res:	correct += 1; total_list[test_num-1][0] += 1; break
+			elif err == '' and len(actionSeq) > 30:	incorrect += 1; total_list[test_num-1][1] += 1; break
+			elif err != '': error += 1; total_list[test_num-1][2] += 1; break
 	den = correct + incorrect + error
 	print ("Correct, Incorrect, Error: ", (correct*100/den), (incorrect*100/den), (error*100/den))
 	for i, tup in enumerate(total_list):
@@ -276,6 +278,14 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 							total_ungrammatical += 1
 						if (not grammatical_action(actionSeq[i])):
 							print (actionSeq[i])
+						if (action_pred["name"] == actionSeq[i]["name"]):
+							action_correct += 1
+						if (action_pred["args"][0] == actionSeq[i]["args"][0]):
+							pred1_correct += 1
+						if (len(action_pred["args"]) > 1):
+							den_pred2 += 1
+							if (action_pred["args"][0] == actionSeq[i]["args"][0]):
+								pred2_correct += 1
 					if (action_pred == actionSeq[i]):
 						total_correct += 1
 			continue
@@ -291,7 +301,7 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 		print ("Denominator is", denominator)
 		print ("Action accuracy is", (action_correct/denominator) * 100)
 		print ("Pred1 accuracy is", (pred1_correct/denominator) * 100)
-		print ("Pred2 accuracy is", (pred2_correct/den_pred2+0.001) * 100)
+		print ("Pred2 accuracy is", (pred2_correct/den_pred2) * 100)
 	print ("Stuttering count is", stuttering)
 	if 'action' in training and False:
 		den = correct + incorrect + error
@@ -605,11 +615,16 @@ if __name__ == '__main__':
 			print(i, gen_score(model, testConcept))
 
 	elif exec_type == "generalization" and "Action" in model.name:
-		testConcept = TestDataset("dataset/test/" + domain + "/conceptnet/")
-		i = "GGCN_Metric_Attn_Aseq_L_Auto_Cons_C_Action_128_3_Trained"
+		# testConcept = TestDataset("dataset/test/" + domain + "/conceptnet/")
+		# i = "GGCN_Metric_Attn_Aseq_L_Auto_Cons_C_Action_128_3_Trained"
+		# model, _ = get_model('_'.join(i.split("_")[:-3]))
+		# model, _, _, _, _ = load_model(i, model, None)
+		# print(i, gen_policy_score(model, testConcept, data.num_objects))
+		testFast = TestDataset("dataset/test/" + domain + "/fasttext/")
+		i = "GGCN_Auto_Action_128_3_Trained"
 		model, _ = get_model('_'.join(i.split("_")[:-3]))
 		model, _, _, _, _ = load_model(i, model, None)
-		print(i, gen_policy_score(model, testConcept, data.num_objects))
+		print(i, gen_policy_score(model, testFast, data.num_objects))
 
 	elif exec_type == "ablation":
 		testConcept = TestDataset("dataset/test/" + domain + "/conceptnet/")
