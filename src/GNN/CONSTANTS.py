@@ -53,9 +53,13 @@ all_home_objects = ['floor', 'walls', 'door', 'fridge', 'cupboard', 'husky', 'ta
 		'bottle_gray', 'bottle_red', 'box', 'apple', 'orange', 'banana', 'chair', 'ball', 'stick', 'dumpster', 'milk', \
 		'shelf', 'glue', 'tape', 'stool', 'mop', 'sponge', 'vacuum', 'dirt']
 
-all_objects_with_states = ['door', 'fridge', 'cupboard', 'light']
+all_objects_with_states = ['door', 'fridge', 'cupboard', 'light'] if domain == 'home' else ['cupboard', 'lift', 'blow_dryer']
 
-all_factory_objects = []
+all_factory_objects = ['floor_warehouse', '3d_printer', 'assembly_station', 'blow_dryer', 'board', 'box', 'brick', 'coal', \
+		'crate_green', 'crate_peach', 'crate_red', 'cupboard', 'drill', 'gasoline', 'generator', 'glue', \
+		'hammer', 'ladder', 'lift', 'long_shelf', 'mop', 'nail', 'oil', 'paper', 'part1', 'part2', 'part3', \
+		'platform', 'screw', 'screwdriver', 'spraypaint', 'stick', 'stool', 'table', 'tape', 'toolbox', \
+		'trolley', 'wall_warehouse', 'water', 'welder', 'wood', 'wood_cutter', 'worktable', 'ramp', 'husky', 'tray']
 
 all_objects = all_home_objects if domain == 'home' else all_factory_objects
 

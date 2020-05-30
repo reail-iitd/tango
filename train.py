@@ -141,7 +141,7 @@ def gen_policy_score(model, testData, num_objects, verbose = False):
 				y_pred = y_pred_list[-1]
 			else:
 				y_pred = model(graphSeq[-1], goal2vec[goal_num], goalObjects2vec[goal_num])
-			action_pred = vec2action_grammatical(y_pred, num_objects, 4, idx2object) if "Cons" in model.name else vec2action(y_pred, num_objects, 4, idx2object)
+			action_pred = vec2action_grammatical(y_pred, num_objects, len(possibleStates), idx2object) if "Cons" in model.name else vec2action(y_pred, num_objects, len(possibleStates), idx2object)
 			if test_num == 7 and action_pred['name'] in ['climbUp', 'climbDown'] and action_pred['args'][0] == 'stool': 
 				if verbose: print(goal_num, world_num); print(actionSeq, 'Climb up/down headphone'); print('----------')
 				error += 1; total_list[test_num-1][2] += 1; break
@@ -182,7 +182,7 @@ def test_policy(dset, graphs, model, modelEnc, num_objects = 0, verbose = False)
 				y_pred = y_pred_list[-1]
 			else:
 				y_pred = model(graphSeq[-1], goal2vec[goal_num], goalObjects2vec[goal_num])
-			action_pred = vec2action_grammatical(y_pred, num_objects, 4, idx2object) if "Cons" in model.name else vec2action(y_pred, num_objects, 4, idx2object)
+			action_pred = vec2action_grammatical(y_pred, num_objects, len(possibleStates), idx2object) if "Cons" in model.name else vec2action(y_pred, num_objects, len(possibleStates), idx2object)
 			res, g, err = approx.execAction(goal_num, action_pred, e)
 			actionSeq.append(action_pred); graphSeq.append(g)
 			if verbose and err != '': print(goal_num, world_num); print(tool_preds); print(actionSeq, err); print('----------')
@@ -238,7 +238,7 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 				plan = []
 				for i,y_pred in enumerate(y_pred_list):
 					denominator += 1
-					action_pred = vec2action_grammatical(y_pred, num_objects, 4, idx2object) if "Cons" in model.name else vec2action(y_pred, num_objects, 4, idx2object)
+					action_pred = vec2action_grammatical(y_pred, num_objects, len(possibleStates), idx2object) if "Cons" in model.name else vec2action(y_pred, num_objects, len(possibleStates), idx2object)
 					plan.append(action_pred)
 					if verbose:
 						if "Cons" not in model.name and (not grammatical_action(action_pred)):
@@ -269,7 +269,7 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 					elif model_name == 'sequence_list':
 						y_pred = model(graphSeq[max(0,i + 1 - graph_seq_length):i+1], goal2vec[goal_num], goalObjects2vec[goal_num])
 					denominator += 1
-					action_pred = vec2action_grammatical(y_pred, num_objects, 4, idx2object) if "Cons" in model.name else vec2action(y_pred, num_objects, 4, idx2object)
+					action_pred = vec2action_grammatical(y_pred, num_objects, len(possibleStates), idx2object) if "Cons" in model.name else vec2action(y_pred, num_objects, len(possibleStates), idx2object)
 					# print ("Prediction: ", action_pred)
 					# print ("Target: ", actionSeq[i])
 					if verbose:
@@ -331,7 +331,7 @@ def printPredictions(model, data=None):
 				y_pred_list = model(graphSeq, goal2vec[goal_num], goalObjects2vec[goal_num], actionSeq)
 				for i,y_pred in enumerate(y_pred_list):
 					denominator += 1
-					action_pred = vec2action_grammatical(y_pred, num_objects, 4, idx2object)
+					action_pred = vec2action_grammatical(y_pred, num_objects, len(possibleStates), idx2object)
 					if verbose:
 						if (not grammatical_action(action_pred)):
 							# print (action_pred)
@@ -346,7 +346,7 @@ def printPredictions(model, data=None):
 						y_pred = model(graphSeq[i], goal2vec[goal_num], goalObjects2vec[goal_num])
 					elif training == 'sequence_list':
 						y_pred = model(graphSeq[max(0,i + 1 - graph_seq_length):i+1], goal2vec[goal_num], goalObjects2vec[goal_num])
-					action_pred = vec2action(y_pred, data.num_objects, 4, idx2object)
+					action_pred = vec2action(y_pred, data.num_objects, len(possibleStates), idx2object)
 					# if (action_pred != actionSeq[i]):
 					# 	print ("Prediction: ", action_pred)
 					# 	print ("Target: ", actionSeq[i])
@@ -395,7 +395,7 @@ def backprop(data, optimizer, graphs, model, num_objects, modelEnc=None, batch_s
 				else:
 					y_pred_list = model(graphSeq, goal2vec[goal_num], goalObjects2vec[goal_num], actionSeq)
 				for i,y_pred in enumerate(y_pred_list):
-					y_true = action2vec_cons(actionSeq[i], num_objects, 4) if "Cons" in model.name else action2vec(actionSeq[i], num_objects, 4)
+					y_true = action2vec_cons(actionSeq[i], num_objects, len(possibleStates)) if "Cons" in model.name else action2vec(actionSeq[i], num_objects, len(possibleStates))
 					loss += l(y_pred, y_true)
 			else:
 				for i in range(len(graphSeq)):
@@ -403,7 +403,7 @@ def backprop(data, optimizer, graphs, model, num_objects, modelEnc=None, batch_s
 						y_pred = model(graphSeq[i], goal2vec[goal_num], goalObjects2vec[goal_num])
 					elif model_name == 'sequence_list':
 						y_pred = model(graphSeq[max(0,i + 1 - graph_seq_length):i + 1], goal2vec[goal_num], goalObjects2vec[goal_num])
-					y_true = action2vec(actionSeq[i], num_objects, 4)
+					y_true = action2vec(actionSeq[i], num_objects, len(possibleStates))
 					loss += l(y_pred, y_true)
 			batch_loss += loss
 		total_loss += loss
@@ -430,7 +430,7 @@ def backpropGD(data, optimizer, graphs, model, num_objects, modelEnc=None):
 			if "aseq" in training:
 				y_pred_list = model(graphSeq, goal2vec[goal_num], goalObjects2vec[goal_num], actionSeq)
 				for i,y_pred in enumerate(y_pred_list):
-					y_true = action2vec(actionSeq[i], num_objects, 4)
+					y_true = action2vec(actionSeq[i], num_objects, len(possibleStates))
 					loss += l(y_pred, y_true)
 			else:
 				for i in range(len(graphSeq)):
@@ -438,7 +438,7 @@ def backpropGD(data, optimizer, graphs, model, num_objects, modelEnc=None):
 						y_pred = model(graphSeq[i], goal2vec[goal_num], goalObjects2vec[goal_num])
 					elif training == 'sequence_list':
 						y_pred = model(graphSeq[max(0,i + 1 - graph_seq_length):i + 1], goal2vec[goal_num], goalObjects2vec[goal_num])
-					y_true = action2vec(actionSeq[i], num_objects, 4)
+					y_true = action2vec(actionSeq[i], num_objects, len(possibleStates))
 					loss += l(y_pred, y_true)
 					# loss += torch.sum((y_pred - y_true)** 2)
 		total_loss += loss
@@ -501,7 +501,7 @@ def get_model(model_name):
 	elif training == 'action' or training == 'action_tool':
 		modelEnc = DGL_Simple_Likelihood(data.features, data.num_objects, 2 * GRAPH_HIDDEN, NUMTOOLS, 3, etypes, torch.tanh, 0.5, embedding, weighted) if 'tool' in training else None 
 		model_class = getattr(src.GNN.models, model_name)
-		model = model_class(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
+		model = model_class(data.features, data.num_objects, 2 * GRAPH_HIDDEN, len(possibleStates), 3, etypes, torch.tanh, 0.5)
 	return model, modelEnc
 
 def load_model(filename, model, modelEnc):

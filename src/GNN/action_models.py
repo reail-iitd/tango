@@ -89,6 +89,8 @@ def vec2action(vec, num_objects, num_states, idx2object):
     action_array = list(vec[:len(possibleActions)])
     ret_action["name"] = possibleActions[action_array.index(max(action_array))]
     ret_action["args"] = []
+    if ret_action['name'] in ['moveUp', 'moveDown', 'placeRamp']:
+        return ret_action
     object1_array = list(vec[len(possibleActions):len(possibleActions)+num_objects+1])
     object1_ind = object1_array.index(max(object1_array))
     if object1_ind == len(object1_array) - 1:
@@ -110,10 +112,12 @@ def vec2action_grammatical(vec, num_objects, num_states, idx2object):
     action_array = list(vec[:len(possibleActions)])
     ret_action["name"] = possibleActions[action_array.index(max(action_array))]
     ret_action["args"] = []
+    if ret_action['name'] in noArgumentActions:
+        return ret_action
     object1_array = list(vec[len(possibleActions):len(possibleActions)+num_objects])
     object1_ind = object1_array.index(max(object1_array))
     ret_action["args"].append(idx2object[object1_ind])
-    if ret_action["name"] in ["moveTo", "pick", "climbUp", "climbDown", "clean"]:
+    if ret_action["name"] in singleArgumentActions:
         return ret_action
     object2_array = list(vec[len(possibleActions)+num_objects:len(possibleActions)+num_objects+num_objects])
     state_array = list(vec[len(possibleActions)+num_objects+num_objects:])

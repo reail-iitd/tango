@@ -12,7 +12,10 @@ import matplotlib.pyplot as plt
 from statistics import pstdev
 import seaborn as sns
 import itertools
-from src.generalization import *
+# from src.generalization import *
+
+import warnings
+warnings.simplefilter("ignore")
 
 GOAL_LISTS = \
 {'home': ["goal1-milk-fridge.json", "goal2-fruits-cupboard.json", "goal3-clean-dirt.json", "goal4-stick-paper.json", "goal5-cubes-box.json", "goal6-bottles-dumpster.json", "goal7-weight-paper.json", "goal8-light-off.json"],
@@ -156,11 +159,11 @@ def printGraph(filename):
 	f = open("dataset/test/home/test2/0.graph", "w+")
 	f.write(json.dumps(datapoint.getGraph(), indent=2))
 
-def allActionTypes():
+def allActionTypes(d):
 	actionTypes = []
-	for goal in GOAL_LISTS['home']:
+	for goal in GOAL_LISTS[d]:
 		for world in range(10):
-			directory = './dataset/home/' + goal.split('.')[0] + '/world_home' + str(world) + '/'
+			directory = './dataset/' + d + '/' + goal.split('.')[0] + '/world_' + d + str(world) + '/'
 			for point in range(len(listdir(directory))):
 				file = directory + str(point) + '.datapoint'
 				datapoint = pickle.load(open(file, 'rb'))
@@ -184,20 +187,21 @@ def allTools():
 
 def checkActionTypes():
 	actionTypes = []
-	for goal in GOAL_LISTS['home']:
+	for goal in GOAL_LISTS[domain]:
 		print(goal)
 		for world in range(10):
-			directory = './dataset/home/' + goal.split('.')[0] + '/world_home' + str(world) + '/'
+			directory = './dataset/'+domain+'/' + goal.split('.')[0] + '/world_' + domain + str(world) + '/'
 			for point in range(len(listdir(directory))):
 				file = directory + str(point) + '.datapoint'
 				datapoint = pickle.load(open(file, 'rb'))
 				for action in datapoint.symbolicActions:
+					if str(action[0]) == 'E' or str(action[0]) == 'U': break
 					if len(action) == 1:
 						possible = getPossiblePredicates(action[0]['name'])
 						for i in range(len(action[0]['args'])):
 							if not action[0]['args'][i] in possible[i]:
 								print(file)
-								print(action[0]['name'], i, action[0]['args'][i])
+								print(action[0], i, action[0]['args'][i])
 							elif action[0]['name'] not in actionTypes: actionTypes.append(action[0]['name'])
 	print(actionTypes)
 
@@ -308,7 +312,7 @@ def getInteractedObjects(filename):
 	for action in datapoint.symbolicActions:
 		if not (str(action[0]) == 'E' or str(action[0]) == 'U'):
 			try: 
-				for i in [1,2]: 
+				for i in [0,1]: 
 					if action[0]['args'][i] not in os: os.append(action[0]['args'][i])
 			except: pass
 	return os
@@ -347,12 +351,27 @@ def mapObjects():
 	plt.tight_layout()
 	f.savefig('figures/'+domain+'_objects.pdf')
 
-def checkApprox():
-	import approx
-	for goal in GOAL_LISTS['home']:
+def allObjects():
+	objInteracted = []
+	allobjs = [o['name'] for o in json.load(open("jsons/objects.json", "r"))["objects"]]
+	for goal in GOAL_LISTS[domain]:
 		print('Goal = ' + goal)
 		for world in range(10):
-			directory = './dataset/home/' + goal.split('.')[0] + '/world_home' + str(world)
+			directory = './dataset/'+domain+'/' + goal.split('.')[0] + '/world_'+domain + str(world)
+			points = listdir(directory)
+			for point in points:
+				filename = directory + '/' + point.split('.')[0]
+				for o in getInteractedObjects(filename): 
+					if o not in objInteracted and o in allobjs: objInteracted.append(o)
+	objInteracted.sort()
+	print(objInteracted)
+
+def checkApprox(d):
+	import approx
+	for goal in GOAL_LISTS[d]:
+		print('Goal = ' + goal)
+		for world in range(10):
+			directory = './dataset/' + d + '/' + goal.split('.')[0] + '/world_' + d + str(world)
 			try:
 				points = listdir(directory)
 			except Exception as e:
@@ -361,8 +380,8 @@ def checkApprox():
 				f = open(directory + '/' + point, 'rb')
 				datapoint = pickle.load(f)
 				args = approx.Args()
-				args.world = 'jsons/home_worlds/world_home' + str(world) +'.json'
-				args.goal = 'jsons/home_goals/' + goal
+				args.world = 'jsons/' + d + '_worlds/world_' + d + str(world) +'.json'
+				args.goal = 'jsons/' + d + '_goals/' + goal
 				plan = []
 				# print("####### Goal", goal, "on world", world, "######")
 				# print("####### Filename", point, " #######")
@@ -372,6 +391,7 @@ def checkApprox():
 					else:
 						plan.append(action[0])
 				if plan == []: continue
+				# print(plan)
 				plan = {'actions': plan}
 				approx.start(args)
 				res = approx.execute(plan, args.goal, saveImg=False)
@@ -447,15 +467,18 @@ def checkPlan():
 # changeAllDatapoints()
 # combineDatasets(4)
 # printGraph("dataset/factory/goal1-crates-platform/world_factory3/0")
-# checkActionTypes()
 # printGraph("dataset/home/goal1-milk-fridge/world_home4/0")
-testData()
+# testData()
 # printAllTimes()
 # allTools()
 # mapToolsGoals()
 # mapToolsWorlds()
 # mapObjects()
 # getAllData()
-# checkApprox()
+# allObjects()
+# allActionTypes('factory')
+# checkActionTypes()
+# printDatapoint('dataset/factory/goal4-generator-on/world_factory9/3')
+checkApprox(domain)
 # checkPlan()
 # checkAllActions()
