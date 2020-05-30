@@ -37,7 +37,7 @@ def action2vec_cons(action, num_objects, num_states):
     predicate3 = torch.zeros(num_states)
     if len(action['args']) == 1:
         predicate1[object2idx[action['args'][0]]] = 1
-    else:
+    elif len(action['args']) == 2:
         if action['args'][1] in object2idx:
             predicate1[object2idx[action['args'][0]]] = 1
             predicate2[object2idx[action['args'][1]]] = 1
