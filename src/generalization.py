@@ -33,6 +33,13 @@ tools_home = {1: ["tray2", "stick"],
 		 8: ["stick", "stool", "no-tool", "tray", "tray2", "chair"],
 		 9: ["stool", "tray", "stick"]}
 
+def listSum(a, b):
+    c = []
+    for i in range(len(a)):
+        c.append(round(a[i]+b[i], 4))
+    return c
+
+
 def writeFiles(number, path, d):
 	i = len(listdir(path))
 	for j in range(number):
