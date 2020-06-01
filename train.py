@@ -248,11 +248,11 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 							print (actionSeq[i])
 						if (action_pred["name"] == actionSeq[i]["name"]):
 							action_correct += 1
-						if (action_pred["args"][0] == actionSeq[i]["args"][0]):
+						if (len(action_pred["args"]) and len(actionSeq[i]["args"]) and action_pred["args"][0] == actionSeq[i]["args"][0]):
 							pred1_correct += 1
 						if (len(action_pred["args"]) > 1):
 							den_pred2 += 1
-							if (action_pred["args"][0] == actionSeq[i]["args"][0]):
+							if (len(actionSeq[i]["args"]) > 1 and action_pred["args"][1] == actionSeq[i]["args"][1]):
 								pred2_correct += 1
 					if (action_pred == actionSeq[i]):
 						total_correct += 1
@@ -280,11 +280,11 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 							print (actionSeq[i])
 						if (action_pred["name"] == actionSeq[i]["name"]):
 							action_correct += 1
-						if (action_pred["args"][0] == actionSeq[i]["args"][0]):
+						if (len(action_pred["args"]) and len(actionSeq[i]["args"]) and action_pred["args"][0] == actionSeq[i]["args"][0]):
 							pred1_correct += 1
 						if (len(action_pred["args"]) > 1):
 							den_pred2 += 1
-							if (action_pred["args"][0] == actionSeq[i]["args"][0]):
+							if (len(actionSeq[i]["args"]) > 1 and action_pred["args"][1] == actionSeq[i]["args"][1]):
 								pred2_correct += 1
 					if (action_pred == actionSeq[i]):
 						total_correct += 1
