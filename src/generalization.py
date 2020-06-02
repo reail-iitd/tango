@@ -43,6 +43,7 @@ def listSum(a, b):
 
 def writeFiles(number, path, d):
 	i = len(listdir(path))
+	if domain == 'factory' and 'test7' in path and i > 50: return
 	for j in range(number):
 		f = open(path + str(i) + ".graph", "w+") 
 		f.write(json.dumps(d, indent=2))
