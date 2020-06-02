@@ -207,8 +207,9 @@ def checkActionTypes():
 
 def testData():
 	# for i in range(1,10):	formTestData(i)
-	# formTestDataFactory(4)
-	for i in range(1,9): formTestDataFactory(i)
+	formTestDataFactory(7)
+	formTestDataFactory(8)
+	# for i in range(1,9): formTestDataFactory(i)
 
 def printAllTimes():
 	for goal in ["goal2-fruits-cupboard.json"]:

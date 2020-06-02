@@ -143,7 +143,7 @@ def gen_policy_score(model, testData, num_objects, verbose = False):
 			else:
 				y_pred = model(graphSeq[-1], goal2vec[goal_num], goalObjects2vec[goal_num])
 			action_pred = vec2action_grammatical(y_pred, num_objects, len(possibleStates), idx2object) if "Cons" in model.name else vec2action(y_pred, num_objects, len(possibleStates), idx2object)
-			if test_num == 7 and action_pred['name'] in ['climbUp', 'climbDown'] and action_pred['args'][0] == 'stool': 
+			if domain == 'home' and test_num == 7 and action_pred['name'] in ['climbUp', 'climbDown'] and action_pred['args'][0] == 'stool': 
 				if verbose: print(goal_num, world_num); print(actionSeq, 'Climb up/down headphone'); print('----------')
 				error += 1; total_list[test_num-1][2] += 1; break
 			res, g, err = approx.execAction(goal_num, action_pred, e)
@@ -156,7 +156,7 @@ def gen_policy_score(model, testData, num_objects, verbose = False):
 	print ("Correct, Incorrect, Error: ", (correct*100/den), (incorrect*100/den), (error*100/den))
 	for i, tup in enumerate(total_list):
 		res = []
-		for j in tup: res.append(j * 100 / sum(tup))
+		for j in tup: res.append((j * 100 / sum(tup)) if sum(tup) else 0)
 		print("Testcase", i+1, res)
 	return (correct*100/den), (incorrect*100/den), (error*100/den)
 
