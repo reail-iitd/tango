@@ -140,6 +140,7 @@ def fct(o):
   return ""
 
 def fcw(o):
+    if o not in constraints: return []
     return constraints[o]
 
 def closed(o):

@@ -115,8 +115,9 @@ def grammatical_action(action):
 			return False
 		if action["args"][1] in object2idx:
 			return False
-	else:
-		assert False
+	elif action["name"] in noArgumentActions:
+		if (len(action["args"]) != 0):
+			return False
 	return True
 
 def gen_policy_score(model, testData, num_objects, verbose = False):

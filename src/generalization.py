@@ -102,7 +102,7 @@ def formTestDataFactory(testnum):
 				with open(file_path, 'rb') as f:
 					datapoint = pickle.load(f)
 				for e in [(conceptnet, "conceptnet", ce), (fasttext, "fasttext", fe)]:	
-					d = {"goal_num": goal_num_factory[testnum], "tools": tools_factory[testnum]} 
+					d = {"goal_num": goal_num_factory[testnum], "tools": tools_factory[testnum], "world_num": int(datapoint.world[-1])} 
 					enew = deepcopy(e[2])
 					if testnum == 1: enew["blow_dryer"] = [0] * 300
 					elif testnum == 2: enew["brick"] = [0] * 300
@@ -117,4 +117,5 @@ def formTestDataFactory(testnum):
 						for i in d["graph_0"]["nodes"]: 
 							if i["name"] == "screwdriver" and 'To_Print' in i['states']: i["states"].remove('To_Print'); i['states'].append('Printed')
 					d["tool_embeddings"] = [enew[i] for i in TOOLS2]
+					d["object_embeddings"] = dict(zip(all_objects, [enew[i] for i in all_objects]))
 					writeFiles(5 if testnum == 8 else 1, "dataset/test/factory/" + e[1] + "/test"+ str(testnum) + "/", d)
