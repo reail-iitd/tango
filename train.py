@@ -616,16 +616,8 @@ if __name__ == '__main__':
 			print(i, gen_score(model, testConcept))
 
 	elif exec_type == "generalization" and "Action" in model.name:
-		testConcept = TestDataset("dataset/test/" + domain + "/conceptnet/")
-		i = "GGCN_Metric_Attn_Aseq_L_Auto_Cons_C_Action_128_3_Trained"
-		model, _ = get_model('_'.join(i.split("_")[:-3]))
-		model, _, _, _, _ = load_model(i, model, None)
-		print(i, gen_policy_score(model, testConcept, data.num_objects))
-		# testFast = TestDataset("dataset/test/" + domain + "/fasttext/")
-		# i = "GGCN_Auto_Action_128_3_Trained"
-		# model, _ = get_model('_'.join(i.split("_")[:-3]))
-		# model, _, _, _, _ = load_model(i, model, None)
-		# print(i, gen_policy_score(model, testFast, data.num_objects))
+		genTestSet = TestDataset("dataset/test/" + domain + "/" + embedding + "/")
+		print(i, gen_policy_score(model, testFast, data.num_objects))
 
 	elif exec_type == "ablation":
 		testConcept = TestDataset("dataset/test/" + domain + "/conceptnet/")
