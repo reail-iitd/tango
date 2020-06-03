@@ -150,7 +150,7 @@ def gen_policy_score(model, testData, num_objects, verbose = False):
 			actionSeq.append(action_pred); graphSeq.append(g)
 			if verbose and err != '': print(goal_num, world_num); print(actionSeq, err); print('----------')
 			if res:	correct += 1; total_list[test_num-1][0] += 1; break
-			elif err == '' and len(actionSeq) > 30:	incorrect += 1; total_list[test_num-1][1] += 1; break
+			elif err == '' and len(actionSeq) > (30 if domain=='home' else 40):	incorrect += 1; total_list[test_num-1][1] += 1; break
 			elif err != '': error += 1; total_list[test_num-1][2] += 1; break
 	den = correct + incorrect + error
 	print ("Correct, Incorrect, Error: ", (correct*100/den), (incorrect*100/den), (error*100/den))
@@ -188,7 +188,7 @@ def test_policy(dset, graphs, model, modelEnc, num_objects = 0, verbose = False)
 			actionSeq.append(action_pred); graphSeq.append(g)
 			if verbose and err != '': print(goal_num, world_num); print(tool_preds); print(actionSeq, err); print('----------')
 			if res:	correct += 1; break
-			elif err == '' and len(actionSeq) > 30:	incorrect += 1; break
+			elif err == '' and len(actionSeq) > (30 if domain=='home' else 40):	incorrect += 1; break
 			elif err != '': error += 1; break
 	den = correct + incorrect + error
 	print ("Correct, Incorrect, Error: ", (correct*100/den), (incorrect*100/den), (error*100/den))
@@ -617,7 +617,7 @@ if __name__ == '__main__':
 
 	elif exec_type == "generalization" and "Action" in model.name:
 		genTestSet = TestDataset("dataset/test/" + domain + "/" + embedding + "/")
-		print(i, gen_policy_score(model, genTestSet, data.num_objects))
+		gen_policy_score(model, genTestSet, data.num_objects)
 
 	elif exec_type == "ablation":
 		testConcept = TestDataset("dataset/test/" + domain + "/conceptnet/")
