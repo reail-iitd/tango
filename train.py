@@ -461,7 +461,7 @@ def world_split(data):
 	counter = 0
 	for i in data.graphs:
 		for j in range(1,9):
-			if (i[0],i[1]) == (j,j):
+			if (i[0],i[1]) == (j,(j if domain=='home' else j-1)):
 				test_set.append(i)
 				break
 		else:
@@ -617,7 +617,7 @@ if __name__ == '__main__':
 
 	elif exec_type == "generalization" and "Action" in model.name:
 		genTestSet = TestDataset("dataset/test/" + domain + "/" + embedding + "/")
-		print(i, gen_policy_score(model, testFast, data.num_objects))
+		print(i, gen_policy_score(model, genTestSet, data.num_objects))
 
 	elif exec_type == "ablation":
 		testConcept = TestDataset("dataset/test/" + domain + "/conceptnet/")
