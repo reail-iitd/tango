@@ -45,7 +45,7 @@ TOOLS2 = ['stool', 'tray', 'tray2', 'big-tray', 'book', 'box', 'chair',\
 		'spraypaint', 'toolbox', 'mop']
 TOOLS = TOOLS2 + ['no-tool']
 NUMTOOLS = len(TOOLS)
-MODEL_SAVE_PATH = "trained_models/"
+MODEL_SAVE_PATH = "trained_models/"+domain+"/"
 AUGMENTATION = 1
 
 all_home_objects = ['floor', 'walls', 'door', 'fridge', 'cupboard', 'husky', 'table', 'table2', 'couch', 'big-tray',\

@@ -3,7 +3,7 @@ from src.GNN.models import *
 from src.GNN.dataset_utils import *
 import random
 import numpy as np
-from os import path
+from os import path, makedirs
 from tqdm import tqdm
 from sys import argv
 import approx
@@ -39,6 +39,7 @@ num_actions = len(possibleActions)
 
 def load_dataset():
 	global TOOLS, NUMTOOLS, globalnode
+	if not path.exists(MODEL_SAVE_PATH): makedirs(MODEL_SAVE_PATH)
 	filename = ('dataset/'+ domain + '_'+ 
 				("global_" if globalnode else '') + 
 				("NoTool_" if not ignoreNoTool else '') + 
