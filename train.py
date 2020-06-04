@@ -130,8 +130,8 @@ def gen_policy_score(model, testData, num_objects, verbose = False):
 		actionSeq, graphSeq, object_likelihoods, tool_preds = [], [g], [], []
 		approx.initPolicy(domain, goal_num, world_num)
 		while True:
-			if "Aseq" in model_name:
-				if "Tool" in model_name:
+			if "Aseq" in model.name:
+				if "Tool" in model.name:
 					tool_likelihoods = modelEnc(graphSeq[-1], goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
 					tool_ls = list(tool_likelihoods.reshape(-1))
 					tool_preds.append(TOOLS[tool_ls.index(max(tool_ls))])
@@ -171,8 +171,8 @@ def test_policy(dset, graphs, model, modelEnc, num_objects = 0, verbose = False)
 		actionSeq, graphSeq, object_likelihoods, tool_preds = [], [graphSeq[0]], [], []
 		approx.initPolicy(domain, goal_num, world_num)
 		while True:
-			if "Aseq" in model_name:
-				if "Tool" in model_name:
+			if "Aseq" in model.name:
+				if "Tool" in model.name:
 					tool_likelihoods = modelEnc(graphSeq[-1], goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
 					tool_ls = list(tool_likelihoods.reshape(-1))
 					tool_preds.append(TOOLS[tool_ls.index(max(tool_ls))])
@@ -227,8 +227,8 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 			denominator += 1
 		elif 'action' in training:
 			actionSeq, graphSeq = g
-			if "Aseq" in model_name:
-				if "Tool" in model_name:
+			if "Aseq" in model.name:
+				if "Tool" in model.name:
 					object_likelihoods = []
 					for g in graphSeq:
 						tool_likelihoods = modelEnc(g, goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
@@ -265,9 +265,9 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 					if err != '' and False: print(goal_num, world_num); print(plan, err); print('----------')
 			else:	
 				for i in range(len(graphSeq)):
-					if 'list' not in model_name:
+					if 'list' not in model.name:
 						y_pred = model(graphSeq[i], goal2vec[goal_num], goalObjects2vec[goal_num])
-					elif model_name == 'sequence_list':
+					elif model.name == 'sequence_list':
 						y_pred = model(graphSeq[max(0,i + 1 - graph_seq_length):i+1], goal2vec[goal_num], goalObjects2vec[goal_num])
 					denominator += 1
 					action_pred = vec2action_grammatical(y_pred, num_objects, len(possibleStates), idx2object) if "Cons" in model.name else vec2action(y_pred, num_objects, len(possibleStates), idx2object)
@@ -386,8 +386,8 @@ def backprop(data, optimizer, graphs, model, num_objects, modelEnc=None, batch_s
 			batch_loss += loss
 		elif 'action' in training:
 			actionSeq, graphSeq = g; loss = 0
-			if "Aseq" in model_name:
-				if "Tool" in model_name:
+			if "Aseq" in model.name:
+				if "Tool" in model.name:
 					object_likelihoods = []
 					for g in graphSeq:
 						tool_likelihoods = modelEnc(g, goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
@@ -400,9 +400,9 @@ def backprop(data, optimizer, graphs, model, num_objects, modelEnc=None, batch_s
 					loss += l(y_pred, y_true)
 			else:
 				for i in range(len(graphSeq)):
-					if 'list' not in model_name:
+					if 'list' not in model.name:
 						y_pred = model(graphSeq[i], goal2vec[goal_num], goalObjects2vec[goal_num])
-					elif model_name == 'sequence_list':
+					elif model.name == 'sequence_list':
 						y_pred = model(graphSeq[max(0,i + 1 - graph_seq_length):i + 1], goal2vec[goal_num], goalObjects2vec[goal_num])
 					y_true = action2vec(actionSeq[i], num_objects, len(possibleStates))
 					loss += l(y_pred, y_true)
