@@ -404,7 +404,7 @@ def backprop(data, optimizer, graphs, model, num_objects, modelEnc=None, batch_s
 						y_pred = model(graphSeq[i], goal2vec[goal_num], goalObjects2vec[goal_num])
 					elif model.name == 'sequence_list':
 						y_pred = model(graphSeq[max(0,i + 1 - graph_seq_length):i + 1], goal2vec[goal_num], goalObjects2vec[goal_num])
-					y_true = action2vec(actionSeq[i], num_objects, len(possibleStates))
+					y_true = action2vec_cons(actionSeq[i], num_objects, len(possibleStates)) if "Cons" in model.name else action2vec(actionSeq[i], num_objects, len(possibleStates))
 					loss += l(y_pred, y_true)
 			batch_loss += loss
 		total_loss += loss

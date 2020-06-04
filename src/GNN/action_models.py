@@ -873,7 +873,6 @@ class Final_Auto_Action(nn.Module):
 
             #Predicting the first argument of the action
             pred1_input = torch.cat([final_to_decode], 1)
-            import pdb; pdb.set_trace()
             pred1_object = self.activation(self.p1_object(
                         torch.cat([pred1_input.view(-1).repeat(self.n_objects).view(self.n_objects, -1), self.activation(self.embed(self.object_vec))], 1)))
             pred1_object = self.activation(self.p2_object(pred1_object))
@@ -916,7 +915,7 @@ class Final_Aseq_Action(nn.Module):
             self.layers.append(GatedHeteroRGCNLayer(n_hidden, n_hidden, etypes, activation=activation))
         self.attention = nn.Sequential(nn.Linear(n_hidden + n_hidden + n_hidden, n_hidden), self.activation, nn.Linear(n_hidden, 1))
         self.embed = nn.Sequential(nn.Linear(PRETRAINED_VECTOR_SIZE, n_hidden), self.activation, nn.Linear(n_hidden, n_hidden))
-        self.fc1 = nn.Linear(n_hidden*4, n_hidden)
+        self.fc1 = nn.Linear(n_hidden*3, n_hidden)
         self.fc2 = nn.Linear(n_hidden, n_hidden)
         self.fc3 = nn.Linear(n_hidden, len(possibleActions))
         self.p1_object  = nn.Linear(n_hidden*4 + len(possibleActions), n_hidden)
@@ -938,56 +937,54 @@ class Final_Aseq_Action(nn.Module):
             l.append(object2vec[obj])
         self.object_vec = torch.Tensor(l)
 
-    def forward(self, g_list, goalVec, goalObjectsVec, a_list):
+    def forward(self, g, goalVec, goalObjectsVec):
         predicted_actions = []
         goalObjectsVec = self.activation(self.embed(torch.Tensor(goalObjectsVec)))
         goal_embed = self.activation(self.embed(torch.Tensor(goalVec.reshape(1, -1))))
-        for ind,g in enumerate(g_list):
-            h = g.ndata['feat']
-            for i, layer in enumerate(self.layers):
-                h = layer(g, h)
-            metric_part = g.ndata['feat']
-            metric_part = self.activation(self.metric1(metric_part))
-            metric_part = self.activation(self.metric2(metric_part))
-            h = torch.cat([h, metric_part], dim = 1)
-            attn_embedding = torch.cat([h, goalObjectsVec.repeat(h.size(0)).view(h.size(0), -1)], 1)
-            attn_weights = F.softmax(self.attention(attn_embedding), dim=0)
-            scene_embedding = torch.mm(attn_weights.t(), h)
-            final_to_decode = torch.cat([scene_embedding, goal_embed], 1)
-            action = self.activation(self.fc1(final_to_decode))
-            action = self.activation(self.fc2(action))
-            action = self.fc3(action)
-            action = F.softmax(action, dim=1)
-            pred_action_values = list(action[0])
-            ind_max_action = pred_action_values.index(max(pred_action_values))
-            one_hot_action = [0] * len(pred_action_values); one_hot_action[ind_max_action] = 1
-            one_hot_action = torch.Tensor(one_hot_action).view(1,-1)
+        h = g.ndata['feat']
+        for i, layer in enumerate(self.layers):
+            h = layer(g, h)
+        metric_part = g.ndata['feat']
+        metric_part = self.activation(self.metric1(metric_part))
+        metric_part = self.activation(self.metric2(metric_part))
+        h = torch.cat([h, metric_part], dim = 1)
+        attn_embedding = torch.cat([h, goalObjectsVec.repeat(h.size(0)).view(h.size(0), -1)], 1)
+        attn_weights = F.softmax(self.attention(attn_embedding), dim=0)
+        scene_embedding = torch.mm(attn_weights.t(), h)
+        final_to_decode = torch.cat([scene_embedding, goal_embed], 1)
+        action = self.activation(self.fc1(final_to_decode))
+        action = self.activation(self.fc2(action))
+        action = self.fc3(action)
+        action = F.softmax(action, dim=1)
+        pred_action_values = list(action[0])
+        ind_max_action = pred_action_values.index(max(pred_action_values))
+        one_hot_action = [0] * len(pred_action_values); one_hot_action[ind_max_action] = 1
+        one_hot_action = torch.Tensor(one_hot_action).view(1,-1)
 
-            #Predicting the first argument of the action
-            pred1_input = torch.cat([final_to_decode, one_hot_action], 1)
-            pred1_object = self.activation(self.p1_object(
-                        torch.cat([pred1_input.view(-1).repeat(self.n_objects).view(self.n_objects, -1), self.activation(self.embed(self.object_vec))], 1)))
-            pred1_object = self.activation(self.p2_object(pred1_object))
-            pred1_object = self.p3_object(pred1_object)
-            pred1_output = torch.sigmoid(pred1_object)
+        #Predicting the first argument of the action
+        pred1_input = torch.cat([final_to_decode, one_hot_action], 1)
+        pred1_object = self.activation(self.p1_object(
+                    torch.cat([pred1_input.view(-1).repeat(self.n_objects).view(self.n_objects, -1), self.activation(self.embed(self.object_vec))], 1)))
+        pred1_object = self.activation(self.p2_object(pred1_object))
+        pred1_object = self.p3_object(pred1_object)
+        pred1_output = torch.sigmoid(pred1_object)
 
-            # Predicting the second argument of the action
-            pred2_input = torch.cat([final_to_decode, one_hot_action], 1)
-            pred2_object = self.activation(self.q1_object(
-                        torch.cat([pred2_input.view(-1).repeat(self.n_objects).view(self.n_objects, -1), self.activation(self.embed(self.object_vec)), pred1_output.view(self.n_objects, 1)], 1)))
-            pred2_object = self.activation(self.q2_object(pred2_object))
-            pred2_object = self.q3_object(pred2_object)
-            pred2_object = torch.sigmoid(pred2_object)
+        # Predicting the second argument of the action
+        pred2_input = torch.cat([final_to_decode, one_hot_action], 1)
+        pred2_object = self.activation(self.q1_object(
+                    torch.cat([pred2_input.view(-1).repeat(self.n_objects).view(self.n_objects, -1), self.activation(self.embed(self.object_vec)), pred1_output.view(self.n_objects, 1)], 1)))
+        pred2_object = self.activation(self.q2_object(pred2_object))
+        pred2_object = self.q3_object(pred2_object)
+        pred2_object = torch.sigmoid(pred2_object)
 
-            pred2_state = self.activation(self.q1_state(pred2_input))
-            pred2_state = self.activation(self.q2_state(pred2_state))
-            pred2_state = self.q3_state(pred2_state)
-            pred2_state = torch.sigmoid(pred2_state)
-            pred2_output = torch.cat([pred2_object.view(1,-1), pred2_state], 1)
-            predicted_actions.append(torch.cat((action, pred1_output.view(1,-1), pred2_output.view(1,-1)), 1).flatten())
-        return predicted_actions
+        pred2_state = self.activation(self.q1_state(pred2_input))
+        pred2_state = self.activation(self.q2_state(pred2_state))
+        pred2_state = self.q3_state(pred2_state)
+        pred2_state = torch.sigmoid(pred2_state)
+        pred2_output = torch.cat([pred2_object.view(1,-1), pred2_state], 1)
+        return torch.cat((action, pred1_output.view(1,-1), pred2_output.view(1,-1)), 1).flatten()
 
-class Final_L(nn.Module):
+class Final_L_Action(nn.Module):
     def __init__(self,
                  in_feats,
                  n_objects,
@@ -997,7 +994,7 @@ class Final_L(nn.Module):
                  etypes,
                  activation,
                  dropout):
-        super(Final_L, self).__init__()
+        super(Final_L_Action, self).__init__()
         self.name = "GGCN_Metric_Attn_Aseq_Auto_Cons_C_Action_" + str(n_hidden) + "_" + str(n_layers)
         self.layers = nn.ModuleList()
         self.activation = nn.PReLU()
