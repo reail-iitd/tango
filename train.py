@@ -161,7 +161,7 @@ def gen_policy_score(model, testData, num_objects, verbose = False):
 		print("Testcase", i+1, res)
 	return (correct*100/den), (incorrect*100/den), (error*100/den)
 
-def test_policy(dset, graphs, model, modelEnc, num_objects = 0, verbose = False):
+def test_policy(dset, graphs, model, modelEnc, num_objects = 0, ignoreNearCons = True, verbose = False):
 	assert "action" in training
 	with open('jsons/embeddings/'+embedding+'.vectors') as handle: e = json.load(handle)
 	if verbose: print ("Policy Testing")
@@ -185,7 +185,7 @@ def test_policy(dset, graphs, model, modelEnc, num_objects = 0, verbose = False)
 			else:
 				y_pred = model(graphSeq[-1], goal2vec[goal_num], goalObjects2vec[goal_num])
 			action_pred = vec2action_grammatical(y_pred, num_objects, len(possibleStates), idx2object) if "Cons" in model.name else vec2action(y_pred, num_objects, len(possibleStates), idx2object)
-			res, g, err = approx.execAction(goal_num, action_pred, e)
+			res, g, err = approx.execAction(goal_num, action_pred, e, ignoreNearCons)
 			actionSeq.append(action_pred); graphSeq.append(g)
 			if verbose and err != '': print(goal_num, world_num); print(tool_preds); print(actionSeq, err); print('----------')
 			if res:	correct += 1; break
@@ -585,7 +585,7 @@ if __name__ == '__main__':
 			print(loss)
 			t1, t2 = eval_accuracy(data, train_set, test_set, model, modelEnc)
 			if 'action' in training:
-				c, i, e = test_policy(data, test_set, model, modelEnc, data.num_objects, False)
+				c, i, e = test_policy(data, test_set, model, modelEnc, data.num_objects, False, False)
 			accuracy_list.append((t2, t1, loss, c, i, e))
 			save_model(model, optimizer, num_epochs, accuracy_list)
 		print ("The maximum accuracy on test set is ", str(max(accuracy_list)), " at epoch ", accuracy_list.index(max(accuracy_list)))
@@ -638,4 +638,4 @@ if __name__ == '__main__':
 	elif exec_type == "policy":
 		assert "action" in training and "Action" in model.name
 		# test_policy(data, train_set, model, modelEnc, data.num_objects)
-		test_policy(data, test_set, model, modelEnc, data.num_objects, True)
+		test_policy(data, test_set, model, modelEnc, data.num_objects, verbose = True)

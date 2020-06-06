@@ -274,7 +274,7 @@ def cg(goal_file, constraints, states, on, clean, sticky, fixed, drilled, welded
                 success = False
     return success
 
-def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None, saveImg = True):
+def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None, saveImg = True, ignoreNearCons = True):
   global x1, y1, o1, z1, world_states, dist, yaw, pitch, camX, camY, imageCount, cleaner, on, datapoint, clean, stick, keyboard, drilled, welded, painted, fueled, cut
   global light, args, speed, sticky, fixed, on, fueled, cut, cleaner, stick, clean, drilled, welded, painted, datapoint, metrics, constraints
   # List of low level actions
@@ -381,8 +381,8 @@ def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None, sav
               raise Exception("Object is inside an enclosure, can not grasp it.")
           if (t in enclosures and closed(t)):
               raise Exception("Enclosure is closed, can not place object inside")
-          # if (t == 'ur5' and objDistance > 2.95):
-          #     raise Exception("Object too far away, move closer to it")
+          if not ignoreNearCons and (t == 'ur5' and objDistance > 2.95):
+              raise Exception("Object too far away, move closer to it")
           if (t == 'ur5' and abs(metrics[obj][0][2] - z1) > (1.5 if domain == 'home' else 2)):
                 raise Exception("Object on different height, please use stool/ladder")
           if ("mop" in obj
@@ -546,10 +546,10 @@ def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None, sav
         action_index += 1
         done = False
 
-def execute(actions, goal_file=None, queue_for_execute_to_stop = None, saveImg = True):
+def execute(actions, goal_file=None, queue_for_execute_to_stop = None, saveImg = True, ignoreNearCons = True):
   global datapoint
   try:
-    return executeHelper(actions, goal_file, queue_for_execute_to_stop, saveImg)
+    return executeHelper(actions, goal_file, queue_for_execute_to_stop, saveImg, ignoreNearCons)
   except Exception as e:
     datapoint.addSymbolicAction("Error = " + str(e))
     datapoint.addPoint(None, None, None, None, 'Error = ' + str(e), None, None, None, None, None, None, None, None, None, None)
@@ -594,10 +594,10 @@ def initPolicy(domain, goal_num, world_num):
   args.goal = 'jsons/' + domain + '_goals/' + GOAL_LISTS[domain][goal_num - 1]
   start(args)
 
-def execAction(goal_num, action, e):
+def execAction(goal_num, action, e, ignoreNearCons = True):
   plan = {'actions': [action]}
   try:
-    res = execute(plan, args.goal, saveImg=False)
+    res = execute(plan, args.goal, saveImg=False, ignoreNearCons=ignoreNearCons)
     graph_data = datapoint.getGraph(embeddings = e)
     graph_data = graph_data["graph_"+str(len(graph_data)-1)] 
     g = convertToDGLGraph(graph_data, False, goal_num, -1)
