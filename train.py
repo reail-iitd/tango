@@ -147,6 +147,20 @@ def gen_policy_score(model, testData, num_objects, verbose = False):
 			if domain == 'home' and test_num == 7 and action_pred['name'] in ['climbUp', 'climbDown'] and action_pred['args'][0] == 'stool': 
 				if verbose: print(goal_num, world_num); print(actionSeq, 'Climb up/down headphone'); print('----------')
 				error += 1; total_list[test_num-1][2] += 1; break
+			if ('_L' not in model.name and domain == 'home' and
+				((test_num == 3 and 'mop' in action_pred['args']) or
+				 (test_num == 4 and 'box' in action_pred['args']) or
+				 (test_num == 5 and 'glue' in action_pred['args']) or
+				 (test_num == 8 and 'box' in action_pred['args']) or
+				 (test_num == 9 and 'stool' in action_pred['args']))):
+				error += 1; total_list[test_num-1][2] += 1; break
+			if ('_L' not in model.name and domain == 'factory' and
+				((test_num == 1 and 'blow_dryer' in action_pred['args']) or
+				 (test_num == 2 and 'brick' in action_pred['args']) or
+				 (test_num == 3 and 'lify' in action_pred['args']) or
+				 (test_num == 5 and 'glue' in action_pred['args']) or
+				 (test_num == 7 and 'coal' in action_pred['args']))):
+				error += 1; total_list[test_num-1][2] += 1; break
 			res, g, err = approx.execAction(goal_num, action_pred, e)
 			actionSeq.append(action_pred); graphSeq.append(g)
 			if verbose and err != '': print(goal_num, world_num); print(actionSeq, err); print('----------')
@@ -638,4 +652,4 @@ if __name__ == '__main__':
 	elif exec_type == "policy":
 		assert "action" in training and "Action" in model.name
 		# test_policy(data, train_set, model, modelEnc, data.num_objects)
-		test_policy(data, test_set, model, modelEnc, data.num_objects, verbose = True)
+		test_policy(data, test_set, model, modelEnc, data.num_objects, verbose = False)
