@@ -3,7 +3,7 @@ from src.GNN.models import *
 from src.GNN.dataset_utils import *
 import random
 import numpy as np
-from os import path
+from os import path, makedirs
 from tqdm import tqdm
 from sys import argv
 import approx
@@ -39,6 +39,7 @@ num_actions = len(possibleActions)
 
 def load_dataset():
 	global TOOLS, NUMTOOLS, globalnode
+	if not path.exists(MODEL_SAVE_PATH): makedirs(MODEL_SAVE_PATH)
 	filename = ('dataset/'+ domain + '_'+ 
 				("global_" if globalnode else '') + 
 				("NoTool_" if not ignoreNoTool else '') + 
@@ -115,8 +116,9 @@ def grammatical_action(action):
 			return False
 		if action["args"][1] in object2idx:
 			return False
-	else:
-		assert False
+	elif action["name"] in noArgumentActions:
+		if (len(action["args"]) != 0):
+			return False
 	return True
 
 def gen_policy_score(model, testData, num_objects, verbose = False):
@@ -129,8 +131,8 @@ def gen_policy_score(model, testData, num_objects, verbose = False):
 		actionSeq, graphSeq, object_likelihoods, tool_preds = [], [g], [], []
 		approx.initPolicy(domain, goal_num, world_num)
 		while True:
-			if "Aseq" in model_name:
-				if "Tool" in model_name:
+			if "Aseq" in model.name:
+				if "Tool" in model.name:
 					tool_likelihoods = modelEnc(graphSeq[-1], goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
 					tool_ls = list(tool_likelihoods.reshape(-1))
 					tool_preds.append(TOOLS[tool_ls.index(max(tool_ls))])
@@ -141,25 +143,39 @@ def gen_policy_score(model, testData, num_objects, verbose = False):
 				y_pred = y_pred_list[-1]
 			else:
 				y_pred = model(graphSeq[-1], goal2vec[goal_num], goalObjects2vec[goal_num])
-			action_pred = vec2action_grammatical(y_pred, num_objects, 4, idx2object) if "Cons" in model.name else vec2action(y_pred, num_objects, 4, idx2object)
-			if test_num == 7 and action_pred['name'] in ['climbUp', 'climbDown'] and action_pred['args'][0] == 'stool': 
+			action_pred = vec2action_grammatical(y_pred, num_objects, len(possibleStates), idx2object) if "Cons" in model.name else vec2action(y_pred, num_objects, len(possibleStates), idx2object)
+			if domain == 'home' and test_num == 7 and action_pred['name'] in ['climbUp', 'climbDown'] and action_pred['args'][0] == 'stool': 
 				if verbose: print(goal_num, world_num); print(actionSeq, 'Climb up/down headphone'); print('----------')
+				error += 1; total_list[test_num-1][2] += 1; break
+			if ('_L' not in model.name and domain == 'home' and
+				((test_num == 3 and 'mop' in action_pred['args']) or
+				 (test_num == 4 and 'box' in action_pred['args']) or
+				 (test_num == 5 and 'glue' in action_pred['args']) or
+				 (test_num == 8 and 'box' in action_pred['args']) or
+				 (test_num == 9 and 'stool' in action_pred['args']))):
+				error += 1; total_list[test_num-1][2] += 1; break
+			if ('_L' not in model.name and domain == 'factory' and
+				((test_num == 1 and 'blow_dryer' in action_pred['args']) or
+				 (test_num == 2 and 'brick' in action_pred['args']) or
+				 (test_num == 3 and 'lify' in action_pred['args']) or
+				 (test_num == 5 and 'glue' in action_pred['args']) or
+				 (test_num == 7 and 'coal' in action_pred['args']))):
 				error += 1; total_list[test_num-1][2] += 1; break
 			res, g, err = approx.execAction(goal_num, action_pred, e)
 			actionSeq.append(action_pred); graphSeq.append(g)
 			if verbose and err != '': print(goal_num, world_num); print(actionSeq, err); print('----------')
 			if res:	correct += 1; total_list[test_num-1][0] += 1; break
-			elif err == '' and len(actionSeq) > 30:	incorrect += 1; total_list[test_num-1][1] += 1; break
+			elif err == '' and len(actionSeq) > (30 if domain=='home' else 40):	incorrect += 1; total_list[test_num-1][1] += 1; break
 			elif err != '': error += 1; total_list[test_num-1][2] += 1; break
 	den = correct + incorrect + error
 	print ("Correct, Incorrect, Error: ", (correct*100/den), (incorrect*100/den), (error*100/den))
 	for i, tup in enumerate(total_list):
 		res = []
-		for j in tup: res.append(j * 100 / sum(tup))
+		for j in tup: res.append((j * 100 / sum(tup)) if sum(tup) else 0)
 		print("Testcase", i+1, res)
 	return (correct*100/den), (incorrect*100/den), (error*100/den)
 
-def test_policy(dset, graphs, model, modelEnc, num_objects = 0, verbose = False):
+def test_policy(dset, graphs, model, modelEnc, num_objects = 0, ignoreNearCons = True, verbose = False):
 	assert "action" in training
 	with open('jsons/embeddings/'+embedding+'.vectors') as handle: e = json.load(handle)
 	if verbose: print ("Policy Testing")
@@ -170,8 +186,8 @@ def test_policy(dset, graphs, model, modelEnc, num_objects = 0, verbose = False)
 		actionSeq, graphSeq, object_likelihoods, tool_preds = [], [graphSeq[0]], [], []
 		approx.initPolicy(domain, goal_num, world_num)
 		while True:
-			if "Aseq" in model_name:
-				if "Tool" in model_name:
+			if "Aseq" in model.name:
+				if "Tool" in model.name:
 					tool_likelihoods = modelEnc(graphSeq[-1], goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
 					tool_ls = list(tool_likelihoods.reshape(-1))
 					tool_preds.append(TOOLS[tool_ls.index(max(tool_ls))])
@@ -182,12 +198,12 @@ def test_policy(dset, graphs, model, modelEnc, num_objects = 0, verbose = False)
 				y_pred = y_pred_list[-1]
 			else:
 				y_pred = model(graphSeq[-1], goal2vec[goal_num], goalObjects2vec[goal_num])
-			action_pred = vec2action_grammatical(y_pred, num_objects, 4, idx2object) if "Cons" in model.name else vec2action(y_pred, num_objects, 4, idx2object)
-			res, g, err = approx.execAction(goal_num, action_pred, e)
+			action_pred = vec2action_grammatical(y_pred, num_objects, len(possibleStates), idx2object) if "Cons" in model.name else vec2action(y_pred, num_objects, len(possibleStates), idx2object)
+			res, g, err = approx.execAction(goal_num, action_pred, e, ignoreNearCons)
 			actionSeq.append(action_pred); graphSeq.append(g)
 			if verbose and err != '': print(goal_num, world_num); print(tool_preds); print(actionSeq, err); print('----------')
 			if res:	correct += 1; break
-			elif err == '' and len(actionSeq) > 30:	incorrect += 1; break
+			elif err == '' and len(actionSeq) > (30 if domain=='home' else 40):	incorrect += 1; break
 			elif err != '': error += 1; break
 	den = correct + incorrect + error
 	print ("Correct, Incorrect, Error: ", (correct*100/den), (incorrect*100/den), (error*100/den))
@@ -226,8 +242,8 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 			denominator += 1
 		elif 'action' in training:
 			actionSeq, graphSeq = g
-			if "Aseq" in model_name:
-				if "Tool" in model_name:
+			if "Aseq" in model.name:
+				if "Tool" in model.name:
 					object_likelihoods = []
 					for g in graphSeq:
 						tool_likelihoods = modelEnc(g, goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
@@ -238,7 +254,7 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 				plan = []
 				for i,y_pred in enumerate(y_pred_list):
 					denominator += 1
-					action_pred = vec2action_grammatical(y_pred, num_objects, 4, idx2object) if "Cons" in model.name else vec2action(y_pred, num_objects, 4, idx2object)
+					action_pred = vec2action_grammatical(y_pred, num_objects, len(possibleStates), idx2object) if "Cons" in model.name else vec2action(y_pred, num_objects, len(possibleStates), idx2object)
 					plan.append(action_pred)
 					if verbose:
 						if "Cons" not in model.name and (not grammatical_action(action_pred)):
@@ -248,11 +264,11 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 							print (actionSeq[i])
 						if (action_pred["name"] == actionSeq[i]["name"]):
 							action_correct += 1
-						if (action_pred["args"][0] == actionSeq[i]["args"][0]):
+						if (len(action_pred["args"]) and len(actionSeq[i]["args"]) and action_pred["args"][0] == actionSeq[i]["args"][0]):
 							pred1_correct += 1
 						if (len(action_pred["args"]) > 1):
 							den_pred2 += 1
-							if (action_pred["args"][0] == actionSeq[i]["args"][0]):
+							if (len(actionSeq[i]["args"]) > 1 and action_pred["args"][1] == actionSeq[i]["args"][1]):
 								pred2_correct += 1
 					if (action_pred == actionSeq[i]):
 						total_correct += 1
@@ -264,12 +280,12 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 					if err != '' and False: print(goal_num, world_num); print(plan, err); print('----------')
 			else:	
 				for i in range(len(graphSeq)):
-					if 'list' not in model_name:
+					if 'list' not in model.name:
 						y_pred = model(graphSeq[i], goal2vec[goal_num], goalObjects2vec[goal_num])
-					elif model_name == 'sequence_list':
+					elif model.name == 'sequence_list':
 						y_pred = model(graphSeq[max(0,i + 1 - graph_seq_length):i+1], goal2vec[goal_num], goalObjects2vec[goal_num])
 					denominator += 1
-					action_pred = vec2action_grammatical(y_pred, num_objects, 4, idx2object) if "Cons" in model.name else vec2action(y_pred, num_objects, 4, idx2object)
+					action_pred = vec2action_grammatical(y_pred, num_objects, len(possibleStates), idx2object) if "Cons" in model.name else vec2action(y_pred, num_objects, len(possibleStates), idx2object)
 					# print ("Prediction: ", action_pred)
 					# print ("Target: ", actionSeq[i])
 					if verbose:
@@ -280,11 +296,11 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 							print (actionSeq[i])
 						if (action_pred["name"] == actionSeq[i]["name"]):
 							action_correct += 1
-						if (action_pred["args"][0] == actionSeq[i]["args"][0]):
+						if (len(action_pred["args"]) and len(actionSeq[i]["args"]) and action_pred["args"][0] == actionSeq[i]["args"][0]):
 							pred1_correct += 1
 						if (len(action_pred["args"]) > 1):
 							den_pred2 += 1
-							if (action_pred["args"][0] == actionSeq[i]["args"][0]):
+							if (len(actionSeq[i]["args"]) > 1 and action_pred["args"][1] == actionSeq[i]["args"][1]):
 								pred2_correct += 1
 					if (action_pred == actionSeq[i]):
 						total_correct += 1
@@ -331,7 +347,7 @@ def printPredictions(model, data=None):
 				y_pred_list = model(graphSeq, goal2vec[goal_num], goalObjects2vec[goal_num], actionSeq)
 				for i,y_pred in enumerate(y_pred_list):
 					denominator += 1
-					action_pred = vec2action_grammatical(y_pred, num_objects, 4, idx2object)
+					action_pred = vec2action_grammatical(y_pred, num_objects, len(possibleStates), idx2object)
 					if verbose:
 						if (not grammatical_action(action_pred)):
 							# print (action_pred)
@@ -346,7 +362,7 @@ def printPredictions(model, data=None):
 						y_pred = model(graphSeq[i], goal2vec[goal_num], goalObjects2vec[goal_num])
 					elif training == 'sequence_list':
 						y_pred = model(graphSeq[max(0,i + 1 - graph_seq_length):i+1], goal2vec[goal_num], goalObjects2vec[goal_num])
-					action_pred = vec2action(y_pred, data.num_objects, 4, idx2object)
+					action_pred = vec2action(y_pred, data.num_objects, len(possibleStates), idx2object)
 					# if (action_pred != actionSeq[i]):
 					# 	print ("Prediction: ", action_pred)
 					# 	print ("Target: ", actionSeq[i])
@@ -385,8 +401,8 @@ def backprop(data, optimizer, graphs, model, num_objects, modelEnc=None, batch_s
 			batch_loss += loss
 		elif 'action' in training:
 			actionSeq, graphSeq = g; loss = 0
-			if "Aseq" in model_name:
-				if "Tool" in model_name:
+			if "Aseq" in model.name:
+				if "Tool" in model.name:
 					object_likelihoods = []
 					for g in graphSeq:
 						tool_likelihoods = modelEnc(g, goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
@@ -395,15 +411,15 @@ def backprop(data, optimizer, graphs, model, num_objects, modelEnc=None, batch_s
 				else:
 					y_pred_list = model(graphSeq, goal2vec[goal_num], goalObjects2vec[goal_num], actionSeq)
 				for i,y_pred in enumerate(y_pred_list):
-					y_true = action2vec_cons(actionSeq[i], num_objects, 4) if "Cons" in model.name else action2vec(actionSeq[i], num_objects, 4)
+					y_true = action2vec_cons(actionSeq[i], num_objects, len(possibleStates)) if "Cons" in model.name else action2vec(actionSeq[i], num_objects, len(possibleStates))
 					loss += l(y_pred, y_true)
 			else:
 				for i in range(len(graphSeq)):
-					if 'list' not in model_name:
+					if 'list' not in model.name:
 						y_pred = model(graphSeq[i], goal2vec[goal_num], goalObjects2vec[goal_num])
-					elif model_name == 'sequence_list':
+					elif model.name == 'sequence_list':
 						y_pred = model(graphSeq[max(0,i + 1 - graph_seq_length):i + 1], goal2vec[goal_num], goalObjects2vec[goal_num])
-					y_true = action2vec(actionSeq[i], num_objects, 4)
+					y_true = action2vec_cons(actionSeq[i], num_objects, len(possibleStates)) if "Cons" in model.name else action2vec(actionSeq[i], num_objects, len(possibleStates))
 					loss += l(y_pred, y_true)
 			batch_loss += loss
 		total_loss += loss
@@ -430,7 +446,7 @@ def backpropGD(data, optimizer, graphs, model, num_objects, modelEnc=None):
 			if "aseq" in training:
 				y_pred_list = model(graphSeq, goal2vec[goal_num], goalObjects2vec[goal_num], actionSeq)
 				for i,y_pred in enumerate(y_pred_list):
-					y_true = action2vec(actionSeq[i], num_objects, 4)
+					y_true = action2vec(actionSeq[i], num_objects, len(possibleStates))
 					loss += l(y_pred, y_true)
 			else:
 				for i in range(len(graphSeq)):
@@ -438,7 +454,7 @@ def backpropGD(data, optimizer, graphs, model, num_objects, modelEnc=None):
 						y_pred = model(graphSeq[i], goal2vec[goal_num], goalObjects2vec[goal_num])
 					elif training == 'sequence_list':
 						y_pred = model(graphSeq[max(0,i + 1 - graph_seq_length):i + 1], goal2vec[goal_num], goalObjects2vec[goal_num])
-					y_true = action2vec(actionSeq[i], num_objects, 4)
+					y_true = action2vec(actionSeq[i], num_objects, len(possibleStates))
 					loss += l(y_pred, y_true)
 					# loss += torch.sum((y_pred - y_true)** 2)
 		total_loss += loss
@@ -460,7 +476,7 @@ def world_split(data):
 	counter = 0
 	for i in data.graphs:
 		for j in range(1,9):
-			if (i[0],i[1]) == (j,j):
+			if (i[0],i[1]) == (j,(j if domain=='home' else j-1)):
 				test_set.append(i)
 				break
 		else:
@@ -501,7 +517,7 @@ def get_model(model_name):
 	elif training == 'action' or training == 'action_tool':
 		modelEnc = DGL_Simple_Likelihood(data.features, data.num_objects, 2 * GRAPH_HIDDEN, NUMTOOLS, 3, etypes, torch.tanh, 0.5, embedding, weighted) if 'tool' in training else None 
 		model_class = getattr(src.GNN.models, model_name)
-		model = model_class(data.features, data.num_objects, 2 * GRAPH_HIDDEN, 4, 3, etypes, torch.tanh, 0.5)
+		model = model_class(data.features, data.num_objects, 2 * GRAPH_HIDDEN, len(possibleStates), 3, etypes, torch.tanh, 0.5)
 	return model, modelEnc
 
 def load_model(filename, model, modelEnc):
@@ -583,7 +599,7 @@ if __name__ == '__main__':
 			print(loss)
 			t1, t2 = eval_accuracy(data, train_set, test_set, model, modelEnc)
 			if 'action' in training:
-				c, i, e = test_policy(data, test_set, model, modelEnc, data.num_objects, False)
+				c, i, e = test_policy(data, test_set, model, modelEnc, data.num_objects, False, False)
 			accuracy_list.append((t2, t1, loss, c, i, e))
 			save_model(model, optimizer, num_epochs, accuracy_list)
 		print ("The maximum accuracy on test set is ", str(max(accuracy_list)), " at epoch ", accuracy_list.index(max(accuracy_list)))
@@ -615,16 +631,8 @@ if __name__ == '__main__':
 			print(i, gen_score(model, testConcept))
 
 	elif exec_type == "generalization" and "Action" in model.name:
-		# testConcept = TestDataset("dataset/test/" + domain + "/conceptnet/")
-		# i = "GGCN_Metric_Attn_Aseq_L_Auto_Cons_C_Action_128_3_Trained"
-		# model, _ = get_model('_'.join(i.split("_")[:-3]))
-		# model, _, _, _, _ = load_model(i, model, None)
-		# print(i, gen_policy_score(model, testConcept, data.num_objects))
-		testFast = TestDataset("dataset/test/" + domain + "/fasttext/")
-		i = "GGCN_Auto_Action_128_3_Trained"
-		model, _ = get_model('_'.join(i.split("_")[:-3]))
-		model, _, _, _, _ = load_model(i, model, None)
-		print(i, gen_policy_score(model, testFast, data.num_objects))
+		genTestSet = TestDataset("dataset/test/" + domain + "/" + embedding + "/")
+		gen_policy_score(model, genTestSet, data.num_objects)
 
 	elif exec_type == "ablation":
 		testConcept = TestDataset("dataset/test/" + domain + "/conceptnet/")
@@ -644,4 +652,4 @@ if __name__ == '__main__':
 	elif exec_type == "policy":
 		assert "action" in training and "Action" in model.name
 		# test_policy(data, train_set, model, modelEnc, data.num_objects)
-		test_policy(data, test_set, model, modelEnc, data.num_objects, True)
+		test_policy(data, test_set, model, modelEnc, data.num_objects, verbose = False)

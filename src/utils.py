@@ -9,6 +9,7 @@ import time
 import numpy as np
 import os
 import glob
+from src.GNN.CONSTANTS import domain
 current_milli_time = lambda: int(round(time.time() * 1000))
 
 camTargetPos = [0, 0, 0]
@@ -499,6 +500,14 @@ def getGoalObjects(world_name, goal_name):
 
 possibleActions = ['pushTo', 'climbUp', 'pick', 'climbDown', 'changeState', \
     'dropTo', 'pickNplaceAonB', 'moveTo', 'clean', 'apply', 'stick']
+if domain == 'factory':
+    possibleActions.extend(['placeRamp', 'moveUp', 'moveDown', 'drop', 'drill', 'cut', \
+        'print', 'drive', 'fuel', 'weld', 'paint'])
+
+noArgumentActions = ["placeRamp", "moveUp", "moveDown"]
+singleArgumentActions = ["moveTo", "pick", "climbUp", "climbDown", "clean", "drop", "drill", "print", \
+    "weld", "paint"]
+
 property2Objects = {}; allObjects = []
 for i in json.load(open("jsons/objects.json", "r"))["objects"]:
     allObjects.append(i["name"])
@@ -509,20 +518,22 @@ for i in json.load(open("jsons/objects.json", "r"))["objects"]:
 
 property2Objects["all"] = allObjects
 surfaceAndContainers = property2Objects['Surface'] + property2Objects['Container']
-hasState = property2Objects['Can_Open'] + property2Objects['Switchable']
+hasState = property2Objects['Can_Open'] + property2Objects['Switchable'] + ['lift']
 
 possibleStates = ['on', 'off', 'open', 'close']
+if domain == 'factory':
+    possibleStates.extend(['up', 'down'])
 
 def getPossiblePredicates(action):
     assert action in possibleActions
-    if action == 'moveTo':
+    if action == 'moveTo' or action == 'drop':
         return [property2Objects['all']]
     elif action == 'pick':
         return [property2Objects['Movable']]
     elif action == 'pushTo':
         return [property2Objects['Movable'], property2Objects['all']]
     elif action == 'climbUp' or action == 'climbDown':
-        return [['stool']]
+        return [['stool', 'ladder']]
     elif action == 'changeState':
         return [hasState, possibleStates]
     elif action == 'dropTo' or action == 'pickNplaceAonB':
@@ -533,6 +544,20 @@ def getPossiblePredicates(action):
         return [property2Objects['Can_Apply'], property2Objects["Stickable"]]
     elif action == 'stick':
         return [property2Objects['Stickable'], property2Objects["Surface"]]
+    elif action == 'drill':
+        return [property2Objects['Drillable']]
+    elif action == 'print':
+        return [property2Objects['Printable']]
+    elif action == 'drive':
+        return [property2Objects['Drivable'], property2Objects['Movable']]
+    elif action == 'cut':
+        return [property2Objects['Cuttable'], property2Objects['Cutter']]
+    elif action == 'fuel':
+        return [property2Objects['Can_Fuel'], property2Objects['Fuel']]
+    elif action == 'weld':
+        return [property2Objects['Weldable']]
+    elif action == 'paint':
+        return [property2Objects['Can_Paint']]
 
 class color:
     HEADER = '\033[95m'

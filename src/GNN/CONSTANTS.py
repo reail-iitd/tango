@@ -8,7 +8,7 @@ from sys import argv
 domain = argv[1] # can be 'home' or 'factory'
 
 # The embedding type which is used by model. Can be conceptnet or fasttext.
-embedding = "conceptnet" if (("_C" in argv[3]) ^ ("Final" in argv[3])) else "fasttext"
+embedding = "conceptnet" if (("_C_" in argv[3] or ("_C" in argv[3] and "Action" not in argv[3])) ^ ("Final" in argv[3])) else "fasttext"
 
 # These are the states that are possible for any object. Only the ones possessed bu the object are 1. Other are 0.
 STATES = ["Outside", "Inside", "On", "Off", "Close", "Open", "Up", "Down", "Sticky", "Non_Sticky", "Dirty", "Clean", "Grabbed", "Free", "Welded", "Not_Welded", "Drilled", "Not_Drilled", "Driven", "Not_Driven", "Fueled", "Not_Fueled", "Cut", "Not_Cut", "Painted", "Not_Painted", "Different_Height", "Same_Height"]
@@ -34,7 +34,7 @@ SIZE_AND_POS_SIZE = 10
 # EMBEDDING_DIM = 32
 N_TIMESEPS = 2
 GRAPH_HIDDEN = 64
-NUM_EPOCHS = 100
+NUM_EPOCHS = 50
 LOGIT_HIDDEN = 32
 NUM_GOALS = 8
 
@@ -45,7 +45,7 @@ TOOLS2 = ['stool', 'tray', 'tray2', 'big-tray', 'book', 'box', 'chair',\
 		'spraypaint', 'toolbox', 'mop']
 TOOLS = TOOLS2 + ['no-tool']
 NUMTOOLS = len(TOOLS)
-MODEL_SAVE_PATH = "trained_models/"
+MODEL_SAVE_PATH = "trained_models/"+domain+"/"
 AUGMENTATION = 1
 
 all_home_objects = ['floor', 'walls', 'door', 'fridge', 'cupboard', 'husky', 'table', 'table2', 'couch', 'big-tray',\
@@ -53,9 +53,13 @@ all_home_objects = ['floor', 'walls', 'door', 'fridge', 'cupboard', 'husky', 'ta
 		'bottle_gray', 'bottle_red', 'box', 'apple', 'orange', 'banana', 'chair', 'ball', 'stick', 'dumpster', 'milk', \
 		'shelf', 'glue', 'tape', 'stool', 'mop', 'sponge', 'vacuum', 'dirt']
 
-all_objects_with_states = ['door', 'fridge', 'cupboard', 'light']
+all_objects_with_states = ['door', 'fridge', 'cupboard', 'light'] if domain == 'home' else ['cupboard', 'lift', 'blow_dryer']
 
-all_factory_objects = []
+all_factory_objects = ['floor_warehouse', '3d_printer', 'assembly_station', 'blow_dryer', 'board', 'box', 'brick', 'coal', \
+		'crate_green', 'crate_peach', 'crate_red', 'cupboard', 'drill', 'gasoline', 'generator', 'glue', \
+		'hammer', 'ladder', 'lift', 'long_shelf', 'mop', 'nail', 'oil', 'paper', 'part1', 'part2', 'part3', \
+		'platform', 'screw', 'screwdriver', 'spraypaint', 'stick', 'stool', 'table', 'tape', 'toolbox', \
+		'trolley', 'wall_warehouse', 'water', 'welder', 'wood', 'wood_cutter', 'worktable', 'ramp', 'husky', 'tray']
 
 all_objects = all_home_objects if domain == 'home' else all_factory_objects
 

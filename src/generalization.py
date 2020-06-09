@@ -4,7 +4,8 @@ import json
 from src.extract_vectors import load_all_vectors
 from copy import deepcopy
 from src.GNN.CONSTANTS import TOOLS2, domain, all_objects
-from os import listdir
+from os import listdir, mkdir
+import shutil
 
 conceptnet = load_all_vectors("jsons/embeddings/conceptnet.txt") # {} #
 fasttext = load_all_vectors("jsons/embeddings/fasttext.txt") # {} #
@@ -33,8 +34,16 @@ tools_home = {1: ["tray2", "stick"],
 		 8: ["stick", "stool", "no-tool", "tray", "tray2", "chair"],
 		 9: ["stool", "tray", "stick"]}
 
+def listSum(a, b):
+    c = []
+    for i in range(len(a)):
+        c.append(round(a[i]+b[i], 4))
+    return c
+
+
 def writeFiles(number, path, d):
 	i = len(listdir(path))
+	if domain == 'factory' and 'test7' in path and i > 50: return
 	for j in range(number):
 		f = open(path + str(i) + ".graph", "w+") 
 		f.write(json.dumps(d, indent=2))
@@ -43,6 +52,9 @@ def writeFiles(number, path, d):
 
 def formTestData(testnum):
 	all_files = os.walk(directory_home[testnum])
+	for e in ['conceptnet', 'fasttext']:
+		dirname = 'dataset/test/home/' + e + '/test'+str(testnum)
+		shutil.rmtree(dirname); mkdir(dirname)
 	for path, dirs, files in all_files:
 		if (len(files) > 0):
 			for file in files:
@@ -72,7 +84,7 @@ directory_factory = {1: "dataset/factory/goal7-clean-water/",
 			 5: "dataset/factory/goal2-paper-wall/",
 			 6: "dataset/factory/goal5-assemble-parts/",
 			 7: "dataset/factory/goal4-generator-on/",
-			 8: "dataset/factory/goal6-tools-workbench/world_factory5/"}
+			 8: "dataset/factory/goal6-tools-workbench/world_factory6/"}
 
 goal_num_factory = {1:7 ,2:3 ,3:1 ,4:8 ,5:2 ,6:5 ,7:4, 8:6}
 
@@ -88,6 +100,9 @@ tools_factory = {1: ["mop"],
 
 def formTestDataFactory(testnum):
 	all_files = os.walk(directory_factory[testnum])
+	for e in ['conceptnet', 'fasttext']:
+		dirname = 'dataset/test/factory/' + e + '/test'+str(testnum)
+		shutil.rmtree(dirname); mkdir(dirname)
 	for path, dirs, files in all_files:
 		if (len(files) > 0):
 			for file in files:
@@ -95,7 +110,7 @@ def formTestDataFactory(testnum):
 				with open(file_path, 'rb') as f:
 					datapoint = pickle.load(f)
 				for e in [(conceptnet, "conceptnet", ce), (fasttext, "fasttext", fe)]:	
-					d = {"goal_num": goal_num_factory[testnum], "tools": tools_factory[testnum]} 
+					d = {"goal_num": goal_num_factory[testnum], "tools": tools_factory[testnum], "world_num": int(datapoint.world[-1])} 
 					enew = deepcopy(e[2])
 					if testnum == 1: enew["blow_dryer"] = [0] * 300
 					elif testnum == 2: enew["brick"] = [0] * 300
@@ -103,11 +118,14 @@ def formTestDataFactory(testnum):
 					elif testnum == 4: enew["mop"] = e[0]["mop"] if 'c' in e[1] else e[0]['washcloth']
 					elif testnum == 5: enew["glue"] = [0] * 300
 					elif testnum == 6: enew["toolbox"] = e[0]["box"]
-					elif testnum == 7: enew["wood_cutter"] = e[0]["table"]
+					elif testnum == 7: enew["coal"] = enew["book"]
 					g = datapoint.getGraph(embeddings = enew)
 					d["graph_0"] = g["graph_0"]
 					if testnum == 8:
 						for i in d["graph_0"]["nodes"]: 
-							if i["name"] == "screwdriver" and 'To_Print' in i['states']: i["states"].remove('To_Print'); i['states'].append('Printed')
+							if i["name"] == "screwdriver" and 'To_Print' in i['states']: 
+								i["states"].remove('To_Print'); i['states'].append('Printed')
+								i["position"] = [[0,0,1],[]]
 					d["tool_embeddings"] = [enew[i] for i in TOOLS2]
-					writeFiles(5 if testnum == 8 else 1, "dataset/test/factory/" + e[1] + "/test"+ str(testnum) + "/", d)
+					d["object_embeddings"] = dict(zip(all_objects, [enew[i] for i in all_objects]))
+					writeFiles(11 if testnum == 8 else 1, "dataset/test/factory/" + e[1] + "/test"+ str(testnum) + "/", d)

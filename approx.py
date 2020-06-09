@@ -140,6 +140,7 @@ def fct(o):
   return ""
 
 def fcw(o):
+    if o not in constraints: return []
     return constraints[o]
 
 def closed(o):
@@ -273,7 +274,7 @@ def cg(goal_file, constraints, states, on, clean, sticky, fixed, drilled, welded
                 success = False
     return success
 
-def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None, saveImg = True):
+def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None, saveImg = True, ignoreNearCons = True):
   global x1, y1, o1, z1, world_states, dist, yaw, pitch, camX, camY, imageCount, cleaner, on, datapoint, clean, stick, keyboard, drilled, welded, painted, fueled, cut
   global light, args, speed, sticky, fixed, on, fueled, cut, cleaner, stick, clean, drilled, welded, painted, datapoint, metrics, constraints
   # List of low level actions
@@ -289,7 +290,7 @@ def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None, sav
         return cg(goal_file, constraints, states, on, clean, sticky, fixed, drilled, welded, painted)
 
       inpAction = actions[action_index][0]
-      # print("\n---", actions[action_index])
+      # print("---", actions[action_index])
       # print("Robot: ", [x1, y1, z1])
       # print("milk: ", metrics['milk'][0])
       # print(constraints)
@@ -310,7 +311,7 @@ def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None, sav
             and actions[action_index][1][2] == 1):
             if (fct('ramp') != 'floor_warehouse'):
               raise Exception("Can not move up without ramp")
-        target = metrics[actions[action_index][1]][0]
+        target = actions[action_index][1]
         x2, y2, z2 = target[0], target[1], target[2]
         x1, y1, z1, o1, done = x2, y2, z2, math.atan2((y2-y1),(x2-x1))%(2*math.pi), True
 
@@ -324,7 +325,7 @@ def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None, sav
         # print(objDistance)
         if objDistance > 10.3 and "husky" in fixed:
               raise Exception("Husky can not move as it is on a stool")  
-        if abs(metrics[t][0][2] - z1) > 1.8 and not stick:
+        if abs(metrics[t][0][2] - z1) > (1.8 if domain == 'home' else 2) and not stick:
               raise Exception("Object on different height, please use stool")
         if metrics[t][0][2] - z1 < -1.1:
               raise Exception("Object on lower level, please move down")
@@ -380,9 +381,9 @@ def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None, sav
               raise Exception("Object is inside an enclosure, can not grasp it.")
           if (t in enclosures and closed(t)):
               raise Exception("Enclosure is closed, can not place object inside")
-          # if (t == 'ur5' and objDistance > 2.95):
-          #     raise Exception("Object too far away, move closer to it")
-          if (t == 'ur5' and abs(metrics[obj][0][2] - z1 > 1.5)):
+          if not ignoreNearCons and (t == 'ur5' and objDistance > 2.95):
+              raise Exception("Object too far away, move closer to it")
+          if (t == 'ur5' and abs(metrics[obj][0][2] - z1) > (1.5 if domain == 'home' else 2)):
                 raise Exception("Object on different height, please use stool/ladder")
           if ("mop" in obj
               or "sponge" in obj
@@ -415,14 +416,14 @@ def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None, sav
             raise Exception("Gripper is not free, can not change state")
         if (state == 'stuck' and "Stickable" not in properties[obj]):
             raise Exception("Object not stickable")
-        if 'paper' in obj and state == 'stuck' and obj not in sticky:
+        if domain == 'home' and 'paper' in obj and state == 'stuck' and obj not in sticky:
             raise Exception("Object not sticky")
         if state == 'on' or state == 'off':
           if (state == 'on'
             and "Can_Fuel" in properties[obj]
             and not obj in fueled):
             raise Exception("First add fuel to object and then switch on")
-          if state in on:
+          if state == 'on':
             on.append(obj)
           else:
             if obj in on: on.remove(obj)
@@ -508,14 +509,14 @@ def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None, sav
 
       elif(inpAction == "print"):
         obj = actions[action_index][1]
-        if obj in id_lookup.keys():
+        if obj in metrics.keys():
             raise Exception("Object already in world")
         object_list = []
         with open(object_file, 'r') as handle:
             all_objects = json.load(handle)['objects']
         for o in all_objects:
           if o['name'] == obj: break
-        if 'Printable' not in "Movable" in properties[obj]:
+        if 'Printable' not in o['properties']:
           raise Exception("Object "+obj+" is not printable")
         metrics[obj] = [[-2.5, 4, 1.7], []]
         states[obj] = []
@@ -545,10 +546,10 @@ def executeHelper(actions, goal_file=None, queue_for_execute_to_stop = None, sav
         action_index += 1
         done = False
 
-def execute(actions, goal_file=None, queue_for_execute_to_stop = None, saveImg = True):
+def execute(actions, goal_file=None, queue_for_execute_to_stop = None, saveImg = True, ignoreNearCons = True):
   global datapoint
   try:
-    return executeHelper(actions, goal_file, queue_for_execute_to_stop, saveImg)
+    return executeHelper(actions, goal_file, queue_for_execute_to_stop, saveImg, ignoreNearCons)
   except Exception as e:
     datapoint.addSymbolicAction("Error = " + str(e))
     datapoint.addPoint(None, None, None, None, 'Error = ' + str(e), None, None, None, None, None, None, None, None, None, None)
@@ -593,10 +594,10 @@ def initPolicy(domain, goal_num, world_num):
   args.goal = 'jsons/' + domain + '_goals/' + GOAL_LISTS[domain][goal_num - 1]
   start(args)
 
-def execAction(goal_num, action, e):
+def execAction(goal_num, action, e, ignoreNearCons = True):
   plan = {'actions': [action]}
   try:
-    res = execute(plan, args.goal, saveImg=False)
+    res = execute(plan, args.goal, saveImg=False, ignoreNearCons=ignoreNearCons)
     graph_data = datapoint.getGraph(embeddings = e)
     graph_data = graph_data["graph_"+str(len(graph_data)-1)] 
     g = convertToDGLGraph(graph_data, False, goal_num, -1)
