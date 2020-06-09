@@ -655,5 +655,5 @@ if __name__ == '__main__':
 
 	elif exec_type == "policy":
 		assert "action" in training and "Action" in model.name
-		test_policy(data, train_set, model, modelEnc, data.num_objects)
-		# test_policy(data, test_set, model, modelEnc, data.num_objects, verbose = False)
+		# test_policy(data, train_set, model, modelEnc, data.num_objects)
+		test_policy(data, test_set, model, modelEnc, data.num_objects, verbose = False)
