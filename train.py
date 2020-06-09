@@ -318,7 +318,7 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 		print ("Action accuracy is", (action_correct/denominator) * 100)
 		print ("Pred1 accuracy is", (pred1_correct/denominator) * 100)
 		print ("Pred2 accuracy is", (pred2_correct/den_pred2) * 100)
-	print ("Stuttering count is", stuttering)
+		print ("Stuttering count is", stuttering)
 	if 'action' in training and False:
 		den = correct + incorrect + error
 		print ("Correct, Incorrect, Error: ", (correct*100/den), (incorrect*100/den), (error*100/den))
