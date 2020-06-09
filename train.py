@@ -179,10 +179,12 @@ def test_policy(dset, graphs, model, modelEnc, num_objects = 0, ignoreNearCons =
 	assert "action" in training
 	with open('jsons/embeddings/'+embedding+'.vectors') as handle: e = json.load(handle)
 	if verbose: print ("Policy Testing")
-	correct, incorrect, error = 0, 0, 0
+	correct, incorrect, error = 0, 0, 0; buckets = []
+	for i in range(30): buckets.append([0, 0, 0])
 	for graph in tqdm(graphs, desc = "Policy Testing", ncols=80):
 		goal_num, world_num, tools, g, t = graph
 		actionSeq, graphSeq = g
+		plan_len = len(actionSeq)-1
 		actionSeq, graphSeq, object_likelihoods, tool_preds = [], [graphSeq[0]], [], []
 		approx.initPolicy(domain, goal_num, world_num)
 		while True:
@@ -202,10 +204,10 @@ def test_policy(dset, graphs, model, modelEnc, num_objects = 0, ignoreNearCons =
 			res, g, err = approx.execAction(goal_num, action_pred, e, ignoreNearCons)
 			actionSeq.append(action_pred); graphSeq.append(g)
 			if verbose and err != '': print(goal_num, world_num); print(tool_preds); print(actionSeq, err); print('----------')
-			if res:	correct += 1; break
-			elif err == '' and len(actionSeq) > (30 if domain=='home' else 40):	incorrect += 1; break
-			elif err != '': error += 1; break
-	den = correct + incorrect + error
+			if res:	correct += 1; buckets[plan_len][0] += 1; break
+			elif err == '' and len(actionSeq) > (30 if domain=='home' else 40):	incorrect += 1; buckets[plan_len][1] += 1; break
+			elif err != '': error += 1; buckets[plan_len][2] += 1; break
+	den = correct + incorrect + error; print(buckets)
 	print ("Correct, Incorrect, Error: ", (correct*100/den), (incorrect*100/den), (error*100/den))
 	return (correct*100/den), (incorrect*100/den), (error*100/den)
 
@@ -653,5 +655,5 @@ if __name__ == '__main__':
 
 	elif exec_type == "policy":
 		assert "action" in training and "Action" in model.name
-		# test_policy(data, train_set, model, modelEnc, data.num_objects)
-		test_policy(data, test_set, model, modelEnc, data.num_objects, verbose = False)
+		test_policy(data, train_set, model, modelEnc, data.num_objects)
+		# test_policy(data, test_set, model, modelEnc, data.num_objects, verbose = False)

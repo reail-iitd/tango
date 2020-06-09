@@ -12,10 +12,13 @@ import matplotlib.pyplot as plt
 from statistics import pstdev
 import seaborn as sns
 import itertools
-from src.generalization import *
+# from src.generalization import *
 
 import warnings
 warnings.simplefilter("ignore")
+
+plt.style.use(['science'])
+plt.rcParams["text.usetex"] = True
 
 GOAL_LISTS = \
 {'home': ["goal1-milk-fridge.json", "goal2-fruits-cupboard.json", "goal3-clean-dirt.json", "goal4-stick-paper.json", "goal5-cubes-box.json", "goal6-bottles-dumpster.json", "goal7-weight-paper.json", "goal8-light-off.json"],
@@ -460,6 +463,41 @@ def checkPlan():
 	except Exception as e:
 		print(str(e))
 
+def listSum(a, b):
+    c = []
+    for i in range(len(a)):
+        c.append(round(a[i]+b[i], 4))
+    return c
+
+def accuracyWithTime():
+	# a = eval('[[5, 0, 0], [2, 0, 0], [7, 0, 0], [16, 0, 1], [13, 0, 1], [4, 0, 1], [3, 0, 3], [5, 0, 0], [2, 0, 0], [2, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]]')
+	# b = eval('[[0, 0, 0], [0, 0, 0], [9, 0, 0], [3, 0, 1], [0, 0, 0], [0, 0, 0], [4, 0, 4], [8, 0, 2], [4, 0, 4], [3, 0, 0], [2, 0, 5], [5, 0, 1], [1, 0, 1], [5, 0, 1], [1, 0, 0], [1, 0, 0], [1, 0, 0], [1, 0, 1], [2, 0, 1], [0, 0, 0], [5, 0, 1]]')
+	# res = []
+	# for i in range(len(a)):
+	# 	d = []
+	# 	for j in range(3):
+	# 		d.append(a[i][j] + b[i][j])
+	# 	res.append(d)
+	## test both
+	# res = eval('[[5, 0, 0], [2, 0, 0], [16, 0, 0], [19, 0, 2], [13, 0, 1], [4, 0, 1], [7, 0, 7], [13, 0, 2], [6, 0, 5], [5, 0, 6], [2, 0, 5], [5, 0, 3], [1, 0, 1], [3, 0, 4], [1, 0, 1], [1, 0, 2], [1, 0, 3], [1, 0, 2], [2, 0, 5], [0, 0, 0], [3, 0, 5]]')
+	## train home
+	# res = eval('[[47, 0, 12], [51, 0, 5], [84, 4, 7], [112, 2, 10], [83, 1, 21], [46, 0, 17], [37, 0, 24], [34, 0, 10], [15, 0, 47], [19, 0, 20], [5, 0, 10], [3, 0, 9], [0, 0, 0], [4, 0, 10]]')
+	## train factory
+	res = eval('[[0, 0, 0], [0, 0, 0], [42, 0, 5], [31, 0, 7], [18, 0, 10], [66, 0, 14], [47, 0, 42], [24, 0, 32], [24, 0, 38], [26, 0, 37], [20, 0, 28], [22, 0, 6], [8, 0, 13], [11, 1, 18], [10, 0, 6], [6, 0, 1], [6, 0, 7], [7, 0, 1], [10, 1, 4], [2, 0, 1], [1, 0, 1], [1, 3, 3], [3, 0, 3], [0, 0, 3], [0, 7, 7], [2, 4, 0], [0, 0, 1], [0, 0, 0], [0, 2, 3], [1, 4, 6]]')
+	c, i, e  = [], [], []
+	for j in range(len(res)):
+		if sum(res[j]) != 0:
+			c.append(100*res[j][0]/sum(res[j])); i.append(100*res[j][1]/sum(res[j])); e.append(100*res[j][2]/sum(res[j]))
+			# c.append(res[j][0]); i.append(res[j][1]); e.append(res[j][2])
+		else:
+			c.append(0); i.append(0); e.append(0)
+	fig = plt.figure(figsize=(3,2.5))
+	plt.xticks(range(0, len(c), 5), range(1, len(c)+1, 5))
+	plt.bar(range(len(c)), c, label='Correct', edgecolor='k')
+	plt.bar(range(len(c)), i, bottom=c, label='Incorrect', edgecolor='k')
+	plt.bar(range(len(c)), e, bottom=listSum(c,i), label='Error', edgecolor='k')
+	plt.legend(loc=9, ncol=3,bbox_to_anchor=(0.5,1.2)); plt.ylabel('Policy execution metric (\%)'); plt.xlabel('Plan length')
+	plt.savefig('test.pdf')
 
 # keepNewDatapoints(4)
 # printAllDatapoints()
@@ -468,7 +506,7 @@ def checkPlan():
 # combineDatasets(4)
 # printGraph("dataset/factory/goal1-crates-platform/world_factory3/0")
 # printGraph("dataset/home/goal1-milk-fridge/world_home4/0")
-testData()
+# testData()
 # printAllTimes()
 # allTools()
 # mapToolsGoals()
@@ -482,3 +520,4 @@ testData()
 # checkApprox(domain)
 # checkPlan()
 # checkAllActions()
+accuracyWithTime()
