@@ -18,7 +18,7 @@ warnings.simplefilter("ignore")
 # python train.py $domain $training_type $model_name $exec_type
 
 training = argv[2]  
-# can be "gcn", "gcn_seq", "action", "action_tool"
+# can be "gcn", "gcn_seq", "action"
 
 model_name = argv[3] 
 # can be "GGCN", "GGCN_Metric", "GGCN_Metric_Attn", "GGCN_Metric_Attn_L", "GGCN_Metric_Attn_L_NT",
@@ -537,7 +537,7 @@ def load_model(filename, model, modelEnc):
 		epoch = -1; accuracy_list = []
 		print(color.GREEN+"Creating new model: "+model.name+color.ENDC)
 	if "action" in training:
-		if "action_tool" in training:
+		if "Tool" in model.name:
 			enc_path = MODEL_SAVE_PATH + "/Seq_GGCN_Metric_Attn_L_NT_C_128_3_Trained.ckpt"
 			assert(path.exists(enc_path))
 			checkpoint_enc = torch.load(enc_path)
