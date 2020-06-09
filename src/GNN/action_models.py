@@ -1093,8 +1093,8 @@ class GGCN_Metric_Attn_Aseq_L_Auto_Cons_C_Tool_Action(nn.Module):
                  etypes,
                  activation,
                  dropout):
-        super(GGCN_Metric_Attn_Aseq_L_Auto_Cons_C_Action, self).__init__()
-        self.name = "GGCN_Metric_Attn_Aseq_L_Auto_Cons_C_Action_" + str(n_hidden) + "_" + str(n_layers)
+        super(GGCN_Metric_Attn_Aseq_L_Auto_Cons_C_Tool_Action, self).__init__()
+        self.name = "GGCN_Metric_Attn_Aseq_L_Auto_Cons_C_Tool_Action_" + str(n_hidden) + "_" + str(n_layers)
         self.layers = nn.ModuleList()
         self.activation = nn.PReLU()
         self.layers.append(GatedHeteroRGCNLayer(in_feats, n_hidden, etypes, activation=activation))
