@@ -207,7 +207,7 @@ def test_policy(dset, graphs, model, modelEnc, num_objects = 0, ignoreNearCons =
 			if res:	correct += 1; buckets[plan_len][0] += 1; break
 			elif err == '' and len(actionSeq) > (30 if domain=='home' else 40):	incorrect += 1; buckets[plan_len][1] += 1; break
 			elif err != '': error += 1; buckets[plan_len][2] += 1; break
-	den = correct + incorrect + error; print(buckets)
+	den = correct + incorrect + error; #print(buckets)
 	print ("Correct, Incorrect, Error: ", (correct*100/den), (incorrect*100/den), (error*100/den))
 	return (correct*100/den), (incorrect*100/den), (error*100/den)
 
