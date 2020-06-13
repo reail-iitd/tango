@@ -7,6 +7,7 @@ from os import path, makedirs
 from tqdm import tqdm
 from sys import argv
 import approx
+from statistics import stdev
 
 import torch
 import torch.nn as nn
@@ -211,8 +212,10 @@ def test_policy(dset, graphs, model, modelEnc, num_objects = 0, ignoreNearCons =
 			elif err != '': error += 1; buckets[plan_len][2] += 1; break
 	den = correct + incorrect + error; #print(buckets)
 	# for i in lenHuman: print(sum(i)/len(i), end=', ')
+	# for i in lenHuman: print(stdev(i), end=', ')
 	# print()
 	# for i in lenModel: print(sum(i)/len(i) if len(i) else 0, end=', ')
+	# for i in lenModel: print(stdev(i) if len(i) else 0, end=', ')
 	print ("Correct, Incorrect, Error: ", (correct*100/den), (incorrect*100/den), (error*100/den))
 	return (correct*100/den), (incorrect*100/den), (error*100/den)
 
