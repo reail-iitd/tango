@@ -1100,12 +1100,12 @@ class GGCN_Metric_Attn_Aseq_L_Auto_Cons_C_Tool_Action(nn.Module):
         self.layers.append(GatedHeteroRGCNLayer(in_feats, n_hidden, etypes, activation=activation))
         for i in range(n_layers - 1):
             self.layers.append(GatedHeteroRGCNLayer(n_hidden, n_hidden, etypes, activation=activation))
-        self.attention = nn.Sequential(nn.Linear(n_hidden + n_hidden + n_hidden + n_hidden, n_hidden), self.activation, nn.Linear(n_hidden, 1))
+        self.attention = nn.Sequential(nn.Linear(n_hidden + n_hidden + n_hidden + n_hidden + 1, n_hidden), self.activation, nn.Linear(n_hidden, 1))
         self.embed = nn.Sequential(nn.Linear(PRETRAINED_VECTOR_SIZE, n_hidden), self.activation, nn.Linear(n_hidden, n_hidden))
         self.fc1 = nn.Linear(n_hidden*4, n_hidden)
         self.fc2 = nn.Linear(n_hidden, n_hidden)
         self.fc3 = nn.Linear(n_hidden, len(possibleActions))
-        self.p1_object  = nn.Linear(n_hidden*5 + len(possibleActions) + 1, n_hidden)
+        self.p1_object  = nn.Linear(n_hidden*5 + len(possibleActions), n_hidden)
         self.p2_object  = nn.Linear(n_hidden, n_hidden)
         self.p3_object  = nn.Linear(n_hidden, 1)
         self.q1_object  = nn.Linear(n_hidden*5 + len(possibleActions) + 1, n_hidden)
@@ -1144,7 +1144,7 @@ class GGCN_Metric_Attn_Aseq_L_Auto_Cons_C_Tool_Action(nn.Module):
             else:
                 lstm_out = torch.zeros(1, 1, self.n_hidden)
             lstm_out = lstm_out.view(-1)
-            attn_embedding = torch.cat([h, goalObjectsVec.repeat(h.size(0)).view(h.size(0), -1), lstm_out.repeat(h.size(0)).view(h.size(0), -1)], 1)
+            attn_embedding = torch.cat([h, goalObjectsVec.repeat(h.size(0)).view(h.size(0), -1), lstm_out.repeat(h.size(0)).view(h.size(0), -1), object_likelihoods[ind].view(h.size(0), -1)], 1)
             attn_weights = F.softmax(self.attention(attn_embedding), dim=0)
             scene_embedding = torch.mm(attn_weights.t(), h)
             final_to_decode = torch.cat([scene_embedding, goal_embed, lstm_out.view(1,-1)], 1)
@@ -1160,7 +1160,7 @@ class GGCN_Metric_Attn_Aseq_L_Auto_Cons_C_Tool_Action(nn.Module):
             #Predicting the first argument of the action
             pred1_input = torch.cat([final_to_decode, one_hot_action], 1)
             pred1_object = self.activation(self.p1_object(
-                        torch.cat([pred1_input.view(-1).repeat(self.n_objects).view(self.n_objects, -1), self.activation(self.embed(self.object_vec)), object_likelihoods[ind].view(self.n_objects, -1)], 1)))
+                        torch.cat([pred1_input.view(-1).repeat(self.n_objects).view(self.n_objects, -1), self.activation(self.embed(self.object_vec))], 1)))
             pred1_object = self.activation(self.p2_object(pred1_object))
             pred1_object = self.p3_object(pred1_object)
             pred1_output = torch.sigmoid(pred1_object)
