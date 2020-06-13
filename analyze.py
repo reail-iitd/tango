@@ -504,20 +504,24 @@ def accuracyWithTime():
 
 def planLen():
 	## test home
-	human = eval('[3.375, 3.375, 3.625, 5.75, 3.7142857142857144, 7.75, 0.2857142857142857, 3.090909090909091]')
-	model = eval('[3.0, 4.285714285714286, 4.125, 8.0, 14.0, 10.0, 1.0, 1.0]')
+	# human = eval('[3.375, 3.375, 3.625, 5.75, 3.7142857142857144, 7.75, 0.2857142857142857, 3.090909090909091]')
+	# model = eval('[3.0, 4.285714285714286, 4.125, 8.0, 14.0, 10.0, 1.0, 1.0]')
+	# humandev = eval('[1.7677669529663689, 0.5175491695067657, 1.0606601717798212, 0.4629100498862757, 0.4879500364742666, 0.8864052604279183, 0.1879500364742666, 0.8312094145936335]')
+	# modeldev = eval('[0.0, 0.7559289460184544, 0.3535533905932738, 0.0, 0.0, 0.0, 0.0, 0.0]')
 	## test factory
-	# human = eval('[11.363636363636363, 10.4, 11.8, 8.0, 19.333333333333332, 7.0, 5.333333333333333, 2.0]')
-	# model = eval('[13.11111111111111, 10.142857142857142, 9.25, 9.829, 26.0, 8.0, 4.0, 3.888888888888889]')
+	human = eval('[11.363636363636363, 10.4, 11.8, 8.0, 19.333333333333332, 7.0, 5.333333333333333, 2.0]')
+	model = eval('[13.11111111111111, 10.142857142857142, 9.25, 9.829, 26.0, 8.0, 4.0, 3.888888888888889]')
+	humandev = eval('[3.8800187440971796, 1.429840705968481, 2.780887148615228, 1.8856180831641267, 1.0, 0.0, 2.5, 0.0]')
+	modeldev = eval('[1.536590742882148, 1.4638501094227998, 0.7071067811865476, 0, 1.9148542155126762, 0.0, 0.0, 0.33333333333333337]')
 	fig = plt.figure(figsize=(3,2.5))
 	plt.xticks(np.arange(len(human)), np.arange(1, len(human)+1, 1))
-	plt.bar(np.arange(len(human))-0.2, human, width=0.4, label='Human', edgecolor='k')
-	plt.bar(np.arange(len(human))+0.2, model, width=0.4, label='Model', edgecolor='k')
+	plt.bar(np.arange(len(human))-0.2, human, yerr=humandev, capsize=1, ecolor='black', width=0.4, label='Human', edgecolor='k')
+	plt.bar(np.arange(len(human))+0.2, model, yerr=modeldev, capsize=1, ecolor='black', width=0.4, label='Model', edgecolor='k')
 	# plt.legend(loc=9, ncol=3,bbox_to_anchor=(0.5,1.2))
 	plt.ylabel('Average Plan Length')
 	plt.xlabel('Goal ID')
 	plt.tight_layout()
-	plt.savefig('test_home.pdf')
+	plt.savefig('test_factory.pdf')
 
 # keepNewDatapoints(4)
 # printAllDatapoints()
