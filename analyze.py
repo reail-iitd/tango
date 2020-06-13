@@ -479,11 +479,11 @@ def accuracyWithTime():
 	# 		d.append(a[i][j] + b[i][j])
 	# 	res.append(d)
 	## test both
-	# res = eval('[[5, 0, 0], [2, 0, 0], [16, 0, 0], [19, 0, 2], [13, 0, 1], [4, 0, 1], [7, 0, 7], [13, 0, 2], [6, 0, 5], [5, 0, 6], [2, 0, 5], [5, 0, 3], [1, 0, 1], [3, 0, 4], [1, 0, 1], [1, 0, 2], [1, 0, 3], [1, 0, 2], [2, 0, 5], [0, 0, 0], [3, 0, 5]]')
+	res = eval('[[5, 0, 0], [2, 0, 0], [16, 0, 0], [19, 0, 2], [13, 0, 1], [4, 0, 1], [7, 0, 7], [13, 0, 2], [6, 0, 5], [5, 0, 6], [2, 0, 5], [5, 0, 3], [1, 0, 1], [3, 0, 4], [1, 0, 1], [1, 0, 2], [1, 0, 3], [1, 0, 2], [2, 0, 5], [0, 0, 0], [3, 0, 5]]')
 	## train home
 	# res = eval('[[47, 0, 12], [51, 0, 5], [84, 4, 7], [112, 2, 10], [83, 1, 21], [46, 0, 17], [37, 0, 24], [34, 0, 10], [15, 0, 47], [19, 0, 20], [5, 0, 10], [3, 0, 9], [0, 0, 0], [4, 0, 10]]')
 	## train factory
-	res = eval('[[0, 0, 0], [0, 0, 0], [42, 0, 5], [31, 0, 7], [18, 0, 10], [66, 0, 14], [47, 0, 42], [24, 0, 32], [24, 0, 38], [26, 0, 37], [20, 0, 28], [22, 0, 6], [8, 0, 13], [11, 1, 18], [10, 0, 6], [6, 0, 1], [6, 0, 7], [7, 0, 1], [10, 1, 4], [2, 0, 1], [1, 0, 1], [1, 3, 3], [3, 0, 3], [0, 0, 3], [0, 7, 7], [2, 4, 0], [0, 0, 1], [0, 0, 0], [0, 2, 3], [1, 4, 6]]')
+	# res = eval('[[0, 0, 0], [0, 0, 0], [42, 0, 5], [31, 0, 7], [18, 0, 10], [66, 0, 14], [47, 0, 42], [24, 0, 32], [24, 0, 38], [26, 0, 37], [20, 0, 28], [22, 0, 6], [8, 0, 13], [11, 1, 18], [10, 0, 6], [6, 0, 1], [6, 0, 7], [7, 0, 1], [10, 1, 4], [2, 0, 1], [1, 0, 1], [1, 3, 3], [3, 0, 3], [0, 0, 3], [0, 7, 7], [2, 4, 0], [0, 0, 1], [0, 0, 0], [0, 2, 3], [1, 4, 6]]')
 	c, i, e  = [], [], []
 	for j in range(len(res)):
 		if sum(res[j]) != 0:
@@ -492,12 +492,32 @@ def accuracyWithTime():
 		else:
 			c.append(0); i.append(0); e.append(0)
 	fig = plt.figure(figsize=(3,2.5))
-	plt.xticks(range(0, len(c), 5), range(1, len(c)+1, 5))
+	plt.xticks(range(0, len(c), 4), range(1, len(c)+1, 4))
 	plt.bar(range(len(c)), c, label='Correct', edgecolor='k')
 	plt.bar(range(len(c)), i, bottom=c, label='Incorrect', edgecolor='k')
 	plt.bar(range(len(c)), e, bottom=listSum(c,i), label='Error', edgecolor='k')
-	plt.legend(loc=9, ncol=3,bbox_to_anchor=(0.5,1.2)); plt.ylabel('Policy execution metric (\%)'); plt.xlabel('Plan length')
+	# plt.legend(loc=9, ncol=3,bbox_to_anchor=(0.5,1.2))
+	plt.ylabel('Plan Execution Performance (\%)')
+	plt.xlabel('Plan length')
+	plt.tight_layout()
 	plt.savefig('test.pdf')
+
+def planLen():
+	## test home
+	human = eval('[3.375, 3.375, 3.625, 5.75, 3.7142857142857144, 7.75, 0.2857142857142857, 3.090909090909091]')
+	model = eval('[3.0, 4.285714285714286, 4.125, 8.0, 14.0, 10.0, 1.0, 1.0]')
+	## test factory
+	# human = eval('[11.363636363636363, 10.4, 11.8, 8.0, 19.333333333333332, 7.0, 5.333333333333333, 2.0]')
+	# model = eval('[13.11111111111111, 10.142857142857142, 9.25, 9.829, 26.0, 8.0, 4.0, 3.888888888888889]')
+	fig = plt.figure(figsize=(3,2.5))
+	plt.xticks(np.arange(len(human)), np.arange(1, len(human)+1, 1))
+	plt.bar(np.arange(len(human))-0.2, human, width=0.4, label='Human', edgecolor='k')
+	plt.bar(np.arange(len(human))+0.2, model, width=0.4, label='Model', edgecolor='k')
+	# plt.legend(loc=9, ncol=3,bbox_to_anchor=(0.5,1.2))
+	plt.ylabel('Average Plan Length')
+	plt.xlabel('Goal ID')
+	plt.tight_layout()
+	plt.savefig('test_home.pdf')
 
 # keepNewDatapoints(4)
 # printAllDatapoints()
@@ -520,4 +540,5 @@ def accuracyWithTime():
 # checkApprox(domain)
 # checkPlan()
 # checkAllActions()
-accuracyWithTime()
+# accuracyWithTime()
+planLen()

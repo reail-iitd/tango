@@ -179,12 +179,14 @@ def test_policy(dset, graphs, model, modelEnc, num_objects = 0, ignoreNearCons =
 	assert "action" in training
 	with open('jsons/embeddings/'+embedding+'.vectors') as handle: e = json.load(handle)
 	if verbose: print ("Policy Testing")
-	correct, incorrect, error = 0, 0, 0; buckets = []
+	correct, incorrect, error = 0, 0, 0; buckets = []; lenHuman, lenModel = [], []
 	for i in range(30): buckets.append([0, 0, 0])
+	for i in range(8): 
+		lenHuman.append([]); lenModel.append([])
 	for graph in tqdm(graphs, desc = "Policy Testing", ncols=80):
 		goal_num, world_num, tools, g, t = graph
 		actionSeq, graphSeq = g
-		plan_len = len(actionSeq)-1
+		plan_len = len(actionSeq)-1; lenHuman[goal_num-1].append(plan_len)
 		actionSeq, graphSeq, object_likelihoods, tool_preds = [], [graphSeq[0]], [], []
 		approx.initPolicy(domain, goal_num, world_num)
 		while True:
@@ -204,10 +206,13 @@ def test_policy(dset, graphs, model, modelEnc, num_objects = 0, ignoreNearCons =
 			res, g, err = approx.execAction(goal_num, action_pred, e, ignoreNearCons)
 			actionSeq.append(action_pred); graphSeq.append(g)
 			if verbose and err != '': print(goal_num, world_num); print(tool_preds); print(actionSeq, err); print('----------')
-			if res:	correct += 1; buckets[plan_len][0] += 1; break
+			if res:	correct += 1; buckets[plan_len][0] += 1; lenModel[goal_num-1].append(len(actionSeq)); break
 			elif err == '' and len(actionSeq) > (30 if domain=='home' else 40):	incorrect += 1; buckets[plan_len][1] += 1; break
 			elif err != '': error += 1; buckets[plan_len][2] += 1; break
-	den = correct + incorrect + error; print(buckets)
+	den = correct + incorrect + error; #print(buckets)
+	# for i in lenHuman: print(sum(i)/len(i), end=', ')
+	# print()
+	# for i in lenModel: print(sum(i)/len(i) if len(i) else 0, end=', ')
 	print ("Correct, Incorrect, Error: ", (correct*100/den), (incorrect*100/den), (error*100/den))
 	return (correct*100/den), (incorrect*100/den), (error*100/den)
 
