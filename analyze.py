@@ -143,6 +143,27 @@ def getAllData():
 		print('Objects    = ' + "{:.2f}".format(mean(objs)) + ' +- ' + "{:.2f}".format(pstdev(objs)))
 		print('Tools      = ' + "{:.2f}".format(mean(tools)) + ' +- ' + "{:.2f}".format(pstdev(tools)))
 
+def getAllData2():
+	times = []; actions = []; subactions = []; objs = []; tools = []
+	for goal in GOAL_LISTS[domain]:
+		for world in range(10):
+			directory = './dataset/' + domain + '/' + goal.split('.')[0] + '/world_' + domain + str(world) + '/'
+			for point in range(len(listdir(directory))):
+				file = directory + str(point) + '.datapoint'
+				f = open(file, 'rb')
+				datapoint = pickle.load(f)
+				times.append(datapoint.totalTime()/1000)
+				actions.append(len(datapoint.symbolicActions))
+				subactions.append(len(datapoint.actions))
+				objs.append(len(getInteractedObjs(datapoint)))
+				tools.append(len(datapoint.getTools()))
+	print('Time       = ' + "{:.2f}".format(mean(times)) + ' +- ' + "{:.2f}".format(pstdev(times)/1000))
+	print('Actions    = ' + "{:.2f}".format(mean(actions)) + ' +- ' + "{:.2f}".format(pstdev(actions)))
+	print('SubActions = ' + "{:.2f}".format(mean(subactions)) + ' +- ' + "{:.2f}".format(pstdev(subactions)))
+	print('Objects    = ' + "{:.2f}".format(mean(objs)) + ' +- ' + "{:.2f}".format(pstdev(objs)))
+	print('Tools      = ' + "{:.2f}".format(mean(tools)) + ' +- ' + "{:.2f}".format(pstdev(tools)))
+
+
 def combineDatasets(idx=1):
 	for goal in GOAL_LIST:
 		for world in range(10):
@@ -660,9 +681,10 @@ def datasetActionsAll():
 # checkApprox(domain)
 # checkPlan()
 # checkAllActions()
-accuracyWithTime()
+# accuracyWithTime()
 # planLen()
 # datasetPlanLen()
 # datasetObjInt()
 # datasetObjIntAll()
 # datasetActionsAll()
+getAllData2()
