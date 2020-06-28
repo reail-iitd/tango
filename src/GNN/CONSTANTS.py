@@ -5,10 +5,11 @@ from copy import deepcopy
 from sys import argv
 # Contains all the constants used by the model. These are global constants.
 
-domain = argv[1] # can be 'home' or 'factory'
+domain = argv[1] if len(argv) > 1 else 'home' # can be 'home' or 'factory'
 
 # The embedding type which is used by model. Can be conceptnet or fasttext.
-embedding = "conceptnet" if (("_C_" in argv[3] or ("_C" in argv[3] and "Action" not in argv[3])) ^ ("Final" in argv[3])) else "fasttext"
+mname = argv[3] if len(argv) > 3 else "_C_"
+embedding = "conceptnet" if (("_C_" in mname or ("_C" in mname and "Action" not in mname)) ^ ("Final" in mname)) else "fasttext"
 
 # These are the states that are possible for any object. Only the ones possessed bu the object are 1. Other are 0.
 STATES = ["Outside", "Inside", "On", "Off", "Close", "Open", "Up", "Down", "Sticky", "Non_Sticky", "Dirty", "Clean", "Grabbed", "Free", "Welded", "Not_Welded", "Drilled", "Not_Drilled", "Driven", "Not_Driven", "Fueled", "Not_Fueled", "Cut", "Not_Cut", "Painted", "Not_Painted", "Different_Height", "Same_Height"]

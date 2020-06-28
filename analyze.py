@@ -144,6 +144,27 @@ def getAllData():
 		print('Objects    = ' + "{:.2f}".format(mean(objs)) + ' +- ' + "{:.2f}".format(pstdev(objs)))
 		print('Tools      = ' + "{:.2f}".format(mean(tools)) + ' +- ' + "{:.2f}".format(pstdev(tools)))
 
+def getAllData2():
+	times = []; actions = []; subactions = []; objs = []; tools = []
+	for goal in GOAL_LISTS[domain]:
+		for world in range(10):
+			directory = './dataset/' + domain + '/' + goal.split('.')[0] + '/world_' + domain + str(world) + '/'
+			for point in range(len(listdir(directory))):
+				file = directory + str(point) + '.datapoint'
+				f = open(file, 'rb')
+				datapoint = pickle.load(f)
+				times.append(datapoint.totalTime()/1000)
+				actions.append(len(datapoint.symbolicActions))
+				subactions.append(len(datapoint.actions))
+				objs.append(len(getInteractedObjs(datapoint)))
+				tools.append(len(datapoint.getTools()))
+	print('Time       = ' + "{:.2f}".format(mean(times)) + ' +- ' + "{:.2f}".format(pstdev(times)/1000))
+	print('Actions    = ' + "{:.2f}".format(mean(actions)) + ' +- ' + "{:.2f}".format(pstdev(actions)))
+	print('SubActions = ' + "{:.2f}".format(mean(subactions)) + ' +- ' + "{:.2f}".format(pstdev(subactions)))
+	print('Objects    = ' + "{:.2f}".format(mean(objs)) + ' +- ' + "{:.2f}".format(pstdev(objs)))
+	print('Tools      = ' + "{:.2f}".format(mean(tools)) + ' +- ' + "{:.2f}".format(pstdev(tools)))
+
+
 def combineDatasets(idx=1):
 	for goal in GOAL_LIST:
 		for world in range(10):
@@ -175,6 +196,7 @@ def allActionTypes(d):
 					if len(subAction) == 1 and not [subAction[0]['name'], len(subAction[0]['args'])] in actionTypes:
 						actionTypes.append([subAction[0]['name'], len(subAction[0]['args'])])
 	print(actionTypes)
+	return actionTypes
 
 def allTools():
 	tools = []
@@ -494,31 +516,150 @@ def accuracyWithTime():
 			c.append(0); i.append(0); e.append(0)
 	fig = plt.figure(figsize=(3,2.5))
 	plt.xticks(range(0, len(c), 4), range(1, len(c)+1, 4))
-	plt.bar(range(len(c)), c, label='Correct', edgecolor='k')
-	plt.bar(range(len(c)), i, bottom=c, label='Incorrect', edgecolor='k')
-	plt.bar(range(len(c)), e, bottom=listSum(c,i), label='Error', edgecolor='k')
-	# plt.legend(loc=9, ncol=3,bbox_to_anchor=(0.5,1.2))
-	plt.ylabel('Plan Execution Performance (\%)')
+	plt.plot(range(len(c)), c, '.-', label='Home+Factory')
+	# plt.bar(range(len(c)), c, label='Successful', edgecolor='k')
+	# plt.bar(range(len(c)), i, bottom=c, label='Incorrect', edgecolor='k')
+	# plt.bar(range(len(c)), e, bottom=listSum(c,i), label='Unsuccessful', edgecolor='k')
+	# plt.legend(ncol=1)
+	plt.ylabel('Plan Execution Accuracy')
 	plt.xlabel('Plan length')
 	plt.tight_layout()
 	plt.savefig('test.pdf')
 
 def planLen():
 	## test home
-	human = eval('[3.375, 3.375, 3.625, 5.75, 3.7142857142857144, 7.75, 0.2857142857142857, 3.090909090909091]')
-	model = eval('[3.0, 4.285714285714286, 4.125, 8.0, 14.0, 10.0, 1.0, 1.0]')
+	# human = eval('[3.375, 3.375, 3.625, 5.75, 3.7142857142857144, 7.75, 0.2857142857142857, 3.090909090909091]')
+	# model = eval('[3.0, 4.285714285714286, 4.125, 8.0, 14.0, 10.0, 1.0, 1.0]')
+	# humandev = eval('[1.7677669529663689, 0.5175491695067657, 1.0606601717798212, 0.4629100498862757, 0.4879500364742666, 0.8864052604279183, 0.1879500364742666, 0.8312094145936335]')
+	# modeldev = eval('[0.0, 0.7559289460184544, 0.3535533905932738, 0.0, 0.0, 0.0, 0.0, 0.0]')
 	## test factory
-	# human = eval('[11.363636363636363, 10.4, 11.8, 8.0, 19.333333333333332, 7.0, 5.333333333333333, 2.0]')
-	# model = eval('[13.11111111111111, 10.142857142857142, 9.25, 9.829, 26.0, 8.0, 4.0, 3.888888888888889]')
+	human = eval('[11.363636363636363, 10.4, 11.8, 8.0, 19.333333333333332, 7.0, 5.333333333333333, 2.0]')
+	model = eval('[13.11111111111111, 10.142857142857142, 9.25, 9.829, 26.0, 8.0, 4.0, 3.888888888888889]')
+	humandev = eval('[3.8800187440971796, 1.429840705968481, 2.780887148615228, 1.8856180831641267, 1.0, 0.0, 2.5, 0.0]')
+	modeldev = eval('[1.536590742882148, 1.4638501094227998, 0.7071067811865476, 0, 1.9148542155126762, 0.0, 0.0, 0.33333333333333337]')
 	fig = plt.figure(figsize=(3,2.5))
 	plt.xticks(np.arange(len(human)), np.arange(1, len(human)+1, 1))
-	plt.bar(np.arange(len(human))-0.2, human, width=0.4, label='Human', edgecolor='k')
-	plt.bar(np.arange(len(human))+0.2, model, width=0.4, label='Model', edgecolor='k')
+	plt.bar(np.arange(len(human))-0.2, human, yerr=humandev, capsize=1, ecolor='black', width=0.4, label='Human', edgecolor='k')
+	plt.bar(np.arange(len(human))+0.2, model, yerr=modeldev, capsize=1, ecolor='black', width=0.4, label='Model', edgecolor='k')
 	# plt.legend(loc=9, ncol=3,bbox_to_anchor=(0.5,1.2))
 	plt.ylabel('Average Plan Length')
 	plt.xlabel('Goal ID')
 	plt.tight_layout()
-	plt.savefig('test_home.pdf')
+	plt.savefig('test_factory.pdf')
+
+def datasetObjInt():
+	res = []; topX = 10
+	allobjs = [o['name'] for o in json.load(open("jsons/objects.json", "r"))["objects"]]
+	for domain in ['home', 'factory']:
+		timesInteracted = {};
+		for i in allobjs: timesInteracted[i] = 0
+		for goal in GOAL_LISTS[domain]:
+			for world in range(10):
+				directory = './dataset/'+domain+'/' + goal.split('.')[0] + '/world_'+ domain + str(world)
+				points = listdir(directory)
+				for point in points:
+					objs = getInteractedObjects(directory + '/' + str(point).split('.')[0])
+					for o in objs: 
+						if o in allobjs: timesInteracted[o] += 1
+		sort_orders = sorted(timesInteracted.items(), key=lambda x: x[1], reverse=True)
+		res.append(([i[0].replace('_',' ') for i in sort_orders[:topX]],[i[1] for i in sort_orders[:topX]]))
+	fig = plt.figure(figsize=(3,2.5))
+	print(res[1])
+	plt.xticks(np.arange(0, len(res[1][0])), res[1][0], rotation=90)
+	plt.bar(np.arange(len(res[1][1])), res[1][1], label='Factory', edgecolor='k')
+	plt.ylabel('Number of interactions')
+	plt.legend()
+	plt.tight_layout()
+	plt.savefig('num_int.pdf')
+
+def datasetObjIntAll():
+	res = []; topX = 10
+	allobjs = [o['name'] for o in json.load(open("jsons/objects.json", "r"))["objects"]]
+	for domain in ['home', 'factory']:
+		timesInteracted = {};
+		for i in allobjs: timesInteracted[i] = 0
+		timesInteracted['wall'] = 0
+		for goal in GOAL_LISTS[domain]:
+			for world in range(10):
+				directory = './dataset/'+domain+'/' + goal.split('.')[0] + '/world_'+ domain + str(world)
+				points = listdir(directory)
+				for point in points:
+					objs = getInteractedObjects(directory + '/' + str(point).split('.')[0])
+					for o in objs: 
+						if o in allobjs: timesInteracted[o.replace('walls', 'wall').replace('_warehouse','')] += 1
+		res.append(timesInteracted)
+	allTimes = {}
+	for o in allobjs+['wall']: 
+		allTimes[o] = (res[0][o] if o in res[0] else 0) + (res[1][o] if o in res[1] else 0)
+	sort_orders = sorted(allTimes.items(), key=lambda x: x[1], reverse=True)
+	finalobjs = [i[0] for i in sort_orders[:topX]]
+	a = [res[0][o] if o in res[0] else 0 for o in finalobjs]; b = [res[1][o] if o in res[1] else 0 for o in finalobjs]
+	print(a); print(b)
+	fig = plt.figure(figsize=(3,2.5))
+	plt.xticks(np.arange(0, len(finalobjs)), [i.replace('_warehouse','') for i in finalobjs], rotation=90)
+	plt.bar(np.arange(len(a)), a, label='Home', color='C3', edgecolor='k')
+	plt.bar(np.arange(len(b)), b, label='Factory', color='C4', bottom=a, edgecolor='k')
+	plt.ylabel('Number of interactions')
+	plt.legend()
+	plt.tight_layout()
+	plt.savefig('num_int.pdf')
+
+def datasetPlanLen():
+	res = []
+	for domain in ['home', 'factory']:
+		planLen = []; maxplanlen = 14 if domain == 'home' else 32; 
+		for i in range(maxplanlen): planLen.append(0)
+		for goal in GOAL_LISTS[domain]:
+			for world in range(10):
+				directory = './dataset/'+domain+'/' + goal.split('.')[0] + '/world_'+ domain + str(world)
+				points = listdir(directory)
+				for point in points:
+					file = directory + '/' + str(point)
+					datapoint = pickle.load(open(file, 'rb'))
+					planLen[len(datapoint.symbolicActions)-1] += 1
+		res.append(planLen)
+	fig = plt.figure(figsize=(3,2.5))
+	plt.xticks(np.arange(0, len(res[1]), 4), np.arange(1, len(res[1])+1, 4))
+	plt.plot(np.arange(len(res[0])), res[0], '.-', color='C3', label='Home')
+	plt.plot(np.arange(len(res[1])), res[1], '.-', color='C4', label='Factory')
+	plt.ylabel('Number of plans')
+	plt.xlabel('Plan Length')
+	plt.legend()
+	plt.tight_layout()
+	plt.savefig('planlen.pdf')
+
+def datasetActionsAll():
+	res = []; topX = 10; x = allActionTypes('home'); y = allActionTypes('factory')
+	allActions = list(set().union([i[0] for i in x],[i[0] for i in y]))
+	for domain in ['home', 'factory']:
+		timesInteracted = {};
+		for i in allActions: timesInteracted[i] = 0
+		for goal in GOAL_LISTS[domain]:
+			for world in range(10):
+				directory = './dataset/'+domain+'/' + goal.split('.')[0] + '/world_'+ domain + str(world)
+				points = listdir(directory)
+				for point in points:
+					file = directory + '/' + str(point)
+					datapoint = pickle.load(open(file, 'rb'))
+					for subAction in datapoint.symbolicActions:
+						if len(subAction) == 1 and subAction[0]['name'] in allActions:
+							timesInteracted[subAction[0]['name']] += 1
+		res.append(timesInteracted)
+	allTimes = {}
+	for o in allActions: 
+		allTimes[o] = (res[0][o] if o in res[0] else 0) + (res[1][o] if o in res[1] else 0)
+	sort_orders = sorted(allTimes.items(), key=lambda x: x[1], reverse=True)
+	finalobjs = [i[0] for i in sort_orders[:topX]]
+	a = [res[0][o] if o in res[0] else 0 for o in finalobjs]; b = [res[1][o] if o in res[1] else 0 for o in finalobjs]
+	print(a); print(b)
+	fig = plt.figure(figsize=(3,2.5))
+	plt.xticks(np.arange(0, len(finalobjs)), [i.replace('pickNplaceAonB', 'pick and place') for i in finalobjs], rotation=90)
+	plt.bar(np.arange(len(a)), a, label='Home', color='C3', edgecolor='k')
+	plt.bar(np.arange(len(b)), b, label='Factory', color='C4', bottom=a, edgecolor='k')
+	plt.ylabel('Frequency of action')
+	plt.legend()
+	plt.tight_layout()
+	plt.savefig('num_actions.pdf')
 
 def drawGraph(filename):
 	print(filename)
@@ -567,4 +708,9 @@ def drawGraph(filename):
 # checkAllActions()
 # accuracyWithTime()
 # planLen()
+# datasetPlanLen()
+# datasetObjInt()
+# datasetObjIntAll()
+# datasetActionsAll()
+# getAllData2()
 drawGraph('dataset/factory/goal4-generator-on/world_factory9/3')
