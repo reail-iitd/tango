@@ -670,13 +670,15 @@ def drawGraph(filename):
 	datapoint = pickle.load(f)
 	for i in range(len(datapoint.metrics)):
 		print(datapoint.actions[i])
+		if datapoint.actions[i] != 'Start': continue
 		graph_data = datapoint.getGraph(index = i, embeddings = e)["graph_"+str(i)]
 		G = nx.DiGraph()
 		weights = {'Close': 'green', 'On': 'black', 'Inside': 'red', 'Stuck': 'blue'}
 		edge_colors = []
 		plt.figure(figsize=(9,7))
+		husky_id = all_objects.index('husky')
 		for edge in graph_data['edges']:
-			if edge['relation'] != 'Close':
+			if edge['relation'] != 'Close' or (edge['relation'] == 'Close' and husky_id == edge['from']):
 				G.add_edges_from([(edge['from'], edge['to'])])
 				edge_colors.append(weights[edge['relation']])
 		pos=nx.planar_layout(G)
@@ -713,4 +715,4 @@ def drawGraph(filename):
 # datasetObjIntAll()
 # datasetActionsAll()
 # getAllData2()
-drawGraph('dataset/factory/goal4-generator-on/world_factory9/3')
+drawGraph('dataset/factory/goal4-generator-on/world_factory9/1')
