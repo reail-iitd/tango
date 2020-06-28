@@ -667,7 +667,7 @@ def drawGraph(filename):
 	plt.rcParams["text.usetex"] = False
 	f = open(filename + '.datapoint', 'rb')
 	with open('jsons/embeddings/conceptnet.vectors') as handle: e = json.load(handle)
-	datapoint = pickle.load(f)
+	datapoint = pickle.load(f); pos = None
 	for i in range(len(datapoint.metrics)):
 		print(datapoint.actions[i])
 		if datapoint.actions[i] != 'Start': continue
@@ -675,15 +675,18 @@ def drawGraph(filename):
 		G = nx.DiGraph()
 		weights = {'Close': 'green', 'On': 'black', 'Inside': 'red', 'Stuck': 'blue'}
 		edge_colors = []
-		plt.figure(figsize=(9,7))
+		plt.figure(figsize=(9,9)); containers = []
+		for i in ['dumpster', 'cupboard', 'fridge', 'box', 'toolbox', 'bin']:
+			if i in all_objects: containers.append(all_objects.index(i))
 		husky_id = all_objects.index('husky')
-		for edge in graph_data['edges']:
+		for edge in graph_data['edges'][::-1]:
 			if edge['relation'] != 'Close' or (edge['relation'] == 'Close' and husky_id == edge['from']):
-				G.add_edges_from([(edge['from'], edge['to'])])
-				edge_colors.append(weights[edge['relation']])
-		pos=nx.circular_layout(G)
-		nx.draw_networkx_labels(G, pos)
-		nx.draw(G, pos, node_size=600, alpha=0.7, linewidths=2, width=2, edge_color=edge_colors, edge_cmap=plt.cm.Reds)
+				if (edge['relation'] == 'Inside' and edge['to'] not in containers): continue
+				G.add_edge(edge['from'], edge['to'], color=weights[edge['relation']])
+		edge_colors = [G[u][v]['color'] for u,v in G.edges()]
+		pos= nx.circular_layout(nx.complete_graph(len(all_objects)), scale=2)
+		node_c = ['g' if i==husky_id else 'k' if all_objects[i] in TOOLS else 'r' if all_objects[i] in all_objects_with_states else 'b'  for i in G.nodes()]
+		nx.draw(G, pos, node_size=400, with_labels=True, font_color='white', alpha=0.7, linewidths=2, width=2, edge_color=edge_colors, node_color=node_c)
 		plt.show()
 
 
