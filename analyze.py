@@ -668,16 +668,17 @@ def drawGraph(filename):
 	f = open(filename + '.datapoint', 'rb')
 	with open('jsons/embeddings/conceptnet.vectors') as handle: e = json.load(handle)
 	datapoint = pickle.load(f); pos = None
+	for i in datapoint.symbolicActions: print(i)
 	for i in range(len(datapoint.metrics)):
 		print(datapoint.actions[i])
-		if datapoint.actions[i] != 'Start': continue
+		if datapoint.actions[i] != 'Start' and i != len(datapoint.metrics)-1: continue
 		graph_data = datapoint.getGraph(index = i, embeddings = e)["graph_"+str(i)]
 		G = nx.DiGraph()
 		weights = {'Close': 'green', 'On': 'black', 'Inside': 'red', 'Stuck': 'blue'}
 		edge_colors = []
 		plt.figure(figsize=(9,9)); containers = []
-		for i in ['dumpster', 'cupboard', 'fridge', 'box', 'toolbox', 'bin']:
-			if i in all_objects: containers.append(all_objects.index(i))
+		for j in ['dumpster', 'cupboard', 'fridge', 'box', 'toolbox', 'bin']:
+			if j in all_objects: containers.append(all_objects.index(j))
 		husky_id = all_objects.index('husky')
 		for edge in graph_data['edges'][::-1]:
 			if edge['relation'] != 'Close' or (edge['relation'] == 'Close' and husky_id == edge['from']):
@@ -687,7 +688,8 @@ def drawGraph(filename):
 		pos= nx.circular_layout(nx.complete_graph(len(all_objects)), scale=2)
 		node_c = ['g' if i==husky_id else 'k' if all_objects[i] in TOOLS else 'r' if all_objects[i] in all_objects_with_states else 'b'  for i in G.nodes()]
 		nx.draw(G, pos, node_size=400, with_labels=True, font_color='white', alpha=0.7, linewidths=2, width=2, edge_color=edge_colors, node_color=node_c)
-		plt.show()
+		plt.savefig('appendix/'+str(i)+'.pdf')
+		print(all_objects.index('paper'), all_objects.index('wall_warehouse'))
 
 
 # keepNewDatapoints(4)
@@ -718,4 +720,4 @@ def drawGraph(filename):
 # datasetObjIntAll()
 # datasetActionsAll()
 # getAllData2()
-drawGraph('dataset/factory/goal4-generator-on/world_factory9/1')
+drawGraph('dataset/factory/goal2-paper-wall/world_factory0/0')
