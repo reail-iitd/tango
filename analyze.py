@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 from statistics import pstdev
 import seaborn as sns
 import itertools
+from src.GNN.dataset_utils import *
 # from src.generalization import *
 
 import warnings
@@ -519,6 +520,30 @@ def planLen():
 	plt.tight_layout()
 	plt.savefig('test_home.pdf')
 
+def drawGraph(filename):
+	print(filename)
+	import networkx as nx
+	plt.rcParams["text.usetex"] = False
+	f = open(filename + '.datapoint', 'rb')
+	with open('jsons/embeddings/conceptnet.vectors') as handle: e = json.load(handle)
+	datapoint = pickle.load(f)
+	for i in range(len(datapoint.metrics)):
+		print(datapoint.actions[i])
+		graph_data = datapoint.getGraph(index = i, embeddings = e)["graph_"+str(i)]
+		G = nx.DiGraph()
+		weights = {'Close': 'green', 'On': 'black', 'Inside': 'red', 'Stuck': 'blue'}
+		edge_colors = []
+		plt.figure(figsize=(9,7))
+		for edge in graph_data['edges']:
+			if edge['relation'] != 'Close':
+				G.add_edges_from([(edge['from'], edge['to'])])
+				edge_colors.append(weights[edge['relation']])
+		pos=nx.planar_layout(G)
+		nx.draw_networkx_labels(G, pos)
+		nx.draw(G, pos, node_size=600, alpha=0.7, linewidths=2, width=2, edge_color=edge_colors, edge_cmap=plt.cm.Reds)
+		plt.show()
+
+
 # keepNewDatapoints(4)
 # printAllDatapoints()
 # printNumDatapoints(w='factory')
@@ -541,4 +566,5 @@ def planLen():
 # checkPlan()
 # checkAllActions()
 # accuracyWithTime()
-planLen()
+# planLen()
+drawGraph('dataset/factory/goal4-generator-on/world_factory9/3')
