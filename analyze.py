@@ -681,7 +681,7 @@ def drawGraph(filename):
 			if edge['relation'] != 'Close' or (edge['relation'] == 'Close' and husky_id == edge['from']):
 				G.add_edges_from([(edge['from'], edge['to'])])
 				edge_colors.append(weights[edge['relation']])
-		pos=nx.planar_layout(G)
+		pos=nx.circular_layout(G)
 		nx.draw_networkx_labels(G, pos)
 		nx.draw(G, pos, node_size=600, alpha=0.7, linewidths=2, width=2, edge_color=edge_colors, edge_cmap=plt.cm.Reds)
 		plt.show()
