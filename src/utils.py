@@ -394,7 +394,8 @@ def saveImage(lastTime, imageCount, display, ax, o1, cam, dist, yaw, pitch, camT
             rgb = img_arr2[2]#[:800,200:1400,:]
         if not "light" in on:
             rgb = np.divide(rgb, 2)
-        #plt.imsave("logs/"+str(imageCount)+".jpg", arr=np.reshape(rgb, (800, 1200, 4)) * (1. / 255.))
+        if not os.path.exists("logs"): os.mkdir("logs")
+        # plt.imsave("logs/"+str(imageCount)+".jpg", arr=np.reshape(rgb, (800, 1200, 4)) * (1. / 255.))
         plt.imsave("logs/"+str(imageCount)+".jpg", arr=np.reshape(rgb, (pixelHeight, pixelWidth, 4)) * (1. / 255.))
     return current, imageCount+1
 

@@ -134,7 +134,8 @@ def start(input_args):
 
   # Check Logging
   if args.logging or args.display:
-      deleteAll("logs")
+      if os.path.exists("logs"):
+        deleteAll("logs")
 
   # Default perspective
   perspective = "tp"
