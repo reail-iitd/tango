@@ -45,7 +45,7 @@ We used a system with 32gb RAM CPU and 8GB graphics RAM to run our simulator. Th
 | **jsons/\*.json**					| These are configuration files for the simulator and the webapp. These define the different actions possible in the simulator, the different objects present in the simulator, states possible, readable form of actions to show on the webapp etc.
 | **models/\***                     | This folder contains the stl and urdf files for all models which are loaded by the physics simulator used i.e Pybullet.
 | **templates/\***				    | These are the templates that are used by the webapp to load the different tutorial webpages along with the actual data collection platform.
-| **dataste/\***                    | These are files corresponding to training, test and generalization datasets.
+| **dataset/\***                    | These are files corresponding to training, test and generalization datasets.
 
 ## Setup Web Interface for Data Collection
 To execute the website that is needed for data collection, use the following command:
