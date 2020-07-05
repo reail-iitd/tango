@@ -97,7 +97,7 @@ TRAINING_TYPE can be as follows:
 MODEL_NAME specifies the specific PyTorch model that you want to train. Look at `src/GNN/models.py` (ToolNet) or `src/GNN/action_models.py` (Tango) to specify the name. They are specified here for reference.
 
 
-| MODEL_NAME                     | Name in papern (Tango)                     
+| MODEL_NAME                     | Name in paper                    
 | -------------------------------| --------------------------- 
 | **GGCN_Auto_Action**               | GGCN+Auto (Baseline)
 | **GGCN_Metric_Attn_Aseq_L_Auto_Cons_C_Action**                    | Tango
