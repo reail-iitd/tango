@@ -129,22 +129,22 @@ To train the best model in **factory** domain:
 python3 train.py factory action GGCN_Metric_Attn_Aseq_L_Auto_Cons_C_Action train
 ```
 
-To train the ablated **- GGCN** model in **home** domain:
+To train the ablated **"- GGCN"** model in **home** domain:
 ```
 python3 train.py home action Final_GGCN_Action train
 ```
 
-To find the action prediction accuracy of trained **- GGCN** model:
+To find the action prediction accuracy of trained **"- GGCN"** model:
 ```
 python3 train.py home action Final_GGCN_Action accuracy
 ```
 
-To find the plan execution accuracy on Test Set of trained **- GGCN** model:
+To find the plan execution accuracy on Test Set of trained **"- GGCN"** model:
 ```
 python3 train.py home action Final_GGCN_Action policy
 ```
 
-To find the plan execution accuracy on GenTest Set of trained **- GGCN** model:
+To find the plan execution accuracy on GenTest Set of trained **"- GGCN"** model:
 ```
 python3 train.py home action Final_GGCN_Action generalization
 ```
