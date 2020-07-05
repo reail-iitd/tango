@@ -149,3 +149,10 @@ To find the plan execution accuracy on GenTest Set of trained **- GGCN** model:
 python3 train.py home action Final_GGCN_Action generalization
 ```
 
+## License
+
+BSD-2-Clause. 
+Copyright (c) 2020, Rajas Basal, Shreshth Tuli, Rohan Paul, Mausam
+All rights reserved.
+
+See License file for more details.
