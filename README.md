@@ -1,4 +1,4 @@
-# Using Commonsense Generalization for Predicting Tool Use for Robot Plan Synthesis
+# Human-Guided Acquisition of Commonsense Knowledge for Robot Task Execution: An Imitation Learning Approach
 
 This implementation contains all the models mentioned in the paper for next-tool prediction along with next-action prediction.
 
@@ -27,7 +27,7 @@ $ source commonsense_tool/bin/activate
 (commonsense_tool) $ pip3 install -r requirements.txt
 ```
 
-We used a system with 32gb RAM CPU and 8GB graphics RAM to run our simulator. The models were trained using the same system. The simulator and training pipeline has been tested on MacOS and Ubuntu 16.04.
+We used a system with 32gb RAM CPU and 8GB graphics RAM to run our simulator. The models were trained using the same system. The simulator and training pipeline has been tested on Windows, MacOS and Ubuntu 16.04.
 
 ## Directory Structure
 | Folder/File                       | Utility 		              
@@ -45,6 +45,7 @@ We used a system with 32gb RAM CPU and 8GB graphics RAM to run our simulator. Th
 | **jsons/\*.json**					| These are configuration files for the simulator and the webapp. These define the different actions possible in the simulator, the different objects present in the simulator, states possible, readable form of actions to show on the webapp etc.
 | **models/\***                     | This folder contains the stl and urdf files for all models which are loaded by the physics simulator used i.e Pybullet.
 | **templates/\***				    | These are the templates that are used by the webapp to load the different tutorial webpages along with the actual data collection platform.
+| **dataste/\***                    | These are files corresponding to training, test and generalization datasets.
 
 ## Setup Web Interface for Data Collection
 To execute the website that is needed for data collection, use the following command:
@@ -59,8 +60,6 @@ $ python3 app.py --help
 ```
 
 ## Dataset
-
-Download the dataset [here](https://drive.google.com/open?id=18dmWjDjz3DPYZTFv92vAnMssK2YFZh3j).
 
 Here is how the dataset structure should look like:
 
@@ -77,7 +76,8 @@ The dataset is organized as follows. We have 8 different goals and 10 different 
 
 ## Training
 
-All the trained models can be found [here](https://drive.google.com/open?id=1Kw65B55DehnteO1hwLUk0k1rWw2eCTl0).
+All the trained models of ToolNet can be found [here](https://drive.google.com/open?id=1Kw65B55DehnteO1hwLUk0k1rWw2eCTl0).
+All the trained models of Tango can be found [here](https://drive.google.com/file/d/1nhhvoJqhktsoDnvgI0vO0kQizs-yV1tO/view?usp=sharing).
 
 All the models mentioned in the paper can be trained through the command
 
@@ -93,20 +93,20 @@ TRAINING_TYPE can be as follows:
 | **gcn**                           | Tool prediction model predicting most probable tool using inital state  
 | **gcn_seq**                       | Tool sequence prediction model, which predicts the sequence of tools that will be used in the plan      
 | **action**                        | Action prediction model which does not use the trained tool prediction model
-| **action_tool**                   | Action prediction model which uses the trained tool prediction model
 
-MODEL_NAME specifies the specific PyTorch model that you want to train. Look at `src/GNN/models.py` or `src/GNN/models.py` to specify the name. They are specified here for reference.
+MODEL_NAME specifies the specific PyTorch model that you want to train. Look at `src/GNN/models.py` (ToolNet) or `src/GNN/action_models.py` (Tango) to specify the name. They are specified here for reference.
 
-| MODEL_NAME                     | Name in paper                     
+
+| MODEL_NAME                     | Name in papern (Tango)                     
 | -------------------------------| --------------------------- 
-| **GGCN**                           | GGCN
-| **GGCN_Metric**                    | GGCN+Metric
-| **GGCN_Metric_Attn**               | GGCN+Metric+Attn
-| **GGCN_Metric_Attn_L**             | GGCN+Metric+Attn+L    
-| **GGCN_Metric_Attn_L_NT**          | GGCN+Metric+Attn+L+NT
-| **GGCN_Metric_Attn_L_NT_C**        | GGCN+Metric+Attn+L+NT+C
-| **GGCN_Metric_Attn_L_NT_C_W**      | GGCN+Metric+Attn+L+NT+C+W
-| **Final_\***                       | These are ablated model with the best GGCN_Metric_Attn_L_NT_C_W model - the * component.
+| **GGCN_Auto_Action**               | GGCN+Auto (Baseline)
+| **GGCN_Metric_Attn_Aseq_L_Auto_Cons_C_Action**                    | Tango
+| **Final_GGCN_Action**              | - GGCN
+| **Final_Attn_Action**              | - Goal-Conditioned Attn
+| **Final_Cons_Action**              | - Constraints
+| **Final_Auto_Action**              | - Autoregression
+| **Final_Aseq_Action**              | - Temporal Action History
+| **Final_L_Action**                 | - Factored Likelihood
 
 EXEC_TYPE can be as follows:
 
@@ -114,27 +114,38 @@ EXEC_TYPE can be as follows:
 | --------------------------------- | --------------------------- 
 | **train**                         | Train the model 
 | **accuracy**                      | Determine the prediction accuracy for tool/action prediction model on the given dataset     
-| **ablation**                      | Determine tool prediction accuracies for ablated models of the form Final_*
 | **generalization**                | Calculate accuracies of all models on generalization test set
 | **policy**                        | Run the action model for the given dataset and determine percentage task completion using the model as a policy in approximate simulated environment.
 
-To train the best tool prediction model, use the following command
-```bash
-python3 train.py home gcn GGCN_Metric_Attn_L_NT_C train
+## Sample Commands
+
+To train the best model in **home** domain:
+```
+python3 train.py home action GGCN_Metric_Attn_Aseq_L_Auto_Cons_C_Action train
 ```
 
-To test the tool prediction accuracies of all ablated models, use the following command
-```bash
-python3 train.py home gcn GGCN ablation
+To train the best model in **factory** domain:
+```
+python3 train.py factory action GGCN_Metric_Attn_Aseq_L_Auto_Cons_C_Action train
 ```
 
-To test the generalization accuracies of all models, use the following command
-```bash
-python3 train.py home gcn GGCN generalization
+To train the ablated **- GGCN** model in **home** domain:
+```
+python3 train.py home action Final_GGCN_Action train
 ```
 
-To train the best tool sequence prediction model, use the following command
-```bash
-python3 train.py home gcn_seq GGCN_Metric_Attn_L_NT_C train
+To find the action prediction accuracy of trained **- GGCN** model:
+```
+python3 train.py home action Final_GGCN_Action accuracy
+```
+
+To find the plan execution accuracy on Test Set of trained **- GGCN** model:
+```
+python3 train.py home action Final_GGCN_Action policy
+```
+
+To find the plan execution accuracy on GenTest Set of trained **- GGCN** model:
+```
+python3 train.py home action Final_GGCN_Action generalization
 ```
 
