@@ -22,6 +22,10 @@ The results for *TANGO*, as compared to the baseline along with the individual c
 
 <img src="https://github.com/reail-iitd/Robot-task-planning/blob/master/figures/tango_table.png" width="900" align="middle">
 
+The figure below shows that the plans outputted by *TANGO* are quite close the human demonstrations for the datapoints present in the test set.
+
+<img src="https://github.com/reail-iitd/Robot-task-planning/blob/master/figures/plan_lengths.png" width="900" align="middle">
+
 ## License
 
 BSD-2-Clause. 
