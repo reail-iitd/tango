@@ -47,7 +47,7 @@ def printDatapoint(filename):
 	print(filename)
 	f = open(filename + '.datapoint', 'rb')
 	datapoint = pickle.load(f)
-	print (datapoint.toString(subSymbolic=False))
+	print (datapoint.toString(subSymbolic=True))
 	print(datapoint.getTools(returnNoTool=True), datapoint.totalTime()/10000)
 	f.close()
 
@@ -164,7 +164,6 @@ def getAllData2():
 	print('SubActions = ' + "{:.2f}".format(mean(subactions)) + ' +- ' + "{:.2f}".format(pstdev(subactions)))
 	print('Objects    = ' + "{:.2f}".format(mean(objs)) + ' +- ' + "{:.2f}".format(pstdev(objs)))
 	print('Tools      = ' + "{:.2f}".format(mean(tools)) + ' +- ' + "{:.2f}".format(pstdev(tools)))
-
 
 def combineDatasets(idx=1):
 	for goal in GOAL_LIST:
