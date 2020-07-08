@@ -169,7 +169,6 @@ def getAllPositionsAndOrientations(id_lookup):
         metrics[obj] = p.getBasePositionAndOrientation(id_lookup[obj])
     return metrics
 
-
 def restoreOnKeyboard(world_states, x1, y1, o1):
     """
     Restore to last saved state when 'r' is pressed

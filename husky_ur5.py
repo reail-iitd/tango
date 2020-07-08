@@ -170,7 +170,6 @@ def changeView(direction):
   perspective = "tp" if perspective == "fp" and direction == None else "fp" if direction == None else perspective
   lastTime, imageCount = saveImage(0, imageCount, perspective, ax, o1, cam, dist, yaw, pitch, camTargetPos, wall_id, on)
 
-
 def showObject(obj):
   # Show a close up view of an object in the world
   global world_states, x1, y1, o1, imageCount, on
@@ -590,10 +589,10 @@ def destroy():
   # Destroys the pybullet connection
   p.disconnect()
                       
-def executeAction(inp):
+def executeAction(inp, saveImg=False):
   # Execute a custom input from user specified in jsons/input.json
   # Specified by --input at run time
-    if execute(convertActionsFromFile(inp), args.goal, saveImg=False):
+    if execute(convertActionsFromFile(inp), args.goal, saveImg=saveImg):
     	print("Goal Success!!!")
     else:
     	print("Goal Fail!!!")
@@ -603,7 +602,7 @@ if __name__ == '__main__':
 	args = initParser()
 	inp = args.input
 	start(args)
-	executeAction(inp)
+	executeAction(inp, True)
 
 	datapoint = getDatapoint()
 	print(datapoint.toString(metrics=False))

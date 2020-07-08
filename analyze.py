@@ -13,6 +13,7 @@ from statistics import pstdev
 import seaborn as sns
 import itertools
 from src.GNN.dataset_utils import *
+from sys import argv
 # from src.generalization import *
 
 import warnings
@@ -668,6 +669,7 @@ def drawGraph(filename):
 	f = open(filename + '.datapoint', 'rb')
 	with open('jsons/embeddings/conceptnet.vectors') as handle: e = json.load(handle)
 	datapoint = pickle.load(f); pos = None
+	domain = datapoint.world.split('_')[1][:-1]
 	for i in datapoint.symbolicActions: print(i)
 	for i in range(len(datapoint.metrics)):
 		print(datapoint.actions[i])
@@ -688,9 +690,27 @@ def drawGraph(filename):
 		pos= nx.circular_layout(nx.complete_graph(len(all_objects)), scale=2)
 		node_c = ['g' if i==husky_id else 'k' if all_objects[i] in TOOLS else 'r' if all_objects[i] in all_objects_with_states else 'b'  for i in G.nodes()]
 		nx.draw(G, pos, node_size=400, with_labels=True, font_color='white', alpha=0.7, linewidths=2, width=2, edge_color=edge_colors, node_color=node_c)
-		plt.savefig('appendix/'+str(i)+'.pdf')
-		print(all_objects.index('paper'), all_objects.index('wall_warehouse'))
+		plt.savefig(str(i)+'.png')
 
+def runDatapoint(filename):
+	import husky_ur5
+	datapoint = pickle.load(open(filename + '.datapoint', 'rb'))
+	domain = datapoint.world.split('_')[1][:-1]
+	class args():
+		world = "jsons/"+domain+"_worlds/"+datapoint.world+".json"
+		logging = False
+		display = "tp"
+		speed = 1
+		goal = "jsons/"+domain+"_goals/"+datapoint.goal+".json"
+	husky_ur5.start(args)
+	plan = []
+	for action in datapoint.symbolicActions:
+		if str(action[0]) == 'E' or str(action[0]) == 'U':
+			plan = []; break;
+		else:
+			plan.append(action[0])
+	if plan == []: raise Exception(color.FAIL+"This plan has error and can not be simulated"+color.ENDC)
+	husky_ur5.execute({"actions": plan}, args.goal, saveImg=False)
 
 # keepNewDatapoints(4)
 # printAllDatapoints()
@@ -720,4 +740,7 @@ def drawGraph(filename):
 # datasetObjIntAll()
 # datasetActionsAll()
 # getAllData2()
-drawGraph('dataset/factory/goal2-paper-wall/world_factory0/0')
+# drawGraph('dataset/factory/goal2-paper-wall/world_factory0/0')
+# runDatapoint('dataset/home/goal1-milk-fridge/world_home0/0')
+
+eval(argv[1])

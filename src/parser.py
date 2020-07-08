@@ -12,7 +12,7 @@ def initParser():
     parser.add_argument('--input',
                             type=str,
                             required=False,
-                            default="jsons/input.json",
+                            default="jsons/input_home.json",
                             help='The json file of input high level actions')
     parser.add_argument('--logging',
                             type=bool,

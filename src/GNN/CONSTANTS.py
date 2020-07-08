@@ -5,7 +5,7 @@ from copy import deepcopy
 from sys import argv
 # Contains all the constants used by the model. These are global constants.
 
-domain = argv[1] if len(argv) > 1 else 'home' # can be 'home' or 'factory'
+domain = 'home' if 'home' in argv[1] else 'factory' # can be 'home' or 'factory'
 
 # The embedding type which is used by model. Can be conceptnet or fasttext.
 mname = argv[3] if len(argv) > 3 else "_C_"
