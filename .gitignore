@@ -6,7 +6,6 @@ venv/
 logs/*
 trained_models/*
 jsons/embeddings/*.txt
-figures/
 
 ## Mac Files
 *.DS_Store
