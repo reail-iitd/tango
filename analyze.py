@@ -14,13 +14,14 @@ import seaborn as sns
 import itertools
 from src.GNN.dataset_utils import *
 from sys import argv
+from distutils.spawn import find_executable
 # from src.generalization import *
 
 import warnings
 warnings.simplefilter("ignore")
 
 plt.style.use(['science'])
-plt.rcParams["text.usetex"] = False
+if not find_executable('latex'): plt.rcParams["text.usetex"] = False
 
 GOAL_LISTS = \
 {'home': ["goal1-milk-fridge.json", "goal2-fruits-cupboard.json", "goal3-clean-dirt.json", "goal4-stick-paper.json", "goal5-cubes-box.json", "goal6-bottles-dumpster.json", "goal7-weight-paper.json", "goal8-light-off.json"],
