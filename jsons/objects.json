@@ -414,7 +414,7 @@
 			"constraints": ["horizontal", "noise"],
 			"tolerance": 1.2,
 			"constraint_link": -1,
-			"constraint_cpos": [[0, 0, -0.5]],
+			"constraint_cpos": [[0, 0, 0.7]],
 			"constraint_pos": [[0, 0, 0.7], [0, 0.05, 0.7], [0, -0.05, 0.7], [0.05, 0, 0.7], [0.05, 0.05, 0.7], [0.05, -0.05, 0.7], [-0.05, 0, 0.7], [-0.05, 0.05, 0.7], [-0.05, -0.05, 0.7]],
 			"ur5_dist": [0,0,0],
 			"properties": ["Movable", "Surface"],
