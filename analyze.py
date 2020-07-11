@@ -19,7 +19,7 @@ from sys import argv
 import warnings
 warnings.simplefilter("ignore")
 
-# plt.style.use(['science'])
+plt.style.use(['science'])
 # plt.rcParams["text.usetex"] = True
 
 GOAL_LISTS = \
