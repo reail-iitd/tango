@@ -20,7 +20,7 @@ import warnings
 warnings.simplefilter("ignore")
 
 plt.style.use(['science'])
-# plt.rcParams["text.usetex"] = True
+plt.rcParams["text.usetex"] = True
 
 GOAL_LISTS = \
 {'home': ["goal1-milk-fridge.json", "goal2-fruits-cupboard.json", "goal3-clean-dirt.json", "goal4-stick-paper.json", "goal5-cubes-box.json", "goal6-bottles-dumpster.json", "goal7-weight-paper.json", "goal8-light-off.json"],
@@ -279,8 +279,8 @@ def getInterestTools(domain, numTools):
 		interestTools.remove('tray2'); interestTools.remove('sponge')
 	return interestTools
 
-def mapToolsGoals():
-	numTools = 10; domain = 'home'
+def mapToolsGoals(domain):
+	numTools = 10
 	interestTools = getInterestTools(domain, numTools)
 	usemap = np.zeros((len(GOAL_LISTS[domain]), numTools))
 	for goal in GOAL_LISTS[domain]:
@@ -305,8 +305,8 @@ def mapToolsGoals():
 	plt.tight_layout()
 	f.savefig('figures/'+domain+'_goal_tools.pdf')
 
-def mapToolsWorlds():
-	numTools = 10; domain = 'home'
+def mapToolsWorlds(domain):
+	numTools = 10
 	interestTools = getInterestTools(domain, numTools)
 	usemap = np.zeros((10, numTools))
 	for goal in GOAL_LISTS[domain]:
