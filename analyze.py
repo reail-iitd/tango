@@ -19,8 +19,8 @@ from sys import argv
 import warnings
 warnings.simplefilter("ignore")
 
-plt.style.use(['science'])
-plt.rcParams["text.usetex"] = True
+# plt.style.use(['science'])
+# plt.rcParams["text.usetex"] = True
 
 GOAL_LISTS = \
 {'home': ["goal1-milk-fridge.json", "goal2-fruits-cupboard.json", "goal3-clean-dirt.json", "goal4-stick-paper.json", "goal5-cubes-box.json", "goal6-bottles-dumpster.json", "goal7-weight-paper.json", "goal8-light-off.json"],
