@@ -4,9 +4,9 @@ GUI/vizForDSE/*
 *__pycache*
 venv/
 logs/*
-trained_models/*
 jsons/embeddings/*.txt
 figures-bak
+trained_models/**/graphs/
 
 ## Mac Files
 *.DS_Store
