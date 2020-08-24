@@ -233,19 +233,33 @@ def accuracy_score(dset, graphs, model, modelEnc, num_objects = 0, verbose = Fal
 		goal_num, world_num, tools, g, t = graph
 		if 'gcn_seq' in training:
 			actionSeq, graphSeq = g; loss = 0; toolSeq = tools
-			for i, g in enumerate(graphSeq):
-				y_pred = model(g, goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
-				y_true = torch.zeros(NUMTOOLS)
-				y_true[TOOLS.index(toolSeq[i])] = 1
-				total_test_loss += l(y_pred.view(1,-1), y_true)
-				y_pred = list(y_pred.reshape(-1))
-				# tools_possible = dset.goal_scene_to_tools[(goal_num,world_num)]
-				tool_predicted = TOOLS[y_pred.index(max(y_pred))]
-				if tool_predicted == toolSeq[i]:
-					total_correct += 1
-				elif verbose:
-					print (goal_num, world_num, tool_predicted, toolSeq[i])
-				denominator += 1
+			if 'Tseq' in model.name:
+				y_pred = model(graphSeq, goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec, tools)
+				for i in range(len(y_pred)):
+					y_pred_i = list(y_pred[i].reshape(-1))
+					tool_predicted = TOOLS[y_pred_i.index(max(y_pred_i))]
+					y_true = torch.zeros(NUMTOOLS)
+					y_true[TOOLS.index(toolSeq[i])] = 1
+					total_test_loss += l(y_pred[i].view(1,-1), y_true)
+					if tool_predicted == toolSeq[i]:
+						total_correct += 1
+					elif verbose:
+						print (goal_num, world_num, tool_predicted, toolSeq[i])
+					denominator += 1
+			else:
+				for i, g in enumerate(graphSeq):
+					y_pred = model(g, goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
+					y_true = torch.zeros(NUMTOOLS)
+					y_true[TOOLS.index(toolSeq[i])] = 1
+					total_test_loss += l(y_pred.view(1,-1), y_true)
+					y_pred = list(y_pred.reshape(-1))
+					# tools_possible = dset.goal_scene_to_tools[(goal_num,world_num)]
+					tool_predicted = TOOLS[y_pred.index(max(y_pred))]
+					if tool_predicted == toolSeq[i]:
+						total_correct += 1
+					elif verbose:
+						print (goal_num, world_num, tool_predicted, toolSeq[i])
+					denominator += 1
 			continue
 		elif 'gcn' in training:
 			y_pred = model(g, goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
@@ -394,13 +408,20 @@ def backprop(data, optimizer, graphs, model, num_objects, modelEnc=None, batch_s
 	for iter_num, graph in tqdm(list(enumerate(graphs)), ncols=80):
 		goal_num, world_num, tools, g, t = graph
 		if 'gcn_seq' in training:
-			actionSeq, graphSeq = g; loss = 0; toolSeq = tools
-			for i, g in enumerate(graphSeq):
-				y_pred = model(g, goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
-				y_true = torch.zeros(NUMTOOLS)
-				y_true[TOOLS.index(tools[i])] = 1
-				loss += l(y_pred.view(1,-1), y_true)
-				if weighted: loss *= (1 if t == data.min_time[(goal_num, world_num)] else 0.5)
+			actionSeq, graphSeq = g; loss = 0
+			if 'Tseq' in model.name:
+				y_pred = model(graphSeq, goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec, tools)
+				for i in range(len(y_pred)):
+					y_true = torch.zeros(NUMTOOLS)
+					y_true[TOOLS.index(tools[i])] = 1
+					loss += l(y_pred[i].view(1,-1), y_true)
+			else:
+				for i,g in enumerate(graphSeq):
+					y_pred = model(g, goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
+					y_true = torch.zeros(NUMTOOLS)
+					y_true[TOOLS.index(tools[i])] = 1
+					loss += l(y_pred.view(1,-1), y_true)
+			if weighted: loss *= (1 if t == data.min_time[(goal_num, world_num)] else 0.5)
 			batch_loss += loss
 		elif 'gcn' in training:
 			y_pred = model(g, goal2vec[goal_num], goalObjects2vec[goal_num], tool_vec)
@@ -518,7 +539,10 @@ def get_model(model_name):
 	if training == 'gcn' or training == 'gcn_seq':
 		size, layers = (4, 5) if training == 'gcn' else (2, 3)
 		modelEnc = None
-		if ("Final" not in model_name and "_NT" in model_name) or "Final_W" in model_name:
+		if "Tseq" in model_name:
+			model_class = getattr(src.GNN.models, "GGCN_Metric_Attn_L_NT_Tseq_C")
+			model = model_class(data.features, data.num_objects, size * GRAPH_HIDDEN, NUMTOOLS, layers, etypes, torch.tanh, 0.5, embedding, weighted)
+		elif ("Final" not in model_name and "_NT" in model_name) or "Final_W" in model_name:
 			model_class = getattr(src.GNN.models, "DGL_Simple_Likelihood")
 			model = model_class(data.features, data.num_objects, size * GRAPH_HIDDEN, NUMTOOLS, layers, etypes, torch.tanh, 0.5, embedding, weighted)
 		else:
