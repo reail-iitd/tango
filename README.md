@@ -2,7 +2,7 @@
 
 This repository contains code implementation of the paper "TANGO: Commonsense Generalization in Predicting Tool Interactions for Mobile Manipulators".
 
-Authors: **Shreshth Tuli, Rajas Bansal, Rohan Paul and Mausam**. 
+Authors: **Shreshth Tuli, Rajas Bansal, Rohan Paul and Mausam**. Department of Computer Science and Engineering, Indian Institute of Techonology Delhi.
 
 Accepted at **International Joint Conference on Artificial Intelligence (IJCAI) 2021**.
 
