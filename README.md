@@ -1,4 +1,4 @@
-# Tango
+# TANGO: Commonsense Generalization in Predicting Tool Interactions for Mobile Manipulators
 
 This repository contains code implementation of the paper "TANGO: Commonsense Generalization in Predicting Tool Interactions for Mobile Manipulators".
 
