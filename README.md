@@ -17,7 +17,7 @@ A robot working in a physical environment (like home or factory) must learn  to 
 [![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/lUWU3rK1Gno/0.jpg)](https://www.youtube.com/watch?v=lUWU3rK1Gno)
 
 ## Arxiv preprint
-Paper available on <i>arxiv</i>: https://arxiv.org/abs/2105.04556.
+https://arxiv.org/abs/2105.04556.
 
 ## Cite this work
 ```
