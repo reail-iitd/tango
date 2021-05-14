@@ -16,8 +16,10 @@ A robot working in a physical environment (like home or factory) must learn  to 
 
 [![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/lUWU3rK1Gno/0.jpg)](https://www.youtube.com/watch?v=lUWU3rK1Gno)
 
-## Cite this work
+## Arxiv preprint
 Paper available on <i>arxiv</i>: https://arxiv.org/abs/2105.04556.
+
+## Cite this work
 ```
 @article{tuli2021tango,
   title={TANGO: Commonsense Generalization in Predicting Tool Interactions for Mobile Manipulators},
