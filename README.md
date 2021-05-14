@@ -30,7 +30,7 @@ Paper available on <i>arxiv</i>: https://arxiv.org/abs/2105.04556.
 ## License
 
 BSD-2-Clause. 
-Copyright (c) 2020, Rajas Basal, Shreshth Tuli, Rohan Paul, Mausam
+Copyright (c) 2021, Shreshth Tuli, Rajas Basal, Rohan Paul, Mausam
 All rights reserved.
 
 See License file for more details.
