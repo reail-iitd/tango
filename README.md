@@ -4,7 +4,7 @@ This repository contains code implementation of the paper "TANGO: Commonsense Ge
 
 **Shreshth Tuli, Rajas Bansal, Rohan Paul and Mausam**. Department of Computer Science and Engineering, Indian Institute of Techonology Delhi.
 
-Accepted at **International Joint Conference on Artificial Intelligence (IJCAI) 2021**.
+To appear in **International Joint Conference on Artificial Intelligence (IJCAI) 2021**.
 
 This implementation contains all the models mentioned in the paper for next-tool prediction along with next-action prediction. This readme gives a broad idea of the work that has been accomplished. The code start point is `app.py`. For more details on replicating results, running the data collection platform and visualizing the collected dataset, refer to this [wiki](https://github.com/reail-iitd/tango/wiki).
 
