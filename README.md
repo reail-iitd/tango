@@ -18,6 +18,8 @@ A robot working in a physical environment (like home or factory) must learn  to 
 
 This implementation contains all the models mentioned in the paper for next-tool prediction along with next-action prediction. This readme gives a broad idea of the work that has been accomplished. The code start point is `app.py`. For more details on replicating results, running the data collection platform and visualizing the collected dataset, refer to this [wiki](https://github.com/reail-iitd/tango/wiki).
 
+For our ToolTango model, use $MODEL_NAME as **GGCN_Metric_Attn_Aseq_L_Auto_Cons_C_Tool_Action**.
+
 ## Arxiv preprint
 https://arxiv.org/abs/2105.04556.
 
